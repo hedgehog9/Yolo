@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+   
+   <!-- Root Context: defines shared resources visible to all other web components -->
+      
+   <!-- ==== #15. myBatis(JDBC)설정 연결문자열 설정하기  ==== -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+       <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+       <property name="url" value="jdbc:oracle:thin:@211.238.142.22:1521:xe" />
+       <property name="username" value="final_orauser2" />
+       <property name="password" value="aclass" />
+    </bean>
+   
+   
+    <!-- ==== #15. myBatis(JDBC)설정 mapper 파일 위치 지정하기  ==== -->
+    <!-- mapper 파일이란 sql 문을 가지고 있는 xml 파일을 말한다. -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+       <property name="mapperLocations" value="classpath*:com/yolo/hr/mapper/*.xml" />
+       <property name="dataSource" ref="dataSource"/>
+    </bean>
+   
+   
+    <!-- ==== #15. myBatis(JDBC)설정 sqlSessionTemplate 의존 객체 설정 ==== -->
+    <bean id="sqlsession" class="org.mybatis.spring.SqlSessionTemplate"> 
+       <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+    
+    
+    <!-- ==== #16. 트랜잭션 처리를 위해서 아래와 같이 트랜잭션매니저 객체를 bean 으로 등록해야 한다. ==== -->
+   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+      <property name="dataSource" ref="dataSource" />
+   </bean>
+   <tx:annotation-driven transaction-manager="transactionManager" />
+      
+   <!-- ==== #17. jackson 과 관련된 기능을 사용하기 위해 빈을 등록한다. ==== -->
+   <bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>      
+      
+</beans>

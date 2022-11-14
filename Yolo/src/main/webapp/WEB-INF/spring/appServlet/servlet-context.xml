@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:aop="http://www.springframework.org/schema/aop"
+   xmlns:beans="http://www.springframework.org/schema/beans"
+   xmlns:mvc="http://www.springframework.org/schema/mvc"
+   xmlns:context="http://www.springframework.org/schema/context"
+   xmlns:task="http://www.springframework.org/schema/task"
+   xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+      http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+      http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+   <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+   
+   <!-- Enables the Spring MVC @Controller programming model -->
+    <mvc:annotation-driven />
+    
+    <!-- ==== #18. 이미지, 동영상, js, css 파일등이 위치하는 경로를 의미한다.
+                            그 경로는 /webapp/resources 아래에 위치하거나 또는 /webapp/resources 아래에 폴더를 만들어서 저장시켜야 한다. ==== -->
+   <!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+   <mvc:resources mapping="/resources/**" location="/resources/" />
+   
+   <!-- ==== #182. Spring Scheduler(스프링스케줄러1) 어노테이션을 사용하여 스프링스케줄러를 구현하도록 한다. -->
+   <task:annotation-driven/>
+   
+   <!-- === #19. 엑셀파일다운로드를 위해  BeanNameViewResolver 추가하기 === -->
+   <beans:bean id="excelDownloadView" class="com.yolo.excel.ExcelDownloadView"/>
+   <beans:bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+        <beans:property name="order" value="0"/>
+   </beans:bean>
+    
+   <!-- ======= #20. 실행시 모든 페이지에 기본틀이 되어지는 틀을 배치하기 위한 템플릿 프레임워크인 TilesViewResolver 를 사용하기 위해 빈으로 등록한다. ======= -->
+    
+   <beans:bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        <beans:property name="definitions">
+            <beans:list>
+                 <beans:value>/WEB-INF/tiles/tiles-layout.xml</beans:value>
+            </beans:list>
+        </beans:property>
+    </beans:bean>
+   
+   <beans:bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+        <beans:property name="order" value="1"/>
+    </beans:bean>
+   
+   <!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+   <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <beans:property name="prefix" value="/WEB-INF/views/" />
+      <beans:property name="suffix" value=".jsp" />
+   <!-- 
+      <beans:property name="order" value="2"/> 
+   -->
+   </beans:bean>
+   
+   
+   <!-- ===== #21. 파일업로드 및 파일다운로드에 필요한 의존객체 설정하기 ===== -->
+   <beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">   
+   <!-- 자바파일이 UTF-8로 저장된 경우 한글파일명이 깨지지 않게하기 위해 -->
+        <beans:property name="defaultEncoding" value="utf-8" />
+        <beans:property name="maxUploadSize" value="10485760" />
+   </beans:bean> 
+    
+    <!-- === #44. 양방향 암호화 알고리즘인 AES256 를 사용하여 복호화 하기 위한 클래스(파라미터가 있는 생성자) 의존객체 bean 생성하기 === --> 
+    <beans:bean id="aes" class="com.yolo.hr.common.AES256">
+       <beans:constructor-arg>
+          <beans:value>abcd0070#aclass$</beans:value>  
+       </beans:constructor-arg>
+    </beans:bean>
+    
+   
+   <!-- ==== #18. bean으로 등록될 @Component 클래스가 위치하는 패키지명 지정하기 ====  -->
+   <!-- <context:component-scan base-package="com.spring.board" /> ==> 이게 겁나게 중요 ==> com.spring.board package에 올라간 
+                                                       어노테이션이  @Component로 되어 있는 모든 자바파일들을 bean으로 만들어주겠다!! -->
+   <!-- <context:component-scan base-package="com.yolo.*" /> -->
+   <context:component-scan base-package="com.yolo.*" name-generator="com.yolo.hr.common.FullBeanNameGenerator"/>
+   
+   <!-- ===== #22. 일단 스프링에서 트랜잭션 처리를 하기 위해서는
+            먼저 src/main/webapp/WEB-INF/spring/appServlet/servlet-context.xml 파일에
+        Namespaces 에 aop를 체크를 하고, 아래와 같이 트랜잭션 처리를 위한 aop 포인트컷을 등록을 해야 한다.    
+       - 아래의 <aop:aspectj-autoproxy />가 AOP 관련 어노테이션 동작이 가능하게 설정해주는 것임.
+    -->   
+   <!--  AOP 관련 어노테이션 동작이 가능하게 설정 -->   
+   <aop:aspectj-autoproxy />       
+    
+   <aop:config proxy-target-class="true">
+     <aop:pointcut id="controllerOperation" expression="execution(public * com.yolo..*Controller.*(..))" />
+   </aop:config>
+   
+   <!-- ====== 인터셉터 시작  ====== -->
+   <!-- 로그인 여부 체크하는 인터셉터 등록 -->
+   <!--  
+   	<beans:bean id="loginCheckInterceptor" class="com.yolo.interceptor.controller.LoginCheckInterceptor" />
+   -->
+   <!-- 로그인되어진 사용자가 관리자등급 인지 여부를 체크하는 인터셉터 등록 -->
+   <!--  
+   <beans:bean id="adminLoginCheckInterceptor" class="com.yolo.interceptor.controller.AdminLoginCheckInterceptor" />
+   -->
+   
+   <!-- <mvc:interceptors>
+         특정 URL에 대해서만 로그인 여부 체크하는 인터셉터 매핑시키기
+         <mvc:interceptor>
+            <mvc:mapping path="/member_only/member_a.action"/> 포함되는 url
+            <mvc:mapping path="/member_only/member_b.action"/> 포함되는 url
+            <beans:ref bean="loginCheckInterceptor"/> 로그인유무 검사
+         </mvc:interceptor>
+         
+         <mvc:interceptor>
+            <mvc:mapping path="/special_member/special_member_a.action"/> 포함되는 url
+            <mvc:mapping path="/special_member/special_member_b.action"/> 포함되는 url
+            <beans:ref bean="adminLoginCheckInterceptor"/> 로그인 한 사용자가 특정회원인지 확인함
+         </mvc:interceptor>
+   
+   </mvc:interceptors> -->
+   
+   <!-- ====== 인터셉터 끝  ====== -->
+   
+</beans:beans>

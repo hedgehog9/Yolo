@@ -1,0 +1,432 @@
+﻿>>>> Spring MVC 에서 스마트 에디터 구현하기 <<<<
+
+ 1. 스마트 에디터를 다운받아 /webapp/resources/ 아래에 smarteditor 폴더를 생성후
+    그 아래에 다운받은 스마트 에디터 소스를 붙여두기를 한다.
+ 
+  
+ 2. jQuery + 에디터관련JS파일을 include 한다.
+
+    /Board/src/main/webapp/WEB-INF/tiles/layout/layout-tiles1.jsp 에서
+    
+    <script type="text/javascript" src="<%=request.getContextPath() %>/resources/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script>
+       을 추가한다. 
+
+
+ 3. /Board/src/main/webapp/WEB-INF/views/tiles1/board/add.jsp 에서
+
+   <script type="text/javascript">
+
+	$(document).ready(function(){
+		
+	    //전역변수
+	    var obj = [];
+	    
+	    //스마트에디터 프레임생성
+	    nhn.husky.EZCreator.createInIFrame({
+	        oAppRef: obj,
+	        elPlaceHolder: "content",
+	        sSkinURI: "<%= ctxPath%>/resources/smarteditor/SmartEditor2Skin.html",
+	        htParams : {
+	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseToolbar : true,            
+	            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseVerticalResizer : true,    
+	            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseModeChanger : true,
+	        }
+	    });
+	    
+	    // 쓰기버튼
+	    $("#btnWrite").click(function(){
+	        
+	        <%-- === 스마트 에디터 구현 시작 === --%>
+			    // id가 content인 textarea에 에디터에서 대입
+	            obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+		    <%-- === 스마트 에디터 구현 끝 === --%>
+			
+			// 글제목 유효성 검사
+			const subject = $("input#subject").val().trim();
+			if(subject == "") {
+				alert("글제목을 입력하세요!!");
+				return;
+			}
+			
+		<%--	
+			// 글내용 유효성 검사(스마트 에디터 사용 안 할 경우)
+			const content = $("textarea#content").val().trim();
+			if(content == "") {
+				alert("글내용을 입력하세요!!");
+				return;
+			}
+		--%>	
+		
+		<%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 시작 === --%>
+		    var contentval = $("textarea#content").val();
+		        
+		 // 글내용 유효성 검사 하기 
+         // alert(contentval); // content에  공백만 여러개를 입력하여 쓰기할 경우 알아보는것.
+         // <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p> 이라고 나온다.
+         
+            contentval = contentval.replace(/&nbsp;/gi, ""); // 공백을 "" 으로 변환
+         /*    
+		         대상문자열.replace(/찾을 문자열/gi, "변경할 문자열");
+		     ==> 여기서 꼭 알아야 될 점은 나누기(/)표시안에 넣는 찾을 문자열의 따옴표는 없어야 한다는 점입니다. 
+		                  그리고 뒤의 gi는 다음을 의미합니다.
+		
+		 	 g : 전체 모든 문자열을 변경 global
+		 	 i : 영문 대소문자를 무시, 모두 일치하는 패턴 검색 ignore
+		*/ 
+      //   alert(contentval);
+      //   <p>             </p>
+         
+           contentval = contentval.substring(contentval.indexOf("<p>")+3);   // "             </p>"
+           contentval = contentval.substring(0, contentval.indexOf("</p>")); // "             "
+                  
+           if(contentval.trim().length == 0) {
+        	   alert("글내용을 입력하세요!!");
+               return;
+           }
+		 <%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 끝 === --%>
+		
+		   // 글암호 유효성 검사
+		   const pw = $("input#pw").val().trim();
+		   if(pw == "") {
+			  alert("글암호를 입력하세요!!");
+			  return;
+		   }
+			
+		   // 폼(form)을 전송(submit)
+		   const frm = document.addFrm;
+		   frm.method = "POST";
+		   frm.action = "<%= ctxPath%>/addEnd.action";
+		   frm.submit();    
+	        
+	    });
+		
+	}); // end of ready()-------------------------------------------
+	
+  </script>
+
+
+  <%-- !!!  textarea 태그에서 required="required" 속성을 사용하면 
+                        스마트 에디터는 오류가 발생하므로 사용하지 않는다. !!! --%>
+  <tr>
+      <th>내 용</th>
+      <td>
+ 	     <textarea name="content" id="content" rows="10" cols="100" style="width:766px; height:412px;"></textarea>
+      </td>
+  </tr>
+
+
+
+ 4. /Board/src/main/webapp/WEB-INF/views/tiles1/board/edit.jsp 에서
+
+  <script type="text/javascript">
+
+	$(document).ready(function(){
+	
+	    //전역변수
+	    var obj = [];
+	    
+	    //스마트에디터 프레임생성
+	    nhn.husky.EZCreator.createInIFrame({
+	        oAppRef: obj,
+	        elPlaceHolder: "content",
+	        sSkinURI: "<%= ctxPath%>/resources/smarteditor/SmartEditor2Skin.html",
+	        htParams : {
+	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseToolbar : true,            
+	            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseVerticalResizer : true,    
+	            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseModeChanger : true,
+	        }
+	    });
+    
+      //완료버튼
+      $("button#btnUpdate").click(function(){
+			
+			<%-- === 스마트 에디터 구현 시작 === --%>
+			// id가 content인 textarea에 에디터에서 대입
+	        obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+		    <%-- === 스마트 에디터 구현 끝 === --%>
+			
+			// 글제목 유효성 검사
+			const subject = $("input#subject").val().trim();
+			if(subject == "") {
+				alert("글제목을 입력하세요!!");
+				return;
+			}
+			
+		<%--
+			// 글내용 유효성 검사
+			const content = $("textarea#content").val().trim();
+			if(content == "") {
+				alert("글내용을 입력하세요!!");
+				return;
+			}
+		--%>	
+		
+		    <%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 시작 === --%>
+	        var contentval = $("textarea#content").val();
+	        
+		 // 글내용 유효성 검사 하기 
+	     // alert(contentval); // content에  공백만 여러개를 입력하여 쓰기할 경우 알아보는것.
+	     // <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p> 이라고 나온다.
+	     
+	        contentval = contentval.replace(/&nbsp;/gi, ""); // 공백을 "" 으로 변환
+	     /*    
+		         대상문자열.replace(/찾을 문자열/gi, "변경할 문자열");
+		     ==> 여기서 꼭 알아야 될 점은 나누기(/)표시안에 넣는 찾을 문자열의 따옴표는 없어야 한다는 점입니다. 
+		                  그리고 뒤의 gi는 다음을 의미합니다.
+		
+		 	 g : 전체 모든 문자열을 변경 global
+		 	 i : 영문 대소문자를 무시, 모두 일치하는 패턴 검색 ignore
+		*/ 
+	    //   alert(contentval);
+	    //   <p>             </p>
+     
+	       contentval = contentval.substring(contentval.indexOf("<p>")+3);   // "             </p>"
+	       contentval = contentval.substring(0, contentval.indexOf("</p>")); // "             "
+              
+	       if(contentval.trim().length == 0) {
+	    	   alert("글내용을 입력하세요!!");
+	           return;
+	       }
+	     <%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 끝 === --%>
+		
+			// 글암호 유효성 검사
+			const pw = $("input#pw").val().trim();
+			if(pw == "") {
+				alert("글암호를 입력하세요!!");
+				return;
+			}
+			
+			// 폼(form)을 전송(submit)
+			const frm = document.editFrm;
+			frm.method = "POST";
+			frm.action = "<%= ctxPath%>/editEnd.action";
+			frm.submit();
+		});
+	
+   }); // end of ready()-------------------------------------------
+
+  </script>
+
+
+  <%-- !!!  textarea 태그에서 required="required" 속성을 사용하면 
+                        스마트 에디터는 오류가 발생하므로 사용하지 않는다. !!! --%>
+  <tr>
+      <th>내용</th>
+      <td>
+	     <textarea name="content" id="content" rows="10" cols="100" style="width:766px; height:412px;">${boardvo.content}</textarea>
+      </td> 
+  </tr>
+
+
+
+ 5. 사진첨부
+    /webapp/resources/smarteditor/sample/photo_uploader/photo_uploader.html 에 가면
+    form 태그가 존재합니다.
+
+  <form id="editor_upimage" name="editor_upimage" action="FileUploader.php" method="post" enctype="multipart/form-data" onSubmit="return false;">
+        <div id="pop_content2">
+	    <input type="file" class="upload" id="uploadInputBox" name="Filedata">
+            <p class="dsc" id="info"><strong>10MB</strong>이하의 이미지 파일만 등록할 수 있습니다.<br>(JPG, GIF, PNG, BMP)</p>
+        </div>
+  </form>
+
+  위의 action="FileUploader.php" 의미가 없으므로 아래와 같이 삭제해주시던가 "FileUploader.php" 값을 지워주도록 합니다.
+
+  <form id="editor_upimage" name="editor_upimage" method="post" enctype="multipart/form-data" onSubmit="return false;">
+        <div id="pop_content2">
+	    <input type="file" class="upload" id="uploadInputBox" name="Filedata">
+            <p class="dsc" id="info"><strong>10MB</strong>이하의 이미지 파일만 등록할 수 있습니다.<br>(JPG, GIF, PNG, BMP)</p>
+        </div>
+  </form>
+
+
+ 6. /webapp/resources/smarteditor/sample/photo_uploader/attach_photo.js 에 가서
+    
+   ==> 479번째 줄의 callFileUploader () 함수(단일사진첨부함수)를 보면 
+
+     sUrl  : location.href.replace(/\/[^\/]*$/, '') + '/file_uploader.php',  //샘플 URL입니다.
+     sCallback : location.href.replace(/\/[^\/]*$/, '') + '/callback.html',  //업로드 이후에 iframe이 redirect될 콜백페이지의 주소
+
+    위코드를 아래처럼 재정의 해주도록 합니다.
+
+     sUrl  : '/board/image/photoUpload.action',	  // 파일업로드시 동작되는 컨트롤러 URL
+     sCallback : location.href.replace(/\/[^\/]*$/, '') + '/callback.html',	//업로드 이후  redirect 페이지 URL
+
+   ==> 이어서 뒤에서 해야할 다중사진첨부를 위해 333번째 줄의 html5Upload() 함수(다중사진첨부함수)를 보시면 
+
+     sUploadURL= 'file_uploader_html5.php';  //upload URL 
+
+    위코드를 아래처럼 변경해주도록 합니다
+
+     sUploadURL= '/board/image/multiplePhotoUpload.action';     //다중파일업로드시 동작되는 컨트롤러 URL
+
+
+
+ 7. 먼저 웹브라우저를 실행하여 다중파일업로드를 확인해보기전 아래와 같이 설정을 변경해야 한다.
+    (다중파일업로드가 지원되는 브라우저는 HTML 5를 지원하는 브라우저로서 
+     IE10 이상, 크롬, 파이어폭스임)
+     
+     attach_photo.js 파일의 38번째줄을 보시면 checkDragAndDropAPI() 함수내에 존재하는
+     
+     bSupportDragAndDropAPI = false; 를 
+     bSupportDragAndDropAPI = true; 으로 변경해주어야 한다.
+
+ >>> 클라이언트 설정변경을 위와같이 모두 해주셨다면 이어서 서버페이지 코드작성을 해보도록 하겠습니다. <<<
+
+ 8. 기존의 com.spring.common.FileManager 클래스에서 
+   - 이미지의 크기를 구하기 위한 getImageWidth(), getImageHeight() 메소드 추가생성함.
+     jai_codec.jar, jai_core.jar 이 필요함.
+
+   **  메이븐을 사용하는 경우
+    :  jai_codec.jar, jai_core.jar 파일 Maven dependency
+
+    <repository>
+	    <id>osgeo</id>
+	    <name>OSGeo Release Repository</name>
+	    <url>https://repo.osgeo.org/repository/release/</url>
+	    <snapshots><enabled>false</enabled></snapshots>
+	    <releases><enabled>true</enabled></releases>
+  	</repository>
+
+    <dependency>
+        <groupId>javax.media</groupId>
+        <artifactId>jai_core</artifactId>
+        <version>1.1.3</version>
+    </dependency>
+
+    <dependency>
+        <groupId>javax.media</groupId>
+        <artifactId>jai_codec</artifactId>
+        <version>1.1.3</version>
+    </dependency>
+
+
+
+  9. 기존의 com.spring.common.FileManager 클래스에서 
+   - 이미지의 크기를 구하기 위한 getImageWidth(), getImageHeight() 메소드를 아래와 같이 추가생성함.
+
+	// 이미지 폭
+	public int getImageWidth(String pathname) {
+	   int width=-1;
+		
+	   File file = new File(pathname);
+	     if (! file.exists())
+		return width;
+		
+	   ParameterBlock pb=new ParameterBlock(); 
+           pb.add(pathname); 
+           RenderedOp rOp=JAI.create("fileload",pb); 
+
+           BufferedImage bi=rOp.getAsBufferedImage(); 
+
+           width = bi.getWidth(); 		
+		
+	   return width;
+	}
+		
+	// 이미지 높이
+	public int getImageHeight(String pathname) {
+	   int height=-1;
+		
+	   File file = new File(pathname);
+	     if (! file.exists())
+		return height;
+		
+	   ParameterBlock pb=new ParameterBlock(); 
+           pb.add(pathname); 
+           RenderedOp rOp=JAI.create("fileload",pb); 
+
+           BufferedImage bi=rOp.getAsBufferedImage(); 
+
+           height = bi.getHeight();		
+		
+	   return height;
+	}
+
+
+
+ 10. HTML5 드래그앤드롭 기능을 이용한 스마트에디터 다중파일업로드 관련 컨트롤러를 작성합니다.
+
+    /Board/src/main/java/com/spring/board/BoardController.java 에서
+
+   // ==== #스마트에디터. 드래그앤드롭을 사용한 다중사진 파일업로드 ====
+   @RequestMapping(value="/image/multiplePhotoUpload.action", method= {RequestMethod.POST} )
+	public void multiplePhotoUpload(HttpServletRequest request, HttpServletResponse response) {
+		
+		/*
+		   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.
+		   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
+		        우리는 WAS 의 webapp/resources/photo_upload 라는 폴더로 지정해준다.
+		*/
+		
+		// WAS 의 webapp 의 절대경로를 알아와야 한다.
+		HttpSession session = request.getSession();
+		String root = session.getServletContext().getRealPath("/");
+		String path = root + "resources"+File.separator+"photo_upload";
+		// path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 된다.
+		
+	//	System.out.println("~~~~ 확인용 path => " + path);
+		// ~~~~ 확인용  webapp 의 절대경로 => C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\photo_upload 
+		
+		File dir = new File(path);
+		if(!dir.exists()) {
+			dir.mkdirs();
+		}
+		
+		try {
+			String filename = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
+			// 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
+			
+			/*
+			    [참고]
+			    HttpServletRequest의 getHeader() 메소드를 통해 클라이언트 사용자의 정보를 알아올 수 있다. 
+	
+				request.getHeader("referer");           // 접속 경로(이전 URL)
+				request.getHeader("user-agent");        // 클라이언트 사용자의 시스템 정보
+				request.getHeader("User-Agent");        // 클라이언트 브라우저 정보 
+				request.getHeader("X-Forwarded-For");   // 클라이언트 ip 주소 
+				request.getHeader("host");              // Host 네임  예: 로컬 환경일 경우 ==> localhost:9090    
+			*/
+			
+		//	System.out.println(">>> 확인용 filename ==> " + filename);
+			// >>> 확인용 filename ==> berkelekle%EB%8B%A8%EA%B0%80%EB%9D%BC%ED%8F%AC%EC%9D%B8%ED%8A%B803.jpg 
+			
+			InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
+			
+			String newFilename = fileManager.doFileUpload(is, filename, path);
+			
+			int width = fileManager.getImageWidth(path+File.separator+newFilename);
+			
+		    if(width > 600) {
+		       width = 600;
+		    }
+		    
+		 // System.out.println(">>>> 확인용 width ==> " + width);
+		 // >>>> 확인용 width ==> 600
+		 // >>>> 확인용 width ==> 121
+			
+			String ctxPath = request.getContextPath(); //  /board
+			
+			String strURL = "";
+			strURL += "&bNewLine=true&sFileName="+newFilename; 
+			strURL += "&sWidth="+width;
+			strURL += "&sFileURL="+ctxPath+"/resources/photo_upload/"+newFilename;
+			
+			// === 웹브라우저 상에 사진 이미지를 쓰기 === //
+			PrintWriter out = response.getWriter();
+			out.print(strURL);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+
+ 

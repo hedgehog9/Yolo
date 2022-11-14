@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ======= #23. tiles 레이아웃 설정하기 ======= -->
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       
+<tiles-definitions>
+
+   <!-- ==== tiles 를 사용하는 레이아웃(sidebar,content) 설정 시작 ==== -->
+   <definition name="layout-admin"  template="/WEB-INF/tiles/layout/layout-admin.jsp"> 
+      <put-attribute name="sidebar"  value="/WEB-INF/tiles/admin/sidebar_admin.jsp" />
+      <put-attribute name="content" value="" />
+   </definition>
+   
+   <definition name="*.admin" extends="layout-admin">
+      <put-attribute name="content" value="/WEB-INF/views/admin/{1}.jsp"/>
+   </definition>
+   <definition name="*/*.admin" extends="layout-admin">
+      <put-attribute name="content" value="/WEB-INF/views/admin/{1}/{2}.jsp"/>
+   </definition>
+   <definition name="*/*/*.admin" extends="layout-admin">
+      <put-attribute name="content" value="/WEB-INF/views/admin/{1}/{2}/{3}.jsp"/>
+   </definition>
+   
+   
+   <!-- ==== tiles 를 사용하는 레이아웃(sidebar,content) 설정 시작 ==== -->
+   <definition name="layout-employee"  template="/WEB-INF/tiles/layout/layout-employee.jsp"> 
+      <put-attribute name="sidebar"  value="/WEB-INF/tiles/employee/sidebar_employee.jsp" />
+      <put-attribute name="content" value="" />
+   </definition>
+   
+   <definition name="*.employee" extends="layout-employee">
+      <put-attribute name="content" value="/WEB-INF/views/employee/{1}.jsp"/>
+   </definition>
+   <definition name="*/*.employee" extends="layout-employee">
+      <put-attribute name="content" value="/WEB-INF/views/employee/{1}/{2}.jsp"/>
+   </definition>
+   <definition name="*/*/*.employee" extends="layout-employee">
+      <put-attribute name="content" value="/WEB-INF/views/employee/{1}/{2}/{3}.jsp"/>
+   </definition>
+
+</tiles-definitions> 

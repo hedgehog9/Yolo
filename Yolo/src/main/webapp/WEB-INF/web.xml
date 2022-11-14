@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+   <web-app version="3.1" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
+
+   <!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
+   <context-param>
+      <param-name>contextConfigLocation</param-name>
+      <param-value>/WEB-INF/spring/root-context.xml</param-value>
+   </context-param>
+   
+   <!-- Creates the Spring Container shared by all Servlets and Filters -->
+   <listener>
+      <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+   </listener>
+
+   <!-- Processes application requests -->
+   <servlet>
+      <servlet-name>appServlet</servlet-name>
+      <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+      <init-param>
+         <param-name>contextConfigLocation</param-name>
+         <!--<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>-->
+         
+         <!-- // ==== #196. (웹채팅관련6) === // -->
+         <param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+         <!--  웹소켓 사용할 경우 아래 코드로 대체
+	         <param-value>/WEB-INF/spring/appServlet/servlet-context.xml,
+	                     /WEB-INF/spring/config/websocketContext.xml
+	         </param-value>
+         -->
+         
+      </init-param>
+      <load-on-startup>1</load-on-startup>
+   </servlet>
+      
+   <servlet-mapping>
+      <servlet-name>appServlet</servlet-name>
+      <!-- === #13. URL 패턴에서 확장자 .action 인 것으로 요청을 하면 appServlet 서블릿이 받아서 처리를 해준다. === --> 
+      <url-pattern>*.yolo</url-pattern>
+   </servlet-mapping>
+   
+   <!-- === #14. POST 방식으로 요청시 데이터 인코딩처리(UTF-8)를 위한 필터추가 -->
+    <filter>
+       <filter-name>encodingFilter</filter-name>
+       <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+       <init-param>
+          <param-name>encoding</param-name>
+          <param-value>UTF-8</param-value>      
+       </init-param>
+    </filter> 
+   
+    <filter-mapping>
+       <filter-name>encodingFilter</filter-name>
+       <url-pattern>*</url-pattern>
+    </filter-mapping>
+    
+    <!--  ===== #14. 시작 웹페이지 등록하기 ===== -->
+   <welcome-file-list>
+       <welcome-file>index.yolo</welcome-file>
+   </welcome-file-list>
+
+</web-app>
