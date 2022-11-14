@@ -97,4 +97,5 @@ replay_pid*
 
 
 /Yolo/target/
+/Yolo/NCS/
 *.sql
