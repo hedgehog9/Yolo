@@ -36,8 +36,21 @@
 
 <meta charset="UTF-8">
 
-<!-- 폰트  -->
-<link href="https://webfontworld.github.io/pretendard/Pretendard.css" rel="stylesheet">
+<%-- 조상운이 추가한 라이브러리 시작  --%>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+
+<%-- progress bar --%>
+<script type="text/javascript" src="resources\dist\progressbar.min.js"></script>
+
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<%-- 조상운이 추가한 라이브러리 끝  --%>
+
+
+
   
 
 </head>
