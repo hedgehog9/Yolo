@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<style type="text/css">
+<style>
+
     a { text-decoration:none !important }
     a:hover { text-decoration:none !important }
 
@@ -9,14 +10,36 @@
         display: flex;
     }
 
-    div#commute-content {
-        padding-top: 16px;
+    div#schedule-management-content {
+        height: 100%;
+        padding-top: 8px;
+        margin-top: 0px;
+    }
+    
+    div#management-categoty-div {
+        margin-top: 8px;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    a.detail-category {
+        background-color: var(--colors-white);
+        height: 56px;
+        padding-left: 8px;
+        padding-right: 8px;
+        margin-left: -8px;
+        display: flex;
+        align-items: center;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
     }
 
     div#date {
         padding-left: 40px;
         padding-right: 40px;
         padding-bottom: 16px;
+        padding-top: 16px;
     }
 
     input#daterange {
@@ -29,56 +52,37 @@
         font-size: small;
     }
 
-    div#display-worktime {
-        height: 30px;
-        margin-top: auto;
-    }
-
-    span#worktime {
-        font-weight: 600;
-        font-size: 20px;
-        padding-left: 40px;
-    }
-
     div#gagebar {
-        margin: 20px;
         width: 400px;
         height: 8px;
     }
 
-	div#commute-table {
-		padding-left: 40px;
-        padding-right: 40px;
-        padding-bottom: 16px;
-	}
-
-    
-
+	
 </style>
 
 <script>
 
-    
-
-    $(document).ready(function() { 
+    $(document).ready(function() {
 
         let today = new Date();
 
         getCurrentWeek();
-
+        
+        /*
         var bar = new ProgressBar.Line(gagebar, { // 게이지바 생성
             strokeWidth: 4,
             easing: 'easeInOut',
             duration: 1400,
-            color: '#FFEA82',
+            color: 'yellow',
             trailColor: '#eee',
             trailWidth: 1,
             svgStyle: {width: '100%', height: '100%'}
-        });
+        }); 
 
-        bar.animate(0.5);  // 게이지바 화면에 뿌리는 코드
-        
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        bar.animate(0.1);  // 게이지바 화면에 뿌리는 코드
+        */
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         // DateRange API 호출 시작
         $("input#daterange").daterangepicker({
@@ -115,7 +119,7 @@
                     "11월",
                     "12월"
                 ],
-                "firstDay": 1
+                "firstDay": 0
             },
             "startDate": today,
             "endDate": today,
@@ -144,7 +148,6 @@
             // end of $("input#daterange").daterangepicker
 
 
-
             $("span#today-btn").click(function() {
 
                 getCurrentWeek();
@@ -154,13 +157,47 @@
 
             });// end of $("span#today-btn").click -------------
 
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            // 이 코드가 ajax 실행후 들어가게 만들자
+            html = "";
             
+            for(var i=0; i<10; i++) {
 
-    });// end of $(document).ready --------------------------------------
+                html += "<tr>"+
+                            "<td>조상운</td>"+
+                            "<td>123</td>"+
+                            "<td><div id ='gagebar"+i+"' style='width: 400px; height: 8px;'></div></td>"+
+                            "<td>20</td>"+
+                            "<td>60</td>"+
+                        "</tr>"
+                
+            }
 
+            $("#data-body").html(html);
+
+            for(var i=0; i<10; i++) {
+                var bar = new ProgressBar.Line('#gagebar'+i, { // 게이지바 생성
+                    strokeWidth: 4,
+                    easing: 'easeInOut',
+                    duration: 1400,
+                    color: 'yellow',
+                    trailColor: '#eee',
+                    trailWidth: 1,
+                    svgStyle: {width: '100%', height: '100%'}
+                });
+
+                bar.animate(0.1*i);  // 게이지바 화면에 뿌리는 코드
+                
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////////
     
-   // Funtion Declation     
-   function getCurrentWeek() { // DateRnage 에서 특정날짜 선택시 해당하는 일주일의 평일 '월' 날짜와 '금' 날짜를 가져옴
+
+        
+    })// end of $(document).ready 
+
+
+    // Funtion Declation
+    function getCurrentWeek() { // DateRnage 에서 특정날짜 선택시 해당하는 일주일의 평일 '월' 날짜와 '금' 날짜를 가져옴
 
         let start;
         let end;
@@ -184,10 +221,6 @@
         $("span#enddate").text("~ "+end)
 
     }
-       
-    
-
-    
 
 </script>
 
@@ -197,7 +230,16 @@
             <a href="#" class="h4 mr-2 text-muted font-weight-bold">나의 관리</a>
         </div>
     </nav>
-    <div id="commute-content">
+    <div id="schedule-management-content">
+        <div id="management-categoty-div" class="d-flex border-bottom">
+            <a href="#" class="text-muted font-weight-bold mr-2 detail-category border-bottom border-dark"><span>주기별 근무</span></a> <!-- border-bottom border-dark 을 사용하여 url에 따라 밑줄 생성 -->
+            <a href="#" class="text-muted font-weight-bold mr-2 detail-category"><span>보상휴가</span></a>
+            <div style="margin-left: auto">
+                <select class="department-select">
+                    <option>부서선택</option>
+                </select>
+            </div>
+        </div>
         <div id="date" class="border-bottom">
             <input type="text" id="daterange" class="mr-1 text-center" readonly/>
             <span class="btn btn-outline-secondary btn-sm mr-2" id="today-btn">오늘</span>
@@ -205,36 +247,26 @@
             <span id="startdate" class="text-muted small"></span> <!-- 시작날짜 -->
             <span id="enddate" class="text-muted small"></span> <!-- 마지막 날짜 -->
         </div>
-        <div id="worktime-gagebar" class="d-flex border-bottom">
-            <div id="display-worktime">
-                <span id="worktime" style="vertical-align: middle;">20시간</span> <!-- DB에서 일주일 동안 일한 시간가져오기 -->
-                <span class="text-secondary"> / 52시간</span>
-            </div>
-            <div id="gagebar"></div>
-        </div>
-
-        <div id="commute-table" class="pt-4">
+        <div id="commute-management-div">
             <table class="table table-hover">
-                <thead class="table-light">
+                <thead>
                     <tr>
-                        <th>날짜</th>
-                        <th>출근시각</th>
-                        <th>퇴근시각</th>   
-                        <th>근무시간</th>   
-                        <th>초과근무시간</th>   
+                        <th>이름</th>
+                        <th>사번</th>
+                        <th>시간 차트</th>
+                        <th>초과 시간</th>
+                        <th>합계</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <div id="schedule-data">
-                        <tr>
-                            <td>2022.11.07</td>
-                            <td>09:00</td>
-                            <td>18:00</td>
-                            <td>8</td>
-                            <td>x</td>
-                        </tr>
-                    </div>
-                </tbody>
-          </table>
+                <tbody id="data-body">
+                    <tr>
+                        <td>이름나오는 곳</td>
+                        <td>123</td>
+                        <td><div id="gagebar"></div></td>
+                        <td>20</td>
+                        <td>60</td>
+                    </tr> 
+                </tbody>    
+            </table>
         </div>
     </div>
