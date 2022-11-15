@@ -113,8 +113,7 @@
 				    출근하기
 				  </a>
 				  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="width: 90%;">
-				    <a class="dropdown-item" href="#">일단드롭다운으로</a>
-				    <a class="dropdown-item" href="#">만들었어용</a>
+				    <a class="dropdown-item" href="#">출근하기</a>
 				  </div>
 				</div>
 				<div class="sideTr" onclick="#">
