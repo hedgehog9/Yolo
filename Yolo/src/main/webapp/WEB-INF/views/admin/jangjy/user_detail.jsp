@@ -24,6 +24,7 @@
 	
 	div#user_profile{
 		display: flex;
+		margin-top: 65px
 	}
 	
 	div#user_name{
@@ -54,7 +55,7 @@
 	}
 	
 	div#hr_info_title > div.info_title{
-		padding: 20px 20px 20px 0;
+		padding: 20px 10px 20px 10px;
 	}
 	
 	button#record_search{
@@ -73,10 +74,79 @@
 		cursor: pointer;
 	}
 	
+	i.fa-phone-alt, i.fa-envelope, i.fa-comment{
+		margin:0px;
+		width:30px;
+	}
+	       
+	a.communication{
+		padding:3px 0px 3px 0px;
+		border: solid 1px #d9d9d9;
+	}
+	
+	a.communication:hover{
+		background-color: #ebebeb;
+	}
+	
+	
 
 </style>
+<%-- 말풍선 --%>
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+<%-- 말풍선 --%>
+
+<script>
+	$(document).ready(function(){
+		
+		
+		<%-- 말풍선 --%>
+	  	$('[data-toggle="tooltip"]').tooltip();   
+		
+	  	<%-- 인사정보 클릭시 --%>
+		$(document).on("click","div#div_hr", function(e){
+	  		$("div.info_title").css("border-bottom","");
+	  		$(e.target).css("border-bottom","solid 3px green");
+	  	});
+  	
+  	
+	  	<%-- 개인정보 클릭시 --%>
+	  	$(document).on("click","div#div_ps", function(e){
+	  		$("div.info_title").css("border-bottom","");
+	  		$(e.target).css("border-bottom","solid 3px green");
+	  	});
+		// 문서 로딩시 인사정보 클릭  	
+  		$("div#div_hr").trigger("click");
+	
+	});// end of $(document).ready-----------------------------
+	
+	function editInfo(){
+		
+		
+	}//end of function editInfo(){}---------------
+	
+	
+	// 버튼 클릭시 클립보드에 복사하는 함수 (a태그에서 호출)
+	function copy_to_clipboard(str) {
+		 // str이 복사하고자 하는 문자열
+		  var tempElement = document.createElement("textarea");
+		  document.body.appendChild(tempElement);
+		  tempElement.value = str;
+		  tempElement.select();
+		  document.execCommand('copy');
+		  document.body.removeChild(tempElement);
+		  toastr.info('출력할 문구');
+		 // alert(str+'복사되었습니다');
+		 // Swal.fire('복사되었습니다.',str, 'success');
+	}
+</script>
 
 <div id="user_detail_content">
+	
+	
+	
 	
 	<span><a href="<%= ctxPath%>/people.yolo">구성원</a> / 홍길동</span>
 	<i class="fas fa-camera"></i>
@@ -117,13 +187,13 @@
 				</tr>
 				<tr>
 					<th>
-						<button type="button" class="btn btn-info btn-sm"></button>
+						<a onclick="copy_to_clipboard('01012345678')" class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="010-1234-5678"><i class="fas fa-phone-alt"></i></a>
 					</th>
 					<th>
-						<button type="button" class="btn btn-info btn-sm"></button>
+						<a onclick="copy_to_clipboard('honggildong@gmail.com')" class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="honggildong@gmail.com"><i class="far fa-envelope"></i></a>
 					</th>
 					<th>
-						<button type="button" class="btn btn-info btn-sm"></button>
+						<a class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="채팅하기"><i class="fas fa-comment"></i></a>
 					</th>
 				</tr>
 			</thead>
@@ -133,11 +203,11 @@
 	
 	<nav id="hr_info">
 		<div id="hr_info_title">
-			<div class="info_title">인사 정보</div>
-			<div class="info_title">개인 정보</div>
+			<div id="div_hr" class="info_title">인사 정보</div>
+			<div id="div_ps" class="info_title">개인 정보</div>
 		</div>
 		<div>
-			<button id="record_search" type="button" class="btn btn-sm" onclick="#"><i class="fas fa-pen" style="margin:0px; width:16px;"></i></button>
+			<button id="record_search" type="button" class="btn btn-sm" onclick="editInfo()"><i class="fas fa-pen" style="margin:0px; width:16px;"></i></button>
 		</div>
 	</nav>
 

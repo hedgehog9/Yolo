@@ -38,14 +38,67 @@
 
 <!-- 폰트  -->
 <link href="https://webfontworld.github.io/pretendard/Pretendard.css" rel="stylesheet">
-  
+
+<!-- sweet alert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<!-- toastr css라이브러리 -->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+<!-- toastr cdn 라이브러리 둘다 제이쿼리 밑에 있어야함 -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script type="text/javascript">
+
+	toastr.options = {
+	     "closeButton": false,
+	     "debug": false,
+	     "newestOnTop": false,
+	     "progressBar": true,
+	     "positionClass": "toast-top-center",
+	     "preventDuplicates": false,
+	     "onclick": null,
+	     "showDuration": "300",
+	     "hideDuration": "1000",
+	     "timeOut": "1500",
+	     "extendedTimeOut": "1000",
+	     "showEasing": "swing",
+	     "hideEasing": "linear",
+	     "showMethod": "fadeIn",
+	     "hideMethod": "fadeOut",
+	     "toastClass": 'toastr'
+	}
+
+	$(document).ready(function(){
+		
+		// 화면 높이만큼 body div에 height를 주겠다
+		const web_browser_height = $(window).height(); 
+		$("div#sidebar").css({"height":web_browser_height});
+		$("div#content").css({"height":web_browser_height});
+		
+	}); // end of ready
+
+</script>
+<%-- 조상운이 추가한 라이브러리 시작  --%>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+
+<%-- progress bar --%>
+<script type="text/javascript" src="resources\dist\progressbar.min.js"></script>
+
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<%-- 조상운이 추가한 라이브러리 끝  --%>
+
+
+
 
 </head>
 <body>
 
 	<div style="display:flex;">
 		<%-- =========================== 사이드바 시작 =========================== --%>
-		<div id="sidebar" style="width:20%; height:950px;">
+		<div id="sidebar" style="width:20%;">
 			<tiles:insertAttribute name="sidebar" />
 			
 			
@@ -54,7 +107,7 @@
 
 
 		<%-- =========================== 내용물 시작 =========================== --%>
-		<div id="content" style="width:80%;height:950px;">
+		<div id="content" style="width:80%;">
 	         <tiles:insertAttribute name="content" />
 
 				         
