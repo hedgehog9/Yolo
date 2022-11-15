@@ -34,6 +34,44 @@
 <%-- *** ajax로 파일을 업로드할때 가장 널리 사용하는 방법 ==> ajaxForm *** --%>
 <script type="text/javascript" src="<%= ctxPath%>/resources/js/jquery.form.min.js"></script>
 
+<!-- sweet alert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<!-- toastr css라이브러리 -->
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
+<!-- toastr cdn 라이브러리 둘다 제이쿼리 밑에 있어야함 -->
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+	toastr.options = {
+	     "closeButton": false,
+	     "debug": false,
+	     "newestOnTop": false,
+	     "progressBar": true,
+	     "positionClass": "toast-top-center",
+	     "preventDuplicates": false,
+	     "onclick": null,
+	     "showDuration": "300",
+	     "hideDuration": "1000",
+	     "timeOut": "1500",
+	     "extendedTimeOut": "1000",
+	     "showEasing": "swing",
+	     "hideEasing": "linear",
+	     "showMethod": "fadeIn",
+	     "hideMethod": "fadeOut",
+	     "toastClass": 'toastr'
+	}
+	
+	$(document).ready(function(){
+		
+		// 화면 높이만큼 body div에 height를 주겠다
+		const web_browser_height = $(window).height(); 
+		$("div#sidebar").css({"height":web_browser_height});
+		$("div#content").css({"height":web_browser_height});
+		
+	}); // end of ready
+
+</script>
+
 </head>
 <body>
 

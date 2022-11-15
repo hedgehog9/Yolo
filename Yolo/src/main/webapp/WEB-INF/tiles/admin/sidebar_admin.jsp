@@ -20,7 +20,7 @@
 	div#sideTop{
 		width: 80%;
 		height: 260px;
-		margin: 35px auto 0 auto;
+		margin: 0px auto 0 auto;
 		/* border: 1px solid black; */
 	}
 	
@@ -68,7 +68,7 @@
 		
 	}
 	
-	i{
+	i.sideIcon{
 		width: 40px;
 		margin-left: 15px;
 	}
@@ -80,7 +80,7 @@
 <script type="text/javascript" src="<%= ctxPath%>/js/jquery-3.6.0.min.js"></script>
 <script type="text/javascript" src="<%= ctxPath%>/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js" ></script> 
 -->
-<!-- JQuery UI CSS 밒 js -->
+<!-- JQuery UI CSS 및 js -->
 <!--
 <link rel="stylesheet" type="text/css" href="<%= ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.css" />
 <script type="text/javascript" src="<%= ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
@@ -118,49 +118,49 @@
 				  </div>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-paper-plane"></i><span>메신저</span>
+					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span>메신저</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-bell"></i><span>새로운 소식</span>
+					<i class="fas fa-regular fa-bell sideIcon"></i><span>새로운 소식</span>
 				</div>
 			</div>
 			
 			<div id="sideMiddle" class="border-bottom">
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-flag"></i><span>공지사항</span>
+					<i class="fas fa-regular fa-flag sideIcon"></i><span>공지사항</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-solid fa-users"></i><span>구성원</span>
+					<i class="fas fa-solid fa-users sideIcon"></i><span>구성원</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-calendar-check"></i><span>캘린더</span>
+					<i class="fas fa-regular fa-calendar-check sideIcon"></i><span>캘린더</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-clipboard"></i><span>게시판</span>
+					<i class="fas fa-regular fa-clipboard sideIcon"></i><span>게시판</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-clock"></i><span>근무</span>
+					<i class="fas fa-regular fa-clock sideIcon"></i><span>근무</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-solid fa-plane"></i><span>휴가</span>
+					<i class="fas fa-solid fa-plane sideIcon"></i><span>휴가</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-solid fa-pen-nib"></i><span>워크플로우</span>
+					<i class="fas fa-solid fa-pen-nib sideIcon"></i><span>워크플로우</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-solid fa-dollar-sign"></i><span>급여</span>
+					<i class="fas fa-solid fa-dollar-sign sideIcon"></i><span>급여</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-solid fa-comments-dollar"></i><span>급여정산</span>
+					<i class="fas fa-solid fa-comments-dollar sideIcon"></i><span>급여정산</span>
 				</div>
 				<div class="sideTr" onclick="#">
-					<i class="fas fa-solid fa-chart-pie"></i><span>인사이트</span>
+					<i class="fas fa-solid fa-chart-pie sideIcon"></i><span>인사이트</span>
 				</div>
 			</div>
 			
 			<div id="sideBottom">
 				<div class="sideTr mt-1" style="height: 70px;" onclick="#">
-					<div id="prof" style="background-color: #d8c5e2;"><i class="fas fa-solid fa-school" style="width: 30px; margin: auto;"></i></div>
+					<div id="prof" style="background-color: #d8c5e2;"><i class="fas fa-solid fa-school sideIcon" style="width: 30px; margin: auto;"></i></div>
 					<span class="ml-2">쌍용교육센터</span>
 				</div>
 			</div>
