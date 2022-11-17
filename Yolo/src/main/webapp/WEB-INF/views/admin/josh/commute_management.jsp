@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<% String ctxPath = request.getContextPath(); %>  
 <style>
 
     a { text-decoration:none !important }
@@ -226,8 +228,8 @@
 
     <nav class="top-nav border-bottom">
         <div class="category">
-            <a href="#" class="h4 mr-2 text-muted font-weight-bold">나의 출퇴근</a>
-            <a href="#" class="h4 mr-2 text-muted font-weight-bold">나의 관리</a>
+            <a href="<%= ctxPath %>/admin/mycommute.yolo" class="h4 mr-2 text-secondary font-weight-bold">나의 출퇴근</a>
+            <a href="#" class="h4 mr-2 text-dark font-weight-bold">나의 관리</a>
         </div>
     </nav>
     <div id="schedule-management-content">

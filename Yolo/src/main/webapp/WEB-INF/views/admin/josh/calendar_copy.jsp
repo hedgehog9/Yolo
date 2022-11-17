@@ -1,7 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    
-<% String ctxPath = request.getContextPath(); %>
 
 <style type="text/css">
 
@@ -11,26 +9,6 @@
         display: flex;
         align-items: center;
     }
-    
-    span.plusUser{
-			float:left; 
-			background-color:#737373; 
-			color:white;
-			border-radius: 10%;
-			padding: 8px;
-			margin: 3px;
-			transition: .8s;
-			margin-top: 6px;
-	}
-	
-	span.plusUser > i {
-		cursor: pointer;
-	}
-	
-	.ui-autocomplete {
-		max-height: 100px;
-		overflow-y: auto;
-	}
     
     /* ========== full calendar css 시작 ========== */
 	.fc-header-toolbar {
@@ -123,7 +101,7 @@
               
             },function(start, end, label) {
                 $("input[name='start_date']").val(start.format('YYYY-MM-DD hh:mm'))
-                $("input[name='end_date']").val(end.format('YYYY-MM-DD hh:mm'))
+                $("input[name='end_date']").val(end.format('YYYY-MM-DD'))
             });
             
             //alert('selected ' + info.startStr + ' to ' + info.endStr);
@@ -158,78 +136,10 @@
       });
   
       calendar.render();
-      
-      //////////////////////////////////////////////////////////////////////////////////////////////
-      // 켈린더 등록 시작
-      // 공유자 추가하기
-		$("input#joinuser").bind("keyup",function(){
-				var joinuser = $(this).val();
-			//	console.log("확인용 joinUserName : " + joinUserName);
-				$.ajax({
-					url:"<%= ctxPath%>/schedule/insertSchedule/searchJoinUserList.yolo",
-					data:{"joinuser":joinuser},
-					dataType:"json",
-					success : function(json){
-						var joinUserArr = [];
-				    
-					//  input태그 공유자입력란에 "이" 를 입력해본 결과를 json.length 값이 얼마 나오는지 알아본다. 
-					//	console.log(json.length);
-					
-						if(json.length > 0){
-							
-							$.each(json, function(index,item){
-								var name = item.name;
-								if(name.includes(joinuser)){ // name 이라는 문자열에 joinUserName 라는 문자열이 포함된 경우라면 true , 
-									                             // name 이라는 문자열에 joinUserName 라는 문자열이 포함되지 않은 경우라면 false 
-								   joinUserArr.push(name+"("+item.email+")");
-								}
-							});
-							//console.log(joinUserArr);
-							$("input#joinuser").autocomplete({  // 참조 https://jqueryui.com/autocomplete/#default
-								source:joinUserArr,
-								select: function(event, ui) {       // 자동완성 되어 나온 공유자이름을 마우스로 클릭할 경우 
-									add_joinUser(ui.item.value);    // 아래에서 만들어 두었던 add_joinUser(value) 함수 호출하기 
-									                                // ui.item.value 이  선택한이름 이다.
-									return false;
-						        },
-						        focus: function(event, ui) {
-						            return false;
-						        } 
-							}); 
-							
-						}// end of if------------------------------------
-					}// end of success-----------------------------------
-				});
-		});
-      
-      
-      // 켈린더 등록 끝  
-     
 
 
 
   })// end of $(document).ready --------------------
-  
-  // Function Declation
-  // div.displayUserList 에 공유자를 넣어주는 함수
-	function add_joinUser(value){  // value 가 공유자로 선택한이름 이다.
-    	  
-		let plusUser_es = $("div.displayUserList > span.plusUser").text();
-	
-	  	console.log("확인용 plusUser_es => " + plusUser_es);
-	    
-	
-		if(plusUser_es.includes(value)) {  // plusUser_es 문자열 속에 value 문자열이 들어있다라면 
-			alert("이미 추가한 회원입니다.");
-		}
-		
-		else {
-			$("div.displayUserList").append("<span class='plusUser'>"+value+"&nbsp;<i class='fas fa-times-circle'></i></span>");
-		}
-		
-		$("input#joinuser").val("");
-		
-	}// end of function add_joinUser(value){}----------------------------	
 
     
 </script>
@@ -239,7 +149,7 @@
         <span class="text-muted h4 font-weight-bold">캘린더</span>
     </nav>
     
-    <div class="mb-4" style="width: 125px;">
+    <div class="mb-4" style="width: 100px;">
       <select class="custom-select custom-select-sm">
         <option>전체 조직</option>
         <option>내가 속한 조직</option>
@@ -280,9 +190,7 @@
                       </div>
                       <div class="form-group">
                         <label for="category">공유자:</label>
-                        <input type="text" name="joinuser" class="form-control" id="joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
-                        <div class="displayUserList"></div>
-						<input type="hidden" name="joinuser"/>
+                        <input type="text" name="joinuser" class="form-control">
                       </div>
                       <div class="form-group">
                         <label for="category">장소:</label>
