@@ -5,4 +5,9 @@
 
 <mapper namespace="josh">
 
+	<select id="searchJoinUserList" parameterType="String" resultType="com.yolo.hr.josh.model.MemberVO">
+		select email, name from tbl_member
+		where lower(name) like '%'||lower(#{joinuser})||'%'
+	</select>
+
 </mapper>

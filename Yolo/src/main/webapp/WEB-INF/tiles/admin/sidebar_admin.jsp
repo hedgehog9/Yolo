@@ -131,14 +131,14 @@
 				<div class="sideTr" onclick="#">
 					<i class="fas fa-solid fa-users sideIcon"></i><span>구성원</span>
 				</div>
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/calendar.yolo'">
 					<i class="fas fa-regular fa-calendar-check sideIcon"></i><span>캘린더</span>
 				</div>
 				<div class="sideTr" onclick="#">
 					<i class="fas fa-regular fa-clipboard sideIcon"></i><span>게시판</span>
 				</div>
-				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-clock sideIcon"></i><span>근무</span>
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/mycommute.yolo'">
+					<i class="fas fa-regular fa-clock sideIcon"></i><span>출퇴근</span>
 				</div>
 				<div class="sideTr" onclick="#">
 					<i class="fas fa-solid fa-plane sideIcon"></i><span>휴가</span>
@@ -146,7 +146,7 @@
 				<div class="sideTr" onclick="#">
 					<i class="fas fa-solid fa-pen-nib sideIcon"></i><span>워크플로우</span>
 				</div>
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/payStub.yolo'">
 					<i class="fas fa-solid fa-dollar-sign sideIcon"></i><span>급여</span>
 				</div>
 				<div class="sideTr" onclick="#">

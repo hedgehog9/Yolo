@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<% String ctxPath = request.getContextPath(); %>
 
 <style>
 
@@ -39,6 +40,8 @@
 
     $(document).ready(function() {
 
+    		$("#year-select").val() /* 페이지진입할때 백단에서 이번달 값꽂아주기 */
+    	
         $("#year-select").monthpicker({
             monthNames: ['1월(JAN)', '2월(FEB)', '3월(MAR)', '4월(APR)', '5월(MAY)', '6월(JUN)',
                 '7월(JUL)', '8월(AUG)', '9월(SEP)', '10월(OCT)', '11월(NOV)', '12월(DEC)'],
@@ -58,9 +61,9 @@
     <div id="pay-stub-content">
         <div id="category" class="d-flex">
             <a href="#" class="text-muted font-weight-bold mr-2 detail-category border-bottom border-dark"><span>급여명세서 목록</span></a> <!-- border-bottom border-dark 을 사용하여 url에 따라 밑줄 생성 -->
-            <a href="#" class="text-muted font-weight-bold mr-2 detail-category"><span>급여정산 및 지급</span></a>
+            <a href="<%= ctxPath%>/admin/payment.yolo" class="text-muted font-weight-bold mr-2 detail-category"><span>급여정산 및 지급</span></a>
             <div style="margin-left: auto" class="pt-3">
-                <input type="text" id="year-select"  readonly/>
+                <input type="text" id="year-select" class="form-control text-center" style="width: 100px" readonly/>
             </div>
         </div>
         <div>
