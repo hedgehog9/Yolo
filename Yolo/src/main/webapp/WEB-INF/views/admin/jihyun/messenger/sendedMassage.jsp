@@ -1,51 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<style>
+<jsp:include page="messengerHeader.jsp" />
 
-	div#messengerHeader {
-		/* border: 1px solid black; */
-		height: 110px;
-		width: 100%;
-		display: flex;
-  		align-items: center;
-	}
-	
-	span.headerTitle {
-		font-weight: bold;
-		font-size: 22pt;
-		margin: auto 15px;
-		color: #cccece;
-	}
-	
-	span.headerTitle:hover {
-		cursor: pointer;
-		color: #494949;
-	}
-	
-	button.headerBtn {
-		border-radius: 0.5rem;
-		border: 1px solid gray;
-		background: linear-gradient( to left ,#5bd3ff, #88eb1e );
-		margin-left:55%;
-		width: 200px;
-		height: 45px;
-		border: none;
-		color: white;
-		font-weight: bold;
-	}
-	
-	button.headerBtn:hover{
-		 filter: brightness(90%);
-	}
-	
-	i#icon{
-		color: white;
-		margin-right: 15px;
-	}
-	
-	/* -----------------헤더경계선-------------------- */
-	
+<style>
+ 
 	div#sendedMessenger{
 		height: 100%;
 		width: 100%;
@@ -141,127 +100,122 @@
 
 </script>
 
-<div id="right">
-	<div id="messengerHeader" class="border-bottom">
-		<span class="headerTitle ml-5">받은 메신저</span>
-		<span class="headerTitle">보낸 메신저</span>
-		<button class="headerBtn"><i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 보내기</button>
-	</div>
-	<div id="sendedMessenger">
-		<div id="messengertop">
-			<span style="margin-left:30px;">선택 메신저 읽기</span>
-			<span style="margin-left:50px;"> 안 읽은 메신저 모두 읽기</span>
-		</div>
-		
-		<div class="mailRow">
-			<div class="mailRowInside">
-				<div style="width: 30px;">
-					<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
-				</div>
-				<div id="prof" class="mt-3">길동</div>
-				<div class="mailcontent1 ml-4" style="width: 500px;">
-					<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
-					<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
-					<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
-				</div>
-				<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
-				<button class="mailBnt">답장하기</button>
-			</div>
-		</div>
-		
-		<!-- 반복시작 -->
-		<div class="mailRow">
-			<div class="mailRowInside">
-				<div style="width: 30px;">
-					<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
-				</div>
-				<div id="prof" class="mt-3">길동</div>
-				<div class="mailcontent1 ml-4" style="width: 500px;">
-					<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
-					<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
-					<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
-				</div>
-				<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
-				<button class="mailBnt">답장하기</button>
-			</div>
-		</div>
-		<div class="mailRow">
-			<div class="mailRowInside">
-				<div style="width: 30px;">
-					<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
-				</div>
-				<div id="prof" class="mt-3">길동</div>
-				<div class="mailcontent1 ml-4" style="width: 500px;">
-					<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
-					<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
-					<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
-				</div>
-				<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
-				<button class="mailBnt">답장하기</button>
-			</div>
-		</div>
-		<div class="mailRow">
-			<div class="mailRowInside">
-				<div style="width: 30px;">
-					<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
-				</div>
-				<div id="prof" class="mt-3">길동</div>
-				<div class="mailcontent1 ml-4" style="width: 500px;">
-					<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
-					<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
-					<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
-				</div>
-				<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
-				<button class="mailBnt">답장하기</button>
-			</div>
-		</div>
-		<div class="mailRow">
-			<div class="mailRowInside">
-				<div style="width: 30px;">
-					<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
-				</div>
-				<div id="prof" class="mt-3">길동</div>
-				<div class="mailcontent1 ml-4" style="width: 500px;">
-					<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
-					<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
-					<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
-				</div>
-				<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
-				<button class="mailBnt">답장하기</button>
-			</div>
-		</div>
-		<div class="mailRow">
-			<div class="mailRowInside">
-				<div style="width: 30px;">
-					<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
-				</div>
-				<div id="prof" class="mt-3">길동</div>
-				<div class="mailcontent1 ml-4" style="width: 500px;">
-					<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
-					<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
-					<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
-				</div>
-				<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
-				<button class="mailBnt">답장하기</button>
-			</div>
-		</div>
-		<div class="mailRow">
-			<div class="mailRowInside">
-				<div style="width: 30px;">
-					<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
-				</div>
-				<div id="prof" class="mt-3">길동</div>
-				<div class="mailcontent1 ml-4" style="width: 500px;">
-					<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
-					<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
-					<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
-				</div>
-				<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
-				<button class="mailBnt">답장하기</button>
-			</div>
-		</div>
-		<!-- 반복끝 -->
+
+	
+<div id="sendedMessenger">
+	<div id="messengertop">
+		<span style="margin-left:30px;">선택 메신저 읽기</span>
+		<span style="margin-left:50px;"> 안 읽은 메신저 모두 읽기</span>
 	</div>
 	
+	<div class="mailRow">
+		<div class="mailRowInside">
+			<div style="width: 30px;">
+				<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
+			</div>
+			<div id="prof" class="mt-3">길동</div>
+			<div class="mailcontent1 ml-4" style="width: 500px;">
+				<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
+				<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
+				<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
+			</div>
+			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
+			<button class="mailBnt">답장하기</button>
+		</div>
+	</div>
 	
+	<!-- 반복시작 -->
+	<div class="mailRow">
+		<div class="mailRowInside">
+			<div style="width: 30px;">
+				<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
+			</div>
+			<div id="prof" class="mt-3">길동</div>
+			<div class="mailcontent1 ml-4" style="width: 500px;">
+				<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
+				<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
+				<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
+			</div>
+			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
+			<button class="mailBnt">답장하기</button>
+		</div>
+	</div>
+	<div class="mailRow">
+		<div class="mailRowInside">
+			<div style="width: 30px;">
+				<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
+			</div>
+			<div id="prof" class="mt-3">길동</div>
+			<div class="mailcontent1 ml-4" style="width: 500px;">
+				<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
+				<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
+				<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
+			</div>
+			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
+			<button class="mailBnt">답장하기</button>
+		</div>
+	</div>
+	<div class="mailRow">
+		<div class="mailRowInside">
+			<div style="width: 30px;">
+				<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
+			</div>
+			<div id="prof" class="mt-3">길동</div>
+			<div class="mailcontent1 ml-4" style="width: 500px;">
+				<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
+				<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
+				<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
+			</div>
+			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
+			<button class="mailBnt">답장하기</button>
+		</div>
+	</div>
+	<div class="mailRow">
+		<div class="mailRowInside">
+			<div style="width: 30px;">
+				<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
+			</div>
+			<div id="prof" class="mt-3">길동</div>
+			<div class="mailcontent1 ml-4" style="width: 500px;">
+				<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
+				<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
+				<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
+			</div>
+			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
+			<button class="mailBnt">답장하기</button>
+		</div>
+	</div>
+	<div class="mailRow">
+		<div class="mailRowInside">
+			<div style="width: 30px;">
+				<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
+			</div>
+			<div id="prof" class="mt-3">길동</div>
+			<div class="mailcontent1 ml-4" style="width: 500px;">
+				<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
+				<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
+				<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
+			</div>
+			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
+			<button class="mailBnt">답장하기</button>
+		</div>
+	</div>
+	<div class="mailRow">
+		<div class="mailRowInside">
+			<div style="width: 30px;">
+				<input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;">
+			</div>
+			<div id="prof" class="mt-3">길동</div>
+			<div class="mailcontent1 ml-4" style="width: 500px;">
+				<span style="font-weight: bold;">메신저 제목 부분 입니다</span><span style="margin-left: 20px; font-size: 10pt;">2022-11-15 14:02:42</span>
+				<span class="spanBlock" style="font-size: 10pt;">지현 · 인사</span>
+				<span class="spanBlock mt-1" style="color: gray">메신저 내용 미리보기 부분입니다 </span>
+			</div>
+			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 620px;">전달하기</button>
+			<button class="mailBnt">답장하기</button>
+		</div>
+	</div>
+	<!-- 반복끝 -->
 </div>
+	
+	
