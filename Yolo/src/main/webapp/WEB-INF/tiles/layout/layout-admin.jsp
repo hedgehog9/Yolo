@@ -84,7 +84,10 @@
 
 
 <%-- progress bar --%>
-<script type="text/javascript" src="resources\dist\progressbar.min.js"></script>
+<script type="text/javascript" src="<%= ctxPath%>/resources/dist/progressbar.min.js"></script>
+
+<%-- monthpicker 라이브러리 --%>
+<script type="text/javascript" src="<%= ctxPath%>/resources/dist/jquery.ui.monthpicker.js"></script>
 
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
