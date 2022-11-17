@@ -104,7 +104,7 @@
 	    	<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
-						<th rowspan="2" class="th_100">이름</th>
+						<th rowspan="2" class="th_100" style="vertical-align: middle">이름</th>
 						<th colspan=6>기본 정보</th>
 						<th colspan=2>인사 정보</th>
 						<th colspan=3>개인 정보</th>
