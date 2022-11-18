@@ -9,7 +9,7 @@
 	
 	/* leaveCategory.jsp 시작 */
 	
-	#cate1{
+	#cate1, #cate3, #cate4 {
 		color: silver;
 	}
 	
@@ -17,14 +17,17 @@
 		color: black;
 	}
 	
-	#category {
-		cursor: pointer;
-	}
-	
 	/* leaveCategory.jsp 끝 */
 	
+	#container {
+		margin-left: 15px; 
+	/* 	width: 100%; */
+	}
+	
 	#tabletitle {
-		margin-bottom: 20px; width: 900px; font-size: 15pt; font-weight: bold;
+		margin-bottom: 20px;
+		font-size: 15pt; 
+		font-weight: bold;
 	}
 	
 	/* 달력 이미지 시작  */
@@ -44,13 +47,16 @@
 	/* 달력 이미지 끝 */
 	
 	table {
+		max-width:  100%;
 		border-radius: 10px;
 		overflow: hidden; 
 		height: auto;
+		table-layout: fixed;
 	}
 	
 	th, td{
 		text-align: center;
+		flex: 1;
 	}
 	
 	
@@ -100,26 +106,28 @@
 	 // alert('goPage!');
 		location.href="<%= ctxPath%>/jinji/empLeaveStatus.yolo"
 	};
-		
+	
+	function goempLeaveUsingList() { // 구성원 휴가 사용 내역 페이지로 이동
+		 // alert('goPage!');
+			location.href="<%= ctxPath%>/jinji/empLeaveUsingList.yolo"
+	};
+	
 	
 </script>	
 
-
-<div id="content" style="margin: 40px 0 0 15px;">
-	<div  style="width: 1200px;">
-		
+	<div id="container">
 		<div id="title">
 		<span id="tabletitle">연차 상세 현황</span>
-		<form name="searchYear" style="width: 300px;  float: right; text-align: right;">
+		<form name="searchYear" style="float: right; text-align: right;">
 			<input type="text" id="datepicker" class="date-picker-year" style="width: 150px; border-radius: 10px;"/>
 		</form>
 		</div>
 		<br>
 
-	    <div class="table-responsive" style="width:1200px;">
-	      <table class="table table-hover table-bordered" style="width: 1200px;">
+	    <div class="table-responsive">
+	      <table class="table table-hover table-bordered">
 	        <thead>
-	          <tr>
+	          <tr class="thead-dark">
 	            <th>이름</th>
 	            <th>사번</th>
 	            <th>연차 정보</th>
@@ -129,22 +137,47 @@
 	        </thead>
 	        <tbody>
 	          <tr>
-	            <td>Jacob</td>
+	            <td>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	Jacob
+	            </td>
 	            <td>3333</td>
-	            <td class="text-muted "> 11.18 소멸 </td>
-	            <td><label class="badge badge-warning">작성 요청 완료</label></td>
-	            <td><label class="badge badge-success">작성 요청</label></td>
+	            <td class="text-muted "> 11.18 소멸 <i class="fa fa-exclamation-circle" aria-hidden="true"></i></td>
+	            <td><label class="badge badge-danger">관리자 작성 필요</label></td>
+	            <td><label class="badge badge-success">작성하기</label></td>
 	          </tr>
 	          <tr>
-	            <td>Jacob</td>
+	            <td>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	Jacob
+	            </td>
 	            <td>3333</td>
-	            <td class="text-muted "> 11.18 소멸 </td>
-	            <td><label class="badge badge-success">작성 완료</label></td>
-	            <td><label class="badge badge-success">문서 보기</label></td> <%-- 버튼 --%>
+	            <td class="text-muted "> 11.18 소멸 <i class="fa fa-exclamation-circle" aria-hidden="true"></i></td>
+	            <td><label class="badge badge-info">작성 완료</label></td>
+	            <td><label class="badge badge-light">문서 보기</label></td> <%-- 버튼 --%>
+	          </tr>
+	           <tr>
+	            <td>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	Jacob
+	            </td>
+	            <td>3333</td>
+	            <td class="text-muted "> 11.18 소멸 <i class="fa fa-exclamation-circle" aria-hidden="true"></i></td>
+	            <td><label class="badge badge-info">작성 완료</label></td>
+	            <td><label class="badge badge-light">문서 보기</label></td> <%-- 버튼 --%>
+	          </tr>
+	           <tr>
+	            <td>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	Jacob
+	            </td>
+	            <td>3333</td>
+	            <td class="text-muted "> 11.18 소멸 <i class="fa fa-exclamation-circle" aria-hidden="true"></i></td>
+	            <td><label class="badge badge-info">작성 완료</label></td>
+	            <td><label class="badge badge-light">문서 보기</label></td> <%-- 버튼 --%>
 	          </tr>
 	        </tbody>
 	      </table>
 	    </div>
 	
 	</div>
-</div>

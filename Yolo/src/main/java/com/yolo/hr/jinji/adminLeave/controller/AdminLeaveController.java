@@ -13,7 +13,7 @@ public class AdminLeaveController {
 		
         mav.setViewName("/jinji/leaveSummary.admin"); // 뷰단 페이지
         // /WEB-INF/views/admin/{1}/{2}.jsp
-        // http://localhost:9090/hr/jinji/adminLeaveSummary.yolo
+        // http://localhost:9090/hr/jinji/leaveSummary.yolo
         
         return mav;
     }
@@ -36,7 +36,7 @@ public class AdminLeaveController {
 		
         mav.setViewName("/jinji/empLeaveStatus.admin"); // 뷰단 페이지
         // /WEB-INF/views/admin/{1}/{2}.jsp
-        // http://localhost:9090/hr/jinji/leaveDetail.yolo
+        // http://localhost:9090/hr/jinji/empLeaveStatus.yolo
         
         return mav;
     }
@@ -47,7 +47,7 @@ public class AdminLeaveController {
 		
         mav.setViewName("/jinji/empLeaveUsingList.admin"); // 뷰단 페이지
         // /WEB-INF/views/admin/{1}/{2}.jsp
-        // http://localhost:9090/hr/jinji/leaveDetail.yolo
+        // http://localhost:9090/hr/jinji/empLeaveUsingList.yolo
         
         return mav;
     }
@@ -58,7 +58,7 @@ public class AdminLeaveController {
 		
         mav.setViewName("/jinji/empLeavePromotion.admin"); // 뷰단 페이지
         // /WEB-INF/views/admin/{1}/{2}.jsp
-        // http://localhost:9090/hr/jinji/leaveDetail.yolo
+        // http://localhost:9090/hr/jinji/empLeavePromotion.yolo
         
         return mav;
     }

@@ -13,110 +13,160 @@
 		color: silver;
 	}
 	
-	#category {
-		cursor: pointer;
+	.table-responsive {
+		margin-left: 15px;
+	/* 	width: 100%; */
 	}
+
 	
 	/* leaveCategory.jsp 끝 */
 	
-	table {
+	.table {
+		width:95%;
 		border-radius: 10px;
-		overflow: hidden; 
+		overflow : hidden;
+        table-layout: fixed;
+        max-width: 800x;
+        min-width: 1300px;
+        white-space: nowrap;
 	}
 	
-	th, td{
+	th {
+		font-size: 13pt;
 		text-align: center;
+		height: 70px; 
+		flex: 1;
 	}
-	
+
+    td {
+      	text-align: center;
+        flex: 1;
+    }
 
 </style>
 
 <script type="text/javascript">
 
-	$(document).ready(function() {
-		
+	$(document).ready(function () {
+	  
 	});
 
 	
 	///////// Function Declaration ////////////
 	function goAdminLeave() { // 관리자 내 휴가 페이지로 이동 
 	 // alert('goPage!');
-		location.href="<%= ctxPath%>/leave/leaveSummary.yolo"
+		location.href="<%= ctxPath%>/jinji/leaveSummary.yolo"
 	};
 	
 	function goempLeaveUsingList() { // 구성원 휴가 보유 현황 페이지로 이동
 		 // alert('goPage!');
-			location.href="<%= ctxPath%>/leave/empLeaveUsingList.yolo"
+			location.href="<%= ctxPath%>/jinji/empLeaveUsingList.yolo"
 	};
-		
+
+	function goempLeavePromotion() { // 구성원 휴가 촉진 페이지로 이동
+		 // alert('goPage!');
+			location.href="<%= ctxPath%>/jinji/empLeavePromotion.yolo"
+	};
+
+
 	
 </script>	    
+
 
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
 
 <%-- 구성원 휴가 보유 현황 시작 --%>
-<div>
-	<div id="content" style="margin: 40px 0 0 15px;">
-	
-	
-	<div class="table-responsive" style="width:1200px;" >
-	  <table class="table table-hover table-bordered" style="width: 1100px;">
-	  	<thead>
-		    <tr>
-		      <th>이름</th>
-		      <th>사번</th>
-		      <th>연차</th>
-		      <th>산전후</th>
-		      <th>병가</th>
-		      <th>조의</th>
-		      <th>결혼</th>
-		      <th>리프레시</th>
-		      <th>포상</th>
-		      <th>보상</th>
-		    </tr>
-	    </thead>
-	    <tbody>
-		    <tr>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		    </tr>
-		    <tr>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		    </tr>
-		    <tr>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		      <td>Data</td>
-		    </tr>
-	    </tbody>
-	  </table>
+	<br>
+	 <div id="container" style="width: 95%">
+	    <div class="table-responsive">
+	      <table class="table table-hover table-bordered">
+	        <thead>
+	          <tr class="thead-dark">
+	             <th style="text-align: center; padding-bottom: 20px;">이름</th>
+			     <th style="text-align: center; padding-bottom: 20px;">사번</th>
+			     <th style="text-align: center; padding-bottom: 20px;">연차</th>
+			     <th style="text-align: center; padding-bottom: 20px;">산전후</th>
+			     <th style="text-align: center; padding-bottom: 20px;">병가</th>
+			     <th style="text-align: center; padding-bottom: 20px;">조의</th>
+			     <th style="text-align: center; padding-bottom: 20px;">결혼</th>
+			     <th style="text-align: center; padding-bottom: 20px;">리프레시</th>
+			     <th style="text-align: center; padding-bottom: 20px;">포상</th>
+			     <th style="text-align: center; padding-bottom: 20px;">보상</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	          <tr>
+	            <td>
+	            	<div>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style="font-size:13pt;">김안녕</span>
+	            	</div>
+	            </td>
+	            <td>3333</td>
+	            <td>5</td>
+	            <td>1</td>
+	            <td>90</td>
+	            <td></td>
+	            <td>1</td>
+	            <td>2</td>
+	            <td></td>
+	            <td></td>
+	          </tr>
+	          <tr>
+	            <td>
+	            	<div>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style="font-size:13pt;">즐거워</span>
+	            	</div>
+	            </td>
+	            <td>3333</td>
+	            <td>5</td>
+	            <td>1</td>
+	            <td>90</td>
+	            <td></td>
+	            <td>1</td>
+	            <td>2</td>
+	            <td></td>
+	            <td></td>
+	          </tr>
+	          <tr>
+	            <td>
+	            	<div>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style="font-size:13pt;">행복해</span>
+	            	</div>
+	            </td>
+	            <td>3333</td>
+	            <td>5</td>
+	            <td>1</td>
+	            <td>90</td>
+	            <td></td>
+	            <td>1</td>
+	            <td>2</td>
+	            <td></td>
+	            <td></td>
+	          </tr>
+	          <tr>
+	            <td>
+	            	<div>
+	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style="font-size:13pt;">파스타</span>
+	            	</div>
+	            </td>
+	            <td>3333</td>
+	            <td>5</td>
+	            <td>1</td>
+	            <td>90</td>
+	            <td></td>
+	            <td>1</td>
+	            <td>2</td>
+	            <td></td>
+	            <td></td>
+	          </tr>
+	        </tbody>
+	      </table>
+	    </div>
 	</div>
-	
- </div>
-</div>	
+
 <%-- 구성원 휴가 보유 현황  끝 --%>		
 	

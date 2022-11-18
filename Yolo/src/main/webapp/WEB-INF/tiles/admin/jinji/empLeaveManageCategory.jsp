@@ -13,6 +13,8 @@
 	
 	#category {
 		cursor: pointer;
+		margin-left: 15px;
+	/* 	width: 100%; */
 	}
 
 		
@@ -29,9 +31,7 @@
 
 
 <%-- 관리인 연차 상세 페이지 시작 --%>
-<div>
-	<div id="content" style="margin: 40px 0 0 15px;">
-		
+
 		<div id="category">
 			<div id="outercate">
 				<span id="cate1" style="font-size: 20pt; font-weight: bold;" onclick="goAdminLeave()">내 휴가</span>
@@ -48,9 +48,5 @@
 			</div>
 		</div>
 		<hr width = "100%;" >
-		<br>
 		
-		
-	</div>
-</div>
 <%-- 관리인 연차 상세 페이지 끝 --%>
