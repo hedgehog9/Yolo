@@ -68,7 +68,7 @@
 <div>
 	<div id="content" style="margin: 40px 0 0 15px;">
 
-          <div class="table-responsive" style="width:1200px;">
+          <div class="table-responsive" style="width:100%;">
             <table class="table table-hover table-bordered">
               <thead>
                 <tr  class="thead-dark">
@@ -83,7 +83,7 @@
               <tbody>
                 <tr>
                   <td>
-                  	<span style='font-size:20px;'>&#128105;</span>
+                  	<span style='font-size:15px;'>&#128105;</span>
                   	Jacob
                   	</td>
                   <td>3333</td>
@@ -94,7 +94,7 @@
                 </tr>
                 <tr>
                   <td>
-                  <span style='font-size:20px;'>&#128102;</span>
+                  <span style='font-size:15px;'>&#128102;</span>
                   Jacob</td>
                   <td>3333</td>
                   <td class="text-muted"> 2022.11.10~2022.11.18 <i class="mdi mdi-arrow-down"></i></td>
@@ -104,7 +104,7 @@
                 </tr>
                 <tr>
                   <td>
-                  <span style='font-size:20px;'>&#128102;</span>
+                  <span style='font-size:15px;'>&#128102;</span>
                   Jacob</td>
                   <td>3333</td>
                   <td class="text-muted"> 2022.11.10~2022.11.18 <i class="mdi mdi-arrow-down"></i></td>
@@ -114,7 +114,7 @@
                 </tr>
                 <tr>
                   <td>
-                  <span style='font-size:20px;'>&#128102;</span>
+                  <span style='font-size:15px;'>&#128102;</span>
                   Jacob</td>
                   <td>3333</td>
                   <td class="text-muted"> 2022.11.10~2022.11.18 <i class="mdi mdi-arrow-down"></i></td>

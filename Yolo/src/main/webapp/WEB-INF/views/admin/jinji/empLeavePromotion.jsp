@@ -138,7 +138,7 @@
 	        <tbody>
 	          <tr>
 	            <td>
-	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style='font-size:15px;'>&#128105;</span>
 	            	Jacob
 	            </td>
 	            <td>3333</td>
@@ -148,7 +148,7 @@
 	          </tr>
 	          <tr>
 	            <td>
-	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style='font-size:15px;'>&#128105;</span>
 	            	Jacob
 	            </td>
 	            <td>3333</td>
@@ -158,7 +158,7 @@
 	          </tr>
 	           <tr>
 	            <td>
-	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style='font-size:15px;'>&#128105;</span>
 	            	Jacob
 	            </td>
 	            <td>3333</td>
@@ -168,7 +168,7 @@
 	          </tr>
 	           <tr>
 	            <td>
-	            	<span style='font-size:20px;'>&#128105;</span>
+	            	<span style='font-size:15px;'>&#128105;</span>
 	            	Jacob
 	            </td>
 	            <td>3333</td>
