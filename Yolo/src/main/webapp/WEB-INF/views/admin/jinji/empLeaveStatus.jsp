@@ -72,9 +72,6 @@
 	
 </script>	    
 
-
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"/>
-
 <%-- 구성원 휴가 보유 현황 시작 --%>
 	<br>
 	 <div id="container" style="width: 95%">
