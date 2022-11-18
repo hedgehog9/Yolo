@@ -322,12 +322,15 @@
 		height: 38px;
 	}	
 	
+	i.fa-times{
+		color:#556372;
+	
+	}
+	
 
 </style>
 <%-- 말풍선 --%>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 <%-- 말풍선 --%>
 
 <script>
@@ -493,7 +496,7 @@
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
 						+"<div id='div_hr_title'>개인 정보</div>"
 						
-						+"<button id='btn_edit_psInfo' type='button' class='btn_edit' onclick='editInfo()'>"
+						+"<button id='btn_edit_psInfo' type='button' class='btn_edit'>"
 							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
 						+"</button>"
 						
@@ -717,10 +720,29 @@
 		
 		<%-- 기본정보 변경에서 경력 div 클릭시 --%>
 
+		$(document).on("click","button#btn_edit_psInfo",function(){
+			 editInfo();
+			 
+			 
+			
+		});
 		
+		
+		
+		$(document).on("change","textarea",function(){
+			
+			
+		
+		});
+	
 		
 		
 	});// end of $(document).ready-----------------------------
+	
+	function resize(obj) {
+	    obj.style.height = '1px';
+	    obj.style.height = (12 + obj.scrollHeight) + 'px';
+	}
 	
 	
 	//인사정보 페이지에서 인사 정보 변경 버튼 클릭시
@@ -925,17 +947,6 @@
 	    $('#record_outside').fadeIn();
 		
 	}
-	
-	
-	// 개인정보 변경 메소드 
-	function editInfo(){
-		// toastr.info("정보 변경내역 조회 메소드 호출됨");
-		
-		$('#edit_info').addClass('active');
-	    $('#record_outside').fadeIn();
-		
-	}
-	
 	
 	// 버튼 클릭시 클립보드에 복사하는 함수 (a태그에서 호출)
 	function copy_to_clipboard(str) {
@@ -1280,8 +1291,59 @@
 
 <%-- 인사정보 변경, 기본 정보 변경 div --%>
 <div id ="edit_info">
+		<div class="container">
+		
+			<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:10px 0;">
+				<div style="font-size:20px; font-weight:600;">개인 정보 수정</div>
+				<button id="record_close" onclick="record_close();">
+					<i class="fas fa-times"></i>
+				</button>
+			</div>
+			
+			<form name="frm_basicInfo">
+				<div>
+					<div>이름</div>
+					<input type="text" value="" style="width:100%; height:30px; border: solid 1px #d9d9d9; border-radius: 5px;"/>
+				</div>
 
-	
-
+				<div>영문 이름</div>
+				<div style="display: flex;">
+					<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="이름(First Name)" />
+					<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>
+				</div>
+				
+				<div>
+					<textarea id="introduce" rows="1" cols="" style="height: 58px; min-height: 58px; resize: none; overflow-y: hidden;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>
+				</div>
+			
+				<div style="margin: 20px 0;">
+					<div>입사일</div>
+					<input type="text" value="" class="daterange" style="width:100%; height:30px;" />
+				</div>
+			
+				<div style="width:100%;">
+					<div>입사 유형</div>
+					<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"
+							style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width:100%;">
+						<div style="display: flex; justify-content: space-between; width: 100%;">
+							<div id="retirement_type">입사 유형</div>
+							<i class="fas fa-bars" style="padding: 5px;"></i>
+						</div>
+					</button>
+				
+					<div class="dropdown-menu">
+						<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">신입</button>
+						<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">경력</button>
+					</div>
+					
+					<input id="career" name="career" type="hidden"/>
+				</div>
+					
+				<div style="display:flex; justify-content: flex-end;">
+					<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>
+					<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>
+				</div>
+			</form>
+		</div>
 
 </div>
