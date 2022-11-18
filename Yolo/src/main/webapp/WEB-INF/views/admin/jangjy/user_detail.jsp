@@ -6,303 +6,339 @@
 <% String ctxPath = request.getContextPath(); %>
 
 <style>
-
-div#user_detail_content {
-	margin: 40px 20px 20px 20px;
-}
-
-div.profile_icon {
-	width: 30px;
-	height: 30px;
-	border-radius: 40%;
-	background-color: #239afe;
-	color: white;
-	text-align: center;
-	padding-top: 6px;
-	border: 1px solid #ccced0;
-	font-weight: bold;
-	margin: auto 8px;
-	font-size: 5pt;
-}
-
-div.profile {
-	display: flex;
-}
-
-div#profile_img {
-	width: 100px;
-	height: 100px;
-	border-radius: 15%;
-	background-color: green;
-	margin-right: 20px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-div#user_profile {
-	display: flex;
-	margin-top: 65px
-}
-
-div#user_name {
-	font-size: 20pt;
-	font-weight: bold;
-	color: white;
-	position: relative;
-	left: 15px;
-}
-
-th.dept_position {
-	font-size: 12px;
-	font-weight: normal;
-}
-
-nav#hr_info {
-	display: flex;
-	justify-content: space-between;
-	align-items: end;
-	border-bottom: solid 1px #d9d9d9;
-}
-
-div#hr_info_title {
-	display: flex;
-	padding: 30px 30px 0px 0;
-	margin-right: 30px;
-}
-
-div#hr_info_title>div.info_title {
-	padding: 20px 10px 20px 10px;
-}
-
-<%-- 정보 변경 내역 버튼 css --%> 
-button#record_search {
-	margin: 20px 0px 20px 0;
-	border: solid 1px #d9d9d9;
-	border-radius: 10px;
-}
-
-button#record_search:hover {
-	background-color: #ebebeb;
-}
-
-<%-- 정보 변경 내역 버튼 css --%> <%-- 인사정보 수정 버튼 css --%> 
-button#btn_edit {
-	border-radius: 10px;
-	margin: 0px;
-}
-
-button#btn_edit:hover {
-	background-color: #ebebeb;
-}
-
-<%-- 인사정보 수정 버튼 css --%> 
-div.info_title {
-	font-size: 20px;
-}
-
-div.info_title:hover {
-	cursor: pointer;
-}
-
-i.fa-phone-alt, i.fa-envelope, i.fa-comment {
-	margin: 0px;
-	width: 30px;
-}
-
-a.communication {
-	padding: 3px 0px 3px 0px;
-	border: solid 1px #d9d9d9;
-}
-
-a.communication:hover {
-	background-color: #ebebeb;
-}
-
-div#div_hr_title {
-	font-size: 20px;
-	font-weight: 700;
-}
-
-span.span_badge {
-	background-color: #d9d9d9;
-	border-radius: 5px;
-	padding: 0 5px;
-}
-
-<%-- 프로필 옆에 나오는 근무시간, 휴가, 급여명세서 div css --%> 
-div#right_sidebar {
-	margin: 30px 0 0 0;
-}
-
-div.div_rightside {
-	border: solid 1px #d9d9d9;
-	margin-bottom: 10px;
-	width: 300px;
-	height: 120px;
-	border-radius: 10px;
-}
-
-div#progressBar {
-	margin: 16px 15px 0 0;
-	width: 50px;
-	height: 50px;
-}
-
-i.sideIcon {
-	margin: 15px 0 0 20px;
-	color: #242A30;
-}
-
-<%-- a태그 css 효과 없애기 --%> 
-a.a_side:link {
-	background-color: transparent;
-	text-decoration: none;
-}
-
-// 방문 전 링크 상태
-a.a_side:visited {
-	background-color: transparent;
-	text-decoration: none;
-}
-
-//방문 후 링크 상태
-a.a_side:hover {
-	background-color: transparent;
-	text-decoration: underline;
-}
-
-//마우스 오버했을 때 링크 상태
-a.a_side:active {
-	background-color: transparent;
-	text-decoration: underline;
-}
-
-// 클릭했을 때 링크 상태
-<%-- a태그 css 효과 없애기 --%> 
-tr.tr_info {
-	height: 40px;
-}
-
-div#div_info {
-	width: 70%;
-}
-
-<%-- 정보 변경 내역 div css --%> 
-div#record {
-	/* border:solid 2px green; */
-	width: 100%;
-	height: 80%;
-	position: fixed;
-	top: 1000px;
-	left: 0px;
-	z-index: 999;
-	background: white;
-	color: black;
-	transition: all 0.5s;
-	padding: 10px;
-}
-
-div#record.active {
-	top: 280px;
-}
-
-<%-- 정보 변경 내역 div css --%> 
-div#edit_info {
-	/* border: solid 2px orange; */
-	width: 40%;
-	height: 100%;
-	position: fixed;
-	top: 0px;
-	left: 100%;
-	z-index: 999;
-	background: white;
-	color: black;
-	transition: all 0.5s;
-}
-
-div#edit_info.active {
-	left: 60%;
-}
-
-div#record_outside {
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 100%;
-	background: rgba(0, 0, 0, 0.2);
-	z-index: 998;
-	display: none;
-}
-
-i.fa-question-circle:hover {
-	cursor: help;
-}
-
-<%-- 모달 안의 날짜 지정하는 input 태그 css --%> 
-input.daterange {
-	border: solid 1px #d9d9d9;
-	border-radius: 5px;
-}
-
-<%-- 모달 안에 소제목 부분 css --%> 
-.modal_title {
-	font-size: 14px;
-	font-weight: 500;
-	color: #3C4651;
-}
-
-<%--모달 안에 메모 부분 css --%> 
-textarea.memo {
-	border: solid 1px #d9d9d9;
-	width: 465px;
-	border-radius: 10px;
-	padding: 10px;
-}
-
-
-
-
-button#record_close{
-	background-color: transparent;
-	border: none;
-}
-
-<%-- 변경 내역 조회 클릭시 상단에 나오는 버튼 css --%>
-button.btn_record{
-	background-color: white;
-	color: black;
-	font-size:13px;
-	font-weight:600;
-	height:32px;
-	width:76px;
-	border: solid 1px #d9d9d9;
-	margin: 0 5px;
-	border-radius: 100px;
-}
-
-button.btn_record_clicked {
-	background-color: #07B419;
-	color:white;
-}
+	
+	div#user_detail_content {
+		margin: 40px 20px 20px 20px;
+	}
+	
+	div.profile_icon {
+		width: 30px;
+		height: 30px;
+		border-radius: 40%;
+		background-color: #239afe;
+		color: white;
+		text-align: center;
+		padding-top: 6px;
+		border: 1px solid #ccced0;
+		font-weight: bold;
+		margin: auto 8px;
+		font-size: 5pt;
+	}
+	
+	div.profile {
+		display: flex;
+	}
+	
+	div#profile_img {
+		width: 100px;
+		height: 100px;
+		border-radius: 15%;
+		background-color: green;
+		margin-right: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	div#user_profile {
+		display: flex;
+		margin-top: 65px
+	}
+	
+	div#user_name {
+		font-size: 20pt;
+		font-weight: bold;
+		color: white;
+		position: relative;
+		left: 15px;
+	}
+	
+	th.dept_position {
+		font-size: 12px;
+		font-weight: normal;
+	}
+	
+	nav#hr_info {
+		display: flex;
+		justify-content: space-between;
+		align-items: end;
+		border-bottom: solid 1px #d9d9d9;
+	}
+	
+	div#hr_info_title {
+		display: flex;
+		padding: 30px 30px 0px 0;
+		margin-right: 30px;
+	}
+	
+	div#hr_info_title>div.info_title {
+		padding: 20px 10px 20px 10px;
+	}
+	
+	<%-- 정보 변경 내역 버튼 css --%> 
+	button#record_search {
+		margin: 20px 0px 20px 0;
+		border: solid 1px #d9d9d9;
+		border-radius: 10px;
+	}
+	
+	button#record_search:hover {
+		background-color: #ebebeb;
+	}
+	
+	<%-- 정보 변경 내역 버튼 css --%> <%-- 인사정보 수정 버튼 css --%> 
+	button.btn_edit {
+		border-radius: 10px;
+		width:30px;
+		margin: 0px;
+		background-color: transparent;
+		border: none;
+	}
+	
+	button.btn_edit:focus{
+		background-color: #ebebeb;
+		border:none;
+	}
+	
+	button.btn_edit:hover {
+		background-color: #ebebeb;
+	}
+	
+	<%-- 인사정보 수정 버튼 css --%> 
+	div.info_title {
+		font-size: 20px;
+	}
+	
+	div.info_title:hover {
+		cursor: pointer;
+	}
+	
+	i.fa-phone-alt, i.fa-envelope, i.fa-comment {
+		margin: 0px;
+		width: 30px;
+	}
+	
+	a.communication {
+		padding: 3px 0px 3px 0px;
+		border: solid 1px #d9d9d9;
+	}
+	
+	a.communication:hover {
+		background-color: #ebebeb;
+	}
+	
+	div#div_hr_title {
+		font-size: 20px;
+		font-weight: 700;
+	}
+	
+	span.span_badge {
+		background-color: #d9d9d9;
+		border-radius: 5px;
+		padding: 0 5px;
+	}
+	
+	<%-- 프로필 옆에 나오는 근무시간, 휴가, 급여명세서 div css --%> 
+	div#right_sidebar {
+		margin: 30px 0 0 0;
+	}
+	
+	div.div_rightside {
+		border: solid 1px #d9d9d9;
+		margin-bottom: 10px;
+		width: 300px;
+		height: 120px;
+		border-radius: 10px;
+	}
+	
+	div#progressBar {
+		margin: 16px 15px 0 0;
+		width: 50px;
+		height: 50px;
+	}
+	
+	i.sideIcon {
+		margin: 15px 0 0 20px;
+		color: #242A30;
+	}
+	
+	<%-- a태그 css 효과 없애기 --%> 
+	a.a_side:link {
+		background-color: transparent;
+		text-decoration: none;
+	}
+	
+	// 방문 전 링크 상태
+	a.a_side:visited {
+		background-color: transparent;
+		text-decoration: none;
+	}
+	
+	//방문 후 링크 상태
+	a.a_side:hover {
+		background-color: transparent;
+		text-decoration: underline;
+	}
+	
+	//마우스 오버했을 때 링크 상태
+	a.a_side:active {
+		background-color: transparent;
+		text-decoration: underline;
+	}
+	
+	// 클릭했을 때 링크 상태
+	<%-- a태그 css 효과 없애기 --%> 
+	tr.tr_info {
+		height: 40px;
+	}
+	
+	div#div_info {
+		width: 70%;
+	}
+	
+	<%-- 정보 변경 내역 div css --%> 
+	div#record {
+		/* border:solid 2px green; */
+		width: 100%;
+		height: 80%;
+		position: fixed;
+		top: 1000px;
+		left: 0px;
+		z-index: 999;
+		background: white;
+		color: black;
+		transition: all 0.5s;
+		padding: 10px;
+	}
+	
+	div#record.active {
+		top: 280px;
+	}
+	
+	<%-- 정보 변경 내역 div css --%> 
+	div#edit_info {
+		/* border: solid 2px orange; */
+		width: 40%;
+		height: 100%;
+		position: fixed;
+		top: 0px;
+		left: 100%;
+		z-index: 999;
+		background: white;
+		color: black;
+		transition: all 0.5s;
+	}
+	
+	div#edit_info.active {
+		left: 60%;
+	}
+	
+	div#record_outside {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.2);
+		z-index: 998;
+		display: none;
+	}
+	
+	i.fa-question-circle:hover {
+		cursor: help;
+	}
+	
+	<%-- 모달 안의 날짜 지정하는 input 태그 css --%> 
+	input.daterange {
+		border: solid 1px #d9d9d9;
+		border-radius: 5px;
+	}
+	
+	<%-- 모달 안에 소제목 부분 css --%> 
+	.modal_title {
+		font-size: 14px;
+		font-weight: 500;
+		color: #3C4651;
+	}
+	
+	<%--모달 안에 메모 부분 css --%> 
+	textarea.memo {
+		border: solid 1px #d9d9d9;
+		width: 465px;
+		border-radius: 10px;
+		padding: 10px;
+	}
+	
+	
+	
+	
+	button#record_close{
+		background-color: transparent;
+		border: none;
+	}
+	
+	<%-- 변경 내역 조회 클릭시 상단에 나오는 버튼 css --%>
+	button.btn_record{
+		background-color: white;
+		color: black;
+		font-size:13px;
+		font-weight:600;
+		height:32px;
+		width:76px;
+		border: solid 1px #d9d9d9;
+		margin: 0 5px;
+		border-radius: 100px;
+	}
+	
+	button.btn_record_clicked {
+		background-color: #07B419;
+		color:white;
+	}
+	
+	<%-- 정보 변경 내역 수정, 삭제 버튼 css  --%>
+	button.btn_leave_edit_delete{
+		height: 30px;
+	    width: 30px;
+	    background-color: transparent;
+	    border-radius: 5px;
+	}
+	
+	<%-- 정보 변경 내역 수정 버튼 css --%>
+	button.btn_leave_edit{
+		border: solid 1px #d9d9d9;
+		color: #3C4651;
+		margin: 0 10px;
+	}
+	
+	<%-- 정보 변경 내역 삭제 버튼 css --%>
+	button.btn_leave_delete{
+		border: solid 1px #c32700;
+		color: #c32700;
+	}
+	
+	button.btn_save_cancel{
+		font-size: 13px;
+		font-weight: 600;
+		height: 38px;
+	}	
 	
 
 </style>
 <%-- 말풍선 --%>
- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 <%-- 말풍선 --%>
 
 <script>
 
-<%-- ===================================================================================== --%>
-<%-- ===================================================================================== --%>
-
-
-
 	$(document).ready(function(){
+		
+		// 모달에서 x 버튼 클릭스 안의 form 초기화
+	    $('.modal').on('hidden.bs.modal', function (e) {
+	       $(this).find('form')[0].reset();
+	       $("div#retirement_type").text("고용보험 퇴직사유 선택");
+	    });
 		
 		<%-- ===== 달력 하나만 출력 시작 =====  --%>
 		$("input.daterange").daterangepicker({
@@ -390,7 +426,7 @@ button.btn_record_clicked {
 		<%-- 말풍선 --%>
 	  	$('[data-toggle="tooltip"]').tooltip();   
 		
-	  	<%-- =========== 인사정보 클릭시 =========== --%>
+	  	<%-- =========== 인사정보 클릭 시작  =========== --%>
 		$(document).on("click","div#div_hr", function(e){
 	  		$("div.info_title").css("border-bottom","");
 	  		$(e.target).css("border-bottom","solid 3px green");
@@ -399,8 +435,19 @@ button.btn_record_clicked {
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
 						+"<div id='div_hr_title'>인사 정보</div>"
-						+"<button id='btn_edit' type='button' class='btn' onclick='editHrInfo()'><i class='fas fa-pen' style='margin:0px; width:16px;'></i></button>"
+						
+						+"<button id='btn_edit_hrInfo' type='button' data-toggle='dropdown' class='btn_edit'>"
+							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
+						+"</button>"
+						
+						+"<div class='dropdown-menu'>"
+							+"<a id ='a_edit_hrInfo'class='dropdown-item' href='javascript:void(0);' onclick='edit_hrInfo();'><i class='fas fa-user-alt'></i>&nbsp;&nbsp;인사 정보 변경&nbsp;&nbsp;"
+								+"<span class='badge' style='background-color:#3B86C8; color:white;'>발령</span>"
+							+"</a>"
+							+"<a id='a_edit_basicInfo' class='dropdown-item' href='javascript:void(0);'onclick='edit_basicInfo()'><i class='fas fa-pen'></i>&nbsp;&nbsp;기본 정보 변경</a>" 
+						+"</div>"
 					+"</div>"
+					
 					+"<table>"
 						+"<thead>"
 							+"<tr style='height:40px;'>"
@@ -433,9 +480,10 @@ button.btn_record_clicked {
 	  		$("div#div_info").html(html);
 	  		
 	  	});
+		<%-- =========== 인사정보 클릭 끝  =========== --%>
   	
   	
-	  	<%-- =========== 개인정보 클릭시 =========== --%>
+	  	<%-- =========== 개인정보 클릭 시작  =========== --%>
 	  	$(document).on("click","div#div_ps", function(e){
 	  		$("div.info_title").css("border-bottom","");
 	  		$(e.target).css("border-bottom","solid 3px green");
@@ -444,7 +492,11 @@ button.btn_record_clicked {
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
 						+"<div id='div_hr_title'>개인 정보</div>"
-						+"<button id='btn_edit' type='button' class='btn' onclick='editInfo()'><i class='fas fa-pen' style='margin:0px; width:16px;'></i></button>"
+						
+						+"<button id='btn_edit_psInfo' type='button' class='btn_edit' onclick='editInfo()'>"
+							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
+						+"</button>"
+						
 					+"</div>"
 					+"<table>"
 						+"<thead>"
@@ -502,6 +554,7 @@ button.btn_record_clicked {
 	  		$("div#div_info").html(html);
 	  		
 	  	});
+	  	<%-- =========== 개인정보 클릭 끝  =========== --%>
 	  	
 		// 문서 로딩시 인사정보 클릭  	
   		$("div#div_hr").trigger("click");
@@ -525,6 +578,9 @@ button.btn_record_clicked {
 		});
 		
 		
+		
+		
+		
 		$("button.btn_leave").on("click",function(e){
 			let leave_type = $(e.target).text();
 			$("div#leave_type").text(leave_type);
@@ -543,17 +599,18 @@ button.btn_record_clicked {
 			$("button.btn_record").removeClass("btn_record_clicked");
 			$("button#btn_search_hrInfo").addClass("btn_record_clicked");
 			
+			$("div#div_result").html(""); 
 			let html ="";
 			
 			html += "<table class='table table-hover'>"
 						+"<thead>"
 							+"<tr>"
-							+"<th>발령일</th>"
-							+"<th>발령라벨</th>"
-							+"<th>부서</th>"
-							+"<th>직무</th>"
-							+"<th>직위</th>"
-							+"<th>메모</th>"
+								+"<th>발령일</th>"
+								+"<th>발령라벨</th>"
+								+"<th>부서</th>"
+								+"<th>직무</th>"
+								+"<th>직위</th>"
+								+"<th>메모</th>"
 							+"</tr>"
 						+"</thead>"
 			
@@ -596,14 +653,251 @@ button.btn_record_clicked {
 			$("button.btn_record").removeClass("btn_record_clicked");
 			$("button#btn_search_leaveInfo").addClass("btn_record_clicked");
 			
+			$("div#div_result").html(""); 
+			let html ="";
+			
+			html += "<table class='table table-hover'>"
+						+"<thead>"
+							+"<tr>"
+								+"<th style='width:150px;'>수정,삭제</th>"
+								+"<th>휴직기간</th>"
+								+"<th>휴직종류</th>"
+								+"<th>메모</th>"
+								+"<th>기타</th>"
+							+"</tr>"
+						+"</thead>"
+			
+						+"<tbody>"
+						
+							+"<tr>"
+								+"<td>"
+									+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
+									+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
+								+"</td>"
+								+"<td>2022.11.17 ~ 2022.11.18</td>"
+								+"<td>일반휴직</td>"
+								+"<td>직무</td>"
+								+"<td>메모1</td>"
+							+"</tr>"
+							
+							+"<tr>"
+								+"<td>"
+									+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
+									+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
+								+"</td>"
+								+"<td>2022.11.17 ~ 2022.11.18</td>"
+								+"<td>일반휴직</td>"
+								+"<td>직무</td>"
+								+"<td>메모1</td>"
+							+"</tr>"
+						
+						+"<tr>"
+							+"<td>"
+								+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
+								+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
+							+"</td>"
+							+"<td>2022.11.17 ~ 2022.11.18</td>"
+							+"<td>일반휴직</td>"
+							+"<td>직무</td>"
+							+"<td>메모1</td>"
+						+"</tr>"
+							
+						+"</tbody>"
+					+"</table>";
+
+			
+			$("div#div_result").html(html);
+			
 		});
 		
+		<%-- ===== 정보 변경 내역 클릭시 인사정보 버튼 클릭되도록 tirgger 설정 ===== --%>
+		$("button#record_search").on("click",function(){
+			$("button#btn_search_hrInfo").trigger("click");
+		});
 		
-		
-		
+		<%-- 기본정보 변경에서 경력 div 클릭시 --%>
 
-	
+		
+		
+		
 	});// end of $(document).ready-----------------------------
+	
+	
+	//인사정보 페이지에서 인사 정보 변경 버튼 클릭시
+	function edit_hrInfo(){
+		$("div#edit_info").empty();
+		$('#edit_info').addClass('active');
+	    $('#record_outside').fadeIn();
+	    
+		let html ='';
+		
+		html += '<div class="container">'
+						+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin: 10px 0;">'
+								+'<div style="font-size: 20px; font-weight: 600;">인사 정보 변경&nbsp;&nbsp;'
+									+'<span class="badge badge-primary">발령</span>'
+								+'</div>'
+							+'<button id="record_close" onclick="record_close();">'
+								+'<i class="fas fa-times"></i>'
+							+'</button>'
+						+'</div>'
+						
+					+'<form name="frm_basicInfo">'
+						+'<div>'
+							+'<div>발령일<span style="color: red;">＊</span></div>'
+							+'<input type="text" class="daterange" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" />'
+						+'</div>'
+						
+						+'<div style="margin:5px 0;">'		
+							+'<div>발령 라벨</div>'
+							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
+								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
+									+'<div id="retirement_type">발령 라벨</div>'
+									+'<i class="fas fa-bars" style="padding: 5px;"></i>'
+								+'</div>'
+							+'</button>'
+					
+							+'<div class="dropdown-menu">'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">직무 변경</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">부서 변경</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">인사 발령</button>'
+								+'<input id="changeType" name="changeType" type="hidden" />'
+							+'</div>'
+						+'</div>'
+						
+						
+						+'<div style="margin:5px 0;">'
+							+'<div>부서</div>'
+							+'<button id="btn" class=" btn communication" type="button"'
+								+'data-toggle="dropdown"'
+								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
+								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
+									+'<div id="retirement_type">부서</div>'
+									+'<i class="fas fa-bars" style="padding: 5px;"></i>'
+								+'</div>'
+							+'</button>'
+					
+							+'<div class="dropdown-menu">'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="부서">부서 1</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="부서">부서 1</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="부서">부서 1</button>'
+								+'<input id="dept" name="dept" type="hidden" />'
+							+'</div>'
+						+'</div>'
+						
+						+'<div style="margin:5px 0;">'
+							+'<div>세부 부서</div>'
+							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
+								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
+									+'<div id="retirement_type">세부 부서</div>'
+										+'<i class="fas fa-bars" style="padding: 5px;"></i>'
+								+'</div>'
+							+'</button>'
+					
+							+'<div class="dropdown-menu">'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="세부부서">세부 부서 1</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="세부부서">세부 부서 2</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="세부부서">세부 부서 3</button>'
+								+'<input id="detailDept" name="detailDept" type="hidden" />'
+							+'</div>'
+						+'</div>'
+						
+						+'<div style="margin:5px 0;">'
+							+'<div style="width: 100%;">'
+								+'<div>직위</div>'
+								+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"'
+									+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
+									+'<div style="display: flex; justify-content: space-between; width: 100%;">'
+										+'<div id="retirement_type">직위</div>'
+										+'<i class="fas fa-bars" style="padding: 5px;"></i>'
+									+'</div>'
+								+'</button>'
+					
+								+'<div class="dropdown-menu">'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">직위1</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">직위2</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">직위3</button>'
+									+'<input id="position" name="position" type="hidden" />'
+								+'</div>'
+							+'</div>'
+						+'</div>'
+				
+						+'<div style="margin-bottom:290px;">'
+							+'<div class="modal_title" style="width:100%;">메모</div>'
+							+'<textarea class="memo" rows="5" cols="30" style="width:100%;"></textarea>'
+						+'</div>'
+				
+				
+						+'<div style="display: flex; justify-content: flex-end;">'
+							+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6; border: solid 1px #d9d9d9;" onclick="record_close();">취소</button>'
+							+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left: 10px;">'
+								+'<i style="color: white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기'
+						+'</button>'
+						+'</div>'
+					+'</form>'
+				+'</div>'
+			
+			$("div#edit_info").html(html);
+			daterange();
+	} //인사정보 페이지에서 인사 정보 변경 버튼 클릭 끝 ------------------------------------------------------------------------------------------------------------------------
+	
+	//인사정보 페이지에서 기본 정보 변경 버튼 클릭시
+	function edit_basicInfo(){
+		$("div#edit_info").empty();
+		$('#edit_info').addClass('active');
+	    $('#record_outside').fadeIn();
+		
+		let html ='';
+		
+		html += '<div class="container">'
+					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:10px 0;">'
+						+'<div style="font-size:20px; font-weight:600;">기본 정보 변경</div>'
+						+'<button id="record_close" onclick="record_close();">'
+							+'<i class="fas fa-times"></i>'
+						+'</button>'
+					+'</div>'
+					+'<form name="frm_basicInfo">'
+						+'<div>'
+							+'<div>사번</div>'
+							+'<input type="text" value="" style="width:100%; height:30px; border: solid 1px #d9d9d9; border-radius: 5px;"/>'
+						+'</div>'
+					
+					+'<div style="margin: 20px 0;">'
+						+'<div>입사일</div>'
+						+'<input type="text" value="" class="daterange" style="width:100%; height:30px;" />'
+					+'</div>'
+					
+					+'<div style="width:100%; margin-bottom: 580px;">'
+						+'<div>입사 유형</div>'
+						+'<button id="btn" class=" btn communication" type="button"'
+							+'data-toggle="dropdown"'
+								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width:100%;">'
+							+'<div style="display: flex; justify-content: space-between; width: 100%;">'
+								+'<div id="retirement_type">입사 유형</div>'
+								+'<i class="fas fa-bars" style="padding: 5px;"></i>'
+							+'</div>'
+					+'</button>'
+					
+					+'<div class="dropdown-menu">'
+						+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">신입</button>'
+						+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">경력</button>'
+					+'</div>'
+					
+					+'<input id="career" name="career" type="hidden"/>'
+					+'</div>'
+							
+					+'<div style="display:flex; justify-content: flex-end;">'
+						+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>'
+						+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
+					+'</div>'
+				+'</form>'
+			+'</div>';
+			
+			$("div#edit_info").html(html);
+			daterange();
+		
+	}//인사정보 페이지에서 기본 정보 변경 버튼 클릭 끝--------------------------------------------------------------------------------------
+	
+	
 	
 	// 정보 변경 닫기 처리 메소드
 	function record_close(){
@@ -643,7 +937,6 @@ button.btn_record_clicked {
 	}
 	
 	
-	
 	// 버튼 클릭시 클립보드에 복사하는 함수 (a태그에서 호출)
 	function copy_to_clipboard(str) {
 		  let tempElement = document.createElement("textarea");
@@ -655,6 +948,50 @@ button.btn_record_clicked {
 		  toastr.info("<div style='text-align:center;'>"+str+"<br>복사되었습니다</div>");
 	} // end of function copy_to_clipboard(str) {}------------------------------------------
 	
+	
+	function daterange(){
+		
+		<%-- ===== 달력 하나만 출력 시작 =====  --%>
+		$("input.daterange").daterangepicker({
+            "singleDatePicker": true,
+            "locale": {
+                "format": "YYYY-MM-DD", // 날짜표현 형식
+                "separator": " - ",
+                "applyLabel": "선택",
+                "cancelLabel": "취소",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Custom",
+                "weekLabel": "W",
+                "daysOfWeek": [
+                    "일",
+                    "월",
+                    "화",
+                    "수",
+                    "목",
+                    "금",
+                    "토"
+                ],
+                "monthNames": [
+                    "1월",
+                    "2월",
+                    "3월",
+                    "4월",
+                    "5월",
+                    "6월",
+                    "7월",
+                    "8월",
+                    "9월",
+                    "10월",
+                    "11월",
+                    "12월"
+                ],
+                "firstDay": 1
+            }
+        });
+		<%-- ===== 달력 하나만 출력 끝 =====  --%>
+		
+	}
 	
 	
 </script>
@@ -675,7 +1012,6 @@ button.btn_record_clicked {
 				<a class="dropdown-item" href="#"><i class="fas fa-upload"></i>&nbsp;&nbsp;사진 업로드하기</a> 
 				<a id = "delete_profileImg" class="dropdown-item" href="#"><span style="color:#e62e00"><i class="fas fa-trash"></i>&nbsp;&nbsp;삭제하기</span></a> 
 			</div>
-			
 		</div>
 		
 		<%-- ======================== 프로필 시작 ========================= --%>
@@ -715,138 +1051,144 @@ button.btn_record_clicked {
 				</tr>
 			</thead>
 		</table>
+		
 		<%-- ======================== 프로필 끝 ========================= --%>
 	</div>
 	
 		<!-- ============================= 휴직처리하기 모달 시작 ============================= -->
 	<div class="modal fade" id="modal_leave">
-		<div class="modal-dialog modal-dialog-centered">
-			<!-- .modal-dialog-centered 클래스를 사용하여 페이지 내에서 모달을 세로 및 가로 중앙에 배치합니다. -->
-			<div class="modal-content">
-
-				<!-- Modal header -->
-				<div class="modal-header">
-					<h5 class="modal-title">휴직</h5>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-
-				<!-- Modal body -->
-				<div class="modal-body" style="height: 350px;">
-					<div class="modal_title">휴직종류 <span style="color: red;">＊</span></div>
-					<button id="btn" class=" btn communication" type="button"
-						data-toggle="dropdown"
-						style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px;">
-						<div style="display:flex; justify-content: space-between; width:460px;">
-							<div id="leave_type">일반 휴직</div> <i class="fas fa-bars" style="padding:5px;"></i>
+		
+			<div class="modal-dialog modal-dialog-centered">
+				<!-- .modal-dialog-centered 클래스를 사용하여 페이지 내에서 모달을 세로 및 가로 중앙에 배치합니다. -->
+				<div class="modal-content">
+	
+					<!-- Modal header -->
+					<div class="modal-header">
+						<h5 class="modal-title">휴직</h5>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+					</div>
+	
+					<!-- Modal body -->
+					<form name="frm_leave">
+					<div class="modal-body" style="height: 350px;">
+						<div class="modal_title">휴직종류 <span style="color: red;">＊</span></div>
+						<button id="btn" class=" btn communication" type="button"
+							data-toggle="dropdown"
+							style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px;">
+							<div style="display:flex; justify-content: space-between; width:460px;">
+								<div id="leave_type">일반 휴직</div> <i class="fas fa-bars" style="padding:5px;"></i>
+							</div>
+						</button>
+	
+						<div class="dropdown-menu">
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">일반휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">육아휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">산재휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">부상.질병휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">가족 돌봄휴직</button>
 						</div>
-					</button>
-
-					<div class="dropdown-menu">
-						<button class="btn_leave dropdown-item" type="button" style ="width:460px;">일반휴직</button>
-						<button class="btn_leave dropdown-item" type="button" style ="width:460px;">육아휴직</button>
-						<button class="btn_leave dropdown-item" type="button" style ="width:460px;">산재휴직</button>
-						<button class="btn_leave dropdown-item" type="button" style ="width:460px;">부상.질병휴직</button>
-						<button class="btn_leave dropdown-item" type="button" style ="width:460px;">가족 돌봄휴직</button>
+						
+						<div>
+							<div style="margin-top:20px;" class="modal_title">휴직기간 <span style="color: red;">＊</span></div>
+							<input id="between_date" class="form-control" style="margin-bottom:20px;" />
+							<input type="hidden" name="start_date" />
+							<input type="hidden" name="end_date" />
+						</div>
+	
+						<div>
+							<div class="modal_title">메모</div>
+							<textarea class="memo" rows="5" cols="30"></textarea>
+						</div>
 					</div>
-					
-					<div>
-						<div style="margin-top:20px;" class="modal_title">휴직기간 <span style="color: red;">＊</span></div>
-						<input id="between_date" class="form-control" style="margin-bottom:20px;" />
-						<input type="hidden" name="start_date" />
-						<input type="hidden" name="end_date" />
+					</form>
+	
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn " data-dismiss="modal">취소</button>
+						<button type="button" class="btn btn-success">적용하기</button>
 					</div>
-
-					<div>
-						<div class="modal_title">메모</div>
-						<textarea class="memo" rows="5" cols="30"></textarea>
-					</div>
-				</div>
-
-				<!-- Modal footer -->
-				<div class="modal-footer">
-					<button type="button" class="btn " data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-success">적용하기</button>
 				</div>
 			</div>
-		</div>
+		
 	</div>
 	<!-- ============================= 휴직처리하기 모달 끝 ============================= -->
 	
 	<!-- ========================== 퇴직 처리하기 모달 시작 ========================== -->
 	<div class="modal fade" id="modal_retirement">
-		<div class="modal-dialog modal-dialog-centered">
-			<div class="modal-content">
-
-				<!-- Modal header -->
-				<div class="modal-header">
-					<h5 class="modal-title">퇴직</h5>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-				</div>
-					<div style="width:100%; height:45px; background-color: #FFFBF2; padding: 0 10px; display:flex; justify-content: space-evenly;">
-						<i class="fas fa-exclamation-triangle" style="color:#ffe680; margin:auto;"></i>
-						<span style="margin:auto;">먼저 퇴직일과 휴가 사용에 대해 합의한 뒤에 퇴직처리를 해주세요.</span>
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<!-- Modal header -->
+					<div class="modal-header">
+						<h5 class="modal-title">퇴직</h5>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
 					</div>
-
-				<!-- Modal body -->
-				<div class="modal-body">
-				
-					<div style="display:flex; justify-content: space-between; ">
-						<div>
+						<div style="width:100%; height:45px; background-color: #FFFBF2; padding: 0 10px; display:flex; justify-content: space-evenly;">
+							<i class="fas fa-exclamation-triangle" style="color:#ffe680; margin:auto;"></i>
+							<span style="margin:auto;">먼저 퇴직일과 휴가 사용에 대해 합의한 뒤에 퇴직처리를 해주세요.</span>
+						</div>
+	
+					<!-- Modal body -->
+					<div class="modal-body">
+						<form name="frm_retirement">
+					
+						<div style="display:flex; justify-content: space-between; ">
 							<div>
-								<label class="modal_title">퇴직일</label>
-								<i class="far fa-question-circle" style="color:gray;" data-toggle="tooltip" data-placement="top" title="마지막 근무일을 입력해주세요.(휴가포함)"></i>
-								<span style="color: red;">＊</span>
+								<div>
+									<label class="modal_title">퇴직일</label>
+									<i class="far fa-question-circle" style="color:gray;" data-toggle="tooltip" data-placement="top" title="마지막 근무일을 입력해주세요.(휴가포함)"></i>
+									<span style="color: red;">＊</span>
+									<input class="daterange" type="text" style="width:225px;"/>
+								</div>
+							</div>
+							
+							<div>
+								<div>
+									<label class="modal_title">yolo 사용 종료일</label>
+									<i class="far fa-question-circle" style="color:gray;" data-toggle="tooltip" data-placement="top" title="사용 종료일 다음날로부터  로그인이 제한됩니다."></i>
+									<span style="color: red;">＊</span>
+								</div>
 								<input class="daterange" type="text" style="width:225px;"/>
 							</div>
 						</div>
 						
+						<div style="margin: 20px 0px;">
+							<div class="modal_title">고용보험 퇴직사유</div>
+							
+							<button id="btn" class=" btn communication" type="button"
+								data-toggle="dropdown"
+								style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px;">
+								<div style="display:flex; justify-content: space-between; width:460px;">
+									<div id="retirement_type">고용보험 퇴직사유 선택</div> <i class="fas fa-bars" style="padding:5px;"></i>
+								</div>
+							</button>
+							
+							<div class="dropdown-menu">
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">개인사정 자진퇴사</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">고용주 사유로 자진퇴사</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">폐업/도산</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">경영상의 인원감축</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">근로자 귀책사유에 의한 퇴사</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">정년퇴직</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">계약기간만료</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">고용보험 비적용</button>
+								<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">이중고용</button>
+							</div>
+						</div>
+						
 						<div>
-							<div>
-								<label class="modal_title">yolo 사용 종료일</label>
-								<i class="far fa-question-circle" style="color:gray;" data-toggle="tooltip" data-placement="top" title="사용 종료일 다음날로부터  로그인이 제한됩니다."></i>
-								<span style="color: red;">＊</span>
-							</div>
-							<input class="daterange" type="text" style="width:225px;"/>
+							<div class="modal_title">메모</div>
+							<textarea class="memo"rows="5" cols="30" placeholder="퇴직사유 입력"></textarea>
 						</div>
+						</form>
 					</div>
-					
-					<div style="margin: 20px 0px;">
-						<div class="modal_title">고용보험 퇴직사유</div>
-						
-						<button id="btn" class=" btn communication" type="button"
-							data-toggle="dropdown"
-							style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px;">
-							<div style="display:flex; justify-content: space-between; width:460px;">
-								<div id="retirement_type">고용보험 퇴직사유 선택</div> <i class="fas fa-bars" style="padding:5px;"></i>
-							</div>
-						</button>
-						
-						<div class="dropdown-menu">
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">개인사정 자진퇴사</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">고용주 사유로 자진퇴사</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">폐업/도산</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">경영상의 인원감축</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">근로자 귀책사유에 의한 퇴사</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">정년퇴직</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">계약기간만료</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">고용보험 비적용</button>
-							<button class="btn_retirement dropdown-item" type="button" style ="width:460px;">이중고용</button>
-						</div>
+	
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" class="btn " data-dismiss="modal">취소</button>
+						<button type="button" class="btn btn-danger">퇴직 처리하기</button>
 					</div>
-					
-					<div>
-						<div class="modal_title">메모</div>
-						<textarea class="memo"rows="5" cols="30" placeholder="퇴직사유 입력"></textarea>
-					</div>
-				</div>
-
-				<!-- Modal footer -->
-				<div class="modal-footer">
-					<button type="button" class="btn " data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-danger">퇴직 처리하기</button>
 				</div>
 			</div>
-		</div>
 	</div>
 	<!-- ========================== 퇴직 처리하기 모달 끝 ========================== -->
 
@@ -937,4 +1279,9 @@ button.btn_record_clicked {
 </div>
 
 <%-- 인사정보 변경, 기본 정보 변경 div --%>
-<div id ="edit_info"></div>
+<div id ="edit_info">
+
+	
+
+
+</div>
