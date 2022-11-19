@@ -324,14 +324,25 @@
 	
 	i.fa-times{
 		color:#556372;
+	}
+	input.input_edit_info{
+		width:100%;
+		height:30px;
+		border: solid 1px #d9d9d9;
+		margin-bottom: 5px;
+		border-radius: 5px;
+	}	
 	
+	div#div_edit{
+		overflow: auto;
 	}
 	
 
 </style>
 <%-- 말풍선 --%>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<%-- 말풍선 --%>
+<%-- 지도 --%>
+<script type="text/javascript" src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script> 
 
 <script>
 
@@ -724,26 +735,150 @@
 			 editInfo();
 			 
 			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+			 
+		});
+		
+		$(document).on("keyup","input#registeration_no",function(){
+			
 			
 		});
 		
-		
-		
-		$(document).on("change","textarea",function(){
+		// 주민등록번호 입력시 자동 하이픈 입력 
+		$("input#registeration_no").bind("keyup", function(e) {
+			let no = $(e.target).val();
 			
+			if(e.keyCode != 8){
+				if(no.length == 6){
+					$(this).val($(this).val()+"-");
+				}
+				else if(no.length == 7){
+					$(this).val($(this).val().substr(0,6)+"-"+$(this).val().substr(7));
+				}
+			}
 			
+		}); // end of $("#registeration_no").bind("keyup", function(e) {}-------------------------
+				
+		// 핸드폰 번호 입력시 자동 하이픈 입력		
+		$("input#mobile").bind("keyup", function(e) {
+			let no = $(e.target).val();
+			
+			if(e.keyCode != 8){
+				if(no.length == 3){
+					$(this).val($(this).val()+"-");
+				}
+				else if(no.length == 8){
+					$(this).val($(this).val()+"-");
+				}
+			}
+			
+		}); // end of $("#registeration_no").bind("keyup", function(e) {}-------------------------		
 		
+		<%-- =========================== 주소 입력 팝업창 띄우기 시작  ===================== --%>		
+		$("input#address").click(function(){
+			
+			new daum.Postcode({
+	            oncomplete: function(data) {
+	                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+
+	                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
+	                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+	                let addr = ''; // 주소 변수
+	                let extraAddr = ''; // 참고항목 변수
+
+	                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+	                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+	                    addr = data.roadAddress;
+	                } else { // 사용자가 지번 주소를 선택했을 경우(J)
+	                    addr = data.jibunAddress;
+	                }
+
+	                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+	                if(data.userSelectedType === 'R'){
+	                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+	                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+	                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+	                        extraAddr += data.bname;
+	                    }
+	                    // 건물명이 있고, 공동주택일 경우 추가한다.
+	                    if(data.buildingName !== '' && data.apartment === 'Y'){
+	                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+	                    }
+	                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+	                    if(extraAddr !== ''){
+	                        extraAddr = ' (' + extraAddr + ')';
+	                    }
+	                    // 조합된 참고항목을 해당 필드에 넣는다.
+	                    // document.getElementById("extraAddress").value = extraAddr;
+	                    addr += extraAddr;
+	                } else {
+	                    // document.getElementById("extraAddress").value = '';
+	                    extraAddr = '';
+	                    addr += extraAddr;
+	                }
+
+	                // 우편번호와 주소 정보를 해당 필드에 넣는다.
+	                // document.getElementById('postcode').value = data.zonecode;
+	                document.getElementById("address").value = addr;
+	                // 커서를 상세주소 필드로 이동한다.
+	                document.getElementById("detailAddress").focus();
+	            }
+	        }).open(); 	
 		});
-	
+		<%-- =========================== 주소 입력 팝업창 띄우기 끝  ===================== --%>		
+		
+		const web_browser_height = $(window).height(); 
+		$("div#div_edit").css({"max-height":web_browser_height});
+		
 		
 		
 	});// end of $(document).ready-----------------------------
 	
+	
+	// textarea 자동 크기조절 
 	function resize(obj) {
 	    obj.style.height = '1px';
 	    obj.style.height = (12 + obj.scrollHeight) + 'px';
 	}
 	
+	
+	// input 태그 숫자만 입력받도록 설정
+	function OnlyNumericInput() {
+			   
+	    if ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 
+	         && event.keyCode <= 105) || event.keyCode == 190 || event.keyCode == 110 
+	         || event.keyCode == 8) {
+	       return true;
+	    } else {
+	        event.returnValue = false;
+	    }
+	}
+
 	
 	//인사정보 페이지에서 인사 정보 변경 버튼 클릭시
 	function edit_hrInfo(){
@@ -939,13 +1074,70 @@
 	}
 	
 	
-	// 인사정보 변경 메소드 
+	// 개인정보 변경 메소드 
 	function editInfo(){
-		// toastr.info("정보 변경내역 조회 메소드 호출됨");
-		
+		$("div#edit_info").empty();
 		$('#edit_info').addClass('active');
 	    $('#record_outside').fadeIn();
-		
+	    
+	    let html ='';
+	    
+	    html += '<div id="div_edit" class="container">'
+					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:10px 0;">'
+						+'<div style="font-size:20px; font-weight:600;">개인 정보 수정</div>'
+						+'<button id="record_close" onclick="record_close();">'
+							+'<i class="fas fa-times"></i>'
+						+'</button>'
+					+'</div>'
+					
+					+'<form name="frm_basicInfo">'
+						+'<div style="margin: 20px 0;">'
+							+'<div>이름</div>'
+							+'<input class="input_edit_info" type="text" value=""/>'
+						+'</div>'
+						+'<div style="margin: 20px 0;">'
+							+'<div>영문 이름</div>'
+							+'<div style="display: flex;">'
+								+'<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="이름(First Name)" />'
+								+'<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>'
+							+'</div>'
+						+'</div>'
+						+'<div style="margin: 20px 0;">'
+							+'<div>내 소개</div>'
+							+'<textarea id="introduce" rows="1" cols="" style=" width:100%;"height: 58px; min-height: 58px; resize: none; overflow-y: hidden;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
+						+'</div>'
+						+'<div>'
+							+'<div>주민등록번호</div>'
+							+'<input class="input_edit_info" type="text" id="registeration_no" onkeydown=" OnlyNumericInput();" maxlength="14" placeholder="주민등록번호 입력" />'
+						+'</div>'
+					
+						+'<div style="margin: 20px 0;">'
+							+'<div>생년월일</div>'
+							+'<input class="input_edit_info" type="text" value="" class="daterange"" />'
+						+'</div>'
+						
+						+'<div style="margin: 20px 0;">'
+							+'<div>휴대전화 번호</div>'
+							+'<input class="input_edit_info" type="text" id="mobile" onkeydown=" OnlyNumericInput();" maxlength="13" placeholder="휴대전화번호 입력" />'
+						+'</div>'
+						
+						+'<div style="margin: 20px 0;">'
+							+'<div>집 주소</div>'
+							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" value="${sessionScope.loginuser.address}" /><br/>'
+							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" value="${sessionScope.loginuser.detailaddress}" />&nbsp;'
+						+'</div>'
+							
+						+'<div style="display:flex; justify-content: flex-end;">'
+							+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>'
+							+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
+						+'</div>'
+					+'</form>'
+				+'</div>'
+	    
+	    
+	    
+	    $("div#edit_info").html(html);
+		daterange();
 	}
 	
 	// 버튼 클릭시 클립보드에 복사하는 함수 (a태그에서 호출)
@@ -1291,59 +1483,5 @@
 
 <%-- 인사정보 변경, 기본 정보 변경 div --%>
 <div id ="edit_info">
-		<div class="container">
-		
-			<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:10px 0;">
-				<div style="font-size:20px; font-weight:600;">개인 정보 수정</div>
-				<button id="record_close" onclick="record_close();">
-					<i class="fas fa-times"></i>
-				</button>
-			</div>
-			
-			<form name="frm_basicInfo">
-				<div>
-					<div>이름</div>
-					<input type="text" value="" style="width:100%; height:30px; border: solid 1px #d9d9d9; border-radius: 5px;"/>
-				</div>
-
-				<div>영문 이름</div>
-				<div style="display: flex;">
-					<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="이름(First Name)" />
-					<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>
-				</div>
-				
-				<div>
-					<textarea id="introduce" rows="1" cols="" style="height: 58px; min-height: 58px; resize: none; overflow-y: hidden;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>
-				</div>
-			
-				<div style="margin: 20px 0;">
-					<div>입사일</div>
-					<input type="text" value="" class="daterange" style="width:100%; height:30px;" />
-				</div>
-			
-				<div style="width:100%;">
-					<div>입사 유형</div>
-					<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"
-							style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width:100%;">
-						<div style="display: flex; justify-content: space-between; width: 100%;">
-							<div id="retirement_type">입사 유형</div>
-							<i class="fas fa-bars" style="padding: 5px;"></i>
-						</div>
-					</button>
-				
-					<div class="dropdown-menu">
-						<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">신입</button>
-						<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">경력</button>
-					</div>
-					
-					<input id="career" name="career" type="hidden"/>
-				</div>
-					
-				<div style="display:flex; justify-content: flex-end;">
-					<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>
-					<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>
-				</div>
-			</form>
-		</div>
 
 </div>
