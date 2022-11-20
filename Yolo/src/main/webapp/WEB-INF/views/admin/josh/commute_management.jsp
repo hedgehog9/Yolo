@@ -53,11 +53,30 @@
         color: rgb(26, 30, 34);
         font-size: small;
     }
+    
+    div.profile{
+		width: 50px; 
+		height: 50px; 
+		border-radius: 40%; 
+		background-color: #239afe;
+		color: white;
+		text-align: center;
+		padding-top: 13px;
+		border: 1px solid #ccced0;
+		font-weight: bold;
+		margin: auto 8px;
+	}
 
     div#gagebar {
         width: 400px;
         height: 8px;
     }
+    
+    .table td, .table th {
+    padding: 0.75rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+	}
 
 	
 </style>
@@ -166,7 +185,13 @@
             for(var i=0; i<10; i++) {
 
                 html += "<tr>"+
-                            "<td>조상운</td>"+
+                            "<td class='d-flex'>"+
+                            "<div class='profile'>길동</div>"+
+							"<div>"+
+							"<span style='display: block; padding-top: 3px;'>홍길동</span>"+
+							"<span style='font-weight: normal; color: gray; font-size: 10pt;'>인사 · 관리자</span>"+
+							"</div>"+
+                            "</td>"+
                             "<td>123</td>"+
                             "<td><div id ='gagebar"+i+"' style='width: 400px; height: 8px;'></div></td>"+
                             "<td>20</td>"+

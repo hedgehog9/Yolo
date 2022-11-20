@@ -131,7 +131,7 @@
 				<div class="sideTr" onclick="#">
 					<i class="fas fa-solid fa-users sideIcon"></i><span>구성원</span>
 				</div>
-				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/calendar.yolo'">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/schedule/calendar.yolo'">
 					<i class="fas fa-regular fa-calendar-check sideIcon"></i><span>캘린더</span>
 				</div>
 				<div class="sideTr" onclick="#">

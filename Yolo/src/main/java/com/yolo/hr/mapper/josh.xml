@@ -10,4 +10,42 @@
 		where lower(name) like '%'||lower(#{joinuser})||'%'
 	</select>
 
+	<insert id="insertSchedule" parameterType="com.yolo.hr.josh.model.ScheduleVO">
+		insert into tbl_schedule(schedule_no, fk_empno, start_date, end_date, subject, content, color, category, fk_deptno, joinuser, place)
+		values(seq_scheduleno.nextval, #{fk_empno}, to_date(#{start_date},'YYYY-MM-DD HH24:MI:SS'), to_date(#{end_date},'YYYY-MM-DD HH24:MI:SS'), #{subject}, #{content}, #{color}, #{category}, #{fk_deptno}, #{joinuser}, #{place})
+	</insert>
+
+	<select id="selectScheduleList" resultType="com.yolo.hr.josh.model.ScheduleVO">
+		select schedule_no,fk_empno
+		      ,to_char(start_date,'yyyy-mm-dd hh24:mi') as start_date
+		      ,to_char(end_date,'yyyy-mm-dd hh24:mi') as end_date
+		      ,subject,content,color,category,fk_deptno,joinuser,place
+		from tbl_schedule
+	</select>
+	
+	<select id="selectDetailSchedule" parameterType="String" resultType="com.yolo.hr.josh.model.ScheduleVO">
+		select schedule_no,fk_empno
+		      ,to_char(start_date,'yyyy-mm-dd hh24:mi') as start_date
+		      ,to_char(end_date,'yyyy-mm-dd hh24:mi') as end_date
+		      ,subject,content,color,category,fk_deptno,joinuser,place
+		from tbl_schedule
+		where schedule_no = #{schedule_no}
+	</select>
+	
+	<update id="updateSchedule" parameterType="com.yolo.hr.josh.model.ScheduleVO">
+		update tbl_schedule set start_date = to_date(#{start_date},'YYYY-MM-DD HH24:MI:SS')
+							   ,end_date = to_date(#{end_date},'YYYY-MM-DD HH24:MI:SS')
+							   ,subject = #{subject}
+							   ,content = #{content} 
+							   ,color = #{color}
+							   ,joinuser = #{joinuser}
+							   ,category = #{category}
+							   ,place = #{place}
+		where schedule_no = #{schedule_no}
+	</update>
+	
+	<delete id="deleteSchedule" parameterType="String">
+		delete from tbl_schedule where schedule_no = #{schedule_no}
+	</delete>
+	
 </mapper>

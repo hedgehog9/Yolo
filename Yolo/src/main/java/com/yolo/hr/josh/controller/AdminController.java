@@ -39,12 +39,6 @@ public class AdminController {
 		return "josh/payment.admin";
 	}
 	
-	@RequestMapping(value="/admin/calendar.yolo")
-	public String calendar() {
-		
-		
-		
-		return "josh/calendar.admin";
-	}
+	
 	
 }
