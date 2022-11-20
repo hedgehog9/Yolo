@@ -20,7 +20,7 @@
 	div#sideTop{
 		width: 80%;
 		height: 260px;
-		margin: 0px auto 0 auto;
+		margin: 15px auto 0 auto;
 		/* border: 1px solid black; */
 	}
 	
@@ -55,13 +55,28 @@
 	
 	div#sideMiddle{
 		width: 80%;
+		height:490px;
+		overflow: auto;
 		margin: auto;
 		padding-top: 30px;
 		padding-bottom: 50px;
 	}
 	
+	#sideMiddle::-webkit-scrollbar {
+    	width: 10px;
+  	}
+  	#sideMiddle::-webkit-scrollbar-thumb {
+    	background-color: #ababab;
+    	border-radius: 10px;
+  	}
+  	#sideMiddle::-webkit-scrollbar-track {
+    	background-color: #dedfe0;
+    	border-radius: 10px;
+  	}
+	
 	div#sideBottom{
 		width: 80%;
+		height : 130px;
 		margin: auto;
 		padding-top: 30px;
 		padding-bottom: 20px;
@@ -75,33 +90,23 @@
 	
 </style>
 
-<!-- Optional JavaScript -->
-<!-- 
-<script type="text/javascript" src="<%= ctxPath%>/js/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="<%= ctxPath%>/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js" ></script> 
--->
-<!-- JQuery UI CSS 및 js -->
-<!--
-<link rel="stylesheet" type="text/css" href="<%= ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.css" />
-<script type="text/javascript" src="<%= ctxPath%>/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
--->
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
 		
 		// 화면 높이만큼 body div에 height를 주겠다
 		const web_browser_height = $(window).height(); 
-		$("div#body").css({"height":web_browser_height});
+		//$("div#sideBar").css({"height":web_browser_height-10});
 		
 	}); // end of ready
 
 </script>
 
-	<div id="body">
 		<div id="sideBar">
 		
 			<div id="sideTop" class="border-bottom">
-				<div class="sideTr mt-1" style="height: 70px;" onclick="#">
+				<div class="sideTr mt-2" style="height: 70px;" onclick="#">
 					<div id="prof">길동</div>
 					<div>
 						<span class="ml-2" style="display: block; padding-top: 3px;">홍길동</span>
@@ -116,7 +121,7 @@
 				    <a class="dropdown-item" href="#">출근하기</a>
 				  </div>
 				</div>
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/messenger/sendedMassage.yolo'">
 					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span>메신저</span>
 				</div>
 				<div class="sideTr" onclick="#">
@@ -134,13 +139,10 @@
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/schedule/calendar.yolo'">
 					<i class="fas fa-regular fa-calendar-check sideIcon"></i><span>캘린더</span>
 				</div>
-				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-clipboard sideIcon"></i><span>게시판</span>
-				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/mycommute.yolo'">
 					<i class="fas fa-regular fa-clock sideIcon"></i><span>출퇴근</span>
 				</div>
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/jinji/leaveSummary.yolo'">
 					<i class="fas fa-solid fa-plane sideIcon"></i><span>휴가</span>
 				</div>
 				<div class="sideTr" onclick="#">
@@ -165,5 +167,5 @@
 			</div>
 			
 		</div>
-	</div>
+
 
