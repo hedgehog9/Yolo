@@ -90,8 +90,10 @@ select schedule_no,fk_empno
       ,subject,content,color,category,fk_deptno,joinuser 
 from tbl_schedule
 
-update tbl_schedule set (start_date, end_date, subject, content, color, joinuser, category, place)
-
+update tbl_schedule 
+set 
+(start_date, end_date, subject, content, color, joinuser, category, place)
+= ()
 
 
 

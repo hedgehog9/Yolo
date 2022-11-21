@@ -449,62 +449,84 @@
 	   
 	   // 캘린더 수정 버튼 클릭시 이벤트 시작
 	   $("button#schedule_modify").click(function() {
+		   
+		   
+		   Swal.fire({
+			   title: '캘린더를 수정하시겠습니까?',
+			   icon: 'warning',
+			   
+			   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+			   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+			   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+			   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+			   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+			   
+			   reverseButtons: true, // 버튼 순서 거꾸로
+			   
+			}).then(result => {
+			   // 만약 Promise리턴을 받으면,
+			   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+				   const daterange = $("form[name='schedule_modify_delete'] input#daterange").val().trim()
+			  		if("" == daterange) {
+			  			toastr.warning('기간을 선택해주세요');
+			  			return;
+			  		} 
+			  		
+			  		const subject = $("form[name='schedule_modify_delete'] input[name='subject']").val().trim()
+			  		if("" == subject) {
+			  			toastr.warning('제목을 입력해주세요');
+			  			return;
+			  		}
+			  		
+			  		
+			  		let plusUser_elm = document.querySelectorAll("form[name='schedule_modify_delete'] div.plusUser");
+					let joinUserArr = [];
+					
+					plusUser_elm.forEach(function(item,index,array){
+						joinUserArr.push(item.innerText.trim());
+					});
+					
+					let joinuser = joinUserArr.join(",");
+					$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
+					
+					const place = $("form[name='schedule_modify_delete'] input[name='place']").val().trim()
+					if("" == place) {
+			  			toastr.warning('장소를 입력해주세요');
+			  			return;
+			  		}
+					
+					const content = $("form[name='schedule_modify_delete'] textarea[name='content']").val().trim()
+					if("" == content) {
+			  			toastr.warning('내용을 입력해주세요');
+			  			return;
+			  		}
+					
+					const serialize = $("form[name='schedule_modify_delete']").serialize();
+					console.log(serialize)
+					
+					$.ajax({
+						url:"<%= ctxPath %>/schedule/updateSchedule.yolo",
+						type:"POST",
+						data:$("form[name='schedule_modify_delete']").serialize(),
+						dataType:"JSON",
+						success:function(json) {
+							
+							if(json.n == 1) {
+								Swal.fire('스케줄 수정 성공','수정완료','success');
+								setTimeout("location.href='<%= ctxPath %>/schedule/calendar.yolo'", 1000);
+							}
+							else {
+								toastr.error('스케줄 수정 실패');
+							}
+							
+						}
+					}); 
+				   
+			      
+			   }
+			});
 	   		
-		   const daterange = $("form[name='schedule_modify_delete'] input#daterange").val().trim()
-	  		if("" == daterange) {
-	  			toastr.warning('기간을 선택해주세요');
-	  			return;
-	  		} 
-	  		
-	  		const subject = $("form[name='schedule_modify_delete'] input[name='subject']").val().trim()
-	  		if("" == subject) {
-	  			toastr.warning('제목을 입력해주세요');
-	  			return;
-	  		}
-	  		
-	  		
-	  		let plusUser_elm = document.querySelectorAll("form[name='schedule_modify_delete'] div.plusUser");
-			let joinUserArr = [];
-			
-			plusUser_elm.forEach(function(item,index,array){
-				joinUserArr.push(item.innerText.trim());
-			});
-			
-			let joinuser = joinUserArr.join(",");
-			$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
-			
-			const place = $("form[name='schedule_modify_delete'] input[name='place']").val().trim()
-			if("" == place) {
-	  			toastr.warning('장소를 입력해주세요');
-	  			return;
-	  		}
-			
-			const content = $("form[name='schedule_modify_delete'] textarea[name='content']").val().trim()
-			if("" == content) {
-	  			toastr.warning('내용을 입력해주세요');
-	  			return;
-	  		}
-			
-			const serialize = $("form[name='schedule_modify_delete']").serialize();
-			console.log(serialize)
-			
-			$.ajax({
-				url:"<%= ctxPath %>/schedule/updateSchedule.yolo",
-				type:"POST",
-				data:$("form[name='schedule_modify_delete']").serialize(),
-				dataType:"JSON",
-				success:function(json) {
-					
-					if(json.n == 1) {
-						toastr.success('스케줄 수정 성공');
-						setTimeout("location.href='<%= ctxPath %>/schedule/calendar.yolo'", 1000);
-					}
-					else {
-						toastr.error('스케줄 수정 실패');
-					}
-					
-				}
-			});
+		   
 	   
 	   })// end of $("button#schedule_modify").click ----------------------
 	   // 캘린더 수정 버튼 클릭시 이벤트 끝 ----------------------------------------------------------------------------------
@@ -680,8 +702,8 @@
 	                   <div class="form-group" id="daterange-group">
 	                     <label for="daterange">기간<span style="color: red;">＊</span></label><br>
 	                     <input type="text" id="daterange" class="form-control text-center">
-	                     <input type="text" name="start_date" class="form-control text-center">
-	                     <input type="text" name="end_date" class="form-control text-center">
+	                     <input type="hidden" name="start_date" class="form-control text-center">
+	                     <input type="hidden" name="end_date" class="form-control text-center">
 	                   </div>
 	                   <div class="form-group" id="daterange-group">
 	                     <label for="subject">제목<span style="color: red;">＊</span></label><br>
