@@ -49,6 +49,24 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
 <!-- toastr cdn 라이브러리 둘다 제이쿼리 밑에 있어야함 -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<style>
+	div#sidebar{
+		background-color: #f9fafa;
+	}
+	
+	#content::-webkit-scrollbar {
+    	width: 10px;
+  	}
+  	#content::-webkit-scrollbar-thumb {
+    	background-color: #ababab;
+    	border-radius: 10px;
+  	}
+  	#content::-webkit-scrollbar-track {
+    	background-color: #dedfe0;
+    	border-radius: 10px;
+  	}
+  	
+</style>
 
 <script type="text/javascript">
 
@@ -75,8 +93,8 @@
 		
 		// 화면 높이만큼 body div에 height를 주겠다
 		const web_browser_height = $(window).height(); 
-		$("div#sidebar").css({"height":web_browser_height});
-		$("div#content").css({"height":web_browser_height});
+		$("div#sidebar").css({"height":web_browser_height-15});
+		$("div#content").css({"height":web_browser_height-15, "overflow":"auto"});
 		
 	}); // end of ready
 
