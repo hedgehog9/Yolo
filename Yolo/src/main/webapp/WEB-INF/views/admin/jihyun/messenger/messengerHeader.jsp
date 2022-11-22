@@ -136,12 +136,19 @@
 			  $(".upload-name").val(fileName);
 		});
 		
-		$("div#sendMail").on("hide", function(){
-		  	  const modal_frmArr = document.querySelectorAll("form#my_form");
-		  	  for(let i=0; i<modal_frmArr.length; i++) {
-		  		  modal_frmArr[i].reset();
-		  	  }
-		});
+		$("button.my_close").on("click", function(){
+			
+			if (confirm("메신저 보내기를 나갈시 내용은 저장되지 않습니다. 나가시겠습니까?")) {
+				const modal_frmArr = document.querySelectorAll("form#my_form");
+			  	  for(let i=0; i<modal_frmArr.length; i++) {
+			  		  modal_frmArr[i].reset();
+			  	  }
+	        } else {
+	        	// $("div#staticBackdrop").modal(); 이거 안되네 나중에 다시 보자
+	        }
+		  	  
+		}); 
+		
 		
 	});
 
@@ -168,7 +175,7 @@
       <!-- Modal body -->
       <div class="modal-body">
       <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
-      <form id='my_form'></form>
+      <form id='my_form'>
       	<input name="subject" placeholder="메신저 제목을 입력하세요"/>
       	<span style="width: 80%; margin: 0 10%;">받는 사람 입력부분 일단 스팬으로</span>
         <textarea rows="" cols="" name="content"></textarea>
@@ -179,6 +186,7 @@
 			    <input type="file" id="file">
 			</div>
         </div>
+      </form>
         
         <button type="button" class="headerBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 보내기
