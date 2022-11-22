@@ -5,6 +5,18 @@
 
 <style type="text/css">
 
+	.kind-color {
+		border-radius: 100%; 
+		width: 8px;
+		height: 8px; 
+		flex: 0 0 auto; 
+		margin-top: 5px
+	}
+	
+	.kind-name {
+		font-size: 13px;
+	}
+
 	ul.ui-autocomplete {
        z-index: 1100;
 	}
@@ -56,6 +68,31 @@
 	.fc-day-sat a {
 	  color: blue;
 	  text-decoration: none;
+	}
+	
+	.fc .fc-button-group>.fc-button {
+		background: #07B419;
+		border: none;
+	}
+	
+	.fc-today-button {
+		background: #07B419;
+		border: none;
+	}
+	
+	#calendar > div.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > div:nth-child(1) > button {
+		background: #07B419;
+		border: none;
+	}
+	
+	button.fc-dayGridMonth-button.fc-button.fc-button-primary.fc-button-active {
+		background: #07B419;
+		border: none;
+		border-right: 1px solid;
+	}
+	
+	#calendar {
+		height: 800px;
 	}
 	
 	
@@ -227,67 +264,74 @@
       			dataType:"JSON",
       			success:function(json) {
       				
-      				const start_date = json.start_date
-      				const end_date = json.end_date
-      				$("form[name='schedule_modify_delete'] input[name='start_date']").val(start_date)
-      				$("form[name='schedule_modify_delete'] input[name='end_date']").val(end_date)
-      				
-      				$('input#daterange').daterangepicker({
-      	                timePicker: true,
-      	                timePicker24Hour: true,
-      	                startDate: start_date,
-      	                endDate: end_date,
-      	                locale: {
-      	                  "format": 'YYYY-MM-DD HH:mm',
-      	                  "separator": " ~ ",
-      	                  "applyLabel": "확인",
-      	                  "cancelLabel": "취소",
-      	                  "fromLabel": "From",
-      	                  "toLabel": "To",
-      	                  "customRangeLabel": "Custom",
-      	                  "weekLabel": "W",
-      	                  "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
-      	                  "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-      	                  
-      	                }
-      	              },function(start, end, label) {
-      	                $("form[name='schedule_modify_delete'] input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
-      	                $("form[name='schedule_modify_delete'] input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
-      	            });
-      	      		
-      				
-      				$("form[name='schedule_modify_delete'] input[name='subject']").val(json.subject)
-      				$("form[name='schedule_modify_delete'] select[name='category']").val(json.category)
-      				
-      				if(json.joinuser != undefined) {
-      					const joinuser = json.joinuser.split(",")
-      					for(var i=0; i<joinuser.length; i++) {
-      						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle'></i></div>");
-      						
-      					}
+      				if (json.redirect == "true") {
+		                window.location.href = "<%= ctxPath %>/schedule/calendar.yolo";
+		            }
+      				else {
+      					const start_date = json.start_date
+          				const end_date = json.end_date
+          				$("form[name='schedule_modify_delete'] input[name='start_date']").val(start_date)
+          				$("form[name='schedule_modify_delete'] input[name='end_date']").val(end_date)
+          				
+          				$('input#daterange').daterangepicker({
+          	                timePicker: true,
+          	                timePicker24Hour: true,
+          	                startDate: start_date,
+          	                endDate: end_date,
+          	                locale: {
+          	                  "format": 'YYYY-MM-DD HH:mm',
+          	                  "separator": " ~ ",
+          	                  "applyLabel": "확인",
+          	                  "cancelLabel": "취소",
+          	                  "fromLabel": "From",
+          	                  "toLabel": "To",
+          	                  "customRangeLabel": "Custom",
+          	                  "weekLabel": "W",
+          	                  "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+          	                  "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+          	                  
+          	                }
+          	              },function(start, end, label) {
+          	                $("form[name='schedule_modify_delete'] input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
+          	                $("form[name='schedule_modify_delete'] input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
+          	            });
+          	      		
+          				
+          				$("form[name='schedule_modify_delete'] input[name='subject']").val(json.subject)
+          				$("form[name='schedule_modify_delete'] select[name='category']").val(json.category)
+          				
+          				if(json.joinuser != undefined) {
+          					const joinuser = json.joinuser.split(",")
+          					for(var i=0; i<joinuser.length; i++) {
+          						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle'></i></div>");
+          						
+          					}
+          				}
+          				
+          				$("form[name='schedule_modify_delete'] input[name='place']").val(json.place)
+          				$("form[name='schedule_modify_delete'] textarea[name='content']").val(json.content)
+          				$("form[name='schedule_modify_delete'] input[name='schedule_no']").val(schedule_no)
+          				
+          				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
+          					$("button#schedule_modify").hide();
+          					$("button#schedule_delete").hide();
+          					
+          					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
+          					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
+          					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
+          				}
+          				
+          				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
+          					$("button#schedule_modify").show();
+          					$("button#schedule_delete").show();
+          					
+          					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
+          					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
+          					$("form[name='schedule_modify_delete'] textarea").attr("readonly",false);
+          				}
       				}
       				
-      				$("form[name='schedule_modify_delete'] input[name='place']").val(json.place)
-      				$("form[name='schedule_modify_delete'] textarea[name='content']").val(json.content)
-      				$("form[name='schedule_modify_delete'] input[name='schedule_no']").val(schedule_no)
       				
-      				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
-      					$("button#schedule_modify").hide();
-      					$("button#schedule_delete").hide();
-      					
-      					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
-      					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
-      					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
-      				}
-      				
-      				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
-      					$("button#schedule_modify").show();
-      					$("button#schedule_delete").show();
-      					
-      					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
-      					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
-      					$("form[name='schedule_modify_delete'] textarea").attr("readonly",false);
-      				}
       				
       				
       			},
@@ -502,7 +546,7 @@
 			  		}
 					
 					const serialize = $("form[name='schedule_modify_delete']").serialize();
-					console.log(serialize)
+					//console.log(serialize)
 					
 					$.ajax({
 						url:"<%= ctxPath %>/schedule/updateSchedule.yolo",
@@ -617,11 +661,23 @@
         <span class="text-muted h4 font-weight-bold">캘린더</span>
     </nav>
     
-    <div class="mb-4" style="width: 125px;">
-      <select id="kind-calendar" class="custom-select custom-select-sm">
+    <div class="mb-4 d-flex" style="width: 80%;">
+      <select id="kind-calendar" class="custom-select custom-select-sm" style="width: 125px;">
         <option value="0">전체 조직</option>
         <option value="1">내가 속한 조직</option>
       </select>
+      <div style="margin-left: auto; margin-top: 6px">
+      	<div class="d-flex">
+      		<div class="kind-color mr-1" style="background: #ffd699;"></div>
+      		<span class="kind-name mr-3">미팅</span>
+      		<div class="kind-color mr-1" style="background: #bfbfbf;"></div>
+      		<span class="kind-name mr-3">출장</span>
+      		<div class="kind-color mr-1" style="background: #6666ff;"></div>
+      		<span class="kind-name mr-3">회의</span>
+      		<div class="kind-color mr-1" style="background: #b380ff;"></div>
+      		<span class="kind-name">휴가</span>
+      	</div>
+      </div>
     </div>
 
     <div id='calendar' style="width: 80%;"></div>
