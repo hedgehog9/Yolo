@@ -231,6 +231,7 @@
   	height: 30px;
   	background-color: #efefef;
 	cursor: pointer;
+	border-radius: 15px;
 	} 
 	  
   div#child{
@@ -387,7 +388,9 @@
     	<div style="padding : 10px; padding-bottom: 20px;" class="border-bottom" >
     		<span id="profile" style="margin-right: 10px;">이름</span>
     		<span id="sizebold">이름·</span> <span style="font-size: 10pt;">직책</span>
-    		<span style="font-size: 10pt; float:right; color:gray;">2022.11.28(화) 14:25(날짜 코딩)</span>
+    		<span style="font-size: 10pt; float:right; color:gray;">
+    		<i class="bi bi-table"></i> &nbsp;
+    		2022.11.28(화) 14:25(날짜 코딩)</span>
     	</div>
     	
     	<div style="padding : 10px; padding-bottom: 40px; margin-top: 20px;"  class="border-bottom">
