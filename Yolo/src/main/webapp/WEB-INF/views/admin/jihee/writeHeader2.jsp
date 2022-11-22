@@ -22,16 +22,26 @@ a:active {text-decoration: none; color: #cccccc;}
 		font-weight: bold;
 	}
 	
-	
 
-	
-	
 </style>    
-    
+
+<script type="text/javascript">
+
+	function goWrite() {
+			
+		  const frm = document.wirteFrm;
+          frm.method = "POST";
+          frm.action = "<%= ctxPath%>/workflow.yolo";
+          frm.submit();
+		
+	}
+
+</script> 
+
 <div style="display: flex; padding-top: 30px; padding-left: 30px; padding-bottom: 20px;]" class="border-bottom">
 	 <span ><a class="mylink" href="javascript:location.href='<%= request.getContextPath()%>/workflow/selectWrite.yolo'" style="color: #404040; font-size: 23pt; font-weight: bold; padding-right: 20px;"><</a></span>
 	 <span style="color:#404040; font-size: 23pt; font-weight: bold;" onclick="javascript:location.href='<%= request.getContextPath()%>/workflow/selectWrite.yolo'">작성하기</span>
-	<button type="button" class="headerBtn" onclick="javascript:location.href='<%= request.getContextPath()%>/workflow.yolo'">
+	<button type="button" class="headerBtn" onclick="goWrite();">
 		<i class="bi bi-send" style="margin-right: 10px;"></i>
 		 보내기
 	</button>
