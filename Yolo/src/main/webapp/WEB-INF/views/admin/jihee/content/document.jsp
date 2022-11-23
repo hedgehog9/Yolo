@@ -382,6 +382,28 @@
 		    	</div>	
 		    	
 	    	</div>
+	    	
+	    	<!-- 페이지바 -->
+	    	<div style="margin: 7px auto auto 10px;"> 
+		    	 <nav aria-label="Page navigation">
+				  <ul class="pagination justify-content-center pagination-sm my-5">
+				    <li class="page-item">
+				      <a class="page-link" href="#" aria-label="Previous">
+				        <span aria-hidden="true">&laquo;</span>
+				      </a>
+				    </li>
+				    <li class="page-item"><a ><%-- ${requestScope.pageBar} --%></a></li>
+				    <li class="page-item"><a ><%-- ${requestScope.pageBar} --%></a></li>
+				    
+				    
+				    <li class="page-item">
+				      <a class="page-link" href="#" aria-label="Next">
+				        <span aria-hidden="true">&raquo;</span>
+				      </a>
+				    </li>
+				  </ul>
+				</nav>
+			</div>
 	    </div> 
 	<!-- ajax 올릴 것 끝1 -->    
 	</div>

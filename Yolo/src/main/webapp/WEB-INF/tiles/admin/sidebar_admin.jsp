@@ -143,7 +143,7 @@
 				<div class="sideTr" onclick="#">
 					<i class="fas fa-solid fa-plane sideIcon"></i><span>휴가</span>
 				</div>
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= request.getContextPath()%>/workflow.yolo'">
 					<i class="fas fa-solid fa-pen-nib sideIcon"></i><span>워크플로우</span>
 				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/payStub.yolo'">
