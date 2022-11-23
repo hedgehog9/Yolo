@@ -2,26 +2,21 @@
 
 <% String ctxPath=request.getContextPath(); %>
 
-<jsp:include page="/WEB-INF/tiles/admin/jinji/leaveCategory.jsp" ></jsp:include>
+<jsp:include page="leaveCategory.jsp" />
 
 <style type="text/css">
 	
-	/* leaveCategory.jsp 시작 */
 	
-	#cate2, #cate4 {
-		color: silver;
-	}
-
-	/* leaveCategory.jsp 끝 */
-	
-	#container {
-		margin-left: 15px;	
-	 /* width: 95%; */
+	div.dashBoard {
+		width: 90%;
+		margin: 20px 5% 5px 5%;	
+	 	
 	}
 	
 	h4 {
 		font-size: 20px; 
 		font-weight: bold;
+		margin-bottom: 15px;
 	}
 	
 	.card {
@@ -99,8 +94,13 @@
 <script type="text/javascript">
 
 	$(document).ready(function () {
-	
-		 $( "#datepicker" ).datepicker({
+		
+		
+		
+		$("span#myLeave").css("color", "#494949");
+		
+		
+		$("#datepicker" ).datepicker({
 			 dateFormat: 'yy' //Input Display Format 변경
             ,showOtherMonths: false //빈 공간에 현재월의 앞뒤월의 날짜를 표시
             ,changeYear: true //콤보박스에서 년 선택 가능
@@ -126,80 +126,65 @@
 	});
 
 
-	///////// Function Declaration ////////////
-	function goleaveSummary() { // 휴가개요로 이동 
-		// alert('goPage!');
-	   location.href="<%= ctxPath%>/leaveSummary.yolo"
-	};
-	
-	function goleaveDetail() { // 연차 상세 페이지로 이동 
-	 // alert('goPage!');
-		location.href="<%= ctxPath%>/leaveDetail.yolo"
-	};
-	
-
-	function goEmpleaveManage() { // 연차 상세 페이지로 이동 
-		 // alert('goPage!');
-			location.href="<%= ctxPath%>/empLeaveStatus.yolo"
-	};
 	
 </script>
 
-
 	<%-- 대쉬보드 시작 --%>
-	<div id="container" style="cursor: pointer;">
-		<h4 style="margin-bottom: 10px;">휴가등록</h4><br>
-		<div class="card-columns mb-5 mr-1" style="max-width:95%;">
-		  <div class="card md-light">
-		    <div class="card-body text-left">
-			 	<span style="font-size:30px;">&#9978;</span>
-		     	<h6 class="card-title mt-4">연차</h6>	
-		      	<p class="card-text">-4</p>
-		    </div>
-		  </div>
-		  <div class="card md-light">
-		    <div class="card-body text-left">
-		    	<span style="font-size:30px;">&#9993;</span>
-		     	<h6 class="card-title mt-4">조의</h6>	
-		      	<p class="card-text">#</p>
-		    </div>
-		  </div>
-		  <div class="card md-light">
-		    <div class="card-body text-left">
-		    	<span style="font-size:30px;">&#128138;</span>
-		     	<h6 class="card-title mt-4">병가</h6>	
-		      	<p class="card-text">#</p>
-		    </div>
-		  </div>
-		  <div class="card md-light">
-		    <div class="card-body text-left">
-		    	<span style="font-size:30px;">&#128141;</span>
-		     	<h6 class="card-title mt-4">결혼</h6>	
-		      	<p class="card-text">#</p>
-		    </div>
-		  </div>
-		  <div class="card md-light">
-		    <div class="card-body text-left">
-		    	<span style="font-size:30px;">&#127808;</span>
-		     	<h6 class="card-title mt-4">리프레쉬</h6>	
-		      	<p class="card-text">3년 극속시 30일 지급</p>
-		    </div>
-		  </div>
-		  <div class="card md-light">
-		    <div class="card-body text-left">
-		    	<span style="font-size:30px;">&#128420;</span>
-		     	<h6 class="card-title mt-4">기타</h6>	
-		      	<p class="card-text">#</p>
-		    </div>
-		   </div>
-		   
+	<div id="container">
+		<div class="dashBoard">
+			<h4>휴가등록</h4>
+			<div class="card-columns">
+			  <div class="card mb-4">
+			    <div class="card-body text-left">
+				 	<span style="font-size:30px;">&#9978;</span>
+			     	<h6 class="card-title mt-4">연차</h6>	
+			      	<p class="card-text">-4</p>
+			    </div>
+			  </div>
+			  <div class="card mb-4">
+			    <div class="card-body text-left">
+			    	<span style="font-size:30px;">&#9993;</span>
+			     	<h6 class="card-title mt-4">조의</h6>	
+			      	<p class="card-text">#</p>
+			    </div>
+			  </div>
+			  <div class="card mb-4">
+			    <div class="card-body text-left">
+			    	<span style="font-size:30px;">&#128138;</span>
+			     	<h6 class="card-title mt-4">병가</h6>	
+			      	<p class="card-text">#</p>
+			    </div>
+			  </div>
+			  <div class="card mb-4">
+			    <div class="card-body text-left">
+			    	<span style="font-size:30px;">&#128141;</span>
+			     	<h6 class="card-title mt-4">결혼</h6>	
+			      	<p class="card-text">#</p>
+			    </div>
+			  </div>
+			  <div class="card mb-4">
+			    <div class="card-body text-left">
+			    	<span style="font-size:30px;">&#127808;</span>
+			     	<h6 class="card-title mt-4">리프레쉬</h6>	
+			      	<p class="card-text">3년 극속시 30일 지급</p>
+			    </div>
+			  </div>
+			  <div class="card mb-4t">
+			    <div class="card-body text-left">
+			    	<span style="font-size:30px;">&#128420;</span>
+			     	<h6 class="card-title mt-4">기타</h6>	
+			      	<p class="card-text">#</p>
+			    </div>
+			   </div>
+			   
+			</div>
 		</div>
 	</div>
 	<%-- 대쉬보드 끝 --%>
 	
 	
 	<%-- 예정휴가 테이블 --%>
-	<div id="container" style="width: 99%;">
+	<div class="dashBoard">
 		<h4>예정 휴가</h4>
 		<table class="table table-borderless table table-hover ">
 		  <thead>
@@ -249,7 +234,7 @@
 	   
 	    
     <%-- 휴가 사용 기록 시작 --%>
-    <div id="container" style="width: 99%;">
+    <div class="dashBoard">
     	<div>
 		<span style="font-size: 15pt; font-weight: bold;">사용 기록</span>
 		<form id="searchYear"	name="searchYearFrm">
@@ -275,6 +260,7 @@
 		      <td>2022.11.11 ~ 2022.11.11 </td>
 		      <td></td>
 		      <td><span class="badge badge-success rounded-pill d-inline">4일</span></td>
+		      <td></td>
 		    </tr>
 			<tr>
 		      <td>1</td>
@@ -296,4 +282,4 @@
 	  </div>
     
     <%-- 휴가 사용 기록 끝 --%>     
-    
+ 
