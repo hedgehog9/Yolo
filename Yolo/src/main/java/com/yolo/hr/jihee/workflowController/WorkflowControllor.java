@@ -17,6 +17,12 @@ public class WorkflowControllor {
 		return "jihee/content/document.admin";
 	}
 	
+	@RequestMapping(value = "/cpWorkflow.yolo")
+	public String viewCpWorkflow() {
+		
+		return "jihee/content/cpDocument.admin";
+	}
+	
 	@RequestMapping(value = "/workflow/selectWrite.yolo")
 	public String selectWriteWorkflow() {
 		
@@ -37,6 +43,21 @@ public class WorkflowControllor {
 		
 		
 		return "jihee/content/write.admin";
+	}
+	
+	@RequestMapping(value = "/workflow/modify.yolo")
+	public String modifyWorkflow(HttpServletRequest request) {
+		
+		String subject = request.getParameter("subject");
+		String icon = request.getParameter("icon");
+		String information = request.getParameter("information");
+		
+		request.setAttribute("subject", subject);
+		request.setAttribute("icon", icon);
+		request.setAttribute("information", information);
+		
+		
+		return "jihee/content/modify.admin";
 	}
 
 }

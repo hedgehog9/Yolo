@@ -74,7 +74,7 @@ input::placeholder {
 
 .icon {
 
-	olor: #666666; 
+	color: #666666; 
 	font-size: 13pt; 
 	padding-top: 12px; 
 	font-weight: bold;
@@ -123,15 +123,28 @@ div#findPW:hover {
 	
  		
  	
- 	 	$('div.borderID').click(function(){
+ 	 	$("div.borderID").click(function(){
 	          $(this).css("border", "2px solid #66cc66");
-	          $("div.borderPW").css("border", "1px solid #b3b3b3");
+	          $("div.borderPW").css("border", "1px solid #b3b3b3");  
 	        }); 
  	 	
- 	 	$('div.borderPW').click(function(){
+ 	 	/*  $(document).click(function() {
+ 	 	    var borderID = $("div.borderID");
+ 	 	    if (!borderID.is(event.target) && !borderID.has(event.target).length) {
+ 	 	    	$("div.borderID").css("border", "1px solid #b3b3b3");
+ 	 	    }  */
+ 	 	
+ 	 	$("div.borderPW").click(function(){
  	 		 $(this).css("border", "2px solid #66cc66");
-	          $("div.borderID").css("border", "1px solid #b3b3b3");
-	        }); 
+	         $("div.borderID").css("border", "1px solid #b3b3b3"); 
+	        });
+ 	 	
+ 	 	 /* $(document).click(function() {
+ 	 	    var borderPW = $("div.borderPW");
+ 	 	    if (!borderPW.is(event.target) && !borderPW.has(event.target).length) {
+ 	 	    	$("div.borderPW").css("border", "1px solid #b3b3b3");
+ 	 	    }  */
+ 	 
 		
 	});
 	
@@ -139,7 +152,7 @@ div#findPW:hover {
 	function goFindPW() {
 		
 		const frm = document.loginFrm;
-		frm.method="get";
+		frm.method="POST";
 		frm.action="<%= ctxPath%>/findPW.yolo";
 		frm.submit();
 		
