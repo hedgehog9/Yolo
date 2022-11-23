@@ -10,4 +10,56 @@
 		where lower(name) like '%'||lower(#{joinuser})||'%'
 	</select>
 
+	<insert id="insertSchedule" parameterType="com.yolo.hr.josh.model.ScheduleVO">
+		insert into tbl_schedule(schedule_no, fk_empno, start_date, end_date, subject, content, color, category, fk_deptno, joinuser, place)
+		values(seq_scheduleno.nextval, #{fk_empno}, to_date(#{start_date},'YYYY-MM-DD HH24:MI:SS'), to_date(#{end_date},'YYYY-MM-DD HH24:MI:SS'), #{subject}, #{content}, #{color}, #{category}, #{fk_deptno}, #{joinuser}, #{place})
+	</insert>
+
+	<select id="selectScheduleList" resultType="com.yolo.hr.josh.model.ScheduleVO">
+		select schedule_no,fk_empno
+		      ,to_char(start_date,'yyyy-mm-dd hh24:mi') as start_date
+		      ,to_char(end_date,'yyyy-mm-dd hh24:mi') as end_date
+		      ,subject,content,color,category,fk_deptno,joinuser,place
+		from tbl_schedule
+	</select>
+	
+	<select id="selectDetailSchedule" parameterType="String" resultType="com.yolo.hr.josh.model.ScheduleVO">
+		select schedule_no,fk_empno
+		      ,to_char(start_date,'yyyy-mm-dd hh24:mi') as start_date
+		      ,to_char(end_date,'yyyy-mm-dd hh24:mi') as end_date
+		      ,subject,content,color,category,fk_deptno,joinuser,place
+		from tbl_schedule
+		where schedule_no = #{schedule_no}
+	</select>
+	
+	<update id="updateSchedule" parameterType="com.yolo.hr.josh.model.ScheduleVO">
+		update tbl_schedule set start_date = to_date(#{start_date},'YYYY-MM-DD HH24:MI:SS')
+							   ,end_date = to_date(#{end_date},'YYYY-MM-DD HH24:MI:SS')
+							   ,subject = #{subject}
+							   ,content = #{content} 
+							   ,color = #{color}
+							   ,joinuser = #{joinuser}
+							   ,category = #{category}
+							   ,place = #{place}
+		where schedule_no = #{schedule_no}
+	</update>
+	
+	<delete id="deleteSchedule" parameterType="String">
+		delete from tbl_schedule where schedule_no = #{schedule_no}
+	</delete>
+	
+	<insert id="commuteStart" parameterType="String">
+		insert into tbl_commute(commuteno, fk_empno, start_work_time, end_work_time, overtime, work_kind)
+		values(seq_commuteno.nextval, #{fk_empno}, sysdate, null, null, null)
+	</insert>
+	
+	<select id="checkCommute" parameterType="String" resultType="com.yolo.hr.josh.model.CommuteVO">
+		select commuteno, fk_empno 
+		       , to_char(start_work_time,'yyyy-mm-dd hh24:mi:ss') as start_work_time
+		       , end_work_time, overtime, work_kind 
+		from tbl_commute 
+		where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
+		      and fk_empno = #{fk_empno}
+	</select>
+	
 </mapper>
