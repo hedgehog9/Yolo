@@ -60,7 +60,7 @@ create table tbl_schedule
 ,fk_deptno      number
 ,joinuser       nvarchar2(200)
 ,constraint PK_tbl_schedule_schedule_no primary key(schedule_no)
-,constraint CK_tbl_member_category check (category in('미팅','출장','회의'))
+,constraint CK_tbl_member_category check (category in('미팅','출장','회의', '휴가'))
 -- fk_empno, fk_deptno 외래키 등록하기
 );
 
@@ -90,19 +90,43 @@ select schedule_no,fk_empno
       ,subject,content,color,category,fk_deptno,joinuser 
 from tbl_schedule
 
-update tbl_schedule set (start_date, end_date, subject, content, color, joinuser, category, place)
 
 
+create table tbl_commute
+(
+commuteno           number
+,fk_empno           number
+,start_work_time    date default sysdate
+,end_work_time      date
+,overtime           varchar2(20)
+,work_kind          varchar2(20)
+-- constraint FK_tbl_commute_fk_empno foreign key(fk_empno) references tbl_employees(empno)
+)
+drop table tbl_commute
 
+create sequence seq_commuteno
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
 
+insert into tbl_commute(commuteno, fk_empno, start_work_time, end_work_time, overtime, work_kind)
+values(seq_commuteno.nextval, '1', to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), null, null, null)
 
+select *
+from tbl_commute
 
+select commuteno, fk_empno 
+       , to_char(start_work_time,'yyyy-mm-dd hh24:mi') as start_work_time
+       , end_work_time, overtime, work_kind 
+from tbl_commute 
+where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
+      and fk_empno = '1'
 
-
-
-
-
-
+delete from tbl_commute
+commit
 
 
 

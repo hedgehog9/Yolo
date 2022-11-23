@@ -92,17 +92,17 @@
 	///////// Function Declaration ////////////
 	function goleaveSummary() { // 휴가개요로 이동 
 		// alert('goPage!');
-	   location.href="<%= ctxPath%>/jinji/leaveSummary.yolo"
+	   location.href="<%= ctxPath%>/leaveSummary.yolo"
 	};
 	
 	function goleaveDetail() { // 연차 상세 페이지로 이동 
 	 // alert('goPage!');
-		location.href="<%= ctxPath%>/jinji/leaveDetail.yolo"
+		location.href="<%= ctxPath%>/leaveDetail.yolo"
 	};
 	
 	function goEmpleaveManage() { // 연차촉진 페이지로 이동 
 		 // alert('goPage!');
-			location.href="<%= ctxPath%>/jinji/empLeaveStatus.yolo"
+			location.href="<%= ctxPath%>/empLeaveStatus.yolo"
 	};
 	
 </script>

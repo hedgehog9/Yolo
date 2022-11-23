@@ -74,14 +74,14 @@ public class ScheduleController {
 		
 		switch (category) { // 카테고리에 따라 색상 주기
 		case "회의":
-			scvo.setColor("blue");
+			scvo.setColor("#6666ff"); // 파란색
 			break;
 
 		case "미팅":
-			scvo.setColor("red");	
+			scvo.setColor("#ffd699"); // 주황색	
 			break;
 		case "출장":
-			scvo.setColor("gray");	
+			scvo.setColor("#bfbfbf");	// 회색
 			break;
 		}
 		
@@ -106,14 +106,14 @@ public class ScheduleController {
 		
 		switch (category) { // 카테고리에 따라 색상 주기
 		case "회의":
-			scvo.setColor("blue");
+			scvo.setColor("#6666ff"); // 파란색
 			break;
-			
+
 		case "미팅":
-			scvo.setColor("red");	
+			scvo.setColor("#ffd699"); // 주황색	
 			break;
 		case "출장":
-			scvo.setColor("gray");	
+			scvo.setColor("#bfbfbf");	// 회색
 			break;
 		}
 		
@@ -185,23 +185,33 @@ public class ScheduleController {
 	@RequestMapping(value="/schedule/selectDetailSchedule.yolo", produces="text/plain;charset=UTF-8")
 	public String selectDetailSchedule(HttpServletRequest request) {
 		
+		JSONObject jsonObj = new JSONObject();
+		
 		String schedule_no = request.getParameter("schedule_no");
 		// System.out.println("확인용 : " + schedule_no);
 		
-		ScheduleVO scvo = service.selectDetailSchedule(schedule_no);
+		try {
+			Integer.parseInt(schedule_no);
+			
+			ScheduleVO scvo = service.selectDetailSchedule(schedule_no);
+			
+			jsonObj.put("schedule_no", scvo.getSchedule_no());
+			jsonObj.put("fk_empno", scvo.getFk_empno());
+			jsonObj.put("start_date", scvo.getStart_date());
+			jsonObj.put("end_date", scvo.getEnd_date());
+			jsonObj.put("subject", scvo.getSubject());
+			jsonObj.put("content", scvo.getContent());
+			jsonObj.put("color", scvo.getColor());
+			jsonObj.put("category", scvo.getCategory());
+			jsonObj.put("fk_deptno", scvo.getFk_deptno());
+			jsonObj.put("joinuser", scvo.getJoinuser());
+			jsonObj.put("place", scvo.getPlace());
+			
+		} catch(NumberFormatException e) {
+			e.printStackTrace();
+			jsonObj.put("redirect", "true");
+		}
 		
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("schedule_no", scvo.getSchedule_no());
-		jsonObj.put("fk_empno", scvo.getFk_empno());
-		jsonObj.put("start_date", scvo.getStart_date());
-		jsonObj.put("end_date", scvo.getEnd_date());
-		jsonObj.put("subject", scvo.getSubject());
-		jsonObj.put("content", scvo.getContent());
-		jsonObj.put("color", scvo.getColor());
-		jsonObj.put("category", scvo.getCategory());
-		jsonObj.put("fk_deptno", scvo.getFk_deptno());
-		jsonObj.put("joinuser", scvo.getJoinuser());
-		jsonObj.put("place", scvo.getPlace());
 		
 		return jsonObj.toString();
 	}

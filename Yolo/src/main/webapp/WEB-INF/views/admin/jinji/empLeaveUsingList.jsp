@@ -49,17 +49,17 @@
 	///////// Function Declaration ////////////
 	function goAdminLeave() { // 관리자 내 휴가 페이지로 이동 
 	 // alert('goPage!');
-		location.href="<%= ctxPath%>/jinji/leaveSummary.yolo"
+		location.href="<%= ctxPath%>/leaveSummary.yolo"
 	};
 	
 	function goempLeaveStatus() { // 구성원 휴가 보유 현황 페이지로 이동
 	 // alert('goPage!');
-		location.href="<%= ctxPath%>/jinji/empLeaveStatus.yolo"
+		location.href="<%= ctxPath%>/empLeaveStatus.yolo"
 	};
 		
 	function goempLeavePromotion() { // 연차촉진 페이지로 이동 
 		 // alert('goPage!');
-			location.href="<%= ctxPath%>/jinji/empLeavePromotion.yolo"
+			location.href="<%= ctxPath%>/empLeavePromotion.yolo"
 	};
 	
 </script>	
