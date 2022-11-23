@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
+<% String ctxPath = request.getContextPath(); %>
 
 <style>
 
@@ -138,7 +139,7 @@
 		
 		$("button.my_close").on("click", function(){
 			
-			if (confirm("메신저 보내기를 나갈시 내용은 저장되지 않습니다. 나가시겠습니까?")) {
+			if (!confirm("메신저 보내기를 벗어납니다. 작성내용을 임시 저장 할까요?")) {
 				const modal_frmArr = document.querySelectorAll("form#my_form");
 			  	  for(let i=0; i<modal_frmArr.length; i++) {
 			  		  modal_frmArr[i].reset();
@@ -157,8 +158,8 @@
 </script>
 
 <div id="messengerHeader" class="border-bottom">
-		<span class="headerTitle ml-5">받은 메신저</span>
-		<span class="headerTitle">보낸 메신저</span>
+		<span class="headerTitle ml-5" id="rcvmsg" onclick="javascript:location.href='<%= ctxPath%>/messenger/receivedMessage.yolo'">받은 메신저</span>
+		<span class="headerTitle" id="sndmsg" onclick="javascript:location.href='<%= ctxPath%>/messenger/sentMessage.yolo'">보낸 메신저</span>
 		<button type="button" class="headerBtn" data-toggle="modal" data-target=".sendMail">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 보내기
 		</button>
