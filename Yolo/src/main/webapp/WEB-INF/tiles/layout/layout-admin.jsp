@@ -17,15 +17,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> 
 
 <!-- Bootstrap CSS -->
-<link rel="stylesheet" type="text/css" href="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css" > 
+<%--<link rel="stylesheet" type="text/css" href="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css" > --%>
 
 <!-- Font Awesome 5 Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <!-- Optional JavaScript -->
 <script type="text/javascript" src="<%= ctxPath%>/resources/js/jquery-3.6.0.min.js"></script>
-<script type="text/javascript" src="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js" ></script> 
+<%-- <script type="text/javascript" src="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js" ></script> --%>
 <script type="text/javascript" src="<%= ctxPath%>/resources/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script> 
+
+<%-- Bootstrap 4.6.1 --%>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
 
 <%--  ===== 스피너 및 datepicker 를 사용하기 위해  jquery-ui 사용하기 ===== --%>
 <link rel="stylesheet" type="text/css" href="<%= ctxPath%>/resources/jquery-ui-1.13.1.custom/jquery-ui.css" />
@@ -45,6 +49,24 @@
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"/>
 <!-- toastr cdn 라이브러리 둘다 제이쿼리 밑에 있어야함 -->
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<style>
+	div#sidebar{
+		background-color: #f9fafa;
+	}
+	
+	#content::-webkit-scrollbar {
+    	width: 10px;
+  	}
+  	#content::-webkit-scrollbar-thumb {
+    	background-color: #ababab;
+    	border-radius: 10px;
+  	}
+  	#content::-webkit-scrollbar-track {
+    	background-color: #dedfe0;
+    	border-radius: 10px;
+  	}
+  	
+</style>
 
 <script type="text/javascript">
 
@@ -71,8 +93,8 @@
 		
 		// 화면 높이만큼 body div에 height를 주겠다
 		const web_browser_height = $(window).height(); 
-		$("div#sidebar").css({"height":web_browser_height});
-		$("div#content").css({"height":web_browser_height});
+		$("div#sidebar").css({"height":web_browser_height-15});
+		$("div#content").css({"height":web_browser_height-15, "overflow":"auto"});
 		
 	}); // end of ready
 

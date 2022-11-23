@@ -47,3 +47,89 @@ where name like '%'||'ka'||'%';
 
 
 
+create table tbl_schedule
+(
+ schedule_no    number 
+,fk_empno       number
+,start_date     date
+,end_date       date
+,subject        nvarchar2(30)
+,content        nvarchar2(300) 
+,color          varchar2(20)
+,category       varchar2(20)
+,fk_deptno      number
+,joinuser       nvarchar2(200)
+,constraint PK_tbl_schedule_schedule_no primary key(schedule_no)
+,constraint CK_tbl_member_category check (category in('미팅','출장','회의', '휴가'))
+-- fk_empno, fk_deptno 외래키 등록하기
+);
+
+-- ALTER TABLE tbl_schedule ADD joinuser NVARCHAR2(200);
+ALTER TABLE tbl_schedule ADD place NVARCHAR2(100);
+
+create sequence seq_scheduleno
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+insert into tbl_schedule(schedule_no, fk_empno, start_date, end_date, subject, content, color, category, fk_deptno, joinuser, place)
+values(seq_scheduleno.nextval, 2, to_date('2022-11-19 09:00','YYYY-MM-DD HH24:MI:SS'), to_date('2022-11-19 18:00','YYYY-MM-DD HH24:MI:SS'), '이게나오나', '테스트', 'red', '미팅', 2, null, '집')
+
+commit
+
+select * from tbl_schedule
+
+select to_char(end_date, 'yyyy-mm-dd hh24:mi:ss') from tbl_schedule
+
+select schedule_no,fk_empno
+      ,to_char(start_date,'yyyy-mm-dd hh24:mi') as start_date
+      ,to_char(end_date,'yyyy-mm-dd hh24:mi') as end_date
+      ,subject,content,color,category,fk_deptno,joinuser 
+from tbl_schedule
+
+
+
+create table tbl_commute
+(
+commuteno           number
+,fk_empno           number
+,start_work_time    date default sysdate
+,end_work_time      date
+,overtime           varchar2(20)
+,work_kind          varchar2(20)
+-- constraint FK_tbl_commute_fk_empno foreign key(fk_empno) references tbl_employees(empno)
+)
+drop table tbl_commute
+
+create sequence seq_commuteno
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+insert into tbl_commute(commuteno, fk_empno, start_work_time, end_work_time, overtime, work_kind)
+values(seq_commuteno.nextval, '1', to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), null, null, null)
+
+select *
+from tbl_commute
+
+select commuteno, fk_empno 
+       , to_char(start_work_time,'yyyy-mm-dd hh24:mi') as start_work_time
+       , end_work_time, overtime, work_kind 
+from tbl_commute 
+where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
+      and fk_empno = '1'
+
+delete from tbl_commute
+commit
+
+
+
+
+
+

@@ -82,6 +82,8 @@
 
 	$(document).ready(function(){
 		
+		$("span#rcvmsg").css("color", "#494949");
+		
 		// 화면 높이만큼 body div에 height를 주겠다
 		/* const web_browser_height = $(window).height(); 
 		$("div#right").css({"height":web_browser_height}); */
