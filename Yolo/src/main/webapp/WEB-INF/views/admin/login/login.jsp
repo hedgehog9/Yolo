@@ -189,10 +189,10 @@ div#findPW:hover {
 		
 	}
 	
-	function goMessenger() {
+	function goNotice() {
 		
-		location.href="<%= request.getContextPath()%>/messenger/sentMessage.yolo";
-	} 
+		location.href="<%= request.getContextPath()%>/notice/noticeList.yolo";
+	} http:
 	
 	function goContents() {
 		  
@@ -214,7 +214,7 @@ div#findPW:hover {
 						 	"<input placeholder='비밀번호' name='pw' id='search'/>"+
 						"</div>"+
 						"<div style='margin-top: 20px;'>"+
-							"<button type='button' class='headerBtn' onclick='goMessenger();'>"+
+							"<button type='button' class='headerBtn' onclick='goNotice();'>"+
 							"로그인하기"+
 							"</button>"+
 						"</div>"+
