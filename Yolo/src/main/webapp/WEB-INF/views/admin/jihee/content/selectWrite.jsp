@@ -9,10 +9,10 @@
 
 .card {
 
-	width: 200px;
-	height : 150px;
+	width: 250px;
+	height : 190px;
 	border : 2px solid gray;
-	margin: 30px 15px;
+	margin: 25px 20px;
 	padding: 10px;
 	border-color: #cccccc;
 	border-radius: 0.5rem;
@@ -26,27 +26,28 @@
 	
 div#fontSubject {
 	
-	font-size: 12pt;
+	font-size: 15pt;
 	font-weight: bold;
 	margin-top: 25px;
-	margin-left: 5px;
+	margin-left: 13px;
+	margin-bottom:3px;
 	color: #4d4d4d;
 	
 }
 
 div#fontpurpose {
 	
-	font-size: 9pt;
-	margin-left: 5px;
+	font-size: 12pt;
+	margin-left: 13px;
 	margin-top: 2px;
 
 }
 
 img {
 
-	width: 30px;
-	height: 30px;
-	margin: 5px;
+	width: 40px;
+	height: 40px;
+	margin: 13px;
 }
 
 div#parent {
@@ -168,9 +169,9 @@ div#child2 {
 	
 </script> 
 
-<div id="parent">
+<div id="parent" style="margin-top: 30px;">
 <form name="selectFrm">
-		<div class="card" onclick="goWrite()" id="child" style="margin-left: 30px;">
+		<div class="card" onclick="goWrite()" id="child" style="margin-left: 45px;">
 			<div class="icon">
 				<img src="<%= ctxPath%>/image/jihee/tem.png">
 				<input type="hidden" name="icon" value="tem.png" readonly />
@@ -253,7 +254,7 @@ div#child2 {
 
 <div id="parent2">
 <form name="selectFrm6">	
-		<div class="card" onclick="goWrite6()" id="child2" style="margin-left: 30px;">
+		<div class="card" onclick="goWrite6()" id="child2" style="margin-left: 45px;">
 			<div class="icon">
 				<img src="<%= ctxPath%>/image/jihee/board.png">
 				<input type="hidden" name="icon" value="board.png" readonly />

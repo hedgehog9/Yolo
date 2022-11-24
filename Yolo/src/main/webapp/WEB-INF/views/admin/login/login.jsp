@@ -25,7 +25,7 @@
        -webkit-background-clip: text;
                background-clip: text;
        color: transparent;
-       font-size: 25pt;
+       font-size: 32pt;
        font-weight: 800;
    }
 
@@ -43,21 +43,22 @@
 input#search {
 		border-radius: 0.5rem;
 		border: none;
-		width: 270px;
-		height: 40px;
+		width: 350px;
+		height: 50px;
 /* 		font-weight: bold; */
-		font-size: 12pt;
+		font-size: 13pt;
 		float: right;
 		display: flex;
-		margin-left : 15px;
-		margin-top: 5px;
+		margin-left : 20px;
+		margin-top: 9px;
+		font-weight: bold;
 	}
 
 div#text {
 		border-radius: 0.5rem;
 		border: 1px solid #b3b3b3;
-		width: 380px;
-		height: 55px;
+		width: 410px;
+		height: 70px;
 		font-weight: bold;
 		font-size: 13pt;
 		padding-left: 15px;
@@ -70,8 +71,8 @@ div#text {
 div#borderID {
 		border-radius: 0.5rem;
 		border: 2px solid #66cc66;
-		width: 380px;
-		height: 55px;
+		width: 410px;
+		height: 70px;
 		font-weight: bold;
 		font-size: 13pt;
 		padding-left: 15px;
@@ -84,14 +85,14 @@ div#borderID {
 
 input::placeholder {
   color: #b3b3b3;
-  font-size: 10pt;
+  font-size: 13pt;
 }
 
 .icon {
 
 	color: #666666; 
-	font-size: 13pt; 
-	padding-top: 12px; 
+	font-size: 17pt; 
+	padding-top: 18px; 
 	font-weight: bold;
 
 }
@@ -104,11 +105,12 @@ button.headerBtn {
 		border-radius: 0.5rem;
 		border: 1px solid gray;
 		background: linear-gradient( to left ,#5bd3ff, #88eb1e );
-		width: 380px;
-		height: 55px;
+		width: 410px;
+		height: 70px;
 		border: none;
 		color: white;
 		font-weight: bold;
+		font-size : 13pt;
 	}
 
 div#findPW:hover {
@@ -121,7 +123,7 @@ div#findPW:hover {
 
 #findPW {
 	margin-top: 25px;
-	font-size: 12pt;
+	font-size: 13pt;
 	color : #00b300;
 	font-weight: bold;
 	padding-top: 10px;
@@ -162,12 +164,13 @@ div#findPW:hover {
  		/* $("input.userid").focus();	 */
  		/* $("button#continue").hide(); */
  	
+ 		//input 클릭시 색 바꾸기
  	 	$("div.borderID").click(function(){
 	          $(this).css("border", "2px solid #66cc66"); 
 	        }); 
 
  	 	    
- 	 	//아이디 입력시    
+ 	 	//아이디 입력시  다음창들 나타남
  	    $("input.userid").bind("keyup", function(e) {
  	    	
  	    	goContents();
@@ -179,7 +182,7 @@ div#findPW:hover {
 		
 	});
 	
- 
+ 	// 비밀번호 찾기
 	function goFindPW() {
 		
 		const frm = document.loginFrm;
@@ -189,11 +192,13 @@ div#findPW:hover {
 		
 	}
 	
+ 	// 로그인하면 공지사항으로 가기
 	function goNotice() {
 		
 		location.href="<%= request.getContextPath()%>/notice/noticeList.yolo";
 	} http:
 	
+	// 아이디치면 나머지 contents 보이기
 	function goContents() {
 		  
 		  $.ajax({
