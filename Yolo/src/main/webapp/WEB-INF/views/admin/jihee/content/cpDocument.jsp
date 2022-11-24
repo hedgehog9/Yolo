@@ -285,8 +285,8 @@
     height:30px;
     border-radius: 15px;
   } 
-  
-    button.bottom-line {
+	
+  button.bottom-line {
   
   	padding : 0px 0px 10px 0px;
   	margin-right: 10px;
@@ -295,7 +295,6 @@
   	
   
   }
-	
   
   
 <script type="text/javascript">
@@ -312,30 +311,22 @@
 	
 </style>
  
- <jsp:include page="/WEB-INF/views/admin/jihee/header.jsp"></jsp:include>
+ <jsp:include page="/WEB-INF/views/admin/jihee/cpHeader.jsp"></jsp:include>
     
  
 <div class="border-top"></div>
  
 <div class="" >
  <div class="row" >
- 
+ 	
     <div id="leftFirst" class="col-5 border-bottom border-right" >
     <!-- ajax 올릴 것 시작1 -->
-<!--     	<div style="padding:10px;">
-    	 	<a href="#" class="mylink"><span id=subject style="color:black;">내가 쓴 문서 </span><span id="number"> 4 </span></a>
-    	 	<a href="#" class="link"><span id=subject style="color:gray;">&nbsp;&nbsp;&nbsp;진행 중 &nbsp;&nbsp;&nbsp;</span></a>
-    	 	<a href="#" class="link"><span id=subject style="color:gray;"> 완료</span> <span id="number"> 3</span></a>
-    	 </div> -->
-    	 <div style="padding:10px 10px 0px 17px;">
+    	<div style="padding:10px 10px 0px 17px;">
 	    	
 	    	 	<!-- <a href="#" class="mylink"><span id=subject style="color:black;">내가 쓴 문서 </span><span id="number"> 4 </span></a>	
 	    	 	<a href="#" class="link"><span id=subject style="color:gray;">&nbsp;&nbsp;&nbsp;완료</span> <span id="number"> 3</span></a> -->
 	    		<button class="bottom-line" style="border-bottom : 4px solid #00cc00;"> 
 	    		<span id=subject style="color:black;">내가 쓴 문서 </span><span id="number"> 4 </span>	
-	    		</button>
-	    		<button class="bottom-line"> 
-	    		<span id=subject style="color:gray;">진행 중 </span>
 	    		</button>
 	    		<button class="bottom-line"> 
 	    		<span id=subject style="color:gray;">완료</span> <span id="number"> 3</span>
@@ -382,31 +373,10 @@
 		    	</div>	
 		    	
 	    	</div>
-	    	
-	    	<!-- 페이지바 -->
-	    	<div style="margin: 7px auto auto 10px;"> 
-		    	 <nav aria-label="Page navigation">
-				  <ul class="pagination justify-content-center pagination-sm my-5">
-				    <li class="page-item">
-				      <a class="page-link" href="#" aria-label="Previous">
-				        <span aria-hidden="true">&laquo;</span>
-				      </a>
-				    </li>
-				    <li class="page-item"><a ><%-- ${requestScope.pageBar} --%></a></li>
-				    <li class="page-item"><a ><%-- ${requestScope.pageBar} --%></a></li>
-				    
-				    
-				    <li class="page-item">
-				      <a class="page-link" href="#" aria-label="Next">
-				        <span aria-hidden="true">&raquo;</span>
-				      </a>
-				    </li>
-				  </ul>
-				</nav>
-			</div>
 	    </div> 
-	<!-- ajax 올릴 것 끝1 -->    
+	<!-- ajax 올릴 것 끝1 -->
 	</div>
+	
 
     <div id="rightFirst" class="col-7" style="text-align: left; padding: 20px 20px;" >
     	
@@ -425,8 +395,8 @@
 	    	<div id="icon" style="margin-top:22px; float: right;">
 	    		<div id="iconhover">
 			    	<!-- <i class="bi bi-pencil icon" onclick="#"></i> -->
-			    	<div id="iconhover" onclick="javascript:location.href='<%= request.getContextPath()%>/workflow/modify.yolo'">
-					<i class="bi bi-pencil-fill" ></i>
+			    	<div id="iconhover">
+					<i class="bi bi-pencil-fill" onclick="#"></i>
 					<span>수정</span>
 					</div>
 		    	</div>
