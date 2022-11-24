@@ -88,6 +88,16 @@
 		margin-left: 15px;
 	}
 	
+	#start_work {
+		cursor: pointer;
+	}
+	
+	#position {
+		top: -27px;
+	    left: 151px;
+	}
+	
+	
 </style>
 
 
@@ -149,7 +159,7 @@
 									  	   "<small class='text-muted ml-4'>근무 선택</small>"+
 									  	   "<a class='dropdown-item' data-value='' id='kind-commute'>근무<i class='fas fa-chevron-right' style='margin-left: 130px;'></i></a>"+
 									  	   "<div class='dropdown-divider'></div>"+
-									    	   "<div id='start_or_end'><a class='dropdown-item' id='start_work'>퇴근하기</a></div>"+
+									    	   "<div id='start_or_end'><a class='dropdown-item' id='end_work'>퇴근하기</a></div>"+
 									  	   "</div>"
 									
 									$("#commute-div").html(html);  	   
@@ -159,20 +169,42 @@
 					            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 					       }
 					   })
-					   
-					   
-					   
-				      
-				   		
-				   	 
 				   
 				   }
 				});
 		})
 		
+		// 출근하기 버튼 클릭이벤트 끝 ------------------------------------------------------------------------------------------
 		
-		// 출근하기 버튼 클릭이벤트 끝
 		
+		// 퇴근하기 버튼 클릭이벤트 
+		$(document).ready("click","#end_work", function(){
+			
+			Swal.fire({
+				   title: '퇴근하시겠습니까?',
+				   icon: 'warning',
+				   
+				   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+				   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+				   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+				   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+				   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+				   
+				   reverseButtons: true, // 버튼 순서 거꾸로
+				   
+				}).then(result => {
+				   // 만약 Promise리턴을 받으면,
+				   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+					   
+					  $.ajax({
+						  
+					  }) 
+					   
+				      Swal.fire('공유자에서 삭제했습니다.',text+' 삭제완료','success');
+				   }
+				});
+			
+		});// end of $(document).ready("click","#end_work", function(){}) ------------------
 		
 	}); // end of ready
 	
@@ -237,7 +269,7 @@
 					  	    "<small class='text-muted ml-4'>근무 선택</small>"+
 					  	    "<a class='dropdown-item' data-value='' id='kind-commute'>근무<i class='fas fa-chevron-right' style='margin-left: 130px;'></i></a>"+
 					  	    "<div class='dropdown-divider'></div>"+
-					    	    "<div id='start_or_end'><a class='dropdown-item' id='start_work'>퇴근하기</a></div>"+
+					    	    "<div id='start_or_end'><a class='dropdown-item' id='end_work'>퇴근하기</a></div>"+
 					  	    "</div>"
 			
 				   $("#commute-div").html(html);
@@ -284,7 +316,14 @@
 				  </a>
 				  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="width: 90%;">
 				    <small class="text-muted ml-4">근무 선택</small>
-				  	<a class="dropdown-item" data-value="" id="kind-commute">근무<i class="fas fa-chevron-right" style="margin-left: 130px;"></i></a>
+				    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example</button>
+				    <ul class="dropdown-menu dropdown-menu-right" id="position">
+				      <li><a href="#">HTML</a></li>
+				      <li><a href="#">CSS</a></li>
+				      <li><a href="#">JavaScript</a></li>
+				      <li class="divider"></li>
+				      <li><a href="#">About Us</a></li>
+				    </ul>
 				  	<div class="dropdown-divider"></div>
 				    <div id="start_or_end"><a class="dropdown-item" id="start_work">출근하기</a></div>
 				  </div>
@@ -339,6 +378,7 @@
 		  		<div>외근</div>
 		  		<div>출장</div>
 		  	</div> -->
+		  	
 			
 		</div>
 
