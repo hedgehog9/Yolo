@@ -3,25 +3,10 @@
 
 <% String ctxPath=request.getContextPath(); %>
 
-<jsp:include page="/WEB-INF/tiles/admin/jinji/empLeaveManageCategory.jsp"></jsp:include>
+<jsp:include page="leaveCategory.jsp" />
     
 <style type="text/css">
 	
-	/* leaveCategory.jsp 시작 */
-	
-	#cate1, #cate3, #cate5{
-		color: silver;
-	}
-	
-	#cate4 {
-		color: black;
-	}
-	
-	#category {
-		cursor: pointer;
-	}
-	
-	/* leaveCategory.jsp 끝 */
 	
 	table {
 		border-radius: 10px;
@@ -43,24 +28,12 @@
 
 	$(document).ready(function() {
 		
+		$("span#empLeave").css("color", "#494949");
+		$("span.headerTitle2").show();
+		$("span#empLeaveSubmit").css("color", "#494949");
+		
 	});
 
-	
-	///////// Function Declaration ////////////
-	function goAdminLeave() { // 관리자 내 휴가 페이지로 이동 
-	 // alert('goPage!');
-		location.href="<%= ctxPath%>/leaveSummary.yolo"
-	};
-	
-	function goempLeaveStatus() { // 구성원 휴가 보유 현황 페이지로 이동
-	 // alert('goPage!');
-		location.href="<%= ctxPath%>/empLeaveStatus.yolo"
-	};
-		
-	function goempLeavePromotion() { // 연차촉진 페이지로 이동 
-		 // alert('goPage!');
-			location.href="<%= ctxPath%>/empLeavePromotion.yolo"
-	};
 	
 </script>	
 

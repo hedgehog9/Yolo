@@ -40,4 +40,18 @@
       <put-attribute name="content" value="/WEB-INF/views/employee/{1}/{2}/{3}.jsp"/>
    </definition>
 
+	   <!-- ==== tiles 를 사용하는 레이아웃(sidebar,content) 설정 시작 ==== -->
+   <definition name="layout-login"  template="/WEB-INF/tiles/layout/layout-login.jsp"> 
+      <put-attribute name="content" value="" />
+   </definition>
+   
+   <definition name="*.login" extends="layout-login">
+      <put-attribute name="content" value="/WEB-INF/views/admin/login/{1}.jsp"/>
+   </definition>
+   <definition name="*/*.login" extends="layout-login">
+      <put-attribute name="content" value="/WEB-INF/views/admin/login/{1}/{2}.jsp"/>
+   </definition>
+   <definition name="*/*/*.login" extends="layout-login">
+      <put-attribute name="content" value="/WEB-INF/views/admin/login/{1}/{2}/{3}.jsp"/>
+   </definition>
 </tiles-definitions> 
