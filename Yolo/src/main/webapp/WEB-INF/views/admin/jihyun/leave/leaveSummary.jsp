@@ -20,13 +20,24 @@
 	}
 	
 	.card {
-		border-radius: 10px;
+		border-radius: 1rem;
 		cursor: pointer;
-		
 	}
 	
 	.card:hover {
     	background: #ededed;
+ 	}
+ 	
+ 	span.miniTitle{
+ 		font-size: 15pt; 
+ 		font-weight: bold;
+ 	}
+ 	
+ 	span.miniTitleNumber{
+ 		font-size: 15pt; 
+ 		font-weight: bold;
+ 		color: red;
+ 		margin-left: 10px;
  	}
  	
  	/* datepicker 시작 */
@@ -70,25 +81,48 @@
 		border-style: none;
 		display: inherit; 
 	}
- 
-	#leavecancel {
-		border-style: none;
-		box-shadow: none !important;
-		background-color: inherit;
-		padding: 0;
-		margin: 0;
-		text-align: left;
+	
+	table {
+		margin-top : 10px;
+		width: 100%;
+	}
+	
+	tr:hover {
 		cursor: pointer;
 	}
 	
-	table {
-		max-width: 100%;
-		table-layout: fixed;
+	div.leaveProf{
+		width: 40px; 
+		height: 40px; 
+		border-radius: 40%; 
+		text-align: center;
+		border: 1px solid #ccced0;
+		font-size: 16pt;
+		display: flex;
+  		align-items: center;
+  		padding-left: 4px;
 	}
 	
-	td, th {
-		flex: 1;
+	button.submitCancle {
+		height: 30px;
+		font-size: 10pt;
+		font-weight: bold;
+		border-radius: 1rem;
+		margin-top: 5px;
+	} 
+	
+	td.patop {
+		padding-top: 20px;
+	} 
+	
+	td.head {
+		width: 70px;
 	}
+	
+	td.tail{
+		text-align: right;
+	}
+	
 </style>
 
 <script type="text/javascript">
@@ -132,45 +166,45 @@
 	<%-- 대쉬보드 시작 --%>
 	<div id="container">
 		<div class="dashBoard">
-			<h4>휴가등록</h4>
+			<h4 class="my-4">휴가등록</h4>
 			<div class="card-columns">
 			  <div class="card mb-4">
-			    <div class="card-body text-left">
+			    <div class="card-body text-left ml-3">
 				 	<span style="font-size:30px;">&#9978;</span>
 			     	<h6 class="card-title mt-4">연차</h6>	
 			      	<p class="card-text">-4</p>
 			    </div>
 			  </div>
 			  <div class="card mb-4">
-			    <div class="card-body text-left">
+			    <div class="card-body text-left ml-3">
 			    	<span style="font-size:30px;">&#9993;</span>
 			     	<h6 class="card-title mt-4">조의</h6>	
 			      	<p class="card-text">#</p>
 			    </div>
 			  </div>
 			  <div class="card mb-4">
-			    <div class="card-body text-left">
+			    <div class="card-body text-left ml-3">
 			    	<span style="font-size:30px;">&#128138;</span>
 			     	<h6 class="card-title mt-4">병가</h6>	
 			      	<p class="card-text">#</p>
 			    </div>
 			  </div>
 			  <div class="card mb-4">
-			    <div class="card-body text-left">
+			    <div class="card-body text-left ml-3">
 			    	<span style="font-size:30px;">&#128141;</span>
 			     	<h6 class="card-title mt-4">결혼</h6>	
 			      	<p class="card-text">#</p>
 			    </div>
 			  </div>
 			  <div class="card mb-4">
-			    <div class="card-body text-left">
+			    <div class="card-body text-left ml-3">
 			    	<span style="font-size:30px;">&#127808;</span>
 			     	<h6 class="card-title mt-4">리프레쉬</h6>	
 			      	<p class="card-text">3년 극속시 30일 지급</p>
 			    </div>
 			  </div>
 			  <div class="card mb-4t">
-			    <div class="card-body text-left">
+			    <div class="card-body text-left ml-3">
 			    	<span style="font-size:30px;">&#128420;</span>
 			     	<h6 class="card-title mt-4">기타</h6>	
 			      	<p class="card-text">#</p>
@@ -184,100 +218,53 @@
 	
 	
 	<%-- 예정휴가 테이블 --%>
+	<%-- 휴가 신청으로 예정된 휴가 있는 경우 --%>
 	<div class="dashBoard">
-		<h4>예정 휴가</h4>
+		<span class="miniTitle">예정 휴가</span><span class="miniTitleNumber">6</span>
 		<table class="table table-borderless table table-hover ">
-		  <thead>
 		    <tr>
-		      <th></th>
-		      <th></th>
-		      <th></th>
-		      <th></th>
-		      <th></th>
-		      <th></th>
+		      <td class="head"><div class="leaveProf">&#9978;</div></td>
+		      <td class="patop">연차</td>
+		      <td class="patop">2022.11.11 ~ 2022.11.11<span class="badge badge-light rounded-pill ml-4">4일</span></td>
+		      <td class="patop"><span class="badge badge-warning rounded-pill">자료 미첨부</span></td>
+		      <td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>
 		    </tr>
-		  </thead>
-		  <tbody>
-		  	<%-- 휴가 신청으로 예정된 휴가 있는 경우 --%>
 		    <tr>
-		      <td>1</td>
-		      <td>연차</td>
-		      <td>2022.11.11 ~ 2022.11.11 </td>
-		      <td></td>
-		      <td><span class="badge badge-warning rounded-pill d-inline">4일</span></td>
-		      <td>
-			    <form id="leavecancel" style="width: 70px">
-	           	 <button type="button" class="badge badge-dark rounded-pill d-inline">신청 취소</button>
-        		</form>
-		      </td ><%-- 휴가 신청 취소 버튼 --%>
+		      <td class="head"><div class="leaveProf">&#128420;</div></td>
+		      <td class="patop">기타</td>
+		      <td class="patop">2022.11.11 ~ 2022.11.11<span class="badge badge-light rounded-pill ml-4">1일</span></td>
+		      <td class="patop"><span class="badge badge-success rounded-pill">자료 첨부완료</span></td>
+		      <td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>
 		    </tr>
-			<tr>
-		      <td>1</td>
-		      <td>연차</td>
-		      <td>2022.11.11 ~ 2022.11.11 </td>
-		      <td></td>
-		      <td><span class="badge badge-warning rounded-pill d-inline">4일</span></td>
-		      <td>
-			    <form id="leavecancel"  style="width: 70px">
-	           	 <button type="button" class="badge badge-dark rounded-pill d-inline">신청 취소</button>
-        		</form>
-		      </td><%-- 휴가 신청 취소 버튼 --%>
-		    </tr>
-		    
-			<%-- 예정된 휴가 없는 경우 --%>
-
-	 	 </tbody>
 		</table>
 	  </div>
-	<br>
+	<%-- 예정된 휴가 없는 경우 --%>
 	<%-- 예정 휴가 태이블 끝 --%>
 	   
 	    
     <%-- 휴가 사용 기록 시작 --%>
-    <div class="dashBoard">
+    <div class="dashBoard mt-5">
     	<div>
-		<span style="font-size: 15pt; font-weight: bold;">사용 기록</span>
+		<span class="miniTitle">사용 기록</span><span class="miniTitleNumber">6</span>
 		<form id="searchYear"	name="searchYearFrm">
 			<input type="text" id="datepicker" class="date-picker-year" />
 		</form>
 		</div>
-		<table class="table table-borderless table table-hover">
-		  <thead>
+		<table class="table table-borderless table table-hover ">
 		    <tr>
-		      <th></th>
-		      <th></th>
-		      <th></th>
-		      <th></th>
-		      <th></th>
-		      <th></th>
+		      <td class="head"><div class="leaveProf">&#9978;</div></td>
+		      <td class="patop">연차</td>
+		      <td class="patop">2022.11.11 ~ 2022.11.11<span class="badge badge-light rounded-pill ml-4">4일</span></td>
+		      <td class="patop"><span class="badge badge-warning rounded-pill">자료 미첨부</span></td>
+		      <td style="width: 170px;"></td>
 		    </tr>
-		  </thead>
-		  <tbody>
-		  	<%-- 사용한 휴가가 있는 경우 --%>
 		    <tr>
-		      <td>1</td>
-		      <td>연차</td>
-		      <td>2022.11.11 ~ 2022.11.11 </td>
-		      <td></td>
-		      <td><span class="badge badge-success rounded-pill d-inline">4일</span></td>
-		      <td></td>
-		    </tr>
-			<tr>
-		      <td>1</td>
-		      <td>연차</td>
-		      <td>2022.11.11 ~ 2022.11.11 </td>
-		      <td></td>
-		      <td><span class="badge badge-success rounded-pill d-inline">4일</span></td>
+		      <td class="head"><div class="leaveProf">&#127808;</div></td>
+		      <td class="patop">리프레쉬</td>
+		      <td class="patop">2022.11.11 ~ 2022.11.11<span class="badge badge-light rounded-pill ml-4">1일</span></td>
+		      <td class="patop"><span class="badge badge-success rounded-pill">자료 첨부완료</span></td>
 		      <td></td>
 		    </tr>
-		    
-			<%-- 사용한 휴가가 없는 경우 
-			<tr>
-		      <td><i class="fa fa-ellipsis-h" aria-hidden="true"></i></td>
-		      <td>예정된 휴가가 없습니다.</td>
-		    </tr>	
-		    --%>
-	 	 </tbody>
 		</table>
 	  </div>
     
