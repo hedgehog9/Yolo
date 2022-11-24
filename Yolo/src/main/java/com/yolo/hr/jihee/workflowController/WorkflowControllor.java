@@ -1,12 +1,16 @@
 package com.yolo.hr.jihee.workflowController;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+
 
 @Controller
 public class WorkflowControllor {
@@ -16,6 +20,18 @@ public class WorkflowControllor {
 		
 		return "jihee/content/document.admin";
 	}
+	
+	//ajax
+	@ResponseBody
+	@RequestMapping(value = "/workflow/myDocument.yolo")
+	public String myDocumnet(HttpServletRequest request) {
+		
+
+		JSONArray jsonArr = new JSONArray(); // []
+
+		return jsonArr.toString(); // "[]" 또는 "[{},}{],{}]"
+	}
+	
 	
 	@RequestMapping(value = "/cpWorkflow.yolo")
 	public String viewCpWorkflow() {
@@ -58,6 +74,28 @@ public class WorkflowControllor {
 		
 		
 		return "jihee/content/modify.admin";
+	}
+	
+	//ajax
+	@ResponseBody
+	@RequestMapping(value = "/workflow/myDocument_dm.yolo")
+	public String myDcument_dm(HttpServletRequest request) {
+		
+
+		JSONArray jsonArr = new JSONArray(); // []
+
+		return jsonArr.toString(); // "[]" 또는 "[{},}{],{}]"
+	}
+		
+	//ajax
+	@ResponseBody
+	@RequestMapping(value = "/workflow/watingDm.yolo")
+	public String watingDm(HttpServletRequest request) {
+		
+
+		JSONArray jsonArr = new JSONArray(); // []
+
+		return jsonArr.toString(); // "[]" 또는 "[{},}{],{}]"
 	}
 
 }

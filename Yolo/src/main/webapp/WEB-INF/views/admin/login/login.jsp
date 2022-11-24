@@ -43,7 +43,7 @@
 input#search {
 		border-radius: 0.5rem;
 		border: none;
-		width: 310px;
+		width: 270px;
 		height: 40px;
 /* 		font-weight: bold; */
 		font-size: 12pt;
@@ -65,6 +65,21 @@ div#text {
 		text-align: left;
 		display: flex;
 }	
+
+
+div#borderID {
+		border-radius: 0.5rem;
+		border: 2px solid #66cc66;
+		width: 380px;
+		height: 55px;
+		font-weight: bold;
+		font-size: 13pt;
+		padding-left: 15px;
+		margin-top: 10px;
+		text-align: left;
+		display: flex;
+}	
+
 	
 
 input::placeholder {
@@ -105,7 +120,6 @@ div#findPW:hover {
 }	
 
 #findPW {
-
 	margin-top: 25px;
 	font-size: 12pt;
 	color : #00b300;
@@ -114,6 +128,30 @@ div#findPW:hover {
 	padding-bottom: 10px;
 }	
 
+.continue {
+
+	width: 70px;
+	height: 50px;
+	margin: 0px;
+	border: 1px solid green;
+	background: #00b300;
+	color: white;
+	border-radius: 0.5rem;
+	font-size: 11pt;
+	font-weight: white;
+}
+#continue {
+
+	width: 60px;
+	height: 45px;
+	margin: 7px 10px 2px 10px;
+	border: 1px solid green;
+	background: #00b300;
+	color: white;
+	border-radius: 0.5rem;
+	font-size: 11pt;
+	font-weight: white;
+}
 
 </style>
 
@@ -121,30 +159,23 @@ div#findPW:hover {
 
  	$(document).ready (function(){
 	
- 		
+ 		/* $("input.userid").focus();	 */
+ 		/* $("button#continue").hide(); */
  	
  	 	$("div.borderID").click(function(){
-	          $(this).css("border", "2px solid #66cc66");
-	          $("div.borderPW").css("border", "1px solid #b3b3b3");  
+	          $(this).css("border", "2px solid #66cc66"); 
 	        }); 
+
+ 	 	    
+ 	 	//아이디 입력시    
+ 	    $("input.userid").bind("keyup", function(e) {
+ 	    	
+ 	    	goContents();
+ 	
+			   
+	   });
  	 	
- 	 	/*  $(document).click(function() {
- 	 	    var borderID = $("div.borderID");
- 	 	    if (!borderID.is(event.target) && !borderID.has(event.target).length) {
- 	 	    	$("div.borderID").css("border", "1px solid #b3b3b3");
- 	 	    }  */
- 	 	
- 	 	$("div.borderPW").click(function(){
- 	 		 $(this).css("border", "2px solid #66cc66");
-	         $("div.borderID").css("border", "1px solid #b3b3b3"); 
-	        });
- 	 	
- 	 	 /* $(document).click(function() {
- 	 	    var borderPW = $("div.borderPW");
- 	 	    if (!borderPW.is(event.target) && !borderPW.has(event.target).length) {
- 	 	    	$("div.borderPW").css("border", "1px solid #b3b3b3");
- 	 	    }  */
- 	 
+	
 		
 	});
 	
@@ -158,6 +189,61 @@ div#findPW:hover {
 		
 	}
 	
+	function goMessenger() {
+		
+		location.href="<%= request.getContextPath()%>/messenger/sentMessage.yolo";
+	} 
+	
+	function goContents() {
+		  
+		  $.ajax({
+			  url:"<%= request.getContextPath()%>/loginpw.yolo",
+			  data:{},
+			  type:"POST",
+			  dataType:"JSON",
+			  success:function(json){
+				  
+			
+				  
+
+				  let html = "";
+
+					  html += 
+						"<div class='borderPW' id='text'>"+
+							"<span class='icon'><i class='bi bi-key'></i></span>"+
+						 	"<input placeholder='비밀번호' name='pw' id='search'/>"+
+						"</div>"+
+						"<div style='margin-top: 20px;'>"+
+							"<button type='button' class='headerBtn' onclick='goMessenger();'>"+
+							"로그인하기"+
+							"</button>"+
+						"</div>"+
+						"<div id='findPW' onclick='goFindPW();'>"+
+							"비밀번호를 잊으셨나요?"+
+						"</div>";	
+					
+				  $("div#userpw").html(html);
+				  
+				  $("div.borderID").click(function(){
+			          $(this).css("border", "2px solid #66cc66");
+			          $("div.borderPW").css("border", "1px solid #b3b3b3");  
+			        }); 
+		 	 	
+		 	 	
+		 	 	$("div.borderPW").click(function(){
+		 	 		 $(this).css("border", "2px solid #66cc66");
+			         $("div.borderID").css("border", "1px solid #b3b3b3"); 
+			        });
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		  
+	  }// end of function goContents()--------------------------- 
+	
+	
+	
 </script>
 
 <div class="inner">
@@ -166,25 +252,13 @@ div#findPW:hover {
 			<span class="gradtext">새로운 HR의 시작 </span>
 			<span class="title">yolo</span>
 		</div>
-		<div class="borderID" id="text">
+		<div class="borderID" id="borderID">
 			<span class="icon"><i class="bi bi-envelope"></i></span>
-		 	<input placeholder="이메일 주소 " name="userid" id="search"/>
+		 	<input placeholder="이메일 주소 " name="userid" id="search" class="userid" autocomplete='off'/>
 		</div>
-		<div class="borderPW" id="text">
-			<span class="icon"><i class="bi bi-key"></i></span>
-		 	<input placeholder="비밀번호" name="pw" id="search"/>
-		</div>
-		<div style="margin-top: 20px;">
-			<button type="button" class="headerBtn" onclick="javascript:location.href='<%= request.getContextPath()%>/messenger/sendedMassage.yolo'">
-			 로그인하기
-			</button>
-		</div>
-		<div id="findPW" onclick="goFindPW();">
-			비밀번호를 잊으셨나요?
-		</div>
-		
-	</form>	
-
+		<div id="userpw">
+		</div>		
+	</form>
 </div>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">

@@ -396,7 +396,7 @@
 	    		<div id="iconhover">
 			    	<!-- <i class="bi bi-pencil icon" onclick="#"></i> -->
 			    	<div id="iconhover">
-					<i class="bi bi-pencil-fill" onclick="#"></i>
+					<i class="bi bi-pencil-fill" onclick="javascript:location.href='<%= request.getContextPath()%>/workflow/modify.yolo'"></i>
 					<span>수정</span>
 					</div>
 		    	</div>
