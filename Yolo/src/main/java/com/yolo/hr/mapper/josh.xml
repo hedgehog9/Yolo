@@ -49,17 +49,24 @@
 	</delete>
 	
 	<insert id="commuteStart" parameterType="String">
-		insert into tbl_commute(commuteno, fk_empno, start_work_time, end_work_time, overtime, work_kind)
+		insert into tbl_commute(commuteno, fk_empno, start_work_time, end_work_time, worktime, work_kind)
 		values(seq_commuteno.nextval, #{fk_empno}, sysdate, null, null, null)
 	</insert>
 	
 	<select id="checkCommute" parameterType="String" resultType="com.yolo.hr.josh.model.CommuteVO">
 		select commuteno, fk_empno 
 		       , to_char(start_work_time,'yyyy-mm-dd hh24:mi:ss') as start_work_time
-		       , end_work_time, overtime, work_kind 
+		       , end_work_time, worktime, work_kind 
 		from tbl_commute 
 		where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
 		      and fk_empno = #{fk_empno}
 	</select>
+	
+	<update id="commuteEnd" parameterType="Map">
+		update tbl_commute set end_work_time = sysdate,
+                       		   worktime = '${worktime}'
+		where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
+		      and fk_empno = '${fk_empno}'	
+	</update>
 	
 </mapper>

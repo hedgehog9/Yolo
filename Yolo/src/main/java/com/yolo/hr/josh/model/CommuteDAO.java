@@ -26,5 +26,12 @@ public class CommuteDAO implements InterCommuteDAO {
 		CommuteVO commentvo = sqlsession.selectOne("josh.checkCommute",fk_empno);
 		return commentvo;
 	}
+
+	// 퇴근 메소드
+	@Override
+	public int commuteEnd(Map<String, String> paraMap) {
+		int n = sqlsession.update("josh.commuteEnd",paraMap);
+		return n;
+	}
 	
 }
