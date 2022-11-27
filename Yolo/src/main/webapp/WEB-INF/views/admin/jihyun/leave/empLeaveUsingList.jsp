@@ -7,21 +7,75 @@
     
 <style type="text/css">
 	
+	div#tableDiv {
+		width: 90%;
+		margin: 10px auto;
+	}
 	
 	table {
-		border-radius: 10px;
-		overflow: hidden; 
-		height: auto;
-		max-width: 100%;
-		table-layout: fixed;
-	}
-	
-	th, td{
+		margin-top : 10px;
+		width: 100%;
 		text-align: center;
-		flex: 1;
 	}
 	
-
+	tr {
+		height: 40px;
+		cursor: pointer;
+	}
+	
+	th {
+		vertical-align: middle;
+	}
+	
+	td.promotionLeave:hover {
+		cursor: pointer; 
+		background-color: #9d9d9d;
+	}
+	
+	div.tableProf {
+		display : inline-block;
+		width: 40px; 
+		height: 40px; 
+		border-radius: 40%; 
+		background-color: #239afe;
+		color: white;
+		text-align: center;
+		padding-top: 8px;
+		border: 1px solid #ccced0;
+		font-weight: bold;
+		font-size: 13px;
+		margin: auto 10px auto 5px;;
+	}
+	
+	td.patop {
+		padding-top: 20px;
+	} 
+	
+	td {
+		font-size: 11pt;
+	}
+	
+	.head {
+		width: 150px;
+	}
+	
+	span.tableTitle {
+		display: block;
+		font-size: 12pt;
+	}
+	
+	span.badge {
+		font-size: 10pt;
+	}
+	
+	button.approve {
+		height: 30px;
+		font-size: 10pt;
+		font-weight: bold;
+		border-radius: 1rem;
+		margin-top: 5px;
+	}
+	
 </style>
 
 <script type="text/javascript">
@@ -38,66 +92,48 @@
 </script>	
 
 
-<div>
-	<div id="content" style="margin: 40px 0 0 15px;">
-
-          <div class="table-responsive" style="width:100%;">
-            <table class="table table-hover table-bordered">
-              <thead>
-                <tr  class="thead-dark">
-                  <th>이름</th>
-                  <th>사번</th>
-                  <th>기간</th>
-                  <th>항목</th>
-                  <th>사용기간</th>
-                  <th>승인</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>
-                  	<span style='font-size:15px;'>&#128105;</span>
-                  	Jacob
-                  	</td>
-                  <td>3333</td>
-                  <td class="text-muted "> 2022.11.10~2022.11.18 <i class="mdi mdi-arrow-down"></i></td>
-                  <td><label class="badge badge-warning">연차</label></td>
-                  <td><label class="badge badge-danger">7일</label></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>
-                  <span style='font-size:15px;'>&#128102;</span>
-                  Jacob</td>
-                  <td>3333</td>
-                  <td class="text-muted"> 2022.11.10~2022.11.18 <i class="mdi mdi-arrow-down"></i></td>
-                  <td><label class="badge badge-warning">연차</label></td>
-                  <td><label class="badge badge-danger">7일</label></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>
-                  <span style='font-size:15px;'>&#128102;</span>
-                  Jacob</td>
-                  <td>3333</td>
-                  <td class="text-muted"> 2022.11.10~2022.11.18 <i class="mdi mdi-arrow-down"></i></td>
-                  <td><label class="badge badge-warning">연차</label></td>
-                  <td><label class="badge badge-danger">7일</label></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td>
-                  <span style='font-size:15px;'>&#128102;</span>
-                  Jacob</td>
-                  <td>3333</td>
-                  <td class="text-muted"> 2022.11.10~2022.11.18 <i class="mdi mdi-arrow-down"></i></td>
-                  <td><label class="badge badge-warning">연차</label></td>
-                  <td><label class="badge badge-danger">7일</label></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-	
-	</div>
+<div id="tableDiv">
+	<table class="table table-bordered table-hover ">
+		<thead>
+		    <tr>
+		      <th class="head"><span class="tableTitle">이름</span></th>
+		      <th><span class="tableTitle">사번</span></th>
+		      <th><span class="tableTitle">기간</span></th>
+		      <th><span class="tableTitle">항목</span></th>
+		      <th><span class="tableTitle">사용시간</span></th>
+		      <th><span class="tableTitle">증명자료</span></th>
+		      <th><span class="tableTitle">승인</span></th>
+		    </tr>
+		</thead>
+		<tbody>
+		    <tr>
+		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="patop">103</td>
+		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)</td>
+		      <td class="patop">연차</td>
+		      <td class="patop">오후</td>
+		      <td class="patop"></td>
+		      <td><button type="button" class="btn btn-outline-secondary btn-sm approve">승인 / 취소</button></td>
+		    </tr>
+		    <tr>
+		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="patop">103</td>
+		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)</td>
+		      <td class="patop">병가</td>
+		      <td class="patop">3일</td>
+		      <td class="patop"><span class="badge badge-success rounded-pill">제출완료</span></td>
+		      <td class="patop">승인 완료</td>
+		    </tr>
+		    <tr>
+		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="patop">103</td>
+		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)</td>
+		      <td class="patop">결혼-자녀</td>
+		      <td class="patop">1일</td>
+		      <td class="patop"></td>
+		      <td class="patop">승인 취소</td>
+		    </tr>
+		    
+	    </tbody>
+	</table>
 </div>

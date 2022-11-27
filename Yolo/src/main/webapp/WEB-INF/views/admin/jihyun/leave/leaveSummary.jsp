@@ -185,11 +185,40 @@
 	
 </style>
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+
 <script type="text/javascript">
 
 	$(document).ready(function () {
 		
 		$("span#myLeave").css("color", "#494949");
+		
+		$('input#daterange').daterangepicker({
+              timePicker: true,
+              timePicker24Hour: true,
+              locale: {
+                "format": 'YYYY-MM-DD HH:mm',
+                "separator": " ~ ",
+                "applyLabel": "확인",
+                "cancelLabel": "취소",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Custom",
+                "weekLabel": "W",
+                "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+                "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+                
+              }
+            },function(start, end, label) {
+              $("input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
+              $("input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
+          }); 
+          
+
 		
 		
 	});
@@ -200,7 +229,7 @@
 		<h4 class="my-4">휴가등록</h4>
 		<div class="row">
 		  <div class="col-lg-3 mb-4">
-			  <div class="card"  data-toggle="modal" data-target="#yearLeave">
+			  <div class="card" data-toggle="modal" data-target="#yearLeave">
 			    <div class="card-body text-left ml-2">
 				 	<span style="font-size:30px;">&#9978;</span>
 			     	<h6 class="card-title mt-4">연차</h6>	
@@ -218,7 +247,7 @@
 			  </div>
 		  </div>
 		  <div class="col-lg-3 mb-4">
-			  <div class="card">
+			  <div class="card" data-toggle="modal" data-target="#joy">
 			    <div class="card-body text-left ml-2">
 			    	<span style="font-size:30px;">&#9993;</span>
 			     	<h6 class="card-title mt-4">조의</h6>	
@@ -293,10 +322,10 @@
 	<div class="dashBoard">
 		<span class="miniTitle">예정 휴가</span><span class="miniTitleNumber">6</span>
 		<table class="table table-borderless table table-hover ">
-		    <tr>
+		    <tr data-toggle="modal" data-target="#leaveDetail">
 		      <td class="head"><div class="leaveProf">&#9978;</div></td>
 		      <td class="patop">연차</td>
-		      <td class="patop">2022.11.11 ~ 2022.11.11<span class="badge badge-light rounded-pill ml-4">4일</span></td>
+		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)<span class="badge badge-light rounded-pill ml-4">4일</span></td>
 		      <td class="patop"><span class="badge badge-warning rounded-pill">자료 미첨부</span></td>
 		      <td class="patop"><span class="badge badge-light rounded-pill">미승인</span></td>
 		      <td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>
@@ -304,8 +333,16 @@
 		    <tr>
 		      <td class="head"><div class="leaveProf">&#128420;</div></td>
 		      <td class="patop">기타</td>
-		      <td class="patop">2022.11.11 ~ 2022.11.11<span class="badge badge-light rounded-pill ml-4">1일</span></td>
+		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)<span class="badge badge-light rounded-pill ml-4">1일</span></td>
 		      <td class="patop"><span class="badge badge-success rounded-pill">자료 첨부완료</span></td>
+		      <td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>
+		      <td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>
+		    </tr>
+		    <tr>
+		      <td class="head"><div class="leaveProf">&#128420;</div></td>
+		      <td class="patop">기타</td>
+		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)<span class="badge badge-light rounded-pill ml-4">1일</span></td>
+		      <td class="patop"></td>
 		      <td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>
 		      <td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>
 		    </tr>
@@ -324,7 +361,7 @@
 		    <tr>
 		      <td class="head"><div class="leaveProf">&#9978;</div></td>
 		      <td class="patop">연차</td>
-		      <td class="patop">2022.11.11 ~ 2022.11.11<span class="badge badge-light rounded-pill ml-4">4일</span></td>
+		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)<span class="badge badge-light rounded-pill ml-4">4일</span></td>
 		      <td class="patop"><span class="badge badge-warning rounded-pill">자료 미첨부</span></td>
 		      <td class="patop"><span class="badge badge-light rounded-pill">미승인</span></td>
 		      <td class="tail"></td>
@@ -342,6 +379,10 @@
     
     <%-- 휴가 사용 기록 끝 --%>     
  
+ 
+<!-- 휴가 상세 모달 -->
+<%@ include file="modal/leaveDetailModal.jsp" %>
+
  
 <!-- 연차 Modal -->
 <div class="modal right fade" id="yearLeave" tabindex="-1"aria-hidden="true" >
@@ -381,7 +422,7 @@
 
 
 <!-- 조의 Modal -->
-<div class="modal right fade" id="yearLeave" tabindex="-1"aria-hidden="true" >
+<div class="modal right fade" id="joy" tabindex="-1"aria-hidden="true" >
   <div class="modal-dialog modal-dialog-scrollable modal-right modal-md">
   
 	    <%-- Modal content --%>
