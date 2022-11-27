@@ -3,7 +3,6 @@
 
 <% String ctxPath=request.getContextPath(); %>
 
-<jsp:include page="/WEB-INF/tiles/admin/jinji/empLeaveManageCategory.jsp"></jsp:include>
     
 <style type="text/css">
 	
