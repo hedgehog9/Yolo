@@ -377,5 +377,41 @@
 		</div>
   	  </div>
    </div>
-   
+</div>
+
+
+<!-- 조의 Modal -->
+<div class="modal right fade" id="yearLeave" tabindex="-1"aria-hidden="true" >
+  <div class="modal-dialog modal-dialog-scrollable modal-right modal-md">
+  
+	    <%-- Modal content --%>
+	    <div class="modal-content">
+	      <div class="modal-header py-3" >
+	        <span style="font-size:21px;">&#9978;</span><span class="miniTitle ml-3"> 조의</span>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="modal-middle">
+		      	<span style="display: block; margin-top: 10px;">&#128204; 휴가정보</span>
+		      	<div style="margin: 10px auto;">
+		      		<span class="badge modalBage" style="background-color: #AFEEEE;">1년당 25개 사용가능</span>
+		      		<span class="badge modalBage" style="background-color: #B0E0E6;">유급</span>
+		      		<span class="badge modalBage" style="background-color: #B0C4DE;">연말만료</span>
+		      	</div>
+		      	<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>
+		      	<span class="badge modalBage" style="background-color: #AFEEEE; margin-top: 10px;">6일</span>
+		      	<span style="display: block; margin-top: 30px;">&#128221; 휴가 일정 · 필요 정보 입력</span>
+		      	<input type="text" id="daterange" class="form-control text-center">
+		        <input type="hidden" name="start_date" class="form-control text-center">
+		        <input type="hidden" name="end_date" class="form-control text-center">
+		        <textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>
+		        
+		 	</div>
+	 	 </div>
+	 	 <div class="modal-footer" >
+			<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;">취소</button>
+			<button type="button" class="leaveUsingBnt">휴가신청</button>
+		</div>
+  	  </div>
+   </div>
 </div>
