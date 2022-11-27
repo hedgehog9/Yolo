@@ -135,6 +135,7 @@
         transform: scale(1) translate(-50%, -50%)
     }
 	
+	
 </style>
 
 
@@ -404,10 +405,10 @@
 				  </div>
 				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/messenger/receivedMessage.yolo'">
-					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span>메신저</span>
+					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span>메신저</span><span class="badge badge-danger rounded-pill" style="margin-left: 60%">5</span>
 				</div>
-				<div class="sideTr" onclick="#">
-					<i class="fas fa-regular fa-bell sideIcon"></i><span>새로운 소식</span>
+				<div class="sideTr" data-toggle="modal" data-target="#alarmModal">
+					<i class="fas fa-regular fa-bell sideIcon"></i><span>새로운 소식</span><span class="badge badge-danger rounded-pill" style="margin-left: 50%">5</span>
 				</div>
 			</div>
 			
@@ -442,7 +443,7 @@
 			</div>
 			
 			<div id="sideBottom">
-				<div class="sideTr mt-1" style="height: 70px;" onclick="#">
+				<div class="sideTr mt-1" style="height: 70px;">
 					<div id="prof" style="background-color: #d8c5e2;"><i class="fas fa-solid fa-school sideIcon" style="width: 30px; margin: auto;"></i></div>
 					<span class="ml-2">쌍용교육센터</span>
 				</div>
@@ -456,5 +457,8 @@
 		  	
 			
 		</div>
+		
+		
+<%@ include file="../../views/admin/jihyun/alarm/alarmModal.jsp" %>
 
 
