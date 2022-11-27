@@ -1,6 +1,8 @@
 package com.yolo.hr.josh.service;
 
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,13 @@ public class CommuteService implements InterCommuteService {
 	public CommuteVO checkCommute(String fk_empno) {
 		CommuteVO commentvo = dao.checkCommute(fk_empno);
 		return commentvo;
+	}
+
+	// 퇴근 메소드
+	@Override
+	public int commuteEnd(Map<String, String> paraMap) {
+		int n = dao.commuteEnd(paraMap);
+		return n;
 	}
 	
 }

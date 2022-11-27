@@ -97,6 +97,43 @@
 	    left: 151px;
 	}
 	
+	/* 체크박스 CSS */
+	input[type="checkbox"] {
+        -webkit-appearance: none;
+        position: relative;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        outline: none !important;
+        border: 2px solid #cccccc;
+        border-radius: 2px;
+        background: #fbfbfb;
+    }
+ 
+    input[type="checkbox"]::before {
+        content: "\2713";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        overflow: hidden;
+        transform: scale(0) translate(-50%, -50%);
+        line-height: 1;
+    }
+ 
+    input[type="checkbox"]:hover {
+        border-color: rgba(170, 170, 170, 0.5);
+    }
+ 
+    input[type="checkbox"]:checked {
+        background-color: #2eb82e;
+        border-color: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+ 
+    input[type="checkbox"]:checked::before {
+        border-radius: 2px;
+        transform: scale(1) translate(-50%, -50%)
+    }
 	
 </style>
 
@@ -113,12 +150,12 @@
 		const web_browser_height = $(window).height(); 
 		//$("div#sideBar").css({"height":web_browser_height-10});
 		
-		check_commute()
+		check_commute(); // 출근을 했는지 가져오는 메소드
 		
 		setInterval("plus_time()", 60000); // 1 분마다 distance 를 1분증가시키고 찍는다
 		
-		// 출근하기 버튼 클릭이벤트 시작
 		
+		// 출근하기 버튼 클릭이벤트 시작
 		$(document).on("click","#start_work",function(){
 			//alert('asd')
 			Swal.fire({
@@ -178,7 +215,9 @@
 		
 		
 		// 퇴근하기 버튼 클릭이벤트 
-		$(document).ready("click","#end_work", function(){
+		$(document).on("click","#end_work", function(){
+			
+			let html = "";
 			
 			Swal.fire({
 				   title: '퇴근하시겠습니까?',
@@ -195,12 +234,32 @@
 				}).then(result => {
 				   // 만약 Promise리턴을 받으면,
 				   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-					   
+				   	  
+					   	const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+					    const minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+						const worktime = hour +"시간 "+minute+"분"
+						
 					  $.ajax({
-						  
+						  url:"<%= ctxPath %>/commute/commuteEnd.yolo",
+						  type:"POST",
+						  data:{"fk_empno":'${sessionScope.loginuser.empno}',
+							    "worktime":worktime},
+						  dataType:"JSON",
+						  success:function(json){
+							  if(json.n == 1) {
+								  html += "<a id='dropdown' class='btn btn-outline-secondary dropdown-toggle' href='#' role='button' id='dropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' style='width: 90%;margin: auto 5%;'>"+
+									      "금일퇴근완료</a>"
+									      
+							  }
+							  
+							  $("#commute-div").html(html);
+							  
+							  Swal.fire('퇴근이 완료되었습니다.','퇴근완료','success');
+							  
+						  }
 					  }) 
 					   
-				      Swal.fire('공유자에서 삭제했습니다.',text+' 삭제완료','success');
+				      
 				   }
 				});
 			
@@ -262,20 +321,31 @@
 				    const minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 				    
 				    const time = hour +"시간 "+ minute +"분";
+				    
+				    //console.log(json.end_work_time)
+				    
+				    if(json.end_work_time == undefined) {
+					    	html += "<a id='dropdown' class='btn btn-outline-secondary dropdown-toggle' href='#' role='button' id='dropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' style='width: 90%;margin: auto 5%;'>"+
+					    		    "<small class='border rounded bg-success text-white text-sm mr-2'>근무중</small><span id='work-time'>"+time+"</span></a>"+
+						  	    "<div class='dropdown-menu' aria-labelledby='dropdownMenuLink' style='width: 90%;'>"+
+						  	    "<small class='text-muted ml-4'>근무 선택</small>"+
+						  	    "<a class='dropdown-item' data-value='' id='kind-commute'>근무<i class='fas fa-chevron-right' style='margin-left: 130px;'></i></a>"+
+						  	    "<div class='dropdown-divider'></div>"+
+						    	    "<div id='start_or_end'><a class='dropdown-item' id='end_work'>퇴근하기</a></div>"+
+						  	    "</div>"
+				    }
+				    else {
+					    	html += "<a class='btn btn-outline-secondary dropdown-toggle' href='#' role='button' id='dropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' style='width: 90%;margin: auto 5%;' disabled>"+
+						        "금일퇴근완료</a>"
+						        
+				    }
 					
-					html += "<a class='btn btn-outline-secondary dropdown-toggle' href='#' role='button' id='dropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' style='width: 90%;margin: auto 5%;'>"+
-				    		    "<small class='border rounded bg-success text-white text-sm mr-2'>근무중</small><span id='work-time'>"+time+"</span></a>"+
-					  	    "<div class='dropdown-menu' aria-labelledby='dropdownMenuLink' style='width: 90%;'>"+
-					  	    "<small class='text-muted ml-4'>근무 선택</small>"+
-					  	    "<a class='dropdown-item' data-value='' id='kind-commute'>근무<i class='fas fa-chevron-right' style='margin-left: 130px;'></i></a>"+
-					  	    "<div class='dropdown-divider'></div>"+
-					    	    "<div id='start_or_end'><a class='dropdown-item' id='end_work'>퇴근하기</a></div>"+
-					  	    "</div>"
 			
 				   $("#commute-div").html(html);
 					  	    
 				   
 				}
+				
 				
 			},
 			error: function(request, status, error){
@@ -286,6 +356,7 @@
 	}// end of function check_commute() {} --------------------------------
 	
 	
+	
     function plus_time() {
 		distance += 60000
 		
@@ -294,9 +365,20 @@
 	    
 	    const time = hour +"시간 "+ minute +"분";
 	    
-	    $("#work-time").text(time);
+	    if(distance > 28800000) {
+	    		$("#work-time").html("<span style=color:'red';>"+time+"</span>");
+	    }
+	    else {
+	    		$("#work-time").text(time);
+	    }
+	    
+	    console.log("확인용 distance : " +distance)
 		
 	}  
+	
+    if(distance > 28800000) {
+		toastr.warning('근무시간이 경과하였습니다. 퇴근버튼을 누르세요');
+	}
 
 </script>
 
@@ -317,18 +399,11 @@
 				  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="width: 90%;">
 				    <small class="text-muted ml-4">근무 선택</small>
 				    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example</button>
-				    <ul class="dropdown-menu dropdown-menu-right" id="position">
-				      <li><a href="#">HTML</a></li>
-				      <li><a href="#">CSS</a></li>
-				      <li><a href="#">JavaScript</a></li>
-				      <li class="divider"></li>
-				      <li><a href="#">About Us</a></li>
-				    </ul>
 				  	<div class="dropdown-divider"></div>
 				    <div id="start_or_end"><a class="dropdown-item" id="start_work">출근하기</a></div>
 				  </div>
 				</div>
-				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/messenger/sendedMassage.yolo'">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/messenger/receivedMessage.yolo'">
 					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span>메신저</span>
 				</div>
 				<div class="sideTr" onclick="#">
@@ -337,10 +412,10 @@
 			</div>
 			
 			<div id="sideMiddle" class="border-bottom">
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/notice/noticeList.yolo'">
 					<i class="fas fa-regular fa-flag sideIcon"></i><span>공지사항</span>
 				</div>
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/people.yolo'">
 					<i class="fas fa-solid fa-users sideIcon"></i><span>구성원</span>
 				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/schedule/calendar.yolo'">
@@ -349,7 +424,7 @@
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/mycommute.yolo'">
 					<i class="fas fa-regular fa-clock sideIcon"></i><span>출퇴근</span>
 				</div>
-				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/jinji/leaveSummary.yolo'">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/leaveSummary.yolo'">
 					<i class="fas fa-solid fa-plane sideIcon"></i><span>휴가</span>
 				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= request.getContextPath()%>/workflow.yolo'">

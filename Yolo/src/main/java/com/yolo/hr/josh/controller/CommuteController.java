@@ -1,5 +1,8 @@
 package com.yolo.hr.josh.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
@@ -64,4 +67,26 @@ public class CommuteController {
 		return jsonObj.toString();
 	}
 	
+	// 퇴근하기 버튼
+	@ResponseBody
+	@RequestMapping(value="/commute/commuteEnd.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.POST})
+	public String commuteEnd(HttpServletRequest request) {
+		
+		String fk_empno = request.getParameter("fk_empno");
+		String worktime = request.getParameter("worktime");
+		
+		Map<String,String> paraMap = new HashMap<>();
+		
+		paraMap.put("fk_empno",fk_empno);
+		paraMap.put("worktime",worktime);
+		
+		int n = service.commuteEnd(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+	}
+	
+		
 }
