@@ -657,7 +657,9 @@
 </script>
 
 </head>
-    <nav class="top-nav border-bottom mb-3">
+
+<div style="width: 90%; margin : 0 5% 0 5%;">
+    <nav class="top-nav border-bottom mb-3" style="width: 80%">
         <span class="text-muted h4 font-weight-bold">캘린더</span>
     </nav>
     
@@ -681,6 +683,8 @@
     </div>
 
     <div id='calendar' style="width: 80%;"></div>
+</div>
+
 
     <!-- register Modal -->
     <div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
