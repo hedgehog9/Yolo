@@ -18,14 +18,14 @@
 		
 	}
 	
-	.modal-content::-webkit-scrollbar {
+	.modal-body::-webkit-scrollbar {
     	width: 10px;
   	}
-  	.modal-content::-webkit-scrollbar-thumb {
+  	.modal-body::-webkit-scrollbar-thumb {
     	background-color: #ababab;
     	border-radius: 10px;
   	}
-  	.modal-content::-webkit-scrollbar-track {
+  	.modal-body::-webkit-scrollbar-track {
     	background-color: #dedfe0;
     	border-radius: 10px;
   	}
