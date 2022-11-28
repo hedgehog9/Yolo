@@ -8,7 +8,7 @@
 <style>
 	
 	div#user_detail_content {
-		margin: 40px 20px 20px 20px;
+		padding: 40px 32px;
 	}
 	
 	div.profile_icon {
@@ -350,10 +350,20 @@
 		outline-color: #07B419;
 	}
 	
+	div.imgtest{
+		width: 200px;
+		height:200px;
+		border: solid 1px red;
+		color: #ebebeb;
+	}
+	
+	img.img_profile{
+		filter: opacity(0.5) drop-shadow(0 0 0 red);
+	}
 
 </style>
 <%-- 말풍선 --%>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <%-- 지도 --%>
 <script type="text/javascript" src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script> 
 
@@ -1193,6 +1203,7 @@
 <div id="user_detail_content">
 	
 	<span><a href="<%= ctxPath%>/people.yolo">구성원</a> / 홍길동</span>
+	
 	
 	<div id="user_profile">
 		<div id="profile_img">

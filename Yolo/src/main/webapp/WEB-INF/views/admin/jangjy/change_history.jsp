@@ -123,6 +123,30 @@
 		border: solid 1px #07B419;
 	}
    	
+   	<%-- header a태그 css  --%>
+	a.a_title{
+		font-size: 28px;
+		font-weight: 700;
+		letter-spacing: -1.12px;
+		text-decoration: none solid rgb(60, 70, 81);
+		word-spacing: 0px;
+		color: #cdd2d6;
+	}
+	a.a_title:hover{
+		text-decoration: none;
+		color: #9e9e9e;
+	}
+	a.a_title:link, a.a_titlevisited, a.a_titleactive {
+		text-decoration: none;
+		color: #9e9e9e;
+	}
+	a.current{
+		color : #3C4651;
+	}
+	a.current:hover{
+		color : #3C4651;
+	}
+		
     
 </style>
 
@@ -194,9 +218,9 @@
 
 		<div id="header">
 	        <div id="header_title">
-	            <a href="<%= ctxPath%>/people.yolo"><span class="title">구성원</span></a>
-	            <a href="<%= ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a>
-	            <a href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
+	            <a class="a_title" href="<%= ctxPath%>/people.yolo"><span class="title">구성원</span></a>
+	            <a class="a_title" href="<%= ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a>
+	            <a class="a_title current" href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
 	        </div>
 	        <div id="button_title">
 	            <button id="change_dept" type="button" class="btn" data-toggle="modal" data-target="#modal_change_hrInfo"><span><i class="fas fa-pen" style="margin:0px; width:20px;"></i>&nbsp;&nbsp;인사 발령하기</span></button>
