@@ -1,187 +1,695 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-    
-<% String ctxPath = request.getContextPath();%>
-    
+	pageEncoding="UTF-8"%>
+
+<%
+	String ctxPath = request.getContextPath();
+%>
+
 <script>
 
 
 </script>
 
 <style>
-    
-    div#peopleContent{
-    	margin-right:10px;
-    }
-    
-    div#header{
-    	display:flex;
-    	justify-content: space-between;
-    }
-    
-    span.title{
-        font-size: 28px;
-        margin-right:20px;
-        font-weight: 700;
-        letter-spacing:-1.12px;
-    }
+div#peopleContent {
+	margin-right: 10px;
+}
 
-    div#header_title, div#button_title{
-        margin: 35px 20px 20px 20px;
-    }
-    
-    button#addPeople{
-    	background-color: #66cc66;
-    	color: white;
-    }
-    
-    tr{
-    	font-size:10pt;
-    }
-    
-    .th_200{
-    	width:200px;
-    }
-    
-    .th_150{
-    	width:150px;
-    }
-    
-    .th_100{
-    	width:100px;
-    }
-    
-    .th_50{
-    	width:50px;
-    }
-    
-    div.profile_icon{
-    	width: 30px; 
-		height: 30px; 
-		border-radius: 40%; 
-		background-color: #239afe;
-		color: white;
-		text-align: center;
-		padding-top: 6px;
-		border: 1px solid #ccced0;
-		font-weight: bold;
-		margin: auto 8px;
-		font-size:5pt;
-    }
-    
-    div.profile{
-    	display:flex;
-    }
-    
+div#header {
+	display: flex;
+	justify-content: space-between;
+}
 
+span.title {
+	font-size: 28px;
+	margin-right: 20px;
+	font-weight: 700;
+	letter-spacing: -1.12px;
+}
+
+div#header_title, div#button_title {
+	margin: 35px 20px 20px 20px;
+}
+
+button#registMember {
+	background-color: #66cc66;
+	color: white;
+}
+
+tr {
+	font-size: 10pt;
+}
+
+.th_200 {
+	width: 200px;
+}
+
+.th_150 {
+	width: 150px;
+}
+
+.th_100 {
+	width: 100px;
+}
+
+.th_50 {
+	width: 50px;
+}
+
+<%--
+상세 조회 아이콘 css --%> div.profile_icon {
+	width: 30px;
+	height: 30px;
+	border-radius: 40%;
+	background-color: #239afe;
+	color: white;
+	text-align: center;
+	padding-top: 6px;
+	border: 1px solid #ccced0;
+	font-weight: bold;
+	margin: auto 8px;
+	font-size: 5pt;
+}
+
+<%--
+간단조회 아이콘 css --%> div.profile_icon2 {
+	width: 50px;
+	height: 50px;
+	border-radius: 40%;
+	background-color: #239afe;
+	color: white;
+	text-align: center;
+	padding-top: 6px;
+	border: 1px solid #ccced0;
+	font-weight: bold;
+	margin: auto 8px;
+	font-size: 14pt;
+}
+
+div.profile_icon2>div {
+	margin-top: 3px;
+}
+
+div.profile, div.profile2 {
+	display: flex;
+}
+
+<%--
+검색버튼, 조직도 버튼, 다운로드 버튼 css --%> div#search_buttons {
+	display: flex;
+	justify-content: end;
+}
+
+button.btn_search {
+	margin-top: 15px;
+}
+
+button.btn_search:hover {
+	background-color: #ebebeb;
+}
+
+div#div_toggle_buttons {
+	background-color: #ebebeb;
+	padding: 3px;
+	border-radius: 5px;
+	margin-top: 15px;
+}
+
+button.btn_view_style:focus {
+	outline: none;
+}
+
+<%--
+검색바 input 태그 css --%> input.input_search {
+	border: none;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+}
+
+input.input_search:focus {
+	outline: none;
+}
+
+div#div_search {
+	border: solid 2px #07B419;
+	border-radius: 10px;
+	height: 30px;
+	padding-left: 3px;
+	margin-top: 20px;
+	position: relative;
+	left: 38px;
+	display: none;
+}
+
+.hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+div.dept_position {
+	background-color: #F8F9FA;
+	padding: 10px;
+	border-radius: 10px;
+	margin-top: 3px;
+}
+
+div.dept_position>span {
+	color: #556372;
+}
+
+div.dept_position>span:nth-child(2) {
+	color: #CDD2D6;
+}
+
+div.div_name2 {
+	font-size: 20px;
+	font-weight: 500;
+	color: #242A30;
+	line-height: 14px;
+	margin-top: 15px;
+}
+
+div.div_empInfo:hover {
+	background-color: #F8F9FA;
+}
+
+<%--
+조직도 상단 조직도 펼치기, 수정 버튼 css --%> button.org_btn:hover {
+	background-color: #ebebeb;
+}
+
+<%--
+조직도에 버튼 오른쪽 끝으로 정렬 --%> div#org_buttons {
+	display: flex;
+	justify-content: flex-end;
+}
+
+<%--
+회원 가입 모달 css 시작  --%> <%-- 구성원 초대하기 버튼 css --%> button#regist_member_btn
+	{
+	height: 50px;
+	width: 100%;
+	border-radius: 10px;
+	color: white;
+	background-color: #07B419;
+}
+
+div#title {
+	font-size: 20pt;
+	font-weight: 600;
+	text-align: center;
+	margin: 100px 0 50px 0px;
+}
+
+input.input_modal, button.choice_type {
+	width: 100%;
+	line-height: 30px;
+	border-radius: 10px;
+	padding: 5px;
+	border: solid 1px #d9d9d9;
+}
+
+input.input_modal:focus {
+	outline-color: #07B419;
+}
+
+button.choice_type:active, button.choice_type:focus {
+	border: solid 1px #07B419;
+}
+
+button#regist_member_btn>i {
+	padding-right: 10px;
+}
+
+div.regitst_title {
+	padding: 0 0 3px 5px;
+}
+
+form#regist_frm  div.show {
+	top: 0px;
+	left: 10px;
+	will-change: transform;
+	border-radius: 10px;
+	width: 458px;
+}
+<%--
+회원
+ 
+가입
+ 
+모달
+ 
+css
+ 
+끝
+  
+--%>
 </style>
 
+<script>
+	let org_flag = true;
 
-	
-	<div id="peopleContent">
-		<div id="header">
-	        <div id="header_title">
-	            <a href="<%= ctxPath%>/people.yolo"><span class="title">구성원</span></a>
-	            <a href="<%= ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a>
-	            <a href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
-	        </div>
-	        <div id="button_title">
-	            <button id="addPeople" type="button" class="btn" onclick="#"><span><i class="fas fa-plus" style="margin:0px; width:20px;"></i>&nbsp;&nbsp;구성원 추가하기</span></button>
-	        </div>
-	    </div>
-	    
-	    <div id="searchBar">
-	    	<select style="height:29px;">
-		    	<option value="">선택하세요</option>
-		    	<option value="name">사원명</option>
-		    	<option value="dept">부서명</option>
-		    	<option value="empno">사원번호</option>
-	    	</select>
-    		<input type="text" placeholder="검색">
-	    </div>
-	    
-	    <div id="result">
-	    	<table class="table table-bordered table-hover">
-				<thead>
-					<tr>
-						<th rowspan="2" class="th_100" style="vertical-align: middle">이름</th>
-						<th colspan=6>기본 정보</th>
-						<th colspan=2>인사 정보</th>
-						<th colspan=3>개인 정보</th>
-					</tr>
-					<tr>
-						<th style="width:5%">상태</th>
-						<th class="th_50">사번</th>
-						<th style="width:7%">입사일</th>
-						<th style="width:7%">퇴직일</th>
-						<th style="width:7%">근속기간</th>
-						<th class="th_100">근무일수</th>
-						
-						<th class="th_50">부서</th>
-						<th class="th_50">직위</th>
-						
-						<th class="th_150">이메일</th>
-						<th style="width:5%">성별</th>
-						<th class="th_150">휴대전화</th>
-						
-					</tr>
-				</thead>	
-				<%-- ========================== 반복해서 출력할 부분 시작 ========== --%>
-				<tbody>
-				<tr onclick="#"><%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+	$(document).ready(function(){
+		
+		<%-- ===== 달력 하나만 출력 시작 =====  --%>
+		$("input.daterange").daterangepicker({
+            "singleDatePicker": true,
+            "locale": {
+                "format": "YYYY-MM-DD", // 날짜표현 형식
+                "separator": " - ",
+                "applyLabel": "선택",
+                "cancelLabel": "취소",
+                "fromLabel": "From",
+                "toLabel": "To",
+                "customRangeLabel": "Custom",
+                "weekLabel": "W",
+                "daysOfWeek": [
+                    "일",
+                    "월",
+                    "화",
+                    "수",
+                    "목",
+                    "금",
+                    "토"
+                ],
+                "monthNames": [
+                    "1월",
+                    "2월",
+                    "3월",
+                    "4월",
+                    "5월",
+                    "6월",
+                    "7월",
+                    "8월",
+                    "9월",
+                    "10월",
+                    "11월",
+                    "12월"
+                ],
+                "firstDay": 1
+            }
+        });
+		<%-- ===== 달력 하나만 출력 끝 =====  --%>
+		
+		<%-- bootstrap 툴팁 --%>
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
+		});
+		
+		// 테이블 형식 또는 리스트 형식 출력 버튼 클릭시 버튼 css 변경 
+		$(document).on("click","button.btn_view_style",function(){
+			$("button.btn_view_style").css("background-color","");
+			$(this).css("background-color","white");
+		});
+		
+		// 검색 버튼 클릭시 
+		$(document).on("click","button#btn_search",function(){
+			$("div#div_search").css("display","block");	
+			$("button#btn_search").addClass("hidden");
+			
+		});
+		// 검색 div 이외 영역 클릭시 값이 비어있는 경우 div 숨기기
+		$('html').click(function(e) {   
+			let searchWord = $("input#searchWord").val();
+			if($(e.target).parents('div#div_search').length < 1 && searchWord.trim() == "" ){  
+				$("div#div_search").css("display","");	
+				$("button#btn_search").removeClass("hidden");
+			}
+		});
+		
+		// 조직도 버튼 클릭시 
+		$(document).on("click","button#btn_organization",function(){
+			if(org_flag){ // 상세 조회 상태인 경우 
+				if($("div#organization_chart").css("display") == "none"){
+					$("button#btn_organization").css("background-color","#ebebeb");
+					$("div#organization_chart").css(
+												{"display":"block",
+												 "position":"relative",
+												 "width":"35%",
+												 "top":"-165px",
+												 "left":"65%",
+												 "background":"white",
+												 "height":"300px"})
+				}
+				else{
+					$("button#btn_organization").css("background-color","");
+					$("div#organization_chart").css("display","none");
+				}
+			}
+			else{ // 간단 조회 상태인 경우 
+				if($("div#organization_chart").css("display") == "none"){
+					$("button#btn_organization").css("background-color","#ebebeb");
+					$("div#organization_chart").show();
+					$("div.div_personOne").css("width","75%");
+				}
+				else{
+					$("button#btn_organization").css("background-color","");
+					$("div#organization_chart").hide();
+					$("div.div_personOne").css("width","100%");
+				}
+			}
+			
+		});
+		
+		// 다운로드 버튼 클릭시 
+		$(document).on("click","button#btn_search",function(){
+			
+		});
+		
+		
+		// 사원 관련 모든 정보 table 로 보여주는 버튼
+		$(document).on("click","button#view_table",function(){
+			org_flag = true;
+			$("div#search_result").empty();
+			let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
+							+'<thead>'
+								+'<tr>'
+									+'<th rowspan="2" class="th_100" style="vertical-align: middle">이름</th>'
+									+'<th colspan=6>기본 정보</th>'
+									+'<th colspan=2>인사 정보</th>'
+									+'<th colspan=3>개인 정보</th>'
+								+'</tr>'
+								+'<tr>'
+									+'<th style="width:5%">상태</th>'
+									+'<th class="th_50">사번</th>'
+									+'<th style="width:7%">입사일</th>'
+									+'<th style="width:7%">퇴직일</th>'
+									+'<th style="width:7%">근속기간</th>'
+									+'<th class="th_100">근무일수</th>'
+									
+									+'<th class="th_50">부서</th>'
+									+'<th class="th_50">직위</th>'
+									
+									+'<th class="th_150">이메일</th>'
+									+'<th style="width:5%">성별</th>'
+									+'<th class="th_150">휴대전화</th>'
+									
+								+'</tr>'
+							+'</thead>'
+							+'<tbody>'
+								<%-- ========================== 반복해서 출력할 부분 시작 ========== --%>
+								+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+									+'<td class="th_150">'
+										+'<div class="profile">'
+											+'<div class="profile_icon"><div>길동</div></div>'
+											+'<div style="padding-top:3px;">홍길동</div>'
+										+'</div>'
+									+'</td>'
+									+'<td>재직</td>'
+									+'<td>333</td>'
+									+'<td>2022.10.11</td>'
+									+'<td>2022.10.12</td>'
+									+'<td>112개월</td>'
+									+'<td>15042일</td>'
 					
-					<td class="th_150">
-						<div class="profile">
-							<div class="profile_icon"><div>길동</div></div>
-							<div style="padding-top:3px;">홍길동</div>
-						</div>
-					</td>
-					<td>재직</td>
-					<td>333</td>
-					<td>2022.10.11</td>
-					<td>2022.10.12</td>
-					<td>112개월</td>
-					<td>15042일</td>
-
-					<td>개발1</td>
-					<td>과장</td>
-
-					<td>hongkildong@gmail.com</td>
-					<td>남</td>
-					<td>010-1234-5678</td>
+									+'<td>개발1</td>'
+									+'<td>과장</td>'
 					
-				</tr>
+									+'<td>hongkildong@gmail.com</td>'
+									+'<td>남</td>'
+									+'<td>010-1234-5678</td>'
+								+'</tr>'
+								<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
+							+'</tbody>'   	
+						+'</table>'
+						
+						+'<div id="organization_chart" style="display:none; text-align: center; border: solid 1px gray; ">'
+							+'여기에 조직도'
+						+'</div>';
+				$("div#search_result").html(html);
+			
+		});
+		
+		// 사원 관련 부서, 이름 , 직위, 아이콘만 보여주는 버튼
+		$(document).on("click","button#view_list",function(){
+			org_flag = false;
+			$("div#search_result").empty();
+			let html ='<div style="display: flex; margin-top:20px;">'
+						+'<div class="div_personOne" style="width:75%; padding-top: 15px;">'
+							
+								<%-- 반복해서 출력할 div 묶음 시작  --%>
+								+'<div class="div_empInfo" style="display: flex; justify-content: space-between; margin: 10px; padding:10px;">'
+								+'<div class="profile2">'
+									+'<div class="profile_icon2">'
+										+'<div>길동</div>'
+									+'</div>'
+										+'<div class="div_name2" style="padding-top:3px;">홍길동</div>'
+								+'</div>'
+								+'<div class="dept_position">'
+									+'<span>직위&nbsp;&nbsp;</span>'
+									+'<span>|</span>'
+									+'<span>&nbsp;&nbsp;부서</span>'
+									+'</div>'
+								+'</div>'
+								<%-- 반복해서 출력할 div 묶음 끝  --%>
+							
+						+'</div>'<%-- end of <div style="width:75%; padding-top: 15px;"> --%>
+						
+						+'<div id="organization_chart" style="width:35%; text-align: center; border: solid 1px gray; ">'
+							+'여기에 조직도'
+						+'</div>'
+					+'</div>';
+			$("div#search_result").html(html);
+		});
+		
+		
+		// 문서 로딩 시 기본값 테이블 보기로 설정
+		$("button#view_table").trigger("click");
+		
+		
+		// 조직도 div 안에 조직도 수정 버튼 (...) 버튼 클릭시
+		$(document).on("click","button#org_edit_btn",function(){
+			
+			
+			
+		});
+		
+		// 조직도 펼치기, 접기 버튼 클릭시
+		$(document).on("click","button#zoom_in_zoom_out_btn",function(){
+			
+			if($("button#zoom_in_zoom_out_btn > i").hasClass("fa-expand-alt") == true){ // 클릭시 	 펼치기
 				
-				<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
+				$("button#zoom_in_zoom_out_btn > i").removeClass("fa-expand-alt");
+				$("button#zoom_in_zoom_out_btn > i").addClass("fa-compress-alt");
+				$("button#zoom_in_zoom_out_btn").attr("data-original-title","조직도 접기");
+				
+			}
+			else{ // 클릭시 조직도 접기
 
-				<tr>
-					<td class="th_150" height="50px;">
-						<div class="profile">
-							<div class="profile_icon"><div>길동</div></div>
-							<div style="padding-top:3px;">홍길동</div>
+				$("button#zoom_in_zoom_out_btn > i").removeClass("fa-compress-alt");
+				$("button#zoom_in_zoom_out_btn > i").addClass("fa-expand-alt");
+				$("button#zoom_in_zoom_out_btn").attr("data-original-title","조직도 펼치기");
+				
+			}
+			
+		});
+		
+		
+		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
+		$(document).on("click","button.btn_label",function(){
+			let selected = $(this).text();
+			$(this).parent().parent().find("input").val(selected);
+		});
+		
+		
+		
+		
+	});// end of $(document).ready(function(){}------------------------------------------------
+	
+	// ajax 통신방식으로 사원 조회하는 메소드		
+	function func_getEmpInfo(){ <%-- 파라미터로 사원 번호 전달 받기 --%>
+	 	<%-- 특정 사원번호 전달 --%>
+		location.href = "<%=ctxPath%>/user_detail.yolo" ;
+		
+	}
+
+</script>
+
+<div id="peopleContent">
+	<div id="header">
+		<div id="header_title">
+			<a href="<%=ctxPath%>/people.yolo"><span class="title">구성원</span></a>
+			<a href="<%=ctxPath%>/organization_chart.yolo"><span
+				class="title">조직도</span></a> <a
+				href="<%=ctxPath%>/change_history.yolo"><span class="title">인사
+					정보 관리</span></a>
+		</div>
+		<div id="button_title">
+			<button id="registMember" type="button" class="btn"
+				data-toggle="modal" data-target="#modal_registMember">
+				<span> <i class="fas fa-plus"
+					style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
+				</span>
+			</button>
+		</div>
+	</div>
+	<!-- ========================== 구성원 추가 모달 시작 ========================== -->
+	<div class="modal fade" id="modal_registMember">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content" style="padding: 5px;">
+				<!-- Modal header -->
+				<div class="modal-header">
+					<h2>구성원 등록</h2>
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form id="regist_frm" name="regist_frm">
+						<div id="div_regist">
+							<div style="display: flex; justify-content: space-between;">
+								<div>
+									<div class="regitst_title">
+										이름<span style="color: red;">*</span>
+									</div>
+									<input name="name" class="input_modal" type="text"
+										autocomplete="off" placeholder="이름 입력" />
+								</div>
+								<div>
+									<div class="regitst_title">
+										이메일<span style="color: red;">*</span>
+									</div>
+									<input name="email" class="input_modal" type="text"
+										autocomplete="off" placeholder="이메일 입력" />
+								</div>
+							</div>
+
+							<div style="margin: 10px 0;">
+								<%-- daterange --%>
+								<div class="regitst_title">
+									입사일<span style="color: red;">*</span>
+								</div>
+								<input name="hire_date" type="text"
+									class="input_modal daterange" placeholder="입사일 입력"></input>
+							</div>
+
+							<%-- =========== 부서 선택 =========== --%>
+							<div style="margin: 10px 0;">
+								<div class="regitst_title">부서 선택</div>
+								<input type="hidden" id="department" name="department" />
+
+								<button id="btn" class=" btn choice_type" type="button"
+									data-toggle="dropdown">
+									<div style="display: flex; justify-content: space-between;">
+										<div id="retirement_type">부서 선택</div>
+										<i class="fas fa-bars" style="padding: 5px;"></i>
+									</div>
+								</button>
+
+								<div class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button">부서1</button>
+									<button class="btn_label dropdown-item" type="button">부서1</button>
+									<button class="btn_label dropdown-item" type="button">부서1</button>
+									<button class="btn_label dropdown-item" type="button">부서1</button>
+								</div>
+							</div>
+							<%-- =========== 부서 선택 =========== --%>
+
+
+							<%-- =========== 세부부서 선택 =========== --%>
+							<div style="margin: 10px 0;">
+								<div class="regitst_title">세부부서 선택</div>
+								<input type="hidden" id="detail_department"
+									name="detail_department" />
+
+								<button id="btn" class=" btn choice_type" type="button"
+									data-toggle="dropdown">
+									<div style="display: flex; justify-content: space-between;">
+										<div id="retirement_type">세부부서 선택</div>
+										<i class="fas fa-bars" style="padding: 5px;"></i>
+									</div>
+								</button>
+
+								<div class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button">세부부서1</button>
+									<button class="btn_label dropdown-item" type="button">세부부서2</button>
+									<button class="btn_label dropdown-item" type="button">세부부서3</button>
+									<button class="btn_label dropdown-item" type="button">세부부서4</button>
+									<button class="btn_label dropdown-item" type="button">세부부서5</button>
+								</div>
+							</div>
+							<%-- =========== 세부부서 선택 =========== --%>
+
+
+							<%-- =========== 직위 선택 =========== --%>
+							<div style="margin: 10px 0;">
+								<div class="regitst_title">직위 선택</div>
+								<input type="hidden" name="position" id="position" />
+
+								<button id="btn" class=" btn choice_type" type="button"
+									data-toggle="dropdown">
+									<div style="display: flex; justify-content: space-between;">
+										<div id="retirement_type">직위 선택</div>
+										<i class="fas fa-bars" style="padding: 5px;"></i>
+									</div>
+								</button>
+
+								<div class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button">직위</button>
+									<button class="btn_label dropdown-item" type="button">직위</button>
+									<button class="btn_label dropdown-item" type="button">직위</button>
+									<button class="btn_label dropdown-item" type="button">직위</button>
+									<button class="btn_label dropdown-item" type="button">직위</button>
+								</div>
+							</div>
+							<%-- =========== 직위 선택 =========== --%>
 						</div>
-					</td>
-					<td class="th_50">재직</td>
-					<td class="th_50">333</td>
-					<td class="th_100">2022.10.11</td>
-					<td class="th_100">2022.10.12</td>
-					<td class="th_100">112개월</td>
-					<td class="th_100">15042일</td>
+					</form>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer"
+					style="display: flex; justify-content: space-between;">
+					<%-- form 전송 --%>
+					<button type="button" class="btn" id="regist_member_btn">
+						<i class="fas fa-check"></i>입력완료
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ========================== 구성원 추가 모달 끝 ========================== -->
 
-					<td class="th_100">개발1</td>
-					<td class="th_100">과장</td>
+	<div id="search_buttons">
 
-					<td class="th_200">hongkildong@gmail.com</td>
-					<td class="th_50">남</td>
-					<td class="th_200">010-1234-5678</td>
-				</tr>
+		<%-- 검색어 입력 input 태그 --%>
+		<div id="div_search">
+			<i class="fas fa-search"></i> <input id="searchWord"
+				class="input_search" type="text" placeholder="검색" />
+		</div>
+
+		<%-- 검색 버튼 (클릭시 input태그 출력)  --%>
+		<button type="button" id="btn_search" class="btn btn_search">
+			<i class="fas fa-search"></i>
+		</button>
+
+		<%-- 조직도 조회 버튼 --%>
+		<button type="button" id="btn_organization" class="btn btn_search">
+			<i class="fas fa-sitemap"></i>
+		</button>
+
+		<%-- 구성원 정보 다운로드 버튼 --%>
+		<button type="button" id="btn_download" class="btn btn_search"
+			data-toggle="tooltip" data-placement="top" title="구성원 정보 다운로드">
+			<i class="fas fa-download"></i>
+		</button>
+
+		<%-- 모든 정보 출력 or 이름,부서,직위만 출력 --%>
+		<div id="div_toggle_buttons">
+			<button type="button" id="view_table" class="btn btn_view_style">
+				<i class="fas fa-th-large"></i>
+			</button>
+
+			<button type="button" id="view_list" class="btn btn_view_style">
+				<i class="fas fa-th-list"></i>
+			</button>
+		</div>
+	</div>
 
 
-			</tbody>    	
-	    	</table>
-	    </div>
-	    
-    </div>
-    
-    
+	<div id="search_result"></div>
+	<%-- end of  <div id="search_result">====== --%>
+
+</div>
+<%-- end of peopleContiner div====== --%>
+
+
 
