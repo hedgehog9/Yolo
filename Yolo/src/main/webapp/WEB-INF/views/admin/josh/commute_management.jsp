@@ -253,7 +253,7 @@
 
     <nav class="top-nav border-bottom">
         <div class="category">
-            <a href="<%= ctxPath %>/admin/mycommute.yolo" class="h4 mr-2 text-secondary font-weight-bold">나의 출퇴근</a>
+            <a href="<%= ctxPath %>/commute/mycommute.yolo" class="h4 mr-2 text-secondary font-weight-bold">나의 출퇴근</a>
             <a href="#" class="h4 mr-2 text-dark font-weight-bold">나의 관리</a>
         </div>
     </nav>
