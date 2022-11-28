@@ -40,7 +40,7 @@
 
     $(document).ready(function() {
 
-    		$("#year-select").val() /* 페이지진입할때 백단에서 이번달 값꽂아주기 */
+    	$("#year-select").val() /* 페이지진입할때 백단에서 이번달 값꽂아주기 */
     	
         $("#year-select").monthpicker({
             monthNames: ['1월(JAN)', '2월(FEB)', '3월(MAR)', '4월(APR)', '5월(MAY)', '6월(JUN)',

@@ -1,5 +1,6 @@
 package com.yolo.hr.josh.model;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -25,6 +26,20 @@ public class CommuteDAO implements InterCommuteDAO {
 	public CommuteVO checkCommute(String fk_empno) {
 		CommuteVO commentvo = sqlsession.selectOne("josh.checkCommute",fk_empno);
 		return commentvo;
+	}
+
+	// 퇴근 메소드
+	@Override
+	public int commuteEnd(Map<String, String> paraMap) {
+		int n = sqlsession.update("josh.commuteEnd",paraMap);
+		return n;
+	}
+
+	// 특정사원의 일주일 출근기록을 가져오는 메소드
+	@Override
+	public List<CommuteVO> mycommute(Map<String, String> paraMap) {
+		List<CommuteVO> commuteList = sqlsession.selectList("josh.mycommute",paraMap);
+		return commuteList;
 	}
 	
 }

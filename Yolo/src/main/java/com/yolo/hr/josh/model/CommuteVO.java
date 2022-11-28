@@ -6,9 +6,11 @@ public class CommuteVO {
 	private String fk_empno;
 	private String start_work_time;
 	private String end_work_time;
+	private String worktime;
 	private String overtime;
-	private String work_kind;
 	
+	// select 용 field
+	private String dt; // select 용 날짜
 	
 	public String getCommuteno() {
 		return commuteno;
@@ -34,17 +36,23 @@ public class CommuteVO {
 	public void setEnd_work_time(String end_work_time) {
 		this.end_work_time = end_work_time;
 	}
+	public String getWorktime() {
+		return worktime;
+	}
+	public void setWorktime(String worktime) {
+		this.worktime = worktime;
+	}
 	public String getOvertime() {
 		return overtime;
 	}
 	public void setOvertime(String overtime) {
 		this.overtime = overtime;
 	}
-	public String getWork_kind() {
-		return work_kind;
+	public String getDt() {
+		return dt;
 	}
-	public void setWork_kind(String work_kind) {
-		this.work_kind = work_kind;
+	public void setDt(String dt) {
+		this.dt = dt;
 	}
 	
 	
