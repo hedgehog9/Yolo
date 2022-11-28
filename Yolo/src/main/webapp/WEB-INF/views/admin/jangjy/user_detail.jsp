@@ -8,7 +8,7 @@
 <style>
 	
 	div#user_detail_content {
-		margin: 40px 20px 20px 20px;
+		padding: 40px 32px;
 	}
 	
 	div.profile_icon {
@@ -336,11 +336,34 @@
 	div#div_edit{
 		overflow: auto;
 	}
+	textarea#introduce{
+		width:100%;
+		height: 58px; 
+		min-height: 58px; 
+		resize: none; 
+		overflow-y: hidden;
+		border: solid 1px #d9d9d9;
+	}
 	
+	input:focus,
+	textarea:focus{
+		outline-color: #07B419;
+	}
+	
+	div.imgtest{
+		width: 200px;
+		height:200px;
+		border: solid 1px red;
+		color: #ebebeb;
+	}
+	
+	img.img_profile{
+		filter: opacity(0.5) drop-shadow(0 0 0 red);
+	}
 
 </style>
 <%-- 말풍선 --%>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <%-- 지도 --%>
 <script type="text/javascript" src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script> 
 
@@ -736,32 +759,6 @@
 			 
 			 
 			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
-			 
 		});
 		
 		$(document).on("keyup","input#registeration_no",function(){
@@ -1104,7 +1101,7 @@
 						+'</div>'
 						+'<div style="margin: 20px 0;">'
 							+'<div>내 소개</div>'
-							+'<textarea id="introduce" rows="1" cols="" style=" width:100%;"height: 58px; min-height: 58px; resize: none; overflow-y: hidden;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
+							+'<textarea id="introduce" rows="1" cols="" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
 						+'</div>'
 						+'<div>'
 							+'<div>주민등록번호</div>'
@@ -1123,8 +1120,12 @@
 						
 						+'<div style="margin: 20px 0;">'
 							+'<div>집 주소</div>'
+							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" value="" /><br/>'
+							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" value="" />&nbsp;'
+							<%-- 나중에 아래 코드와 같이 수정
 							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" value="${sessionScope.loginuser.address}" /><br/>'
 							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" value="${sessionScope.loginuser.detailaddress}" />&nbsp;'
+							--%>
 						+'</div>'
 							
 						+'<div style="display:flex; justify-content: flex-end;">'
@@ -1202,6 +1203,7 @@
 <div id="user_detail_content">
 	
 	<span><a href="<%= ctxPath%>/people.yolo">구성원</a> / 홍길동</span>
+	
 	
 	<div id="user_profile">
 		<div id="profile_img">
