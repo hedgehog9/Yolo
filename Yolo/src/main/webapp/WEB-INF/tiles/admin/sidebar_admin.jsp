@@ -186,16 +186,17 @@
 								   Swal.fire('출근처리가 완료되었습니다.','출근완료','success');
 								   
 								   const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-								   const minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+								   let minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+								   
+								   if(minute < 10) {
+							    			minute = "0"+minute;
+							    	    }
 								    
 								   const time = hour +"시간 "+ minute +"분";
 								   
 								   html += "<a class='btn btn-outline-secondary dropdown-toggle' href='#' role='button' id='dropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' style='width: 90%;margin: auto 5%;'>"+
 								    		   "<small class='border rounded bg-success text-white text-sm mr-2'>근무중</small><span id='work-time'>"+time+"</span></a>"+
 									  	   "<div class='dropdown-menu' aria-labelledby='dropdownMenuLink' style='width: 90%;'>"+
-									  	   "<small class='text-muted ml-4'>근무 선택</small>"+
-									  	   "<a class='dropdown-item' data-value='' id='kind-commute'>근무<i class='fas fa-chevron-right' style='margin-left: 130px;'></i></a>"+
-									  	   "<div class='dropdown-divider'></div>"+
 									    	   "<div id='start_or_end'><a class='dropdown-item' id='end_work'>퇴근하기</a></div>"+
 									  	   "</div>"
 									
@@ -218,9 +219,32 @@
 		$(document).on("click","#end_work", function(){
 			
 			let html = "";
+			   
+		   	const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		    let minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+		    
+		    if(minute < 10) {
+    				minute = "0"+minute;
+    	    		}
+		    
+			const worktime = hour +"시간 "+minute+"분";
+			
+			let overtime;
+			
+			if(distance > 28800000) {
+				overtime = distance - 28800000;
+				const overtime_hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				const overtime_minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				overtime = hour +"시간 "+minute+"분";
+			}
+			else {
+				overtime = 0;
+			}
+			
+			
 			
 			Swal.fire({
-				   title: '퇴근하시겠습니까?',
+				   title: '근무시간 '+worktime+'\n 퇴근하시겠습니까?',
 				   icon: 'warning',
 				   
 				   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
@@ -235,15 +259,12 @@
 				   // 만약 Promise리턴을 받으면,
 				   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
 				   	  
-					   	const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-					    const minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-						const worktime = hour +"시간 "+minute+"분"
-						
 					  $.ajax({
 						  url:"<%= ctxPath %>/commute/commuteEnd.yolo",
 						  type:"POST",
 						  data:{"fk_empno":'${sessionScope.loginuser.empno}',
-							    "worktime":worktime},
+							    "worktime":worktime,
+							    "overtime":overtime},
 						  dataType:"JSON",
 						  success:function(json){
 							  if(json.n == 1) {
@@ -318,7 +339,11 @@
 				    distance = sysdate - start_work_time;
 				   
 				    const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-				    const minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				    let minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+				    
+				    if(minute < 10) {
+			    			minute = "0"+minute;
+			    		}
 				    
 				    const time = hour +"시간 "+ minute +"분";
 				    
@@ -328,9 +353,6 @@
 					    	html += "<a id='dropdown' class='btn btn-outline-secondary dropdown-toggle' href='#' role='button' id='dropdownMenuLink' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false' style='width: 90%;margin: auto 5%;'>"+
 					    		    "<small class='border rounded bg-success text-white text-sm mr-2'>근무중</small><span id='work-time'>"+time+"</span></a>"+
 						  	    "<div class='dropdown-menu' aria-labelledby='dropdownMenuLink' style='width: 90%;'>"+
-						  	    "<small class='text-muted ml-4'>근무 선택</small>"+
-						  	    "<a class='dropdown-item' data-value='' id='kind-commute'>근무<i class='fas fa-chevron-right' style='margin-left: 130px;'></i></a>"+
-						  	    "<div class='dropdown-divider'></div>"+
 						    	    "<div id='start_or_end'><a class='dropdown-item' id='end_work'>퇴근하기</a></div>"+
 						  	    "</div>"
 				    }
@@ -361,7 +383,11 @@
 		distance += 60000
 		
 		const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-	    const minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+	    let minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+	    
+	    if(minute < 10) {
+	    		minute = "0"+minute;
+	    }
 	    
 	    const time = hour +"시간 "+ minute +"분";
 	    
@@ -372,7 +398,7 @@
 	    		$("#work-time").text(time);
 	    }
 	    
-	    console.log("확인용 distance : " +distance)
+	    // console.log("확인용 distance : " +distance)
 		
 	}  
 	
@@ -397,10 +423,7 @@
 				    출근하기
 				  </a>
 				  <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="width: 90%;">
-				    <small class="text-muted ml-4">근무 선택</small>
-				    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example</button>
-				  	<div class="dropdown-divider"></div>
-				    <div id="start_or_end"><a class="dropdown-item" id="start_work">출근하기</a></div>
+				    <div id="start_or_end"><a class="dropdown-item" id="start_work"><i class="fa-solid fa-laptop-file"></i>출근하기</a></div>
 				  </div>
 				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/messenger/receivedMessage.yolo'">
@@ -421,7 +444,7 @@
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/schedule/calendar.yolo'">
 					<i class="fas fa-regular fa-calendar-check sideIcon"></i><span>캘린더</span>
 				</div>
-				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/mycommute.yolo'">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/commute/mycommute.yolo'">
 					<i class="fas fa-regular fa-clock sideIcon"></i><span>출퇴근</span>
 				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/leaveSummary.yolo'">
