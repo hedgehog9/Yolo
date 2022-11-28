@@ -79,7 +79,7 @@
 		$("span#empLeave").css("color", "#494949");
 		$("span.headerTitle2").show();
 		$("span#empLeaveStatus").css("color", "#494949");
-	  
+		$("div#underBar2").css("display", "block");
 	});
 
 	

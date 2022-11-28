@@ -85,6 +85,7 @@
 		$("span#empLeave").css("color", "#494949");
 		$("span.headerTitle2").show();
 		$("span#empLeaveSubmit").css("color", "#494949");
+		$("div#underBar1").css("display", "block");
 		
 	});
 
