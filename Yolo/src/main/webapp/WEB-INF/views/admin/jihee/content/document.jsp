@@ -40,7 +40,7 @@
 	div#rightFirst { overflow: scroll; }	 */
 	div#leftFirst  {
 
-	height: 800px;
+	height: 780px;
 	padding: 0px;
 	}
 	
@@ -324,6 +324,7 @@
   
   .rightFirst {
   	overflow-y: scroll;
+  	height: 780px;
   }
   
   	.rightFirst::-webkit-scrollbar {
@@ -443,7 +444,7 @@
 	function goReadDocument() {
 	  
 	  $.ajax({
-		  url:"<%= request.getContextPath()%>/workflow/myDocument.yolo",
+		  url:"<%= request.getContextPath()%>/workflow/documentDetail.yolo",
 		  data:{},
 		  dataType:"JSON",
 		  success:function(json){
@@ -557,7 +558,7 @@
   	function goReadDocument2() {
 	  
 	  $.ajax({
-		  url:"<%= request.getContextPath()%>/workflow/myDocument.yolo",
+		  url:"<%= request.getContextPath()%>/workflow/documentDetail.yolo",
 		  data:{},
 		  dataType:"JSON",
 		  success:function(json){

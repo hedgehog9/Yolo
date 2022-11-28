@@ -18,13 +18,13 @@ public class WorkflowControllor {
 	@RequestMapping(value = "/workflow.yolo")
 	public String viewWorkflow() {
 		
-		return "jihee/content/document.admin";
+		return "jihee/content/document.workadmin";
 	}
 	
 	//ajax
 	@ResponseBody
-	@RequestMapping(value = "/workflow/myDocument.yolo")
-	public String myDocumnet(HttpServletRequest request) {
+	@RequestMapping(value = "/workflow/documentDetail.yolo")
+	public String documentDetail(HttpServletRequest request) {
 		
 
 		JSONArray jsonArr = new JSONArray(); // []

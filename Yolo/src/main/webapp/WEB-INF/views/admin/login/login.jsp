@@ -31,7 +31,7 @@
 
 .title {
 	
-   font-size: 25pt;
+   font-size: 32pt;
    font-weight: bold;
    color: gray;
 }  
