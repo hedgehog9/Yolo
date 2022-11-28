@@ -7,13 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminController {
 
 	
-	@RequestMapping(value="/admin/mycommute.yolo")
-	public String myschedule() {
-		
-		
-		
-		return "josh/mycommute.admin";
-	}
+	
 	
 	@RequestMapping(value="/admin/commuteManagement.yolo")
 	public String commuteManagement() {

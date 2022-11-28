@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>   
+   
 <% String ctxPath = request.getContextPath(); %>    
     
 <style type="text/css">
@@ -124,6 +126,8 @@
             "endDate": today,
             "maxDate": today
         }, function(start, end, label) {
+        			let html = "";
+        	
                 start = new Date(start.format('YYYY-MM-DD'))
                 const sunday = start.getTime() - 86400000 * start.getDay();
         
@@ -143,17 +147,99 @@
                 $("span#enddate").text("~ "+end)
 
                 // 여기서 ajax 시작
+                $.ajax({
+                		url:"<%=ctxPath%>/commute/ajaxMycommute.yolo",
+                		data:{"startdate":start,
+                			  "enddate":end,
+                			  "fk_empno":'${sessionScope.loginuser.empno}'},
+                		dataType:"JSON",
+                		success:function(json){
+                			
+                			if(json.length > 0) {
+                				
+						$.each(json, function(index,item){
+                					
+            					let worktime = item.worktime;
+            					let overtime = item.overtime;
+            					
+            					if(worktime == 0) {
+            						worktime = worktime+" 시간" 
+            					}
+            					
+            					if(overtime == 0) {
+            						overtime = overtime+" 시간" 
+            					}
+            					
+            					html += "<tr>"+
+            								"<td>"+item.dt+"</td>"+
+            								"<td>"+item.start_work_time+"</td>"+
+            								"<td>"+item.end_work_time+"</td>"+
+            								"<td>"+worktime+"</td>"+
+            								"<td>"+overtime+"</td>"+
+            							"</tr>"
+            				})// end of $.each ------------------------------
+                				
+                				$("tbody#schedule-data").html(html)
+                				
+                			}
+                			
+                		}
+                		
+                })// end of ajax 
             });
             // end of $("input#daterange").daterangepicker
 
 
 
-            $("span#today-btn").click(function() {
+            $("span#today-btn").click(function() { // '오늘' 버튼을 클릭할시
 
+            		let html = "";
+            	
                 getCurrentWeek();
                 $("input#daterange").val(today.toISOString().slice(0, 10))
-
                 // 여기서 ajax 시작
+                const start = $("span#startdate").text();
+        		    const end = $("span#enddate").text().substring(2);
+        		    
+                $.ajax({
+                		url:"<%=ctxPath%>/commute/ajaxMycommute.yolo",
+                		data:{"startdate":start,
+                			  "enddate":end,
+                			  "fk_empno":'${sessionScope.loginuser.empno}'},
+                		dataType:"JSON",
+                		success:function(json){
+                			
+                			if(json.length > 0) {
+                				
+                				$.each(json, function(index,item){
+                					
+                					let worktime = item.worktime;
+                					let overtime = item.overtime;
+                					
+                					if(worktime == 0) {
+                						worktime = worktime+" 시간" 
+                					}
+                					
+                					if(overtime == 0) {
+                						overtime = overtime+" 시간" 
+                					}
+                					
+                					html += "<tr>"+
+                								"<td>"+item.dt+"</td>"+
+                								"<td>"+item.start_work_time+"</td>"+
+                								"<td>"+item.end_work_time+"</td>"+
+                								"<td>"+worktime+"</td>"+
+                								"<td>"+overtime+"</td>"+
+                							"</tr>"
+                				})// end of $.each ------------------------------
+                				
+                				$("tbody#schedule-data").html(html)
+                				
+                			}
+                			
+                		}
+                		
+                })// end of ajax
 
             });// end of $("span#today-btn").click -------------
 
@@ -194,6 +280,7 @@
 
 </script>
 
+<div style="width: 90%; margin : 0 5% 0 5%;">
     <nav class="top-nav border-bottom">
         <div class="category">
             <a href="#" class="h4 mr-2 text-dark font-weight-bold">나의 출퇴근</a>
@@ -227,17 +314,28 @@
                         <th>초과근무시간</th>   
                     </tr>
                 </thead>
-                <tbody>
-                    <div id="schedule-data">
-                        <tr>
-                            <td>2022.11.07</td>
-                            <td>09:00</td>
-                            <td>18:00</td>
-                            <td>8</td>
-                            <td>x</td>
-                        </tr>
-                    </div>
+                <tbody id="schedule-data">
+                		<c:forEach var="commute" items="${requestScope.commuteList}">
+                			<tr>
+                         <td>${commute.dt}</td>
+                         <td>${commute.start_work_time}</td>
+                         <td>${commute.end_work_time}</td>
+                         <c:if test="${commute.worktime == '0'}">
+                         	<td>${commute.worktime} 시간</td>
+                         </c:if>
+                         <c:if test="${commute.worktime != '0'}">
+                         	<td>${commute.worktime}</td>
+                         </c:if>
+                         <c:if test="${commute.overtime == '0'}">
+                         	<td>${commute.overtime} 시간</td>
+                         </c:if>
+                         <c:if test="${commute.overtime != '0'}">
+                         	<td>${commute.overtime}</td>
+                         </c:if>
+                    		</tr>
+                		</c:forEach>
                 </tbody>
           </table>
         </div>
     </div>
+</div>

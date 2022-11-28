@@ -49,14 +49,14 @@
 	</delete>
 	
 	<insert id="commuteStart" parameterType="String">
-		insert into tbl_commute(commuteno, fk_empno, start_work_time, end_work_time, worktime, work_kind)
+		insert into tbl_commute(commuteno, fk_empno, start_work_time, end_work_time, worktime, overtime)
 		values(seq_commuteno.nextval, #{fk_empno}, sysdate, null, null, null)
 	</insert>
 	
 	<select id="checkCommute" parameterType="String" resultType="com.yolo.hr.josh.model.CommuteVO">
 		select commuteno, fk_empno 
 		       , to_char(start_work_time,'yyyy-mm-dd hh24:mi:ss') as start_work_time
-		       , end_work_time, worktime, work_kind 
+		       , end_work_time, worktime, overtime 
 		from tbl_commute 
 		where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
 		      and fk_empno = #{fk_empno}
@@ -68,5 +68,29 @@
 		where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
 		      and fk_empno = '${fk_empno}'	
 	</update>
+	
+	
+	<select id="mycommute" parameterType="HashMap" resultType="com.yolo.hr.josh.model.CommuteVO">
+		select dt,commuteno, nvl(fk_empno,'${fk_empno}') AS fk_empno 
+		       , nvl2(start_work_time,to_char(start_work_time,'yyyy-mm-dd hh24:mi'),'X') as start_work_time
+		       , nvl2(end_work_time,to_char(end_work_time,'yyyy-mm-dd hh24:mi'),'X') as end_work_time
+		       , nvl(worktime,0) AS worktime
+		       , nvl(overtime,0) AS overtime 
+		from 
+		(
+		select * 
+		from tbl_commute 
+		where fk_empno = '${fk_empno}'
+		)c
+		right join 
+		(
+		SELECT TO_CHAR(TO_DATE('${startdate}','YYYY-MM-DD') + LEVEL - 1, 'YYYY-MM-DD') AS dt
+		  FROM dual 
+		  CONNECT BY LEVEL <![CDATA[<=]]> (TO_DATE('${enddate}','YYYY-MM-DD')   
+		                                 - TO_DATE('${startdate}','YYYY-MM-DD') + 1) 
+		) d
+		on to_char(c.start_work_time,'yyyy-mm-dd') = d.dt
+		order by dt asc
+	</select>
 	
 </mapper>
