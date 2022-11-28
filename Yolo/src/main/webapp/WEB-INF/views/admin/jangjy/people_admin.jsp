@@ -232,18 +232,33 @@ form#regist_frm  div.show {
 	border-radius: 10px;
 	width: 458px;
 }
-<%--
-회원
- 
-가입
- 
-모달
- 
-css
- 
-끝
-  
---%>
+<%-- 회원 가입 모달 css 끝 --%>
+
+<%-- header a태그 css  --%>
+a.a_title{
+	font-size: 28px;
+	font-weight: 700;
+	letter-spacing: -1.12px;
+	text-decoration: none solid rgb(60, 70, 81);
+	word-spacing: 0px;
+	color: #cdd2d6;
+}
+<%-- color : #3C4651; --%>
+a.a_title:hover{
+	text-decoration: none;
+	color: #9e9e9e;
+}
+a.a_title:link, a.a_titlevisited, a.a_titleactive {
+	text-decoration: none;
+	color: #9e9e9e;
+}
+a.current{
+	color : #3C4651;
+}
+a.current:hover{
+	color : #3C4651;
+}
+
 </style>
 
 <script>
@@ -500,7 +515,6 @@ css
 	function func_getEmpInfo(){ <%-- 파라미터로 사원 번호 전달 받기 --%>
 	 	<%-- 특정 사원번호 전달 --%>
 		location.href = "<%=ctxPath%>/user_detail.yolo" ;
-		
 	}
 
 </script>
@@ -508,11 +522,9 @@ css
 <div id="peopleContent">
 	<div id="header">
 		<div id="header_title">
-			<a href="<%=ctxPath%>/people.yolo"><span class="title">구성원</span></a>
-			<a href="<%=ctxPath%>/organization_chart.yolo"><span
-				class="title">조직도</span></a> <a
-				href="<%=ctxPath%>/change_history.yolo"><span class="title">인사
-					정보 관리</span></a>
+			<a class="a_title current" href="<%=ctxPath%>/people.yolo"><span class="title">구성원</span></a>
+			<a class="a_title" href="<%=ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a> 
+			<a class="a_title" href="<%=ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
 		</div>
 		<div id="button_title">
 			<button id="registMember" type="button" class="btn"
@@ -560,6 +572,13 @@ css
 								</div>
 								<input name="hire_date" type="text"
 									class="input_modal daterange" placeholder="입사일 입력"></input>
+							</div>
+								<div>
+								<div class="regitst_title">
+									급여<span style="color: red;">*</span>
+								</div>
+								<input name="name" class="input_modal" type="text"
+									autocomplete="off" placeholder="급여 입력" />
 							</div>
 
 							<%-- =========== 부서 선택 =========== --%>
@@ -632,6 +651,31 @@ css
 								</div>
 							</div>
 							<%-- =========== 직위 선택 =========== --%>
+							
+							
+							<%-- =========== 직속상관 선택 =========== --%>
+							<div style="margin: 10px 0;">
+								<div class="regitst_title">직속 상관</div>
+								<input type="hidden" name="position" id="position" />
+
+								<button id="btn" class=" btn choice_type" type="button"
+									data-toggle="dropdown">
+									<div style="display: flex; justify-content: space-between;">
+										<div id="retirement_type">직속상관 선택</div>
+										<i class="fas fa-bars" style="padding: 5px;"></i>
+									</div>
+								</button>
+
+								<div class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button">직속상관1</button>
+									<button class="btn_label dropdown-item" type="button">직속상관2</button>
+									<button class="btn_label dropdown-item" type="button">직속상관3</button>
+									<button class="btn_label dropdown-item" type="button">직속상관4</button>
+									<button class="btn_label dropdown-item" type="button">직속상관5</button>
+								</div>
+							</div>
+							<%-- =========== 직속상관 선택 =========== --%>
+							
 						</div>
 					</form>
 				</div>
