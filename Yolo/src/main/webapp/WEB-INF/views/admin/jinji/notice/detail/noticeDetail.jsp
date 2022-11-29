@@ -125,12 +125,12 @@
 		margin: auto 5px;
 	}
 	
-	span.cmt:hover {
-		filter: brightness(60%);
+	textarea.commentForm:focus {
+		outline : 2px solid #66cc66;
 	}
 	
-	textarea:focus {
-		outline : 2px solid #66cc66;
+	div.commentrow:hover {
+		background-color: #f2fcea;
 	}
 
 </style>    
@@ -224,19 +224,42 @@
 					        </form>
 					    </div>
 					</div> <%-- 댓글 입력란 끝 --%>   
-			        <%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 --%>
+					<hr style="border-color: #66cc66;">					
+					
+			        <%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
 			        <div class="mt-3 mb-2">
-			        	<div>
-				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span></span>
+			        	<div class="commentrow">
+				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
 				        	<div style="display:inline;	float: right;">
 			        			<button type="button" class="MYcommentBnt mr-0" >수정</button>
 			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
 			        		</div>
-				        	<span class="mt-3 mb-3" style="display:block; font-size: 10pt; color: gray;"><span class="pr-2"> ▶ 좋은 댓글 작성합니다.</span><span class="ml-2" style="float: right;">2022-11-30</span></span>
+				        	<span class="commentrow mt-3 mb-4" style="display:block; font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
 				        </div>	
+				        <hr style="border-color: #66cc66;">
+				        
 			        	<%-- 댓글 test --%>
-			        
-			       		<%-- 댓글 페이징-스크롤링 / 익명 댓글? 프로필 --%>
+						<div class="commentrow">
+				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
+				        	<div style="display:inline;	float: right;">
+			        			<button type="button" class="MYcommentBnt mr-0" >수정</button>
+			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
+			        		</div>
+				        	<span class="mt-3 mb-4" style="display:block; font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+				        </div>	
+				        <hr style="border-color: #66cc66;">
+				        			        
+			        	<div class="commentrow">
+				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
+				        	<div style="display:inline;	float: right;">
+			        			<button type="button" class="MYcommentBnt mr-0" >수정</button>
+			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
+			        		</div>
+				        	<span class="mt-3 mb-4" style="display:block; font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+				        </div>	
+				        <hr style="border-color: #66cc66;">	
+				        <%-- 댓글 test 끝--%>
+				        
 			      	</div>
 	  		 	</div>
 	  		 </div> 

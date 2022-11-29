@@ -113,7 +113,7 @@
 		filter: brightness(60%);
 	}
 	
-	textarea:focus {
+	textarea.commentForm:focus {
 		outline : 2px solid #66cc66;
 	}
 

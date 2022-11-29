@@ -80,6 +80,10 @@
 	    color: #999999;
 	}
 	
+	.filebox .upload-name:focus {
+		outline : 2px solid #66cc66;
+	}
+	
 	.filebox label {
 	    display: inline-block;
 	    padding: 9px 20px;
