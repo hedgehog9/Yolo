@@ -220,9 +220,18 @@
 		$(document).on("click","#end_work", function(){
 			
 			let html = "";
-			   
-		   	const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-		    let minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			let endtime = distance;
+			let message = "";
+			
+			const getminute = getMinute().substring(0,2);
+			
+			if(getminute > 12) { // 만약 퇴근버튼을 누른시간이 13시이상이라면 1시간 빼기
+				endtime = endtime - 3600000;
+				
+			}
+			
+		   	const hour = Math.floor((endtime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+		    let minute = Math.floor((endtime % (1000 * 60 * 60)) / (1000 * 60));
 		    
 		    if(minute < 10) {
     				minute = "0"+minute;
@@ -232,22 +241,29 @@
 			
 			let overtime;
 			
-			if(distance > 28800000) {
-				overtime = distance - 28800000;
-				const overtime_hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-				const overtime_minute = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+			if(endtime > 28800000) {
+				overtime = endtime - 28800000;
+				const overtime_hour = Math.floor((endtime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+				const overtime_minute = Math.floor((endtime % (1000 * 60 * 60)) / (1000 * 60));
 				overtime = hour +"시간 "+minute+"분";
 			}
 			else {
 				overtime = 0;
 			}
 			
+			if(getminute > 12) { // 13시라면 1시간 휴계시간 공제
+				message = '<b style="color: blue">'+worktime+' 근무 </b><br>'+
+  			  			  '<small>휴게시간 1시간 공제</small>';
+			}
+			else {
+				message = '<b style="color: blue">'+worktime+' 근무 </b><br>'
+			}
 			
 			
 			Swal.fire({
-				   title: '근무시간 '+worktime+'\n 퇴근하시겠습니까?',
+				   title: '퇴근하시겠습니까?',
 				   icon: 'warning',
-				   
+				   html: message,
 				   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
 				   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
 				   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
@@ -310,6 +326,13 @@
 		const today = year + '-' + month + '-' + day; // 오늘 날짜를 가져옴
 		
 		return today;
+	}
+	
+	function getMinute() {
+		const date = new Date();
+		const time = date.toTimeString().split(' ')[0];
+		
+		return time;
 	}
 	
 	
@@ -392,7 +415,7 @@
 	    
 	    const time = hour +"시간 "+ minute +"분";
 	    
-	    if(distance > 28800000) {
+	    if(distance > 32400000) {
 	    		$("#work-time").html("<span style=color:'red';>"+time+"</span>");
 	    }
 	    else {
@@ -403,7 +426,7 @@
 		
 	}  
 	
-    if(distance > 28800000) {
+    if(distance > 32400000) {
 		toastr.warning('근무시간이 경과하였습니다. 퇴근버튼을 누르세요');
 	}
 

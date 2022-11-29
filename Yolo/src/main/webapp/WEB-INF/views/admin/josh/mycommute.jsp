@@ -39,7 +39,7 @@
         margin-top: auto;
     }
 
-    span#worktime {
+    span#plus_worktime {
         font-weight: 600;
         font-size: 20px;
         padding-left: 40px;
@@ -51,11 +51,6 @@
         height: 8px;
     }
 
-	div#commute-table {
-		padding-left: 40px;
-        padding-right: 40px;
-        padding-bottom: 16px;
-	}
 
     
 
@@ -70,6 +65,13 @@
         let today = new Date();
 
         getCurrentWeek();
+        
+        let plus_worktime = "${requestScope.plus_worktime}";
+        let hour = Math.floor((plus_worktime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        
+        $("span#plus_worktime").text(hour+"시간");
+        
+        // console.log(hour/40)
 
         var bar = new ProgressBar.Line(gagebar, { // 게이지바 생성
             strokeWidth: 4,
@@ -81,7 +83,7 @@
             svgStyle: {width: '100%', height: '100%'}
         });
 
-        bar.animate(0.5);  // 게이지바 화면에 뿌리는 코드
+        bar.animate(hour/40);  // 게이지바 화면에 뿌리는 코드
         
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -127,6 +129,8 @@
             "maxDate": today
         }, function(start, end, label) {
         			let html = "";
+        			plus_worktime = 0;
+        			hour = 0;
         	
                 start = new Date(start.format('YYYY-MM-DD'))
                 const sunday = start.getTime() - 86400000 * start.getDay();
@@ -157,30 +161,38 @@
                 			
                 			if(json.length > 0) {
                 				
-						$.each(json, function(index,item){
-                					
-            					let worktime = item.worktime;
-            					let overtime = item.overtime;
-            					
-            					if(worktime == 0) {
-            						worktime = worktime+" 시간" 
-            					}
-            					
-            					if(overtime == 0) {
-            						overtime = overtime+" 시간" 
-            					}
-            					
-            					html += "<tr>"+
-            								"<td>"+item.dt+"</td>"+
-            								"<td>"+item.start_work_time+"</td>"+
-            								"<td>"+item.end_work_time+"</td>"+
-            								"<td>"+worktime+"</td>"+
-            								"<td>"+overtime+"</td>"+
-            							"</tr>"
-            				})// end of $.each ------------------------------
+							$.each(json, function(index,item){
+	                					
+	            					let worktime = item.worktime;
+	            					let overtime = item.overtime;
+	            					
+	            					if(worktime == 0) {
+	            						worktime = worktime+" 시간" 
+	            					}
+	            					else {
+	            						plus_worktime += worktime.substring(0,1)*3600000;
+	            						plus_worktime += worktime.substring(4,6)*60000;
+	            						
+	            					}
+	            					
+	            					if(overtime == 0) {
+	            						overtime = overtime+" 시간" 
+	            					}
+	            					
+	            					html += "<tr>"+
+	            								"<td>"+item.dt+"</td>"+
+	            								"<td>"+item.start_work_time+"</td>"+
+	            								"<td>"+item.end_work_time+"</td>"+
+	            								"<td>"+worktime+"</td>"+
+	            								"<td>"+overtime+"</td>"+
+	            							"</tr>"
+	            				})// end of $.each ------------------------------
                 				
                 				$("tbody#schedule-data").html(html)
                 				
+                				hour = Math.floor((plus_worktime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+							$("span#plus_worktime").text(hour+"시간");
+						    bar.animate(hour/40);
                 			}
                 			
                 		}
@@ -194,6 +206,8 @@
             $("span#today-btn").click(function() { // '오늘' 버튼을 클릭할시
 
             		let html = "";
+            		plus_worktime = 0;
+        			hour = 0;
             	
                 getCurrentWeek();
                 $("input#daterange").val(today.toISOString().slice(0, 10))
@@ -213,28 +227,36 @@
                 				
                 				$.each(json, function(index,item){
                 					
-                					let worktime = item.worktime;
-                					let overtime = item.overtime;
-                					
-                					if(worktime == 0) {
-                						worktime = worktime+" 시간" 
-                					}
-                					
-                					if(overtime == 0) {
-                						overtime = overtime+" 시간" 
-                					}
-                					
-                					html += "<tr>"+
-                								"<td>"+item.dt+"</td>"+
-                								"<td>"+item.start_work_time+"</td>"+
-                								"<td>"+item.end_work_time+"</td>"+
-                								"<td>"+worktime+"</td>"+
-                								"<td>"+overtime+"</td>"+
-                							"</tr>"
-                				})// end of $.each ------------------------------
+	            					let worktime = item.worktime;
+	            					let overtime = item.overtime;
+	            					
+	            					if(worktime == 0) {
+	            						worktime = worktime+" 시간" 
+	            					}
+	            					else {
+	            						plus_worktime += worktime.substring(0,1)*3600000;
+	            						plus_worktime += worktime.substring(4,6)*60000;
+	            						
+	            					}
+	            					
+	            					if(overtime == 0) {
+	            						overtime = overtime+" 시간" 
+	            					}
+	            					
+	            					html += "<tr>"+
+	            								"<td>"+item.dt+"</td>"+
+	            								"<td>"+item.start_work_time+"</td>"+
+	            								"<td>"+item.end_work_time+"</td>"+
+	            								"<td>"+worktime+"</td>"+
+	            								"<td>"+overtime+"</td>"+
+	            							"</tr>"
+	            				})// end of $.each ------------------------------
                 				
                 				$("tbody#schedule-data").html(html)
                 				
+                				hour = Math.floor((plus_worktime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                				$("span#plus_worktime").text(hour+"시간");
+						    bar.animate(hour/40);
                 			}
                 			
                 		}
@@ -284,7 +306,7 @@
     <nav class="top-nav border-bottom">
         <div class="category">
             <a href="#" class="h4 mr-2 text-dark font-weight-bold">나의 출퇴근</a>
-            <a href="<%= ctxPath %>/admin/commuteManagement.yolo" class="h4 mr-2 text-secondary font-weight-bold">나의 관리</a>
+            <a href="<%= ctxPath %>/admin/commuteManagement.yolo" class="h4 mr-2 text-secondary font-weight-bold">관리</a>
         </div>
     </nav>
     <div id="commute-content">
@@ -297,8 +319,8 @@
         </div>
         <div id="worktime-gagebar" class="d-flex border-bottom">
             <div id="display-worktime">
-                <span id="worktime" style="vertical-align: middle;">20시간</span> <!-- DB에서 일주일 동안 일한 시간가져오기 -->
-                <span class="text-secondary"> / 52시간</span>
+                <span id="plus_worktime" style="vertical-align: middle;"></span> <!-- DB에서 일주일 동안 일한 시간가져오기 -->
+                <span class="text-secondary"> / 40시간</span>
             </div>
             <div id="gagebar"></div>
         </div>
@@ -317,21 +339,21 @@
                 <tbody id="schedule-data">
                 		<c:forEach var="commute" items="${requestScope.commuteList}">
                 			<tr>
-                         <td>${commute.dt}</td>
-                         <td>${commute.start_work_time}</td>
-                         <td>${commute.end_work_time}</td>
-                         <c:if test="${commute.worktime == '0'}">
-                         	<td>${commute.worktime} 시간</td>
-                         </c:if>
-                         <c:if test="${commute.worktime != '0'}">
-                         	<td>${commute.worktime}</td>
-                         </c:if>
-                         <c:if test="${commute.overtime == '0'}">
-                         	<td>${commute.overtime} 시간</td>
-                         </c:if>
-                         <c:if test="${commute.overtime != '0'}">
-                         	<td>${commute.overtime}</td>
-                         </c:if>
+	                         <td>${commute.dt}</td>
+	                         <td>${commute.start_work_time}</td>
+	                         <td>${commute.end_work_time}</td>
+	                         <c:if test="${commute.worktime == '0'}">
+	                         	<td>${commute.worktime} 시간</td>
+	                         </c:if>
+	                         <c:if test="${commute.worktime != '0'}">
+	                         	<td>${commute.worktime}</td>
+	                         </c:if>
+	                         <c:if test="${commute.overtime == '0'}">
+	                         	<td>${commute.overtime} 시간</td>
+	                         </c:if>
+	                         <c:if test="${commute.overtime != '0'}">
+	                         	<td>${commute.overtime}</td>
+	                         </c:if>
                     		</tr>
                 		</c:forEach>
                 </tbody>
