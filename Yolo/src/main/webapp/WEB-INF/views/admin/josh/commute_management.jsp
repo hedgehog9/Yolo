@@ -2,6 +2,11 @@
     pageEncoding="UTF-8"%>
     
 <% String ctxPath = request.getContextPath(); %>  
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ttskch/select2-bootstrap4-theme@x.x.x/dist/select2-bootstrap4.min.css">
+
 <style>
 
     a { text-decoration:none !important }
@@ -77,7 +82,10 @@
     vertical-align: middle;
     border-top: 1px solid #dee2e6;
 	}
-
+	
+	.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
+		border: none;
+	}
 	
 </style>
 
@@ -88,6 +96,10 @@
         let today = new Date();
 
         getCurrentWeek();
+        
+        $("#dept-select").select2({
+        		theme: 'bootstrap4',
+        });
         
         /*
         var bar = new ProgressBar.Line(gagebar, { // 게이지바 생성
@@ -251,10 +263,11 @@
 
 </script>
 
+<div style="width: 90%; margin : 0 5% 0 5%;">
     <nav class="top-nav border-bottom">
         <div class="category">
             <a href="<%= ctxPath %>/commute/mycommute.yolo" class="h4 mr-2 text-secondary font-weight-bold">나의 출퇴근</a>
-            <a href="#" class="h4 mr-2 text-dark font-weight-bold">나의 관리</a>
+            <a href="#" class="h4 mr-2 text-dark font-weight-bold">관리</a>
         </div>
     </nav>
     <div id="schedule-management-content">
@@ -262,9 +275,11 @@
             <a href="#" class="text-muted font-weight-bold mr-2 detail-category border-bottom border-dark"><span>주기별 근무</span></a> <!-- border-bottom border-dark 을 사용하여 url에 따라 밑줄 생성 -->
             <a href="#" class="text-muted font-weight-bold mr-2 detail-category"><span>보상휴가</span></a>
             <div style="margin-left: auto">
-                <select class="department-select">
-                    <option>부서선택</option>
-                </select>
+                <select id="dept-select" class="form-control" multiple="multiple" style="width: 300px">	
+			        <option value="apple" selected="selected">개발</option>
+			        <option value="watermelon">인사</option>
+			        <option value="peach">경영지원</option>
+    				</select>
             </div>
         </div>
         <div id="date" class="border-bottom">
@@ -297,3 +312,4 @@
             </table>
         </div>
     </div>
+</div>

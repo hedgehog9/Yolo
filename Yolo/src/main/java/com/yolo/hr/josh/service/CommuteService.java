@@ -41,6 +41,7 @@ public class CommuteService implements InterCommuteService {
 	@Override
 	public List<CommuteVO> mycommute(Map<String, String> paraMap) {
 		List<CommuteVO> commuteList = dao.mycommute(paraMap);
+		
 		return commuteList;
 	}
 	

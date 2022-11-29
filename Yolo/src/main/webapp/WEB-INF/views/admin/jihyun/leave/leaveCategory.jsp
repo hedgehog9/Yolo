@@ -34,7 +34,27 @@
 	
 	span.headerTitle2:hover {
 		cursor: pointer;
-		color: #494949;
+		color: v
+	}
+	
+	div#underBar1 {
+		height: 3.5px;
+		width: 110px;
+		position: relative;
+		top : 17px;
+		left: 35px;
+		background: #494949;
+		display: none;
+	}
+	
+	div#underBar2 {
+		height: 3.5px;
+		width: 140px;
+		position: relative;
+		top : 17px;
+		left: 150px;
+		background: #494949;
+		display: none;
 	}
 	
 	
@@ -60,7 +80,9 @@
 	
 	<div id="bottomcate" class="border-bottom pb-3">
 		<span class="headerTitle2 ml-5" id="empLeaveSubmit" onclick="javascript:location.href='<%= ctxPath%>/empLeaveUsingList.yolo'">휴가 신청내역</span>
-		<span class="headerTitle2" id="empLeaveStatus" onclick="javascript:location.href='<%= ctxPath%>/empLeaveStatus.yolo'">휴가 보유현황</span>
+		<span class="headerTitle2" id="empLeaveStatus" onclick="javascript:location.href='<%= ctxPath%>/empLeaveStatus.yolo'">휴가 보유/사용현황</span>
+		<div id="underBar1"></div>
+		<div id="underBar2"></div>
 	</div>
 	
 <%-- 관리인 연차 상세 페이지 끝 --%>
