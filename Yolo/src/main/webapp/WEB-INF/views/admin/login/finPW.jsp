@@ -25,19 +25,19 @@
        -webkit-background-clip: text;
                background-clip: text;
        color: transparent;
-       font-size: 22pt;
+       font-size: 29pt;
        font-weight: 800;
    }
 
 .info {
- 	font-size: 11pt;
+ 	font-size: 13.5pt;
  	color : #999999;
  	margin-bottom: 0px;
 
 
 }   
 .id {
-	font-size: 11pt;
+	font-size: 13.5pt;
  	color : #4d4d4d;
  	font-weight: bold;
 
@@ -45,12 +45,12 @@
 
 button.headerBtn {
 		border-radius: 0.5rem;
-		border: 1px solid #b3b3b3;
-		width: 160px;
-		height: 40px;
+		border: 1.5px solid #bfbfbf;
+		width: 200px;
+		height: 50px;
 		color: #4d4d4d;
 		font-weight: bold;
-		font-size: 11pt;
+		font-size: 13.5pt;
 		background-color: white;
 		margin-bottom: 20px;
 	}
@@ -59,11 +59,11 @@ button.headerBtn {
 button.goback {
 		border-radius: 0.5rem;
 		border: none;
-		width: 120px;
-		height: 40px;
+		width: 170px;
+		height: 50px;
 		color: #8c8c8c;
 		font-weight: bold;
-		font-size: 11pt;
+		font-size: 13.5pt;
 		background-color: white;
 		margin-bottom: 30px;
 	}

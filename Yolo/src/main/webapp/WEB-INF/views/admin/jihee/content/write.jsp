@@ -16,7 +16,7 @@
 
 .content {
 
-	margin: 30px 0px;
+	padding: 50px 0px 0px 70px;
 
 }
 
@@ -28,7 +28,7 @@
 	
 span#fontSubject {
 	
-	font-size: 20pt;
+	font-size: 25pt;
 	font-weight: bold;
 	margin-top: 25px;
 	margin-left: 5px;
@@ -38,7 +38,7 @@ span#fontSubject {
 
 div#information {
 	
-	font-size: 10pt;
+	font-size: 13pt;
 	margin-left: 5px;
 	margin-top: 10px;
 
@@ -46,47 +46,47 @@ div#information {
 
 img {
 
-	width: 30px;
-	height: 35px;
+	width: 40px;
+	height: 40px;
 	margin: 5px;
 }
 
 div#contents {
 	
-	font-size: 12pt;
+	font-size: 15pt;
 	color: #4d4d4d;
 	font-weight: bold;
-	margin: 20px 5px;
+	margin: 25px 5px;
 
 }
 
     input.search {
 	border-radius: 0.5rem;
 	border: 1px solid #b3b3b3;
-	width: 600px;
-	height: 35px;
+	width: 650px;
+	height: 45px;
 	font-weight: bold;
-	font-size: 10pt;
+	font-size: 13pt;
 
 }
 
     textarea.search {
 	border-radius: 0.5rem;
 	border: 1px solid #b3b3b3;
-	width: 600px;
+	width: 650px;
 	font-weight: bold;
-	font-size: 10pt;
+	font-size: 13pt;
 
 }
 	
 	    span#modalprof{
-		width: 40px; 
-		height: 40px; 
+		width: 45px; 
+		height: 45px; 
 		border-radius: 40%; 
 		background-color: #239afe;
 		color: white;
 		border: 1px solid #ccced0;
-		font-size: 10pt;
+		font-size: 12pt;
 		text-align: center;
 		padding: 9px 7px;
 	}
@@ -97,9 +97,9 @@ div#contents {
     border-radius: 10px;
     border-style: hidden;
     box-shadow: 0 0 0 1px #ccced0;
-    width: 350px;
-/*     height : 300px; */
-
+    width: 400px;
+    height : 500px; 
+	font-size: 15pt;
     
   }
   
@@ -113,11 +113,13 @@ div#contents {
   }
   
   span#status2{
-	width: 55px; 
-	height: 25px; 
+	width: 60px; 
+	height: 30px; 
 	background-color: #c1f0c1;
-	border-radius: 20%; 
-	color: black;
+	border-radius: 0.5rem;
+	font-weight : bold;
+	font-size : 14pt;
+	color: #4d4d4d;;
 	text-align: center;
 	/* border: 1px solid #ccced0; */
 	margin: auto;
@@ -205,11 +207,11 @@ textarea:focus {
             
 </script>
 		
-<div class="container">
+<div class="contai" style="overflow-x: hidden;">
 	<form name="wirteFrm">
-		<div class="row">
+		<div class="row" style="padding: 0px;">
 			
-				<div class="col-8 content">
+				<div class="col-7 content">
 					<img src="<%= ctxPath%>/image/jihee/${requestScope.icon}">
 					<span id="fontSubject">${requestScope.subject}</span>	
 					<div id="information">${requestScope.information}</div>
@@ -234,7 +236,7 @@ textarea:focus {
 				</div>	
 			
 			
-		<div class="col-4 " style="margin-top:30px;">
+		<div class="col-5 " style="margin-top:50px; padding-left: 20px; width: 430px;">
 			<div style="float:left;">   
 			    <table>
 			    	<thead>
@@ -245,57 +247,51 @@ textarea:focus {
 			    	<tbody>
 			    		<!-- 반복시작 -->
 			    		<tr>
-			    			<th colspan="3" style="color:#4d4d4d; font-size: 10pt; font-weight: bold; padding: 0px 25px;">1단계</th>
+			    			<th colspan="3" style="color:#4d4d4d; font-size: 12pt; font-weight: bold; padding: 0px 25px;">1단계</th>
 			    		</tr>
 			    		<tr> 
 			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 11pt;">이름</td>
-			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 10pt; padding: 3px 5px; float: right;"> 
+			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">이름</td>
+			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
 			    			승인</span>	</td>		    			
 			    		</tr>    		
 			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 10pt;">직책</td>
+			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">직책</td>
 			    		</tr>
 			    		<tr>
 			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
 			    		</tr>
 			    		<!-- 반복 끝 -->
 			    		<tr>
-			    			<th colspan="3" style="color:#4d4d4d; font-size: 10pt; font-weight: bold; padding: 0px 25px;">2단계</th>
+			    			<th colspan="3" style="color:#4d4d4d; font-size: 12pt; font-weight: bold; padding: 0px 25px;">1단계</th>
 			    		</tr>
 			    		<tr> 
 			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 11pt;">이름</td>
-			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 10pt; padding: 3px 5px; float: right;"> 
+			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">이름</td>
+			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
 			    			승인</span>	</td>		    			
 			    		</tr>    		
 			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 10pt;">직책</td>
+			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">직책</td>
 			    		</tr>
 			    		<tr>
 			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
 			    		</tr>
-			    		
 			    		<tr>
-			    			<th colspan="3" style="color:#4d4d4d; font-size: 10pt; font-weight: bold; padding: 0px 25px;">3단계</th>
+			    			<th colspan="3" style="color:#4d4d4d; font-size: 12pt; font-weight: bold; padding: 0px 25px;">1단계</th>
 			    		</tr>
 			    		<tr> 
 			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 11pt;">이름</td>
-			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 10pt; padding: 3px 5px; float: right;"> 
+			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">이름</td>
+			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
 			    			승인</span>	</td>		    			
 			    		</tr>    		
 			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 10pt;">직책</td>
+			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">직책</td>
 			    		</tr>
 			    		<tr>
 			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
 			    		</tr>
-			    		
-			    		
-			    		
-			    		
-			    		
 			    	</tbody>
 			    </table>
 	   		 </div>
