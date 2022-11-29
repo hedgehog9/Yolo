@@ -138,7 +138,37 @@ public class CommuteController {
         paraMap.put("fk_empno",empno);
         
         List<CommuteVO> commuteList = service.mycommute(paraMap);
+        
+        long plus_worktime = 0;
+		int hour = 0;
+		int minute = 0;
 		
+		
+		if(commuteList != null) {
+			
+			for(CommuteVO commutevo :commuteList) {
+				
+				String worktime = commutevo.getWorktime();
+				
+				if(worktime.equals("0")) {
+					worktime = "00000000";
+				}
+				
+				hour = Integer.parseInt(worktime.substring(0,1));
+				minute = Integer.parseInt(worktime.substring(4,6));
+				
+				hour = hour*3600000;
+				minute = minute*60000;
+				
+				plus_worktime += hour;
+				plus_worktime += minute;
+				
+				// System.out.println("time => " + time);
+			}
+			
+		}
+		
+		request.setAttribute("plus_worktime", plus_worktime);
         request.setAttribute("commuteList", commuteList);
         
 		return "josh/mycommute.admin";
