@@ -49,22 +49,6 @@
  		color: red;
  		margin-left: 10px;
  	}
- 	
-	button {
-		border-style: none;
-		box-shadow: none !important;
-		background-color: inherit;
-		padding: 0;
-		margin: 0;
-		text-align: left;
-		cursor: pointer;
-	}
-	
-	button:link, button:visited,
-	button:active, button:hover { 
-		border-style: none;
-		display: inherit; 
-	}
 	
 	table {
 		margin-top : 10px;
@@ -198,10 +182,8 @@
 		$("span#myLeave").css("color", "#494949");
 		
 		$('input#daterange').daterangepicker({
-              timePicker: true,
-              timePicker24Hour: true,
               locale: {
-                "format": 'YYYY-MM-DD HH:mm',
+                "format": 'YYYY-MM-DD',
                 "separator": " ~ ",
                 "applyLabel": "확인",
                 "cancelLabel": "취소",
