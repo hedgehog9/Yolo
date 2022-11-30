@@ -106,47 +106,7 @@
 		background-color: #FAFAFA;
 	}
 	
-	
-	
-	/* 게시물 한 개 모달 content  */
-	
-	.onelist {
-		min-height: 110px;
-	}
-	
-	.onelistrow {
-  		max-height: 100%;
-		min-height: 90px;
-		align-items: center;
-	}
-	
-	.onelistsub {
-		display: flex;
-		align-items: center;
-	}
-	
-	.onelistsubcontent {
-		float: left;
-		
-	}
-	
-	#prof {
-		margin-bottom: 10px;
-	}
-	
-	.onelistsubCon {
-		clear: both;
-	}
-	
-	
-	/* 파일 다운로드 링크  */
-	a:link, a:visited, a:active, a:hover {
-		text-decoration: none;
-		color: #9e9e9e;
-	}
-	
-	
-	
+
 	
 </style>
 
@@ -235,61 +195,5 @@
 	
 </div> <%-- 공지리스트 끝 --%>
 
-
-
-<%-- 게시글 하나 Modal --%>
-<div class="modal right fade" id="myListModal" tabindex="-1" data-backdrop="static" aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-scrollable modal-right modal-md">
-  
-	    <%-- Modal content --%>
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <h4 class="modal-title" id="myListModalTitle">내 공지 </h4>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-	      </div>
-	      <div class="modal-body">
-	      	<div class="onelist"> <%-- onelist 시작 --%>
-		      	<div class="onelistrow">
-					<div class="onelistsub mt-4">
-						<div id="prof">내공지</div>
-						<div class="onelistsubcontent ml-1" style="width: 300px;">
-							<div>
-								<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-								<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-								<span style="margin-left: 10px; font-size: 10pt;">2022-12-25</span>
-							</div>
-							<div  class="onelistsubCon">
-								<span style="font-size: 10pt;"> 나공지  ▶ 인사부</span>
-							</div>
-						</div>
-					</div>	
-					<div class="onelistCon mt-4 ml-3 mr-5">	
-						<span style="max-width: 80px; max-height: 100px;">
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah 
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						공지 내용 보여주는 곳 blahblahblah
-						</span>
-					</div>	
-	  	  		</div> <%-- onelist 끝 --%>
-	  	 	 </div>
-	 	 </div>
-	 	 <div class="footer ml-3 mb-5" >
-			<div class="filedownload">
-              <span><a href="#" class="filedown">[<span style='font-size:20px;'>&#128194;</span> 파일 다운로드]
-              <img src="">
-			  <span>file name.pdf</span></a>	              
-              </span>
-            </div>
-		</div> <%-- file download 끝 --%>
-  	  </div>
-   </div>
-   
-</div>	
+<%-- 공지 상세 모달 --%>
+<%@ include file="detail/myNoticeDetail.jsp" %>

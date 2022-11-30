@@ -58,6 +58,10 @@
 		width: 150px;
 	}
 	
+	td.head:hover {
+		cursor: pointer;
+	}
+	
 	span.tableTitle {
 		display: block;
 		font-size: 12pt;
@@ -72,6 +76,9 @@
 
 </style>
 
+<%-- 말풍선 --%>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
 <script type="text/javascript">
 
 	$(document).ready(function () {
@@ -79,8 +86,15 @@
 		$("span#empLeave").css("color", "#494949");
 		$("span.headerTitle2").show();
 		$("span#empLeaveStatus").css("color", "#494949");
-	  
+		$("div#underBar2").css("display", "block");
+		
+		$('[data-toggle="tooltip"]').tooltip();
 	});
+	
+	function promotionLeave(){
+		toastr.success('김지현님에게<br>연차촉진 알림을 보냈습니다.');
+		
+	}
 
 	
 </script>	    
@@ -105,9 +119,9 @@
 		</thead>
 		<tbody>
 		    <tr>
-		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="head"><div class="tableProf">지현</div>김지현</td>
 		      <td class="patop">103</td>
-		      <td class="promotionLeave patop">12</td>
+		      <td class="promotionLeave patop" data-toggle="tooltip" data-placement="top" title="연차촉진하기" onclick="promotionLeave()">12</td>
 		      <td class="patop">25</td>
 		      <td class="patop">90</td>
 		      <td class="patop">4</td>
@@ -117,9 +131,9 @@
 		      <td class="patop">0</td>
 		    </tr>
 		    <tr>
-		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="head"><div class="tableProf">지현</div>김지현</td>
 		      <td class="patop">103</td>
-		      <td class="promotionLeave patop">12</td>
+		      <td class="promotionLeave patop" data-toggle="tooltip" data-placement="top" title="연차촉진하기" onclick="promotionLeave()">12</td>
 		      <td class="patop">25</td>
 		      <td class="patop">90</td>
 		      <td class="patop">4</td>
@@ -129,9 +143,9 @@
 		      <td class="patop">0</td>
 		    </tr>
 		    <tr>
-		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="head"><div class="tableProf">지현</div>김지현</td>
 		      <td class="patop">103</td>
-		      <td class="promotionLeave patop">12</td>
+		      <td class="promotionLeave patop" data-toggle="tooltip" data-placement="top" title="연차촉진하기" onclick="promotionLeave()">12</td>
 		      <td class="patop">25</td>
 		      <td class="patop">90</td>
 		      <td class="patop">4</td>
@@ -141,9 +155,9 @@
 		      <td class="patop">0</td>
 		    </tr>
 		    <tr>
-		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="head"><div class="tableProf">지현</div>김지현</td>
 		      <td class="patop">103</td>
-		      <td class="promotionLeave patop">12</td>
+		      <td class="promotionLeave patop" data-toggle="tooltip" data-placement="top" title="연차촉진하기" onclick="promotionLeave()">12</td>
 		      <td class="patop">25</td>
 		      <td class="patop">90</td>
 		      <td class="patop">4</td>
@@ -153,9 +167,9 @@
 		      <td class="patop">0</td>
 		    </tr>
 		    <tr>
-		      <td><div class="tableProf">지현</div>김지현</td>
+		      <td class="head"><div class="tableProf">지현</div>김지현</td>
 		      <td class="patop">103</td>
-		      <td class="promotionLeave patop">12</td>
+		      <td class="promotionLeave patop" data-toggle="tooltip" data-placement="top" title="연차촉진하기" onclick="promotionLeave()">12</td>
 		      <td class="patop">25</td>
 		      <td class="patop">90</td>
 		      <td class="patop">4</td>
