@@ -64,6 +64,10 @@
 		border-radius: 0.4rem;
 	}
 	
+	textarea#noticecontent:focus{
+		outline : 2px solid #66cc66;
+	}
+	
 	div#attachArea {
 		width: 80%;
 		margin: 0 10% 15px 10%;
@@ -381,13 +385,12 @@
       	<button class="dropdownBtn" type="button" id="dropdownMenuButton" onclick="search_choosePerson()">
          <div class="sentPsnProf"><i class="fas fa-solid fa-user"></i></div> <span style="color: #757575; font-size: 11pt; margin-left: 10px;">받는 사람 선택</span>
         </button>
-      	
         <textarea rows="" cols="" name="content" id="noticecontent"></textarea>
         <div id="attachArea">
         	<div class="filebox">
 			    <input class="upload-name" value="첨부파일" placeholder="첨부파일">
 			    <label for="file">파일 찾기</label> 
-			    <input type="file" id="file">
+			    <input type="file" id="file" multiple="multiple">
 			</div>
         </div>
       </form>

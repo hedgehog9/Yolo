@@ -30,6 +30,10 @@
 		border-radius: 0.4rem;
 	}
 	
+	textarea#editContent:focus{
+		outline : 2px solid #66cc66;
+	}
+	
 	div#attachFile {
 		width: 80%;
 		margin: 0 10% 15px 10%;
@@ -158,14 +162,14 @@
       <div class="modal-body">
       <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
       <form id='my_editform'>
-      	<input id="editsubject" name="editsubject" placeholder="원래 공지제목 들어가는 곳"/>
+      	<input id="editsubject" name="editsubject" placeholder="원래 공지제목 들어가는 곳" value=""/>
       	<span style="width: 80%; margin: 0 10%;">받는 사람</span>
         <textarea rows="" cols="" id="editContent" name="editContent">원래 공지 내용</textarea>
         <div id="attachFile">
         	<div class="fileEditbox">
 			    <input class="uploadName" value="첨부파일" placeholder="첨부파일">
 			    <label for="editfile">파일 찾기</label> 
-			    <input type="file" id="editfile">
+			    <input type="file" id="editfile" value="">
 			</div>
         </div>
       </form>

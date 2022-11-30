@@ -208,16 +208,16 @@
 					        	
 					        	<%-- 댓글 test --%>
 					        	<div class="cmt">
-					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-11-30</span></span>
+					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-11-28</span></span>
 					       		</div>
 					       		<div class="cmt">
-					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-11-30</span></span>
+					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-11-27</span></span>
 					       		</div>
 					       		<div class="cmt">
-					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-11-30</span></span>
+					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-11-10</span></span>
 					       		</div>
 					       		<div class="cmt">
-					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-11-30</span></span>
+					       			<span class="mt-2 mb-3" style="display: block; font-size: 10pt; color: gray;"> <span> ┗ </span><span id="prof" class="py-2">작성자</span><span>좋은 댓글 </span><span class="ml-3">2022-10-20</span></span>
 					       		</div>
 					       		<%-- 댓글 페이징-스크롤링 / 익명 댓글? 프로필 --%>
 					       	</div>

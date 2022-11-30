@@ -85,12 +85,14 @@
     
 <%-- 게시판 리스트 시작 --%>
 <div id="boardList">
+
 	<div class="listRow">
 		<div class="listRowInside">
 			<div id="prof" class="mt-3">전공지</div>
 			<div class="listcontent1 ml-4" style="width: 500px;" data-toggle="modal" data-target="#myListModal">
 				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
+				<span style="color: green;">[6]</span>	
 				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
 				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 

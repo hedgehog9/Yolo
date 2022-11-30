@@ -91,10 +91,24 @@
 		color: #07b419;
 	}
 	
+	button.cmtEditBnt {
+		width: 40px;
+		height: 20px;
+		border: 1px solid #07b419;
+		border-radius: 0.5rem;
+		margin-right: 10px;
+		font-weight: bold;
+		font-size : 9pt;
+		text-align : center;
+		background-color: #07b419;
+		color: white;
+	}
+	
 	 button.commentBnt:hover, 
 	 button.commentCancleBnt:hover,
 	 button.MYcommentBnt:hover,
-	 button.MYcommentCancelBnt:hover {
+	 button.MYcommentCancelBnt:hover, 
+	 button.cmtEditBnt:hover {
 		filter: brightness(90%);
 	}
 	
@@ -127,10 +141,20 @@
 	
 	textarea.commentForm:focus {
 		outline : 2px solid #66cc66;
+		border-radius: 0.5rem;
+		
+	}
+	
+	div.commentrow {
+		align-content: center;
+		border: 1px solid #e8e5e5;
+		border-radius: 0.5rem;
+		
 	}
 	
 	div.commentrow:hover {
-		background-color: #f2fcea;
+		background-color: #f4f2f2;
+		border-radius: 0.5rem;
 	}
 
 </style>    
@@ -206,14 +230,14 @@
 		            </div>
 			      	<div>
 			      		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
-			      		<span style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0;">작성된 공지 내용 들어가는 곳</span>
+			      		<span style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
 			      	</div>
 			      	<div style="margin: 30px 0;"> <%-- 댓글 입력란 시작 --%>
 				      	<span style="font-size: 16px;">&#128313; 댓글</span>
 			      		<div class="commentBox">
 				      		<form id="insertFrm" name="insertFrm">
 					        	<textarea class="commentForm" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; max-height: 10px;"></textarea>
-					        	<div>
+					        	<div class="mt-2">
 					        		<button type="button" class="commentBnt">댓글쓰기</button>
 									<button type="button" class="commentCancleBnt">취소</button>
 						        	<div class="textLengthWrap" style="float: right; color: #808080;">
@@ -224,40 +248,48 @@
 					        </form>
 					    </div>
 					</div> <%-- 댓글 입력란 끝 --%>   
-					<hr style="border-color: #66cc66;">					
 					
 			        <%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
 			        <div class="mt-3 mb-2">
-			        	<div class="commentrow">
+			        	<div class="commentrow  px-2 py-2">
 				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
 				        	<div style="display:inline;	float: right;">
-			        			<button type="button" class="MYcommentBnt mr-0" >수정</button>
+			        			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
 			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
 			        		</div>
-				        	<span class="commentrow mt-3 mb-4" style="display:block; font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+			        		<div class="mt-3">
+				        		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+				        		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+				        	</div>
 				        </div>	
-				        <hr style="border-color: #66cc66;">
+				        <hr>
 				        
 			        	<%-- 댓글 test --%>
-						<div class="commentrow">
+						<div class="commentrow  px-2 py-2">
 				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
 				        	<div style="display:inline;	float: right;">
-			        			<button type="button" class="MYcommentBnt mr-0" >수정</button>
+			        			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
 			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
 			        		</div>
-				        	<span class="mt-3 mb-4" style="display:block; font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+			        		<div class="mt-3">
+				        		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+				        		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+				        	</div>
 				        </div>	
-				        <hr style="border-color: #66cc66;">
+				        <hr>
 				        			        
-			        	<div class="commentrow">
+			        	<div class="commentrow  px-2 py-2">
 				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
 				        	<div style="display:inline;	float: right;">
-			        			<button type="button" class="MYcommentBnt mr-0" >수정</button>
+			        			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
 			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
 			        		</div>
-				        	<span class="mt-3 mb-4" style="display:block; font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+			        		<div class="mt-3">
+				        		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+				        		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+				        	</div>
 				        </div>	
-				        <hr style="border-color: #66cc66;">	
+				        <hr>	
 				        <%-- 댓글 test 끝--%>
 				        
 			      	</div>
