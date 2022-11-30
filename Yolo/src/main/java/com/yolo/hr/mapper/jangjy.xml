@@ -4,5 +4,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="jangjy">
+	<!-- 아이디와 비밀번호를 입력받아 select -->
+	<select id="checkLogin" resultType="com.yolo.hr.jjy.employee.model.EmployeeVO" parameterType="HashMap">
+		
+		<!-- select empno, name, lastname, firstname, email
+			  ,pwd, mobile, hiredate, retiredate
+			  ,fk_deptno,time_salary, rrn, position
+			  ,address, account, introduce
+			  ,status, profile_color
+		from tbl_employees
+		where email = #{email} and pwd = #{pwd} -->
+		
+		select empno, name, lastname, firstname, email
+			  ,pwd, mobile, hiredate, retiredate
+			  ,fk_deptno,time_salary, rrn, position
+			  ,address, account, introduce
+			  ,status, profile_color
+		from tbl_employees
+		where email = #{email} and pwd = #{pwd}
+	
+	</select>
+
 
 </mapper>
+
+
+

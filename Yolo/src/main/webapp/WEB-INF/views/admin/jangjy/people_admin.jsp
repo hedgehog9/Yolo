@@ -16,6 +16,7 @@ div#peopleContent {
 }
 
 div#header {
+	border-bottom: solid 1px #d9d9d9;
 	display: flex;
 	justify-content: space-between;
 }
@@ -32,7 +33,7 @@ div#header_title, div#button_title {
 }
 
 button#registMember {
-	background-color: #66cc66;
+	background: linear-gradient( to left ,#5bd3ff, #88eb1e );
 	color: white;
 }
 
@@ -56,8 +57,7 @@ tr {
 	width: 50px;
 }
 
-<%--
-상세 조회 아이콘 css --%> div.profile_icon {
+<%-- 상세 조회 아이콘 css --%> div.profile_icon {
 	width: 30px;
 	height: 30px;
 	border-radius: 40%;
@@ -71,8 +71,7 @@ tr {
 	font-size: 5pt;
 }
 
-<%--
-간단조회 아이콘 css --%> div.profile_icon2 {
+<%-- 간단조회 아이콘 css --%> div.profile_icon2 {
 	width: 50px;
 	height: 50px;
 	border-radius: 40%;
@@ -83,7 +82,7 @@ tr {
 	border: 1px solid #ccced0;
 	font-weight: bold;
 	margin: auto 8px;
-	font-size: 14pt;
+	font-size: 15px;
 }
 
 div.profile_icon2>div {
@@ -92,12 +91,15 @@ div.profile_icon2>div {
 
 div.profile, div.profile2 {
 	display: flex;
+	justify-content: start;
 }
 
-<%--
-검색버튼, 조직도 버튼, 다운로드 버튼 css --%> div#search_buttons {
+<%-- 검색버튼, 조직도 버튼, 다운로드 버튼 css --%> 
+div#search_buttons {
 	display: flex;
 	justify-content: end;
+	border-bottom: solid 1px #d9d9d9;
+	padding: 20px;
 }
 
 button.btn_search {
@@ -171,6 +173,12 @@ div.div_name2 {
 
 div.div_empInfo:hover {
 	background-color: #F8F9FA;
+}
+
+#search_result > table > tbody > tr > td{
+	height: 55px;
+	padding: 0;
+	vertical-align: middle;
 }
 
 <%--
@@ -248,16 +256,43 @@ a.a_title:hover{
 	text-decoration: none;
 	color: #9e9e9e;
 }
-a.a_title:link, a.a_titlevisited, a.a_titleactive {
+a.a_title:link, a.a_title:visited, a.a_title:active {
 	text-decoration: none;
 	color: #9e9e9e;
 }
-a.current{
+a.current,a.current:hover {
+	text-decoration: none;
 	color : #3C4651;
 }
-a.current:hover{
-	color : #3C4651;
+div#search_result{
+	width: 95%;
+	margin: 0 auto;
 }
+
+th,td{
+	text-align: center;
+	font-size: 14px;	
+}
+
+<%-- 검색태그 div css --%>
+div#div_searchTag{
+	border: solid 1px gray;
+	
+	padding: 40px 16px;
+	display: flex;
+	justify-content: space-between;
+	
+}
+<%-- 필터초기화 버튼 css --%>
+button.filter_clear{
+	border: solid 1px #d9d9d9;
+}
+<%-- 필터 추가 버튼 css --%>
+button#add_searchTag{
+	border: solid 1px #d9d9d9;
+	padding: 0;
+}
+
 
 </style>
 
@@ -332,39 +367,6 @@ a.current:hover{
 			}
 		});
 		
-		// 조직도 버튼 클릭시 
-		$(document).on("click","button#btn_organization",function(){
-			if(org_flag){ // 상세 조회 상태인 경우 
-				if($("div#organization_chart").css("display") == "none"){
-					$("button#btn_organization").css("background-color","#ebebeb");
-					$("div#organization_chart").css(
-												{"display":"block",
-												 "position":"relative",
-												 "width":"35%",
-												 "top":"-165px",
-												 "left":"65%",
-												 "background":"white",
-												 "height":"300px"})
-				}
-				else{
-					$("button#btn_organization").css("background-color","");
-					$("div#organization_chart").css("display","none");
-				}
-			}
-			else{ // 간단 조회 상태인 경우 
-				if($("div#organization_chart").css("display") == "none"){
-					$("button#btn_organization").css("background-color","#ebebeb");
-					$("div#organization_chart").show();
-					$("div.div_personOne").css("width","75%");
-				}
-				else{
-					$("button#btn_organization").css("background-color","");
-					$("div#organization_chart").hide();
-					$("div.div_personOne").css("width","100%");
-				}
-			}
-			
-		});
 		
 		// 다운로드 버튼 클릭시 
 		$(document).on("click","button#btn_search",function(){
@@ -379,7 +381,7 @@ a.current:hover{
 			let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
 							+'<thead>'
 								+'<tr>'
-									+'<th rowspan="2" class="th_100" style="vertical-align: middle">이름</th>'
+									+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
 									+'<th colspan=6>기본 정보</th>'
 									+'<th colspan=2>인사 정보</th>'
 									+'<th colspan=3>개인 정보</th>'
@@ -425,12 +427,321 @@ a.current:hover{
 									+'<td>010-1234-5678</td>'
 								+'</tr>'
 								<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
+								
+								
+								
+								
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								
+								+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+								+'<td class="th_150">'
+									+'<div class="profile">'
+										+'<div class="profile_icon"><div>길동</div></div>'
+										+'<div style="padding-top:3px;">홍길동</div>'
+									+'</div>'
+								+'</td>'
+								+'<td>재직</td>'
+								+'<td>333</td>'
+								+'<td>2022.10.11</td>'
+								+'<td>2022.10.12</td>'
+								+'<td>112개월</td>'
+								+'<td>15042일</td>'
+				
+								+'<td>개발1</td>'
+								+'<td>과장</td>'
+				
+								+'<td>hongkildong@gmail.com</td>'
+								+'<td>남</td>'
+								+'<td>010-1234-5678</td>'
+							+'</tr>'
+							+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+							+'<td class="th_150">'
+								+'<div class="profile">'
+									+'<div class="profile_icon"><div>길동</div></div>'
+									+'<div style="padding-top:3px;">홍길동</div>'
+								+'</div>'
+							+'</td>'
+							+'<td>재직</td>'
+							+'<td>333</td>'
+							+'<td>2022.10.11</td>'
+							+'<td>2022.10.12</td>'
+							+'<td>112개월</td>'
+							+'<td>15042일</td>'
+			
+							+'<td>개발1</td>'
+							+'<td>과장</td>'
+			
+							+'<td>hongkildong@gmail.com</td>'
+							+'<td>남</td>'
+							+'<td>010-1234-5678</td>'
+						+'</tr>'
+						+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+						+'<td class="th_150">'
+							+'<div class="profile">'
+								+'<div class="profile_icon"><div>길동</div></div>'
+								+'<div style="padding-top:3px;">홍길동</div>'
+							+'</div>'
+						+'</td>'
+						+'<td>재직</td>'
+						+'<td>333</td>'
+						+'<td>2022.10.11</td>'
+						+'<td>2022.10.12</td>'
+						+'<td>112개월</td>'
+						+'<td>15042일</td>'
+		
+						+'<td>개발1</td>'
+						+'<td>과장</td>'
+		
+						+'<td>hongkildong@gmail.com</td>'
+						+'<td>남</td>'
+						+'<td>010-1234-5678</td>'
+					+'</tr>'
+					+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+					+'<td class="th_150">'
+						+'<div class="profile">'
+							+'<div class="profile_icon"><div>길동</div></div>'
+							+'<div style="padding-top:3px;">홍길동</div>'
+						+'</div>'
+					+'</td>'
+					+'<td>재직</td>'
+					+'<td>333</td>'
+					+'<td>2022.10.11</td>'
+					+'<td>2022.10.12</td>'
+					+'<td>112개월</td>'
+					+'<td>15042일</td>'
+	
+					+'<td>개발1</td>'
+					+'<td>과장</td>'
+	
+					+'<td>hongkildong@gmail.com</td>'
+					+'<td>남</td>'
+					+'<td>010-1234-5678</td>'
+				+'</tr>'
+				+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+				+'<td class="th_150">'
+					+'<div class="profile">'
+						+'<div class="profile_icon"><div>길동</div></div>'
+						+'<div style="padding-top:3px;">홍길동</div>'
+					+'</div>'
+				+'</td>'
+				+'<td>재직</td>'
+				+'<td>333</td>'
+				+'<td>2022.10.11</td>'
+				+'<td>2022.10.12</td>'
+				+'<td>112개월</td>'
+				+'<td>15042일</td>'
+
+				+'<td>개발1</td>'
+				+'<td>과장</td>'
+
+				+'<td>hongkildong@gmail.com</td>'
+				+'<td>남</td>'
+				+'<td>010-1234-5678</td>'
+			+'</tr>'
+			+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+			+'<td class="th_150">'
+				+'<div class="profile">'
+					+'<div class="profile_icon"><div>길동</div></div>'
+					+'<div style="padding-top:3px;">홍길동</div>'
+				+'</div>'
+			+'</td>'
+			+'<td>재직</td>'
+			+'<td>333</td>'
+			+'<td>2022.10.11</td>'
+			+'<td>2022.10.12</td>'
+			+'<td>112개월</td>'
+			+'<td>15042일</td>'
+
+			+'<td>개발1</td>'
+			+'<td>과장</td>'
+
+			+'<td>hongkildong@gmail.com</td>'
+			+'<td>남</td>'
+			+'<td>010-1234-5678</td>'
+		+'</tr>'
+		+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+		+'<td class="th_150">'
+			+'<div class="profile">'
+				+'<div class="profile_icon"><div>길동</div></div>'
+				+'<div style="padding-top:3px;">홍길동</div>'
+			+'</div>'
+		+'</td>'
+		+'<td>재직</td>'
+		+'<td>333</td>'
+		+'<td>2022.10.11</td>'
+		+'<td>2022.10.12</td>'
+		+'<td>112개월</td>'
+		+'<td>15042일</td>'
+
+		+'<td>개발1</td>'
+		+'<td>과장</td>'
+
+		+'<td>hongkildong@gmail.com</td>'
+		+'<td>남</td>'
+		+'<td>010-1234-5678</td>'
+	+'</tr>'
+	+'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
+	+'<td class="th_150">'
+		+'<div class="profile">'
+			+'<div class="profile_icon"><div>길동</div></div>'
+			+'<div style="padding-top:3px;">홍길동</div>'
+		+'</div>'
+	+'</td>'
+	+'<td>재직</td>'
+	+'<td>333</td>'
+	+'<td>2022.10.11</td>'
+	+'<td>2022.10.12</td>'
+	+'<td>112개월</td>'
+	+'<td>15042일</td>'
+
+	+'<td>개발1</td>'
+	+'<td>과장</td>'
+
+	+'<td>hongkildong@gmail.com</td>'
+	+'<td>남</td>'
+	+'<td>010-1234-5678</td>'
++'</tr>'
++'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
++'<td class="th_150">'
+	+'<div class="profile">'
+		+'<div class="profile_icon"><div>길동</div></div>'
+		+'<div style="padding-top:3px;">홍길동</div>'
+	+'</div>'
++'</td>'
++'<td>재직</td>'
++'<td>333</td>'
++'<td>2022.10.11</td>'
++'<td>2022.10.12</td>'
++'<td>112개월</td>'
++'<td>15042일</td>'
+
++'<td>개발1</td>'
++'<td>과장</td>'
+
++'<td>hongkildong@gmail.com</td>'
++'<td>남</td>'
++'<td>010-1234-5678</td>'
++'</tr>'
++'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
++'<td class="th_150">'
+	+'<div class="profile">'
+		+'<div class="profile_icon"><div>길동</div></div>'
+		+'<div style="padding-top:3px;">홍길동</div>'
+	+'</div>'
++'</td>'
++'<td>재직</td>'
++'<td>333</td>'
++'<td>2022.10.11</td>'
++'<td>2022.10.12</td>'
++'<td>112개월</td>'
++'<td>15042일</td>'
+
++'<td>개발1</td>'
++'<td>과장</td>'
+
++'<td>hongkildong@gmail.com</td>'
++'<td>남</td>'
++'<td>010-1234-5678</td>'
++'</tr>'
++'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
++'<td class="th_150">'
+	+'<div class="profile">'
+		+'<div class="profile_icon"><div>길동</div></div>'
+		+'<div style="padding-top:3px;">홍길동</div>'
+	+'</div>'
++'</td>'
++'<td>재직</td>'
++'<td>333</td>'
++'<td>2022.10.11</td>'
++'<td>2022.10.12</td>'
++'<td>112개월</td>'
++'<td>15042일</td>'
+
++'<td>개발1</td>'
++'<td>과장</td>'
+
++'<td>hongkildong@gmail.com</td>'
++'<td>남</td>'
++'<td>010-1234-5678</td>'
++'</tr>'
++'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
++'<td class="th_150">'
+	+'<div class="profile">'
+		+'<div class="profile_icon"><div>길동</div></div>'
+		+'<div style="padding-top:3px;">홍길동</div>'
+	+'</div>'
++'</td>'
++'<td>재직</td>'
++'<td>333</td>'
++'<td>2022.10.11</td>'
++'<td>2022.10.12</td>'
++'<td>112개월</td>'
++'<td>15042일</td>'
+
++'<td>개발1</td>'
++'<td>과장</td>'
+
++'<td>hongkildong@gmail.com</td>'
++'<td>남</td>'
++'<td>010-1234-5678</td>'
++'</tr>'
++'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
++'<td class="th_150">'
+	+'<div class="profile">'
+		+'<div class="profile_icon"><div>길동</div></div>'
+		+'<div style="padding-top:3px;">홍길동</div>'
+	+'</div>'
++'</td>'
++'<td>재직</td>'
++'<td>333</td>'
++'<td>2022.10.11</td>'
++'<td>2022.10.12</td>'
++'<td>112개월</td>'
++'<td>15042일</td>'
+
++'<td>개발1</td>'
++'<td>과장</td>'
+
++'<td>hongkildong@gmail.com</td>'
++'<td>남</td>'
++'<td>010-1234-5678</td>'
++'</tr>'
++'<tr onclick="func_getEmpInfo();">'   <%-- tr태그의 인덱스 값을 파라미터로 넘겨서 호출하는 메소드에서 해당 사원의 상세 정보를 출력하도록 작성 필요 --%>
++'<td class="th_150">'
+	+'<div class="profile">'
+		+'<div class="profile_icon"><div>길동</div></div>'
+		+'<div style="padding-top:3px;">홍길동</div>'
+	+'</div>'
++'</td>'
++'<td>재직</td>'
++'<td>333</td>'
++'<td>2022.10.11</td>'
++'<td>2022.10.12</td>'
++'<td>112개월</td>'
++'<td>15042일</td>'
+
++'<td>개발1</td>'
++'<td>과장</td>'
+
++'<td>hongkildong@gmail.com</td>'
++'<td>남</td>'
++'<td>010-1234-5678</td>'
++'</tr>'
+								
+								
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
+								<%-- ========================== 반복해서 출력할 부분  ========== --%>
 							+'</tbody>'   	
-						+'</table>'
+						+'</table>';
 						
-						+'<div id="organization_chart" style="display:none; text-align: center; border: solid 1px gray; ">'
-							+'여기에 조직도'
-						+'</div>';
 				$("div#search_result").html(html);
 			
 		});
@@ -440,7 +751,7 @@ a.current:hover{
 			org_flag = false;
 			$("div#search_result").empty();
 			let html ='<div style="display: flex; margin-top:20px;">'
-						+'<div class="div_personOne" style="width:75%; padding-top: 15px;">'
+						+'<div class="div_personOne" style="width:100%; padding-top: 15px;">'
 							
 								<%-- 반복해서 출력할 div 묶음 시작  --%>
 								+'<div class="div_empInfo" style="display: flex; justify-content: space-between; margin: 10px; padding:10px;">'
@@ -460,9 +771,6 @@ a.current:hover{
 							
 						+'</div>'<%-- end of <div style="width:75%; padding-top: 15px;"> --%>
 						
-						+'<div id="organization_chart" style="width:35%; text-align: center; border: solid 1px gray; ">'
-							+'여기에 조직도'
-						+'</div>'
 					+'</div>';
 			$("div#search_result").html(html);
 		});
@@ -470,34 +778,6 @@ a.current:hover{
 		
 		// 문서 로딩 시 기본값 테이블 보기로 설정
 		$("button#view_table").trigger("click");
-		
-		
-		// 조직도 div 안에 조직도 수정 버튼 (...) 버튼 클릭시
-		$(document).on("click","button#org_edit_btn",function(){
-			
-			
-			
-		});
-		
-		// 조직도 펼치기, 접기 버튼 클릭시
-		$(document).on("click","button#zoom_in_zoom_out_btn",function(){
-			
-			if($("button#zoom_in_zoom_out_btn > i").hasClass("fa-expand-alt") == true){ // 클릭시 	 펼치기
-				
-				$("button#zoom_in_zoom_out_btn > i").removeClass("fa-expand-alt");
-				$("button#zoom_in_zoom_out_btn > i").addClass("fa-compress-alt");
-				$("button#zoom_in_zoom_out_btn").attr("data-original-title","조직도 접기");
-				
-			}
-			else{ // 클릭시 조직도 접기
-
-				$("button#zoom_in_zoom_out_btn > i").removeClass("fa-compress-alt");
-				$("button#zoom_in_zoom_out_btn > i").addClass("fa-expand-alt");
-				$("button#zoom_in_zoom_out_btn").attr("data-original-title","조직도 펼치기");
-				
-			}
-			
-		});
 		
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
@@ -522,7 +802,7 @@ a.current:hover{
 <div id="peopleContent">
 	<div id="header">
 		<div id="header_title">
-			<a class="a_title current" href="<%=ctxPath%>/people.yolo"><span class="title">구성원</span></a>
+			<a class="current" href="<%=ctxPath%>/people.yolo"><span class="title">구성원</span></a>
 			<a class="a_title" href="<%=ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a> 
 			<a class="a_title" href="<%=ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
 		</div>
@@ -691,9 +971,8 @@ a.current:hover{
 		</div>
 	</div>
 	<!-- ========================== 구성원 추가 모달 끝 ========================== -->
-
+	
 	<div id="search_buttons">
-
 		<%-- 검색어 입력 input 태그 --%>
 		<div id="div_search">
 			<i class="fas fa-search"></i> <input id="searchWord"
@@ -703,11 +982,6 @@ a.current:hover{
 		<%-- 검색 버튼 (클릭시 input태그 출력)  --%>
 		<button type="button" id="btn_search" class="btn btn_search">
 			<i class="fas fa-search"></i>
-		</button>
-
-		<%-- 조직도 조회 버튼 --%>
-		<button type="button" id="btn_organization" class="btn btn_search">
-			<i class="fas fa-sitemap"></i>
 		</button>
 
 		<%-- 구성원 정보 다운로드 버튼 --%>
@@ -727,6 +1001,36 @@ a.current:hover{
 			</button>
 		</div>
 	</div>
+	
+	<%-- 검색필터 추가 시작  --%>
+	<div id="div_searchTag">
+		<div id="serchTag_content">
+			
+			<button id="add_searchTag" data-toggle="dropdown" type="button" class="btn">
+				<i class="fas fa-plus"></i>필터 추가하기
+			</button>
+
+			<div class="dropdown-menu">
+				<button class="btn_label dropdown-item" type="button" data-toggle="dropdown">직위</button>
+					<div class="dropdown-menu">
+						<button class="dropdown-item" type	="button">사원</button>
+						<button class="dropdown-item" type="button">대리</button>
+						<button class="dropdown-item" type="button">과장</button>
+						<button class="dropdown-item" type="button">부장</button>
+						<button class="dropdown-item" type="button">사장</button>
+					</div>
+				<button class="btn_label dropdown-item" type="button">부서</button>
+				<button class="btn_label dropdown-item" type="button">재직상태</button>
+				<button class="btn_label dropdown-item" type="button">입사일</button>
+			</div>
+		</div>
+		
+		<div id="div_search_result">
+			<span>n명</span>		
+			<button type="button" class="btn filter_clear" >필터초기화</button>
+		</div>		
+	</div>
+	<%-- 검색필터 추가 시작  --%>
 
 
 	<div id="search_result"></div>

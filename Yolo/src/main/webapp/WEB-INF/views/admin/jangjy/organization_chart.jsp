@@ -12,6 +12,8 @@
     div#header{
     	display:flex;
     	justify-content: space-between;
+    	border-bottom: solid 1px #d9d9d9;
+    	margin-bottom: 50px;
     }
     
     span.title{
@@ -90,14 +92,12 @@ a.a_title:hover{
 	text-decoration: none;
 	color: #9e9e9e;
 }
-a.a_title:link, a.a_titlevisited, a.a_titleactive {
+a.a_title:link, a.a_title:visited, a.a_title:active {
 	text-decoration: none;
 	color: #9e9e9e;
 }
-a.current{
-	color : #3C4651;
-}
-a.current:hover{
+a.current,a.current:hover {
+	text-decoration: none;
 	color : #3C4651;
 }
     
@@ -115,7 +115,7 @@ a.current:hover{
 		<div id="header">
 	        <div id="header_title">
 	            <a class="a_title" href="<%= ctxPath%>/people.yolo"><span class="title">구성원</span></a>
-	            <a class="a_title current" href="<%= ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a>
+	            <a class="current" href="<%= ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a>
 	            <a class="a_title" href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
 	        </div>
 	    </div>
