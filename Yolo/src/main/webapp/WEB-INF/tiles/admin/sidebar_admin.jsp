@@ -143,6 +143,7 @@
 
 	let distance = 0;
 
+	let start_work_time = "";
 
 	$(document).ready(function(){
 		
@@ -225,7 +226,11 @@
 			
 			const getminute = getMinute().substring(0,2);
 			
-			if(getminute > 12) { // 만약 퇴근버튼을 누른시간이 13시이상이라면 1시간 빼기
+			console.log(start_work_time.toTimeString().split(' ')[0].substring(0,2))
+			
+			let chul = start_work_time.toTimeString().split(' ')[0].substring(0,2)
+		
+			if(endtime > 18000000 && chul < 14) { 
 				endtime = endtime - 3600000;
 				
 			}
@@ -251,7 +256,7 @@
 				overtime = 0;
 			}
 			
-			if(getminute > 12) { // 13시라면 1시간 휴계시간 공제
+			if(endtime > 18000000) { // 13시라면 1시간 휴계시간 공제
 				message = '<b style="color: blue">'+worktime+' 근무 </b><br>'+
   			  			  '<small>휴게시간 1시간 공제</small>';
 			}
@@ -351,7 +356,7 @@
 					
 					//console.log("확인용 => " + json.start_work_time)
 				    //console.log("확인용 => " + getDateMinute())
-				    let start_work_time = json.start_work_time
+				    start_work_time = json.start_work_time
 				    let sysdate = getDateMinute()
 				   
 				    start_work_time = new Date(start_work_time);
@@ -404,6 +409,8 @@
 	
 	
     function plus_time() {
+    		const gethour = getMinute() // 시간을 가져옴
+    		
 		distance += 60000
 		
 		const hour = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));

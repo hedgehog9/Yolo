@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>       
+    
 <% String ctxPath = request.getContextPath(); %>  
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
@@ -87,6 +89,7 @@
 		border: none;
 	}
 	
+	
 </style>
 
 <script>
@@ -99,7 +102,12 @@
         
         $("#dept-select").select2({
         		theme: 'bootstrap4',
+        		placeholder:"조직을 선택하세요",
         });
+        
+        const a = $('#management-categoty-div > div > span > span.selection > span').val()
+        
+        console.log(a)
         
         /*
         var bar = new ProgressBar.Line(gagebar, { // 게이지바 생성
@@ -260,7 +268,16 @@
         $("span#enddate").text("~ "+end)
 
     }
-
+    
+    <%-- function totalCommuteList(currentShowPageNo) {
+    		
+    		$.ajax({
+    			url:"<%= ctxPath %>/admin/selectCommuteList",
+    			data:{"startdate":},
+    		})
+    } --%>
+	
+    
 </script>
 
 <div style="width: 90%; margin : 0 5% 0 5%;">
@@ -276,9 +293,14 @@
             <a href="#" class="text-muted font-weight-bold mr-2 detail-category"><span>보상휴가</span></a>
             <div style="margin-left: auto">
                 <select id="dept-select" class="form-control" multiple="multiple" style="width: 300px">	
-			        <option value="apple" selected="selected">개발</option>
-			        <option value="watermelon">인사</option>
-			        <option value="peach">경영지원</option>
+			        <c:forEach var="map" items="${requestScope.deptList}">
+			        <c:if test="${map.level == '1'}">
+			        		<option value="${map.deptno}" disabled="disabled" class="bold	">${map.deptname}</option>
+			        	</c:if>
+			        	<c:if test="${map.level == '2'}">
+			        		<option value="${map.deptno}">&nbsp;&nbsp;${map.deptname}</option>
+			        	</c:if>
+			        </c:forEach>
     				</select>
             </div>
         </div>
