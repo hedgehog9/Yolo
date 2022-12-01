@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <% String ctxPath = request.getContextPath(); %>
 
 <jsp:include page="/WEB-INF/views/admin/jihee/writeHeader2.jsp"></jsp:include>
@@ -62,7 +66,7 @@ div#contents {
 
     input.search {
 	border-radius: 0.5rem;
-	border: 1px solid #b3b3b3;
+	border: 1px solid #dddddd;
 	width: 650px;
 	height: 45px;
 	font-weight: bold;
@@ -72,7 +76,7 @@ div#contents {
 
     textarea.search {
 	border-radius: 0.5rem;
-	border: 1px solid #b3b3b3;
+	border: 1px solid #dddddd; /* #b3b3b3 */
 	width: 650px;
 	font-weight: bold;
 	font-size: 13pt;
@@ -83,9 +87,9 @@ div#contents {
 		width: 45px; 
 		height: 45px; 
 		border-radius: 40%; 
-		background-color: #239afe;
+		/* background-color: #239afe; */
 		color: white;
-		border: 1px solid #ccced0;
+		border: 0px solid #ccced0;
 		font-size: 12pt;
 		text-align: center;
 		padding: 9px 7px;
@@ -140,7 +144,51 @@ textarea:focus {
 	outline : 2px solid #66cc66;
 }
 
-  
+
+div#attachArea {
+	width: 80%;
+	margin: 0 10% 15px 5px;
+}
+	
+	
+.filebox .upload-name {
+	    display: inline-block;
+	    height: 40px;
+	    padding: 0 10px;
+	    vertical-align: middle;
+	    border: 1px solid #dddddd;
+	    width: 70%;
+	    border-radius: 0.4rem;
+	    color: #999999;
+	}
+ .filebox label {
+	    display: inline-block;
+	    padding: 9px 20px;
+	    color: #fff;
+	    vertical-align: middle;
+	    text-align: center;
+	    background-color: #88eb1e;
+	    cursor: pointer;
+	    width : 25%;
+	    height: 40px;
+	    margin-left: 0px;
+	    margin-top: 5px;
+	    border-radius: 0.4rem;
+	}
+	
+	.filebox input[type="file"] {
+	    position: absolute;
+	    width: 0;
+	    height: 0;
+	    padding: 0;
+	    overflow: hidden;
+	    border: 0;
+	} 
+	
+	textarea::placeholder {
+    color: #999999;
+    font-weight: normal;
+	}
 
 </style>
 
@@ -198,12 +246,13 @@ textarea:focus {
   	};		
   	
 
+  
 
             
 </script>
 		
 <div class="contai" style="overflow-x: hidden;">
-	<form name="wirteFrm">
+	<form name="wirteFrm" enctype="multipart/form-data">
 		<div class="row" style="padding: 0px;">
 			
 				<div class="col-7 content">
@@ -232,9 +281,10 @@ textarea:focus {
 						  
 	                 <div id="attachArea">
 			        	<div class="filebox">
+			        		<label for="file">파일찾기</label> 
+			        		<input type="file" id="file">
 						    <input class="upload-name" value="첨부파일" placeholder="첨부파일">
-						    <label for="file">파일찾기</label> 
-						    <input type="file" id="file">
+						    
 						</div>
 			        </div>
 
@@ -251,52 +301,31 @@ textarea:focus {
 			    	</thead>
 			    	<tbody>
 			    		<!-- 반복시작 -->
+			    		<c:if test="${not empty requestScope.appList}">
+			    		<c:forEach var="map" items="${requestScope.appList}">
 			    		<tr>
-			    			<th colspan="3" style="color:#4d4d4d; font-size: 12pt; font-weight: bold; padding: 0px 25px;">1단계</th>
+			    			<th colspan="3" style="color:#4d4d4d; font-size: 12pt; font-weight: bold; padding: 0px 25px;">${map.levelno}단계</th>
 			    		</tr>
 			    		<tr> 
-			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">이름</td>
+			    			<c:set var="TextValue" value="${map.name}"/>
+			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof" style="background-color: ${map.profile_color}">${fn:substring(TextValue,1,3)}</span></td>
+			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">${map.name} </td>
 			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
 			    			승인</span>	</td>		    			
 			    		</tr>    		
 			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">직책</td>
+			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">${map.position} · ${map.deptname}</td>
 			    		</tr>
 			    		<tr>
 			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
 			    		</tr>
+			    		</c:forEach>
+			    		</c:if>
+			    		<c:if test="${empty requestScope.appList}">
+			    		비었따
+			    		</c:if>
 			    		<!-- 반복 끝 -->
-			    		<tr>
-			    			<th colspan="3" style="color:#4d4d4d; font-size: 12pt; font-weight: bold; padding: 0px 25px;">1단계</th>
-			    		</tr>
-			    		<tr> 
-			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">이름</td>
-			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
-			    			승인</span>	</td>		    			
-			    		</tr>    		
-			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">직책</td>
-			    		</tr>
-			    		<tr>
-			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
-			    		</tr>
-			    		<tr>
-			    			<th colspan="3" style="color:#4d4d4d; font-size: 12pt; font-weight: bold; padding: 0px 25px;">1단계</th>
-			    		</tr>
-			    		<tr> 
-			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">이름</td>
-			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
-			    			승인</span>	</td>		    			
-			    		</tr>    		
-			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">직책</td>
-			    		</tr>
-			    		<tr>
-			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
-			    		</tr>
+			    		
 			    		
 			    	</tbody>
 			    </table>

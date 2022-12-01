@@ -5,4 +5,35 @@
 
 <mapper namespace="choijh">
 
+	<resultMap type="HashMap" id="approvalMap">
+   	   <result property="levelno"    	 column="levelno"    			javaType="String"/>
+   	   <result property="deptno"  		 column="deptno"  				javaType="String"/>
+   	   <result property="FK_EMPNO"       column="FK_EMPNO"      		javaType="String"/>
+   	   <result property="position"       column="position"      		javaType="String"/>
+	   <result property="name"       	 column="name"      			javaType="String"/>	
+	   <result property="profile_color"  column="profile_color"      	javaType="String"/>	
+   	   <result property="deptname" 		 column="deptname"      	javaType="String"/>
+   </resultMap> 
+
+	<select id="appList" parameterType="HashMap" resultMap="approvalMap">
+		select G.gradeno AS levelno ,G.deptno , G.FK_EMPNO , E.position, E.name, E.profile_color, G.deptname
+		from
+		(
+		    select V.gradeno ,V.deptno , M.FK_EMPNO , deptname
+		    from 
+		    (
+		        select level AS gradeno , deptno , deptname
+		        from TBL_DEPT 
+		        start with deptno = #{deptno}
+		        connect by NOCYCLE prior upper_deptno = deptno) V
+		        join TBL_DEPT_MAPPING M
+		        on V.deptno = M.fk_deptno
+		) G
+		join TBL_EMPLOYEES E
+		on E.empno = G.FK_EMPNO
+		order by levelno asc
+	</select>
+
+	 
+
 </mapper>
