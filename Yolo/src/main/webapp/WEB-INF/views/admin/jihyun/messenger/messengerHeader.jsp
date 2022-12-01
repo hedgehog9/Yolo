@@ -3,6 +3,8 @@
     
 <% String ctxPath = request.getContextPath(); %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+
 <style>
 
 	div#messengerHeader {
@@ -333,11 +335,100 @@
 	
 	// dropdown 열기
 	function search_choosePerson(){
-		// toastr.info("정보 변경내역 조회 메소드 호출됨");
 		
 		$('#choosePerson').addClass('active');
 		$('button.dropdownBtn').css({'background-color':'#dddddd'});
 	    $('#choosePerson_outside').fadeIn();
+	    
+	    $.ajax({
+	    	url : "<%=ctxPath%>/jihyun/getDept.yolo",
+    		dataType: "JSON",
+			success: function(json){ 
+				
+				if(json.length>0){
+					
+					let html = "";
+					$.each(json, function(index, item){
+						html += '<div style="display: flex; align-items: center;" class="py-1">'+
+							'<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">'+item.deptname+'</label><span class="arrow" onclick="toggleDept()">&#128317;</span>'+
+							'</div>';
+						
+							// 부서 내 사람 구하기(부서장)
+							html += '<div id="insa" class="hid pl-5">';
+							$.ajax({
+						    	url : "<%=ctxPath%>/jihyun/getDeptPerson.yolo",
+						    	data : {deptno : item.deptno},
+					    		dataType: "JSON",
+								success: function(json2){
+									
+									if(json2.length>0){
+										$.each(json2, function(index, item){
+											html +='<div><input type="checkbox"/><label class="person ml-2">'+item.name+'</label></div>';
+										}); // end of for each
+									}
+									
+						        
+								},
+								error: function(request, status, error){
+					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					            }
+							}); // end of ajax (부서구하기)
+						    	
+							
+							// 부서내 팀 구하기
+							$.ajax({
+						    	url : "<%=ctxPath%>/jihyun/getTeam.yolo",
+						    	data : {deptno : item.deptno},
+					    		dataType: "JSON",
+								success: function(json3){
+									
+									if(json3.length>0){
+										$.each(json3, function(index, item){
+											html += '<div style="display: flex; align-items: center;" class="py-1">'+
+											'<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">'+item.deptname+'</label><span class="arrow" onclick="toggleDept()">&#128317;</span>'+
+											'</div>';
+												
+											
+											// 팀 내 사람 구하기(팀원들)
+											html += '<div id="insa" class="hid pl-5">';
+											$.ajax({
+										    	url : "<%=ctxPath%>/jihyun/getTeamPerson.yolo",
+										    	data : {deptno : item.deptno},
+									    		dataType: "JSON",
+												success: function(json4){
+													
+													if(json2.length>0){
+														$.each(json4, function(index, item){
+															html +='<div><input type="checkbox"/><label class="person ml-2">'+item.name+'</label></div>';
+														}); // end of for each
+													}
+										        
+												},
+												error: function(request, status, error){
+									                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+									            }
+											}); // end of ajax (팀 내 사람 구하기(팀원들))
+											html += '</div>';
+											
+										}); // end of for each
+									}
+								},
+								error: function(request, status, error){
+					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					            }
+							}); // end of ajax (팀구하기)
+							
+							html += '</div>';
+					});// end of each
+				}
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+	    }); // end of ajax
+	    
+	    $('div#resultOfAjax').html(html);
 		
 	}
 	
@@ -413,10 +504,20 @@
 		<div style="display: flex; align-items: center;" class="border-bottom py-2">
 			<input type="checkbox" class="ml-2"/><label class="person ml-2" style="font-weight: bold;">전체선택</label>
 		</div>
-		<div style="display: flex; align-items: center;" class="py-1 pt-2">
+		
+		<div id="resultOfAjax"></div>
+		
+		<!-- <div style="display: flex; align-items: center;" class="py-1 pt-2">
 			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
 		</div>
         <div id="insa" class="hid pl-5">
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        </div> -->
+        <!-- <div style="display: flex; align-items: center;" class="py-1">
+			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
+		</div>
+        <div id="insa" class="hid pl-5">
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
@@ -430,17 +531,7 @@
         	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        </div>
-        <div style="display: flex; align-items: center;" class="py-1">
-			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
-		</div>
-        <div id="insa" class="hid pl-5">
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        </div>
+        </div> -->
         
 	</div>
 	<div id="rightSide">
