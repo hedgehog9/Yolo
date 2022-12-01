@@ -6,7 +6,7 @@
 <mapper namespace="josh">
 
 	<select id="searchJoinUserList" parameterType="String" resultType="com.yolo.hr.josh.model.MemberVO">
-		select email, name from tbl_member
+		select email, name from tbl_employees
 		where lower(name) like '%'||lower(#{joinuser})||'%'
 	</select>
 
@@ -91,6 +91,22 @@
 		) d
 		on to_char(c.start_work_time,'yyyy-mm-dd') = d.dt
 		order by dt asc
+	</select>
+	
+	<resultMap type="HashMap" id="selectDeptMap">
+		<result property="level" 	column="level" 		javaType="String"/>
+		<result property="deptname" 	column="deptname" 		javaType="String"/>
+		<result property="deptno" 	column="deptno" 		javaType="String"/>
+	</resultMap>
+	
+	<select id="selectDept" resultMap="selectDeptMap">
+		select
+		level 
+		,LPAD(' ',(LEVEL-1)*2)||deptname AS deptname
+		,deptno
+		from tbl_dept
+		start with upper_deptno=1
+		connect by prior deptno = upper_deptno
 	</select>
 	
 </mapper>

@@ -179,6 +179,10 @@
 	            						overtime = overtime+" 시간" 
 	            					}
 	            					
+	            					if(item.start_work_time == 'X') {
+	            						
+	            					}
+	            					
 	            					html += "<tr>"+
 	            								"<td>"+item.dt+"</td>"+
 	            								"<td>"+item.start_work_time+"</td>"+
@@ -330,8 +334,8 @@
                 <thead class="table-light">
                     <tr>
                         <th>날짜</th>
-                        <th>출근시각</th>
-                        <th>퇴근시각</th>   
+                        <th class="text-center">출근시각</th>
+                        <th class="text-center">퇴근시각</th>   
                         <th>근무시간</th>   
                         <th>초과근무시간</th>   
                     </tr>
@@ -340,8 +344,18 @@
                 		<c:forEach var="commute" items="${requestScope.commuteList}">
                 			<tr>
 	                         <td>${commute.dt}</td>
-	                         <td>${commute.start_work_time}</td>
-	                         <td>${commute.end_work_time}</td>
+	                         <c:if test="${commute.start_work_time != 'X'}">
+	                         	<td class="text-center">${commute.start_work_time}</td>
+	                         </c:if>
+	                         <c:if test="${commute.start_work_time == 'X'}">
+	                         	<td class="text-center"><i class="fas fa-times"></i></td>
+	                         </c:if>
+	                         <c:if test="${commute.end_work_time != 'X'}">
+	                         	<td class="text-center">${commute.end_work_time}</td>
+	                         </c:if>
+	                         <c:if test="${commute.end_work_time == 'X'}">
+	                         	<td class="text-center"><i class="fas fa-times"></i></td>
+	                         </c:if>
 	                         <c:if test="${commute.worktime == '0'}">
 	                         	<td>${commute.worktime} 시간</td>
 	                         </c:if>
