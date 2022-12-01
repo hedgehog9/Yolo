@@ -49,22 +49,6 @@
  		color: red;
  		margin-left: 10px;
  	}
- 	
-	button {
-		border-style: none;
-		box-shadow: none !important;
-		background-color: inherit;
-		padding: 0;
-		margin: 0;
-		text-align: left;
-		cursor: pointer;
-	}
-	
-	button:link, button:visited,
-	button:active, button:hover { 
-		border-style: none;
-		display: inherit; 
-	}
 	
 	table {
 		margin-top : 10px;
@@ -109,46 +93,59 @@
 	}
 	
 	/* 모달 */
-	.modal.right .modal-dialog {
+	
+	div#leaveModal {
+		/* border:solid 2px green; */
+		width: 25%;
+		height: 100%;
+		overflow: auto;
+		display: flex;
+		flex-direction: column;
 		position: fixed;
-		margin: auto;
+		top: 0px;
+		left: 2000px;
+		z-index: 1052;
+		background: white;
+		border-radius: 0.3rem;
+		color: black;
+		transition: all 0.5s; 
+		padding: 5px;
+	}
+	
+	div#leaveModal.active {
+		top: 0px;
+		left: 75%;
+	}
+	
+	div#leaveModal_outside {
+		position: fixed;
+		top: 0px;
+		left: 0px;
 		width: 100%;
 		height: 100%;
-		-webkit-transform: translate3d(0%, 0, 0);
-		    -ms-transform: translate3d(0%, 0, 0);
-		     -o-transform: translate3d(0%, 0, 0);
-		        transform: translate3d(0%, 0, 0);
-	}
-
-	.modal.right .modal-content {
-		height: 100%;
-	/* 	overflow-y: auto; */
+		background: rgba(0, 0, 0, 0.2);
+		z-index: 1051;
+		display: none;
 	}
 	
-	.modal.right .modal-body {
-	 /* padding: 15px 15px 80px;  */
-	 	width: 100%; 
-	}
-	
-	.modal-footer {
-		border: none;
-	}
-	
-	.modal.right.fade .modal-dialog {
-		right: 0;
-		-webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
-		   -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
-		     -o-transition: opacity 0.3s linear, right 0.3s ease-out;
-		        transition: opacity 0.3s linear, right 0.3s ease-out;
-	}
-	
-	.modal.right.fade.in .modal-dialog {
-		right: 0;
-	}
-	
-	div.modal-middle {
+	div.modalTop {
 		width: 90%;
 		margin: auto 5%;
+		height: 7%;
+		padding-top: 15px;
+	}
+	
+	div.modalMiddle {
+		width: 90%;
+		margin: auto 5%;
+		height: 86%;
+	}
+	
+	div.modalBottom {
+		width: 90%;
+		margin: auto 5%;
+		height: 7%;
+		display : flex; 
 	}
 	
 	span.modalBage {
@@ -198,10 +195,8 @@
 		$("span#myLeave").css("color", "#494949");
 		
 		$('input#daterange').daterangepicker({
-              timePicker: true,
-              timePicker24Hour: true,
               locale: {
-                "format": 'YYYY-MM-DD HH:mm',
+                "format": 'YYYY-MM-DD',
                 "separator": " ~ ",
                 "applyLabel": "확인",
                 "cancelLabel": "취소",
@@ -218,10 +213,36 @@
               $("input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
           }); 
           
-
+		// 바깥영역 누르면 닫히는거
+		$('#leaveModal_outside').on('click', function () {
+			closeLeaveModal();
+		});
+		
+		// x 자 누르면 닫히는거
+		$("button.close").on('click', function () {
+			closeLeaveModal();
+		});
 		
 		
-	});
+		
+		
+	}); // end of ready 
+	
+	
+	// 열기
+	function openLeaveModal(){
+		$('#leaveModal').addClass('active');
+	    $('#leaveModal_outside').fadeIn();
+		
+	}
+	
+	// 닫기
+	function closeLeaveModal(){
+		$('#leaveModal').removeClass('active');
+	    $('#leaveModal_outside').fadeOut();
+	}
+	
+	
 </script>
 
 	<%-- 대쉬보드 시작 --%>
@@ -229,7 +250,7 @@
 		<h4 class="my-4">휴가등록</h4>
 		<div class="row">
 		  <div class="col-lg-3 mb-4">
-			  <div class="card" data-toggle="modal" data-target="#yearLeave">
+			  <div class="card" onclick="openLeaveModal()">
 			    <div class="card-body text-left ml-2">
 				 	<span style="font-size:30px;">&#9978;</span>
 			     	<h6 class="card-title mt-4">연차</h6>	
@@ -383,76 +404,36 @@
 <!-- 휴가 상세 모달 -->
 <%@ include file="modal/leaveDetailModal.jsp" %>
 
+<div id="leaveModal_outside"></div>
+
  
 <!-- 연차 Modal -->
-<div class="modal right fade" id="yearLeave" tabindex="-1"aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-scrollable modal-right modal-md">
-  
-	    <%-- Modal content --%>
-	    <div class="modal-content">
-	      <div class="modal-header py-3" >
-	        <span style="font-size:21px;">&#9978;</span><span class="miniTitle ml-3"> 연차</span>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-	      </div>
-	      <div class="modal-body">
-	      	<div class="modal-middle">
-		      	<span style="display: block; margin-top: 10px;">&#128204; 휴가정보</span>
-		      	<div style="margin: 10px auto;">
-		      		<span class="badge modalBage" style="background-color: #AFEEEE;">1년당 25개 사용가능</span>
-		      		<span class="badge modalBage" style="background-color: #B0E0E6;">유급</span>
-		      		<span class="badge modalBage" style="background-color: #B0C4DE;">연말만료</span>
-		      	</div>
-		      	<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>
-		      	<span class="badge modalBage" style="background-color: #AFEEEE; margin-top: 10px;">6일</span>
-		      	<span style="display: block; margin-top: 30px;">&#128221; 휴가 일정 · 필요 정보 입력</span>
-		      	<input type="text" id="daterange" class="form-control text-center">
-		        <input type="hidden" name="start_date" class="form-control text-center">
-		        <input type="hidden" name="end_date" class="form-control text-center">
-		        <textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>
-		        
-		 	</div>
-	 	 </div>
-	 	 <div class="modal-footer" >
-			<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;">취소</button>
-			<button type="button" class="leaveUsingBnt">휴가신청</button>
-		</div>
-  	  </div>
-   </div>
+<div id="leaveModal">
+      <div class="modalTop">
+      	<span style="font-size:21px;">&#9978;</span><span class="miniTitle ml-3"> 연차</span>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+       </div>
+      <div class="modalMiddle">
+	      	<span style="display: block; margin-top: 10px;">&#128204; 휴가정보</span>
+	      	<div style="margin: 10px auto;">
+	      		<span class="badge modalBage" style="background-color: #AFEEEE;">1년당 25개 사용가능</span>
+	      		<span class="badge modalBage" style="background-color: #B0E0E6;">유급</span>
+	      		<span class="badge modalBage" style="background-color: #B0C4DE;">연말만료</span>
+	      	</div>
+	      	<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>
+	      	<span class="badge modalBage" style="background-color: #AFEEEE; margin-top: 10px;">6일</span>
+	      	<span style="display: block; margin-top: 30px;">&#128221; 휴가 일정 · 필요 정보 입력</span>
+	      	<input type="text" id="daterange" class="form-control text-center">
+	        <input type="hidden" name="start_date" class="form-control text-center">
+	        <input type="hidden" name="end_date" class="form-control text-center">
+	        <textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>
+	 </div>
+ 	 
+ 	 <div class="modalBottom" >
+ 	 	<span style="flex-grow: 1;"> </span>
+		<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;">취소</button>
+		<button type="button" class="leaveUsingBnt">휴가신청</button>
+	</div>
 </div>
 
 
-<!-- 조의 Modal -->
-<div class="modal right fade" id="joy" tabindex="-1"aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-scrollable modal-right modal-md">
-  
-	    <%-- Modal content --%>
-	    <div class="modal-content">
-	      <div class="modal-header py-3" >
-	        <span style="font-size:21px;">&#9978;</span><span class="miniTitle ml-3"> 조의</span>
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-	      </div>
-	      <div class="modal-body">
-	      	<div class="modal-middle">
-		      	<span style="display: block; margin-top: 10px;">&#128204; 휴가정보</span>
-		      	<div style="margin: 10px auto;">
-		      		<span class="badge modalBage" style="background-color: #AFEEEE;">1년당 25개 사용가능</span>
-		      		<span class="badge modalBage" style="background-color: #B0E0E6;">유급</span>
-		      		<span class="badge modalBage" style="background-color: #B0C4DE;">연말만료</span>
-		      	</div>
-		      	<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>
-		      	<span class="badge modalBage" style="background-color: #AFEEEE; margin-top: 10px;">6일</span>
-		      	<span style="display: block; margin-top: 30px;">&#128221; 휴가 일정 · 필요 정보 입력</span>
-		      	<input type="text" id="daterange" class="form-control text-center">
-		        <input type="hidden" name="start_date" class="form-control text-center">
-		        <input type="hidden" name="end_date" class="form-control text-center">
-		        <textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>
-		        
-		 	</div>
-	 	 </div>
-	 	 <div class="modal-footer" >
-			<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;">취소</button>
-			<button type="button" class="leaveUsingBnt">휴가신청</button>
-		</div>
-  	  </div>
-   </div>
-</div>

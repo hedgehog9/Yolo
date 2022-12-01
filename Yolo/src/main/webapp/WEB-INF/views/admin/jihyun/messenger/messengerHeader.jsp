@@ -136,8 +136,7 @@
 		background-color: #757575;
 		color : white;
 		font-size: 12pt;
-		display: flex;
-  		align-items: center;
+		padding-top: 3px;
 	}
 	
 	i.fa-user {
@@ -208,14 +207,15 @@
 	
 	div#rightUp {
 		width: 100%;
-		height: 85%;
+		height: 100%;
 		max-height: 390px;
 		overflow: auto;
 	}
 	
 	div#rightDown {
 		width: 100%;
-		height: 15%;
+		height: 50px;
+		padding: 15px 0px;
 	}
 	
 	#leftSide::-webkit-scrollbar {
@@ -261,13 +261,22 @@
 	    background-color: #88eb1e;
 	    border: none;
 	    cursor: pointer;
-	    width : 90px;
+	    width : 80%;
 	    hight : 35px;
-	    margin-top: 5px;
+	    margin: 7px 10%;
 	    border-radius: 0.4rem;
   	}
   	
+  	div.choosedPsn{
+  		width: 100%;
+  		border-radius: 0.4rem;
+  		padding: 5px 5%;
+  	}
   	
+  	div.choosedPsn:hover {
+		cursor: pointer;
+		background-color: #f9fafa;
+	}
 	
 	
 </style>
@@ -281,16 +290,31 @@
 			  $(".upload-name").val(fileName);
 		});
 		
+		
 		$("button.my_close").on("click", function(){
 			
-			if (!confirm("메신저 보내기를 벗어납니다. 작성내용을 임시 저장 할까요?")) {
-				const modal_frmArr = document.querySelectorAll("form#my_form");
-			  	  for(let i=0; i<modal_frmArr.length; i++) {
-			  		  modal_frmArr[i].reset();
-			  	  }
-	        } else {
-	        	// $("div#staticBackdrop").modal(); 이거 안되네 나중에 다시 보자
-	        }
+			Swal.fire({
+				   title: '메신저 보내기를 벗어납니다.',
+				   text: '작성내용을 임시 저장 할까요?',
+				   icon: 'warning',
+				   
+				   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+				   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+				   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+				   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+				   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+				   
+				   // reverseButtons: true, // 버튼 순서 거꾸로
+				   
+				}).then(result => {
+				   // 만약 Promise리턴을 받으면, 
+				   if (!result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+					   const modal_frmArr = document.querySelectorAll("form#my_form");
+					  	  for(let i=0; i<modal_frmArr.length; i++) {
+					  		  modal_frmArr[i].reset();
+					  	  }
+				   }
+				});
 		  	  
 		}); 
 		
@@ -386,47 +410,49 @@
 
 <div id="choosePerson">
 	<div id="leftSide">
-		<div style="display: flex; align-items: center;" class="border-bottom">
-			<label class="person ml-2" style="font-weight: bold;">전체선택</label><input type="checkbox" class="ml-2"/>
+		<div style="display: flex; align-items: center;" class="border-bottom py-2">
+			<input type="checkbox" class="ml-2"/><label class="person ml-2" style="font-weight: bold;">전체선택</label>
 		</div>
-		<div style="display: flex; align-items: center;">
-			<span class="mr-1 arrow" onclick="toggleDept()">&#128317;</span><label class="person" style="font-weight: bold;">인사부</label><input type="checkbox" class="ml-2"/>
+		<div style="display: flex; align-items: center;" class="py-1 pt-2">
+			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
 		</div>
-        <div id="insa" class="hid ml-5">
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
+        <div id="insa" class="hid pl-5">
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         </div>
-        <div style="display: flex; align-items: center;">
-			<span class="mr-1 arrow" onclick="toggleDept()">&#128317;</span><label class="person" style="font-weight: bold;">인사부</label><input type="checkbox" class="ml-2"/>
+        <div style="display: flex; align-items: center;" class="py-1">
+			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
 		</div>
-        <div id="insa" class="hid ml-5">
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
+        <div id="insa" class="hid pl-5">
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         </div>
-        <div style="display: flex; align-items: center;">
-			<span class="mr-1 arrow" onclick="toggleDept()">&#128317;</span><label class="person" style="font-weight: bold;">인사부</label><input type="checkbox" class="ml-2"/>
+        <div style="display: flex; align-items: center;" class="py-1">
+			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
 		</div>
-        <div id="insa" class="hid ml-5">
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        	<div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
+        <div id="insa" class="hid pl-5">
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
         </div>
         
 	</div>
 	<div id="rightSide">
 		<div id="rightUp">
-		
+			<div class="choosedPsn" style="width: 100%;">
+				<div class="sentPsnProf ml-2" style="background-color: orange;"><span style="font-size: 9pt;">길동</span></div>
+				<span class="ml-2" style="padding-top: 3px;">홍길동</span>
+				<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">인사 · 관리자</span>
+			</div>
 		</div>
 		<div id="rightDown">
-			<button type="button" id="addPersonBtn" style="width: 80%; margin: 10px 10% 50px 10%;">받는사람 추가</button>
+			<button type="button" id="addPersonBtn">받는사람 추가</button>
 		</div>
 	
 	</div>

@@ -72,9 +72,20 @@
 		display: none;
 	}
 	
-	 button.mailBnt:hover {
+	 button.mailBnt:hover, button.mailTopBtn:hover {
 		filter: brightness(90%);
 	}  
+	
+	 button.mailTopBtn {
+	 	padding : 1px 15px;
+		height: 25px;
+		border: none;
+		border-radius: 1rem;
+		margin-right: 20px;
+		font-size : 10pt;
+		background-color: #C0C0C0;
+		color: white;
+	 }
 
 </style>
 
@@ -106,8 +117,10 @@
 	
 <div id="sendedMessenger">
 	<div id="messengertop">
-		<span style="margin-left:30px;">선택 메신저 읽기</span>
-		<span style="margin-left:50px;"> 안 읽은 메신저 모두 읽기</span>
+		<input type="checkbox" class="ml-2"/>
+		<span class="ml-2" style="flex-grow: 1;">안 읽은 메신저(4)</span>
+		<button type="button" class="mailTopBtn">선택 메신저 읽기</button>
+		<button type="button"  class="mailTopBtn">안 읽은 메신저 모두 읽기</button>
 	</div>
 	
 	<div class="mailRow">

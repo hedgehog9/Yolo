@@ -435,7 +435,7 @@
 		<div id="sideBar">
 		
 			<div id="sideTop" class="border-bottom">
-				<div class="sideTr mt-2" style="height: 70px;" onclick="#">
+				<div class="sideTr mt-2" style="height: 70px;" onclick="javascript:location.href='<%= ctxPath%>/user_detail.yolo'">
 					<div id="prof">길동</div>
 					<div>
 						<span class="ml-2" style="display: block; padding-top: 3px;">홍길동</span>
@@ -453,7 +453,7 @@
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/messenger/receivedMessage.yolo'">
 					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span>메신저</span><span class="badge badge-danger rounded-pill" style="margin-left: 60%">5</span>
 				</div>
-				<div class="sideTr" data-toggle="modal" data-target="#alarmModal">
+				<div class="sideTr" onclick="openAlarm()">
 					<i class="fas fa-regular fa-bell sideIcon"></i><span>새로운 소식</span><span class="badge badge-danger rounded-pill" style="margin-left: 50%">5</span>
 				</div>
 			</div>
