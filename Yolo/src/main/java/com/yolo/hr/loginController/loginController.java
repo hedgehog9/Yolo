@@ -52,6 +52,10 @@ public class loginController {
 			HttpSession session = request.getSession();
 			session.setAttribute("empno", loginuser.getEmpno());
 			session.setAttribute("fk_deptno", loginuser.getFk_deptno());
+			session.setAttribute("name", loginuser.getName());
+			session.setAttribute("name", loginuser.getPosition());
+			session.setAttribute("deptName", "부서명 구해와서 넣기");
+			
 			result = true;
 			
 			// System.out.println("확인용 loginuser ="+loginuser);

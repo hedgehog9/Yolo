@@ -12,7 +12,7 @@ import com.yolo.hr.jjy.employee.model.EmployeeVO;
 public class LoginDAO implements InterLoginDAO {
 
 	@Resource
-	private SqlSessionTemplate sqlsession; // 로컬DB MyMVC_USER 에 연결
+	private SqlSessionTemplate sqlsession; 
 	
 	
 	// 아이디와 비밀번호를 입력 받아 vo를 반환

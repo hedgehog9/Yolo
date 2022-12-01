@@ -21,7 +21,17 @@ public class EmployeeVO {
 	private String status; // 재직여부를 나타내는 컬럼
 	private String profile_color; // 프로필 색상
 
+	private String gender; // 성별 (오라클에서 func_gender()로 구해옴)
 	
+	
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	// Getter, Setter ///////////////////////////////////////////////
 	public String getEmpno() {
 		return empno;
@@ -166,5 +176,7 @@ public class EmployeeVO {
 	public void setProfile_color(String profile_color) {
 		this.profile_color = profile_color;
 	}
+	
+	
 
 }

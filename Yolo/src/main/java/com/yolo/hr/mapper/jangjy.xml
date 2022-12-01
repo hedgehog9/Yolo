@@ -6,15 +6,6 @@
 <mapper namespace="jangjy">
 	<!-- 아이디와 비밀번호를 입력받아 select -->
 	<select id="checkLogin" resultType="com.yolo.hr.jjy.employee.model.EmployeeVO" parameterType="HashMap">
-		
-		<!-- select empno, name, lastname, firstname, email
-			  ,pwd, mobile, hiredate, retiredate
-			  ,fk_deptno,time_salary, rrn, position
-			  ,address, account, introduce
-			  ,status, profile_color
-		from tbl_employees
-		where email = #{email} and pwd = #{pwd} -->
-		
 		select empno, name, lastname, firstname, email
 			  ,pwd, mobile, hiredate, retiredate
 			  ,fk_deptno,time_salary, rrn, position
@@ -22,7 +13,17 @@
 			  ,status, profile_color
 		from tbl_employees
 		where email = #{email} and pwd = #{pwd}
+	</select>
 	
+	<!-- 모든 사원의 정보를 조회하기  -->
+	<select id="getEmpList" resultType="com.yolo.hr.jjy.employee.model.EmployeeVO" parameterType="HashMap">
+		select empno, name, lastname, firstname, email
+			  ,pwd, mobile, hiredate, retiredate
+			  ,fk_deptno,time_salary, rrn, position
+			  ,address, account, introduce
+			  ,status, profile_color
+			  ,func_gender(rrn) as gender
+		from tbl_employees
 	</select>
 
 
