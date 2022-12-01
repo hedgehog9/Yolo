@@ -78,7 +78,34 @@
 			$(this).find("button").css("display","")
 		});
 		
-	});
+		// 모달 바깥영역 누르면 닫히는거
+		$('#myListModal_outside').on('click', function () {
+			closemyListModal();
+		});
+		
+		// 모달 닫기 x 자 누르면 닫히는거
+		$("button.close").on('click', function () {
+			closemyListModal();
+		});
+		
+	}); // end of $(document).ready(function() ------
+			
+	
+	// 모달 열기
+	function openmyListModal(){
+		$('#myListModal').addClass('active');
+	    $('#myListModal_outside').fadeIn();
+		
+	}
+	
+	// 모달 닫기
+	function closemyListModal(){
+		$('#myListModal').removeClass('active');
+	    $('#myListModal_outside').fadeOut();
+	}
+			
+			
+			
 
 </script>
 
@@ -89,7 +116,7 @@
 	<div class="listRow">
 		<div class="listRowInside">
 			<div id="prof" class="mt-3">전공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;" data-toggle="modal" data-target="#myListModal">
+			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
 				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
 				<span style="color: green;">[6]</span>	
@@ -158,6 +185,7 @@
 
 <%-- 공지 수정 모달 --%>
 <%@ include file="edit/noticeEdit.jsp" %>
+
 
 <%-- 공지 상세 모달 --%>
 <%@ include file="detail/noticeDetail.jsp" %>
