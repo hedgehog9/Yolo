@@ -50,11 +50,7 @@ public class loginController {
 		
 		if(loginuser != null) {
 			HttpSession session = request.getSession();
-			session.setAttribute("empno", loginuser.getEmpno());
-			session.setAttribute("fk_deptno", loginuser.getFk_deptno());
-			session.setAttribute("name", loginuser.getName());
-			session.setAttribute("name", loginuser.getPosition());
-			session.setAttribute("deptName", "부서명 구해와서 넣기");
+			session.setAttribute("loginuser", loginuser);
 			
 			result = true;
 			
