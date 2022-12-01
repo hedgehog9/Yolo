@@ -96,6 +96,8 @@
 	
 	div#leaveModal {
 		/* border:solid 2px green; */
+		width: 25%;
+		height: 100%;
 		overflow: auto;
 		display: flex;
 		flex-direction: column;
@@ -191,12 +193,6 @@
 	$(document).ready(function () {
 		
 		$("span#myLeave").css("color", "#494949");
-		
-		// 화면 크기만큼 modal에 witdh height를 주겠다
-		const web_browser_height = $(window).height(); 
-		const web_browser_width = $(window).width()/4; 
-		$("div#leaveModal").css({"height":web_browser_height, "width":web_browser_width});
-		
 		
 		$('input#daterange').daterangepicker({
               locale: {
