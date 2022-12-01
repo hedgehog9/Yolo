@@ -51,7 +51,6 @@ public class loginController {
 		if(loginuser != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("loginuser", loginuser);
-			
 			result = true;
 			
 			// System.out.println("확인용 loginuser ="+loginuser);
