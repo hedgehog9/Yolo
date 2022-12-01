@@ -1,11 +1,8 @@
 package com.yolo.hr.josh.controller;
 
-
-
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,11 +24,7 @@ public class ScheduleController {
 	
 	@RequestMapping(value="/schedule/calendar.yolo")
 	public String calendar(HttpServletRequest request) {
-		MemberVO loginuser = new MemberVO();
-		loginuser.setEmpno("1");
-		loginuser.setDeptno("1");
-		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
+		
 		
 		return "josh/calendar.admin";
 	}

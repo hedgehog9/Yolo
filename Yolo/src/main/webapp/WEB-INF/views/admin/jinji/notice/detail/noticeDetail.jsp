@@ -3,46 +3,56 @@
 
 <style type="text/css">
 
-		/* 게시물 상세 사이드 모달  */
+	/* 공지 상세 사이드 모달  */
 	
-	.modal.right .modal-dialog {
-		position: fixed;
-		margin: auto;
-		width: 100%;
+	div#myListModal {
+		/* border:solid 2px green; */
+		width: 40%;
 		height: 100%;
-		-webkit-transform: translate3d(0%, 0, 0);
-		    -ms-transform: translate3d(0%, 0, 0);
-		     -o-transform: translate3d(0%, 0, 0);
-		        transform: translate3d(0%, 0, 0);
+		overflow: auto;
+		display: flex;
+		flex-direction: column;
+		position: fixed;
+		top: 0px;
+		left: 2000px;
+		z-index: 1052;
+		background: white;
+		border-radius: 0.3rem;
+		color: black;
+		transition: all 0.5s; 
+		padding: 5px;
 	}
 
-	.modal.right .modal-content {
+	div#myListModal.active {
+		top: 0px;
+		left: 60%;
+	}
+	
+	div#myListModal_outside {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		width: 100%;
 		height: 100%;
-	/* 	overflow-y: auto; */
+		background: rgba(0, 0, 0, 0.2);
+		z-index: 1051;
+		display: none;
 	}
 	
-	.modal.right .modal-body {
-	 /* padding: 15px 15px 80px;  */
-	 	width: 100%; 
+	div.modalHeader {
+		width: 90%;
+		margin: auto 5%;
+		height: 7%;
+		padding-top: 15px;
 	}
 	
-	.modal.right.fade .modal-dialog {
-		right: 0;
-		-webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
-		   -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
-		     -o-transition: opacity 0.3s linear, right 0.3s ease-out;
-		        transition: opacity 0.3s linear, right 0.3s ease-out;
+	div.modalBody {
+		width: 90%;
+		margin: auto 5%;
+		height: 86%;
 	}
 	
-	.modal.right.fade.in .modal-dialog {
-		right: 0;
-	}
-	
-	.modal-footer {
-		border: none;
-	}
-	
-	/* 게시물 상세 모달 content  */
+	/* 공지 상세 모달 content  */
 	
 	div.modal-listContent {
 		width: 90%;
@@ -117,7 +127,7 @@
 	}
 	
 	/* 파일 다운로드 링크  */
-	a:link, a:visited, a:active, a:hover {
+	a.filedown:link, a.filedown:visited, a.filedown:active, a.filedown:hover {
 		text-decoration: none;
 		color: #9e9e9e;
 	}
@@ -198,104 +208,104 @@
 </script>    
     
     
-    
+ <%-- 공지 상세 모달 클릭 시 배경 fade out --%>   
+ <div id="myListModal_outside"></div>
     
 
 <%-- 게시글 상세 Modal --%>
-<div class="modal right fade" id="myListModal" tabindex="-1" data-backdrop="static" aria-hidden="true" >
-  <div class="modal-dialog modal-dialog-scrollable modal-right modal-md">
-  
-	    <%-- Modal content --%>
-	    <div class="modal-content">
-		      <div class="modal-header py-3">
-		      	<span style="font-size:20px;">&#128226;</span><span class="myListModalTitle ml-3" style="font-size: 20px; font-weight: bold;"> 전체 공지 </span>
-		        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
-		      </div>
-	     	 <div class="modal-body" style="height: auto;">
-	      	 	<div class="modal-listContent"> 
-	      			<div>
-			      		<span class="mt-2 mb-2" style="font-size: 13pt;"><span id="prof" class="py-2">브래드</span><span> 작성자  ▶ 인사부</span></span>
-			      		<div style="float: right;">
-				      		<span class="badge badge-dark py-1" style="font-size: 10pt;">작성일</span>
-				      		<span class="badge badge-dark py-1" style="font-size: 10pt;">2022-12-25</span>
-			      		</div>
-			      	</div>
-			      	<div style="margin: 5px auto; clear: right;">
-				      	<span class="badge badge-light mt-3" style="margin-top: 10px; font-size: 13pt;">공지제목 쓰는 곳 &nbsp;</span>
-			      	</div>
-			      	<div class="filedownload">
-			            <span style="font-size:10pt;"><a href="#" class="filedown">[<span style='font-size:20px;'>&#128194;</span>]
-						<span>file name.pdf</span></a>	              
-			            </span>
-		            </div>
-			      	<div>
-			      		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
-			      		<span style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
-			      	</div>
-			      	<div style="margin: 30px 0;"> <%-- 댓글 입력란 시작 --%>
-				      	<span style="font-size: 16px;">&#128313; 댓글</span>
-			      		<div class="commentBox">
-				      		<form id="insertFrm" name="insertFrm">
-					        	<textarea class="commentForm" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; max-height: 10px;"></textarea>
-					        	<div class="mt-2">
-					        		<button type="button" class="commentBnt">댓글쓰기</button>
-									<button type="button" class="commentCancleBnt">취소</button>
-						        	<div class="textLengthWrap" style="float: right; color: #808080;">
-								   		<span class="textCount">0자</span>
-								    	<span class="textTotal">/50자</span>
-									</div>
-								</div>
-					        </form>
-					    </div>
-					</div> <%-- 댓글 입력란 끝 --%>   
-					
-			        <%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
-			        <div class="mt-3 mb-2">
-			        	<div class="commentrow  px-2 py-2">
-				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
-				        	<div style="display:inline;	float: right;">
-			        			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
-			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
-			        		</div>
-			        		<div class="mt-3">
-				        		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
-				        		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
-				        	</div>
-				        </div>	
-				        <hr>
-				        
-			        	<%-- 댓글 test --%>
-						<div class="commentrow  px-2 py-2">
-				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
-				        	<div style="display:inline;	float: right;">
-			        			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
-			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
-			        		</div>
-			        		<div class="mt-3">
-				        		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
-				        		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
-				        	</div>
-				        </div>	
-				        <hr>
-				        			        
-			        	<div class="commentrow  px-2 py-2">
-				        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
-				        	<div style="display:inline;	float: right;">
-			        			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
-			        			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
-			        		</div>
-			        		<div class="mt-3">
-				        		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
-				        		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
-				        	</div>
-				        </div>	
-				        <hr>	
-				        <%-- 댓글 test 끝--%>
-				        
-			      	</div>
-	  		 	</div>
-	  		 </div> 
-  	    </div>
-  	    
+<div id="myListModal">
+    <%-- Modal content --%>
+    <div class="modalHeader">
+    	<span style="font-size:20px;">&#128226;</span><span class="myListModalTitle ml-3" style="font-size: 20px; font-weight: bold;"> 전체 공지 </span>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
     </div>
+   	<div class="modalBody">
+  	 	<div class="modal-listContent"> 
+  			<div>
+    		<span class="mt-2 mb-2" style="font-size: 13pt;"><span id="prof" class="py-2">브래드</span><span> 작성자  ▶ 인사부</span></span>
+    		<div style="float: right;">
+     		<span class="badge badge-dark py-1" style="font-size: 10pt;">작성일</span>
+     		<span class="badge badge-dark py-1" style="font-size: 10pt;">2022-12-25</span>
+    		</div>
+    	</div>
+     	<div style="margin: 5px auto; clear: right;">
+      	<span class="badge badge-light mt-3" style="margin-top: 10px; font-size: 13pt;">공지제목 쓰는 곳 &nbsp;</span>
+     	</div>
+     	<div class="filedownload">
+           <span style="font-size:10pt;"><a href="#" class="filedown">[<span style='font-size:20px;'>&#128194;</span>]
+		<span>file name.pdf</span></a>	              
+           </span>
+          </div>
+     	<div>
+     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
+     		<span style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
+     	</div>
+     	
+     	<div style="margin: 30px 0;"> <%-- 댓글 입력란 시작 --%>
+      	<span style="font-size: 16px;">&#128313; 댓글</span>
+   		<div class="commentBox">
+	    	<form id="insertFrm" name="insertFrm">
+	       	<textarea class="commentForm" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; max-height: 10px;"></textarea>
+	       	<div class="mt-2">
+	       		<button type="button" class="commentBnt">댓글쓰기</button>
+				<button type="button" class="commentCancleBnt">취소</button>
+	        	<div class="textLengthWrap" style="float: right; color: #808080;">
+				   		<span class="textCount">0자</span>
+				    	<span class="textTotal">/50자</span>
+					</div>
+				</div>
+	        </form>
+    	</div>
+		</div> <%-- 댓글 입력란 끝 --%>   
+
+      	<%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
+      	<div class="mt-3 mb-2">
+      	<div class="commentrow  px-2 py-2">
+       	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
+       	<div style="display:inline;	float: right;">
+      			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
+      			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
+      		</div>
+      		<div class="mt-3">
+       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+       	</div>
+       	</div>	
+       	<hr>
+       
+      	<%-- 댓글 test --%>
+		<div class="commentrow  px-2 py-2">
+	       	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
+	       	<div style="display:inline;	float: right;">
+	      			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
+	      			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
+	      		</div>
+	      		<div class="mt-3">
+	       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+	       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+	       	</div>
+		</div>	
+        <hr>
+       			        
+      	<div class="commentrow  px-2 py-2">
+       	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
+       	<div style="display:inline;	float: right;">
+      			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
+      			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
+      		</div>
+      		<div class="mt-3">
+       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+       	</div>
+       </div>	
+       <hr>	
+       <%-- 댓글 test 끝--%>
+       
+	   </div>
+	 </div>
+   </div> 
 </div>
+
+
+	    
+
