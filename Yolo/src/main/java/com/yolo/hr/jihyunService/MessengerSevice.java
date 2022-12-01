@@ -35,4 +35,11 @@ public class MessengerSevice implements InterMessengerService {
 		List<Map<String, String>> teamList = mdao.getTeam(deptno);
 		return teamList;
 	}
+
+	// 팀 사람들 구해오기
+	@Override
+	public List<Map<String, String>> getTeamPerson(String deptno) {
+		List<Map<String, String>> teamPersonList = mdao.getTeamPerson(deptno);
+		return teamPersonList;
+	}
 }

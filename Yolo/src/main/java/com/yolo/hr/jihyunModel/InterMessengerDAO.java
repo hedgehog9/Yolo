@@ -14,4 +14,7 @@ public interface InterMessengerDAO {
 	// 해당부서 팀 구해오기
 	List<Map<String, String>> getTeam(String deptno);
 
+	// 팀 사람들 구해오기
+	List<Map<String, String>> getTeamPerson(String deptno);
+
 }

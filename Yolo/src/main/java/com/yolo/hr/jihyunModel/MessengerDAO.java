@@ -43,6 +43,14 @@ public class MessengerDAO implements InterMessengerDAO {
 	public List<Map<String, String>> getTeam(String deptno) {
 		List<Map<String, String>> teamList = sqlsession.selectList("kimjh.selectDept", deptno);
 		return teamList;
+	}
+
+
+	// 팀 사람들 구해오기
+	@Override
+	public List<Map<String, String>> getTeamPerson(String deptno) {
+		List<Map<String, String>> teamList = sqlsession.selectList("kimjh.selectDeptPerson", deptno);
+		return teamList;
 	} 
 
 }

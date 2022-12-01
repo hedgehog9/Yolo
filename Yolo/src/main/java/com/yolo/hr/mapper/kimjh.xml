@@ -17,7 +17,6 @@
 	</select>
 	
 	
-	<!--  -->
 	<!-- <resultMap type="HashMap" id="deptPeopleMap">
 		<result property="empno" column="empno" javaType="String"/>
 		<result property="name" column="name" javaType="String"/>
@@ -39,7 +38,8 @@
 	<select id="selectDeptPerson" parameterType="String" resultMap="deptPeopleMap">
 		select empno, name
 		from TBL_EMPLOYEES
-		where STATUS='재직' AND deptno = #{deptno}
+		where STATUS='재직' AND fk_deptno = #{deptno}
 	</select>
+	
 	
 </mapper>

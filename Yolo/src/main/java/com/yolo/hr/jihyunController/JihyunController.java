@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.yolo.hr.jihyunService.InterMessengerService;
@@ -43,7 +44,8 @@ public class JihyunController {
 	}
 	
 	// 부서만 조회해오기
-	@RequestMapping(value = "/jihyun/getDept.yolo")
+	@ResponseBody
+	@RequestMapping(value = "/jihyun/getDept.yolo", produces="text/plain;charset=UTF-8")
 	public String getDept( HttpServletRequest request) {
 		
 		// 부서만 조회해오기
@@ -63,7 +65,8 @@ public class JihyunController {
 	}
 	
 	// 부서 사람들(부서장) 조회해오기
-	@RequestMapping(value = "/jihyun/getDeptPerson.yolo")
+	@ResponseBody
+	@RequestMapping(value = "/jihyun/getDeptPerson.yolo", produces="text/plain;charset=UTF-8")
 	public String getDeptPerson( HttpServletRequest request) {
 		
 		String deptno = request.getParameter("deptno");
@@ -80,13 +83,13 @@ public class JihyunController {
 			
 			jsonArr.put(jsonObj);
 		}
-		
 		return jsonArr.toString() ;
 	}
 	
 	
 	// 해당부서 팀 구해오기
-	@RequestMapping(value = "/jihyun/getTeam.yolo")
+	@ResponseBody
+	@RequestMapping(value = "/jihyun/getTeam.yolo", produces="text/plain;charset=UTF-8")
 	public String getTeam( HttpServletRequest request) {
 		
 		String deptno = request.getParameter("deptno");
@@ -103,30 +106,29 @@ public class JihyunController {
 			
 			jsonArr.put(jsonObj);
 		}
-		
 		return jsonArr.toString() ;
 	}
 	
 	
-	// 부서내 팀 사람들(부서장) 조회해오기
-	@RequestMapping(value = "/jihyun/getTeamPerson.yolo")
+	// 부서내 팀 사람들(사원들) 조회해오기
+	@ResponseBody
+	@RequestMapping(value = "/jihyun/getTeamPerson.yolo", produces="text/plain;charset=UTF-8")
 	public String getTeamPerson( HttpServletRequest request) {
 		
 		String deptno = request.getParameter("deptno");
 		
 		// 부서사람들 조회하기
-		List<Map<String,String>> deptList = service.getDeptPersonList(deptno);
+		List<Map<String,String>> teamList = service.getTeamPerson(deptno);
 		
 		JSONArray jsonArr = new JSONArray();
 		
-		for(Map<String,String> dept: deptList) {
+		for(Map<String,String> dept: teamList) {
 			JSONObject jsonObj = new JSONObject();
 			jsonObj.put("empno", dept.get("empno") );
 			jsonObj.put("name", dept.get("name") );
 			
 			jsonArr.put(jsonObj);
 		}
-		
 		return jsonArr.toString() ;
 	}
 	
