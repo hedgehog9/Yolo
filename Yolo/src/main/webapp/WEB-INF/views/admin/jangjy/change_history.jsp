@@ -12,6 +12,8 @@
     div#header{
     	display:flex;
     	justify-content: space-between;
+    	border-bottom: solid 1px #d9d9d9;
+    	margin-bottom: 50px;
     }
     
     span.title{
@@ -136,14 +138,12 @@
 		text-decoration: none;
 		color: #9e9e9e;
 	}
-	a.a_title:link, a.a_titlevisited, a.a_titleactive {
+	a.a_title:link, a.a_title:visited, a.a_title:active {
 		text-decoration: none;
 		color: #9e9e9e;
 	}
-	a.current{
-		color : #3C4651;
-	}
-	a.current:hover{
+	a.current,a.current:hover {
+		text-decoration: none;
 		color : #3C4651;
 	}
 		
@@ -220,7 +220,7 @@
 	        <div id="header_title">
 	            <a class="a_title" href="<%= ctxPath%>/people.yolo"><span class="title">구성원</span></a>
 	            <a class="a_title" href="<%= ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a>
-	            <a class="a_title current" href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
+	            <a class="current" href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
 	        </div>
 	        <div id="button_title">
 	            <button id="change_dept" type="button" class="btn" data-toggle="modal" data-target="#modal_change_hrInfo"><span><i class="fas fa-pen" style="margin:0px; width:20px;"></i>&nbsp;&nbsp;인사 발령하기</span></button>
@@ -228,7 +228,6 @@
 	    </div>
 	    
 	    <div  style="margin:10px 20px;">
-	    	<h2 style="margin-bottom: 20px;">인사발령 내역 조회</h2>
 			<table id="tbl_history" class="table table-hover">
 				<thead>
 					<tr>

@@ -91,12 +91,13 @@ div#contents {
 		padding: 9px 7px;
 	}
 	
-	table{
+	table#mytable{
     border: 1px solid #ccced0;
-    border-collapse: collapse;
-    border-radius: 10px;
-    border-style: hidden;
-    box-shadow: 0 0 0 1px #ccced0;
+
+   /*  border-style: hidden; */
+    
+    
+   /*  box-shadow: 1 1 1 1px #ccced0; */
     width: 400px;
     height : 500px; 
 	font-size: 15pt;
@@ -104,14 +105,14 @@ div#contents {
   }
   
   td {
-  	padding :10px 15px;
+  	/* padding :10px 15px; */ /* 이거만 살리기 */
   	/* border : 1px solid; */
   }
   
   td.td-2 {
   	width: 50%;
   }
-  
+   
   span#status2{
 	width: 60px; 
 	height: 30px; 
@@ -151,39 +152,33 @@ textarea:focus {
 		
         // === 전체 datepicker 옵션 일괄 설정하기 ===  
 		 //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
-        $(function() {
-            //모든 datepicker에 대한 공통 옵션 설정
-            $.datepicker.setDefaults({
-                 dateFormat: 'yy/mm/dd' //Input Display Format 변경
-                ,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
-                ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
-                ,changeYear: true //콤보박스에서 년 선택 가능
-                ,changeMonth: true //콤보박스에서 월 선택 가능                
-             //   ,showOn: "both" //button:버튼을 표시하고,버튼을 눌러야만 달력 표시 ^ both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시  
-             // ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
-             // ,buttonImageOnly: true //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
-             // ,buttonText: "선택" //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
-                ,yearSuffix: "년" //달력의 년도 부분 뒤에 붙는 텍스트
-                ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
-                ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
-                ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
-                ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
-             // ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
-             // ,maxDate: "+1M" //최대 선택일자(+1D:하루후, -1M:한달후, -1Y:일년후)                    
-          
-            });
- 
-            //input을 datepicker로 선언
-            $("input#startDate").datepicker();                    
-            
-            //From의 초기값을 오늘 30일 전으로 설정
-//         $('input#startDate').datepicker('setDate', '-30D'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
-            
-            //To의 초기값을 3일후로 설정
-//          $('input#endDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)     
         
-        });
+           
+        	 $("input#daterange").daterangepicker({
+ 				singleDatePicker: true,
+ 				timePicker: true,
+ 				timePicker24Hour: true,
+ 				startDate: new Date(),
+ 				locale: {
+ 				"format": 'YYYY-MM-DD',
+ 				"applyLabel": "확인",
+ 				"cancelLabel": "취소",
+ 				"fromLabel": "From",
+ 				"toLabel": "To",
+ 				"customRangeLabel": "Custom",
+ 				"weekLabel": "W",
+ 				"daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+ 				"monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+ 				
+ 				}
+ 				},function(start, end, label) {
+ 				
+ 				});
         
+        	 //input을 datepicker로 선언
+        
+        
+
     	//textarea 높이 조절    	
     	var textEle = $('textarea');
     	textEle.on('keyup', function() {
@@ -223,22 +218,32 @@ textarea:focus {
 					<div id="contents">
 						내용
 						<div style="margin-top: 5px;">
-						<textarea class="search" name="contents" placeholder="내용을 입력하세요" style="margin-top: 5px; padding: 6px 10px; "></textarea>
+						<textarea class="search" name="contents" id="daterange" placeholder="내용을 입력하세요" style="margin-top: 5px; padding: 6px 10px; "></textarea>
 						</div>
 					</div>
 					<div id="contents">
 						희망마감날짜<br>
 						<div class="daterange" style="margin-top: 5px;">
-						 <input type="text" class="datepicker search" id="startDate" name="startDate" placeholder="날짜 선택" style="margin-top: 5px; padding-left: 10px;"/>
+						 <input type="text" class="startdate search" id="daterange" name="start_Date" placeholder="날짜 선택" style="margin-top: 5px; padding-left: 10px;"/>
+						 
 						</div>
 						<!-- <input id="search" name="date" placeholder="날짜 선택" style="margin-top: 5px; padding-left: 10px;"/> -->
 					</div>
+						  
+	                 <div id="attachArea">
+			        	<div class="filebox">
+						    <input class="upload-name" value="첨부파일" placeholder="첨부파일">
+						    <label for="file">파일찾기</label> 
+						    <input type="file" id="file">
+						</div>
+			        </div>
+
 				</div>	
 			
 			
-		<div class="col-5 " style="margin-top:50px; padding-left: 20px; width: 430px;">
+		<div class="col-5 " style="margin-top:50px; padding-left: 20px; width: 500px;">
 			<div style="float:left;">   
-			    <table>
+			    <table style="border-collapse: collapse; border-radius: 10px;" id="mytable">
 			    	<thead>
 			    		<tr>
 			    			<th colspan="3" style="padding: 25px 10px 25px 25px; ">승인 · 참조 대상</th>
@@ -292,6 +297,7 @@ textarea:focus {
 			    		<tr>
 			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
 			    		</tr>
+			    		
 			    	</tbody>
 			    </table>
 	   		 </div>

@@ -30,9 +30,9 @@
 	}
 	
 	div#profile_img {
-		width: 100px;
-		height: 100px;
-		border-radius: 15%;
+		width: 150px;
+		height: 150px;
+		border-radius: 2rem;
 		background-color: green;
 		margin-right: 20px;
 		display: flex;
@@ -45,18 +45,62 @@
 		margin-top: 65px
 	}
 	
+	<%-- 프로필 부분 --%>
 	div#user_name {
 		font-size: 20pt;
 		font-weight: bold;
 		color: white;
 		position: relative;
-		left: 15px;
+		/* left: 15px; */
+	}
+	div#profile_img > img{
+		position: relative;
+	    border-radius: 2rem;
+	    width: 100%;
+	    height: 100%;
+	    left: 15px;
+	    z-index: 4;
+	}
+	
+	button#btn_profileImg{
+		position: relative;
+	    background-color: white;
+	    border: solid 1px gray;
+	    border-radius: 50%;
+	    top: 60px;
+	    
+	    z-index: 5;
+	}
+	<%--
+	span#profile_user_name{
+	    position: absolute;
+	    left: -110px;
+	    color: white;
+	    left: -90px;
+	    top: -15px;
+	    width: 100px;
+	}
+	--%>
+	span#profile_user_name{
+	    position: absolute;
+	    color: white;
+	    left: -85px;
+	    top: -15px;
+	    width: 100px;
 	}
 	
 	th.dept_position {
-		font-size: 12px;
+		font-size: 13px;
 		font-weight: normal;
+		color:#556372;
 	}
+	
+	th.user_dept_position {
+		font-size: 13px;
+		font-weight:500;
+		color:#242A30;
+	}
+	
 	
 	nav#hr_info {
 		display: flex;
@@ -180,7 +224,7 @@
 		text-decoration: underline;
 	}
 	
-	//마우스 오버했을 때 링크 상태
+	//마우스 오버했을 때 링크 상태 
 	a.a_side:active {
 		background-color: transparent;
 		text-decoration: underline;
@@ -188,6 +232,17 @@
 	
 	// 클릭했을 때 링크 상태
 	<%-- a태그 css 효과 없애기 --%> 
+	{
+	text-decoration: none;
+	color: #9e9e9e;
+	}
+	a.a_people:link, a.a_people:visited, a.a_people:active ,a.a_people:hover {
+		text-decoration: none;
+		color: #556372;
+	}
+	
+	
+	
 	tr.tr_info {
 		height: 40px;
 	}
@@ -227,6 +282,7 @@
 		background: white;
 		color: black;
 		transition: all 0.5s;
+		overflow: auto;
 	}
 	
 	div#edit_info.active {
@@ -357,10 +413,26 @@
 		color: #ebebeb;
 	}
 	
-	img.img_profile{
-		filter: opacity(0.5) drop-shadow(0 0 0 red);
+	
+	th.th_title{
+		color: #556372;
+		font-size: 14px;
+		font-weight: 500;
+		line-height: 21px;
+		text-align: left;
+		word-spacing: 0px;
 	}
-
+	
+	th.th_content{
+		color:#242A30;
+		font-size: 14px;
+		line-height: 21px;
+		text-align: left;
+		word-spacing: 0px;
+		font-weight: normal;
+		<%-- 정보 미입력시 색상  #8D96A1 --%>
+	}
+	
 </style>
 <%-- 말풍선 --%>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -471,7 +543,7 @@
 	  		
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
-						+"<div id='div_hr_title'>인사 정보</div>"
+						+"<div id='div_hr_title' style=' margin-bottom:20px;'>인사 정보</div>"
 						
 						+"<button id='btn_edit_hrInfo' type='button' data-toggle='dropdown' class='btn_edit'>"
 							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
@@ -488,28 +560,28 @@
 					+"<table>"
 						+"<thead>"
 							+"<tr style='height:40px;'>"
-								+"<th style='width:200px'>사번</th>"				
-								+"<th>333</th>"				
+								+"<th class='th_title' style='width:200px'>사번</th>"				
+								+"<th class='th_content'>333</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>입사일</th>"				
-								+"<th><span>2022.11.17</span>&nbsp;&nbsp;<span class='span_badge'>1개월</span>&nbsp;&nbsp;<span class='span_badge'>그룹입사일 : 2022.11.17</span></th>"				
+								+"<th class='th_title'>입사일</th>"				
+								+"<th class='th_content'><span>2022.11.17</span>&nbsp;&nbsp;<span class='span_badge'>1개월</span>&nbsp;&nbsp;<span class='span_badge'>그룹입사일 : 2022.11.17</span></th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>입사 유형</th>"				
-								+"<th>3</th>"				
+								+"<th class='th_title'>입사 유형</th>"				
+								+"<th class='th_content'>3</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>부서</th>"				
-								+"<th><span>개발 1팀</span>&nbsp;&nbsp;<span class='span_badge'>주조직</span></th>"				
+								+"<th class='th_title'>부서</th>"				
+								+"<th class='th_content'><span>개발 1팀</span>&nbsp;&nbsp;<span class='span_badge'>주조직</span></th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>직책</th>"				
-								+"<th>대리</th>"				
+								+"<th class='th_title'>직책</th>"				
+								+"<th class='th_content'>대리</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>직위</th>"				
-								+"<th>6</th>"			
+								+"<th class='th_title'>직위</th>"				
+								+"<th class='th_content'>6</th>"			
 							+"</tr>"			
 						+"</thead>"
 					+"</table>";
@@ -528,7 +600,7 @@
 	  		
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
-						+"<div id='div_hr_title'>개인 정보</div>"
+						+"<div id='div_hr_title' style='margin-bottom:20px;'>개인 정보</div>"
 						
 						+"<button id='btn_edit_psInfo' type='button' class='btn_edit'>"
 							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
@@ -538,31 +610,31 @@
 					+"<table>"
 						+"<thead>"
 							+"<tr style='height:40px;'>"
-								+"<th style='width:200px'>이메일</th>"				
-								+"<th>honggildong@gmail.com</th>"				
+								+"<th class='th_title' style='width:200px'>이메일</th>"				
+								+"<th class='th_content'>honggildong@gmail.com</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>이름</th>"				
-								+"<th>홍길동</th>"				
+								+"<th class='th_title'>이름</th>"				
+								+"<th class='th_content'>홍길동</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>회사 내 이름</th>"				
-								+"<th>홍길동</th>"				
+								+"<th class='th_title'>회사 내 이름</th>"				
+								+"<th class='th_content'>홍길동</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>영문 이름</th>"				
-								+"<th>Hong Gil Dong</th>"				
+								+"<th class='th_title'>영문 이름</th>"				
+								+"<th class='th_content'>Hong Gil Dong</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>국적, 거주국가, 체류자격 </th>"				
-								+"<th>Republic of Korea</th>"				
+								+"<th class='th_title'>국적, 거주국가, 체류자격 </th>"				
+								+"<th class='th_content'>Republic of Korea</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>생년월일</th>";
+								+"<th class='th_title'>생년월일</th>";
 						<%-- DB 에서 조회해온 성별이 남자인경우 뱃지 하늘색, 여자인 경우 분홍색 --%>	
 						if("남"=="남"){		
-							html+="<th>1998.06.10&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>남</span></th>";
-							html+="<th>1998.06.10&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>여</span></th>";
+							html+="<th class='th_content'>1998.06.10&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>남</span></th>";
+							html+="<th class='th_content'>1998.06.10&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>여</span></th>";
 						}
 						else{
 							
@@ -570,20 +642,20 @@
 								
 						html+="</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>주민등록번호</th>"				
-								+"<th>980610-1111111</th>"			
+								+"<th class='th_title'>주민등록번호</th>"				
+								+"<th class='th_content'>980610-1111111</th>"			
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>휴대전화번호</th>"				
-								+"<th>010-2345-6789</th>"			
+								+"<th class='th_title'>휴대전화번호</th>"				
+								+"<th class='th_content'>010-2345-6789</th>"			
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>집주소</th>"				
-								+"<th>서울 특별시 관악구 남부순환로 234길 28(봉천동)</th>"			
+								+"<th class='th_title'>집주소</th>"				
+								+"<th class='th_content'>서울 특별시 관악구 남부순환로 234길 28(봉천동)</th>"			
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
-								+"<th>급여계좌</th>"				
-								+"<th>우리은행 1234512345123</th>"			
+								+"<th class='th_title'>급여계좌</th>"				
+								+"<th class='th_content'>우리은행 1234512345123</th>"			
 							+"</tr>"			
 						+"</thead>"
 					+"</table>";
@@ -796,9 +868,8 @@
 			
 		}); // end of $("#registeration_no").bind("keyup", function(e) {}-------------------------		
 		
-		<%-- =========================== 주소 입력 팝업창 띄우기 시작  ===================== --%>		
-		$("input#address").click(function(){
-			
+		<%-- =========================== 주소 입력 팝업창 띄우기 시작  ===================== --%>	
+		$(document).on("click","input#address",function(){
 			new daum.Postcode({
 	            oncomplete: function(data) {
 	                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
@@ -853,7 +924,6 @@
 		$("div#div_edit").css({"max-height":web_browser_height});
 		
 		
-		
 	});// end of $(document).ready-----------------------------
 	
 	
@@ -886,7 +956,7 @@
 		let html ='';
 		
 		html += '<div class="container">'
-						+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin: 10px 0;">'
+						+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin: 20px 0;">'
 								+'<div style="font-size: 20px; font-weight: 600;">인사 정보 변경&nbsp;&nbsp;'
 									+'<span class="badge badge-primary">발령</span>'
 								+'</div>'
@@ -896,12 +966,12 @@
 						+'</div>'
 						
 					+'<form name="frm_basicInfo">'
-						+'<div>'
+						+'<div style="padding-bottom: 10px;">'
 							+'<div>발령일<span style="color: red;">＊</span></div>'
 							+'<input type="text" class="daterange" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" />'
 						+'</div>'
 						
-						+'<div style="margin:5px 0;">'		
+						+'<div style="margin:5px 0; padding-bottom: 10px;">'		
 							+'<div>발령 라벨</div>'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
@@ -919,7 +989,7 @@
 						+'</div>'
 						
 						
-						+'<div style="margin:5px 0;">'
+						+'<div style="margin:5px 0;padding-bottom: 10px;">'
 							+'<div>부서</div>'
 							+'<button id="btn" class=" btn communication" type="button"'
 								+'data-toggle="dropdown"'
@@ -938,7 +1008,7 @@
 							+'</div>'
 						+'</div>'
 						
-						+'<div style="margin:5px 0;">'
+						+'<div style="margin:5px 0;padding-bottom: 10px;">'
 							+'<div>세부 부서</div>'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
@@ -955,7 +1025,7 @@
 							+'</div>'
 						+'</div>'
 						
-						+'<div style="margin:5px 0;">'
+						+'<div style="margin:5px 0; padding-bottom: 10px;">'
 							+'<div style="width: 100%;">'
 								+'<div>직위</div>'
 								+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"'
@@ -1003,7 +1073,7 @@
 		let html ='';
 		
 		html += '<div class="container">'
-					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:10px 0;">'
+					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:20px 0;">'
 						+'<div style="font-size:20px; font-weight:600;">기본 정보 변경</div>'
 						+'<button id="record_close" onclick="record_close();">'
 							+'<i class="fas fa-times"></i>'
@@ -1080,7 +1150,7 @@
 	    let html ='';
 	    
 	    html += '<div id="div_edit" class="container">'
-					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:10px 0;">'
+					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:20px 0;">'
 						+'<div style="font-size:20px; font-weight:600;">개인 정보 수정</div>'
 						+'<button id="record_close" onclick="record_close();">'
 							+'<i class="fas fa-times"></i>'
@@ -1110,7 +1180,7 @@
 					
 						+'<div style="margin: 20px 0;">'
 							+'<div>생년월일</div>'
-							+'<input class="input_edit_info" type="text" value="" class="daterange"" />'
+							+'<input class="input_edit_info daterange" type="text" />'
 						+'</div>'
 						
 						+'<div style="margin: 20px 0;">'
@@ -1202,23 +1272,24 @@
 
 <div id="user_detail_content">
 	
-	<span><a href="<%= ctxPath%>/people.yolo">구성원</a> / 홍길동</span>
+	<span><a class="a_people" href="<%= ctxPath%>/people.yolo">구성원</a> / 홍길동</span>
 	
 	
 	<div id="user_profile">
+	
 		<div id="profile_img">
 			<div id="user_name">길동</div>
 			
+			<%-- 
 			<button id="btn_profileImg" type="button" data-toggle="dropdown" style="background-color: white; border: solid 1px gray; border-radius: 50%; position:relative; top:40px; left:20px;">
 				<i class="fas fa-camera"></i>
 			</button>
-			
 			<div class="dropdown-menu">
 				<a class="dropdown-item" href="#"><i class="fas fa-upload"></i>&nbsp;&nbsp;사진 업로드하기</a> 
 				<a id = "delete_profileImg" class="dropdown-item" href="#"><span style="color:#e62e00"><i class="fas fa-trash"></i>&nbsp;&nbsp;삭제하기</span></a> 
 			</div>
+			--%>
 		</div>
-		
 		<%-- ======================== 프로필 시작 ========================= --%>
 		<table>
 			<thead>
@@ -1227,11 +1298,11 @@
 				</tr>
 				<tr>
 					<th class="dept_position">부서</th>				
-					<th class="dept_position">&nbsp;&nbsp;&nbsp;인사</th>				
+					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;인사</th>				
 				</tr>
 				<tr>
 					<th class="dept_position">직책</th>				
-					<th class="dept_position">&nbsp;&nbsp;&nbsp;대리</th>				
+					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;대리</th>				
 				</tr>
 				<tr>
 					<th>
@@ -1241,7 +1312,8 @@
 						<a onclick="copy_to_clipboard('honggildong@gmail.com')" class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="honggildong@gmail.com"><i class="far fa-envelope"></i></a>
 					</th>
 					<th>
-						<a class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="채팅하기"><i class="fas fa-comment"></i></a>
+						<a class="btn communication" href="<%= ctxPath%>/messenger/receivedMessage.yolo" data-toggle="tooltip" data-placement="top" title="메신저"><i class="fas fa-comment"></i></a>
+						<%-- 메시지 받는사람 파라미터로 넘겨줘야 함. --%>
 					</th>
 					<th> 
 						<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding:3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious:10px;">
