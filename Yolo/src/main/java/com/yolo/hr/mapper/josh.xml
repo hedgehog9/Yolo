@@ -64,7 +64,8 @@
 	
 	<update id="commuteEnd" parameterType="Map">
 		update tbl_commute set end_work_time = sysdate,
-                       		   worktime = '${worktime}'
+                       		   worktime = '${worktime}',
+                       		   overtime = '${overtime}'
 		where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
 		      and fk_empno = '${fk_empno}'	
 	</update>
