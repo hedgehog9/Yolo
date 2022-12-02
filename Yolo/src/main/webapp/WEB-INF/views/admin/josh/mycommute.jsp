@@ -266,7 +266,9 @@
     <nav class="top-nav border-bottom">
         <div class="category">
             <a href="#" class="h4 mr-2 text-dark font-weight-bold">나의 출퇴근</a>
-            <a href="<%= ctxPath %>/admin/commuteManagement.yolo" class="h4 mr-2 text-secondary font-weight-bold">관리</a>
+            <c:if test="${sessionScope.loginuser.empno == 9999}">
+            		<a href="<%= ctxPath %>/admin/commuteManagement.yolo" class="h4 mr-2 text-secondary font-weight-bold">관리</a>
+            </c:if>
         </div>
     </nav>
     <div id="commute-content">

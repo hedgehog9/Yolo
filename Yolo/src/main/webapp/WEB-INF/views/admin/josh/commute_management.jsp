@@ -107,7 +107,7 @@
         
         const a = $('#management-categoty-div > div > span > span.selection > span').val()
         
-        console.log(a)
+        totalCommuteList(1, null);
         
         /*
         var bar = new ProgressBar.Line(gagebar, { // 게이지바 생성
@@ -200,6 +200,7 @@
 
             ////////////////////////////////////////////////////////////////////////////////////////////////
             // 이 코드가 ajax 실행후 들어가게 만들자
+            /*
             html = "";
             
             for(var i=0; i<10; i++) {
@@ -236,6 +237,7 @@
                 bar.animate(0.1*i);  // 게이지바 화면에 뿌리는 코드
                 
             }
+            */
             /////////////////////////////////////////////////////////////////////////////////////////////////
     
 
@@ -269,13 +271,140 @@
 
     }
     
-    <%-- function totalCommuteList(currentShowPageNo) {
+    function totalCommuteList(currentShowPageNo, arrDept) {
+    		
+    	    const startdate = $("span#startdate").text();
+    	    const enddate = $("span#enddate").text().substring(2);
+    	
+    		$.ajax({
+    			url:"<%= ctxPath %>/admin/selectCommuteList.yolo",
+    			data:{"startdate": startdate,
+    				  "enddate":enddate,
+    				  "currentShowPageNo":currentShowPageNo,
+    				  "arrDept":arrDept},
+    			dataType:"JSON",
+    			success:function(json) {
+    				
+    				let html = "";
+    				let arr_worktime = [];
+    				
+    				if(json.length > 0) {
+    					$.each(json, function(index,item) {
+    						
+    						arr_worktime.push(Math.floor(item.total_worktime/60))
+    						
+    						html += "<tr>"+
+	                            "<td class='d-flex'>"+
+	                            "<div class='profile' style='background-color:"+item.profile_color+"'>"+item.name.substring(1)+"</div>"+
+								"<div>"+
+								"<span style='display: block; padding-top: 3px;'>"+item.name+"</span>"+
+								"<span style='font-weight: normal; color: gray; font-size: 10pt;'>"+item.upper_deptname+" · "+item.deptname+"</span>"+
+								"</div>"+
+	                            "</td>"+
+	                            "<td>"+item.empno+"</td>"+
+	                            "<td><div id ='gagebar"+index+"' style='width: 400px; height: 8px;'></div></td>"+
+	                            "<td>"+Math.floor(item.total_worktime/60)+"시간</td>"+
+	                            "<td>"+Math.floor(item.total_overtime/60)+"시간</td>"+
+	                            "<td>"+Math.floor((Number(item.total_worktime)+Number(item.total_overtime))/60)+"시간</td>"+
+	                        "</tr>"
+    						
+    					})// $.each ----------------------------
+    					
+    					$("#data-body").html(html);
+    					
+    					for(var i=0; i<json.length; i++) {
+    		                var bar = new ProgressBar.Line('#gagebar'+i, { // 게이지바 생성
+    		                    strokeWidth: 4,
+    		                    easing: 'easeInOut',
+    		                    duration: 1400,
+    		                    color: 'yellow',
+    		                    trailColor: '#eee',
+    		                    trailWidth: 1,
+    		                    svgStyle: {width: '100%', height: '100%'}
+    		                });
+
+    		                bar.animate(arr_worktime[i]/40);  // 게이지바 화면에 뿌리는 코드
+    		                
+    		            }
+    					
+    					// 페이지바 함수 호출
+    					makePageBar(currentShowPageNo, arrDept, startdate, enddate);
+    				}
+    				
+    			},
+    			error: function(request, status, error){
+		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		    }
+    		})
+    } 
+    
+    
+    function makePageBar(currentShowPageNo, arrDept, startdate, enddate) {
     		
     		$.ajax({
-    			url:"<%= ctxPath %>/admin/selectCommuteList",
-    			data:{"startdate":},
+    			url:"<%= ctxPath %>/admin/commuteTotalPage.yolo",
+    			data:{"startdate": startdate,
+  				  "enddate":enddate,
+  				  "arrDept":arrDept},
+  			dataType:"JSON",
+  			success:function(json) {
+  				
+  				if(json.totalPage > 0) {
+					// 댓글이 있는 경우
+					
+					const totalPage = json.totalPage;
+					
+					const blockSize = 10;
+					
+					let loop = 1; // 증가해야 하기 때문에 const 가 아닌 let 으로 선언
+					
+					if(typeof currentShowPageNo == "string") {
+						// currentShowPageNo 는 웹에서 받아오면 String 타입이기 때문에 Number 타입으로 변환해준다.
+						currentShowPageNo = Number(currentShowPageNo);
+					}
+					
+					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
+					let pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
+					
+					
+					let pageBarHTML = "<ul class='pagination'>";
+					
+					if(pageNo != 1) {
+						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList(\"1\")'>[맨처음]</a></li>";
+						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo-1+","+arrDept+")'>[이전]</a></li>";
+					}
+					
+					while( !(loop > blockSize || pageNo > totalPage) ) {
+						
+						if(pageNo == currentShowPageNo) {
+							pageBarHTML += "<li class='page-item active'><a class='page-link' href='#'>"+pageNo+"</a></li>";
+						}
+						else {
+							pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo+","+arrDept+")'>"+pageNo+"</a></li>";
+						}
+						
+						loop++;
+						pageNo++;
+					}// end of while -----------------------------------
+					
+					// === [다음] [마지막] 만들기 === //
+					
+					if(pageNo <= totalPage) {
+						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo+","+arrDept+")'>[다음]</a></li>";
+						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+totalPage+","+arrDept+")'>[마지막]</a></li>";
+					}
+					
+					pageBarHTML += "</ul>";
+					
+					$("div#pageBar").html(pageBarHTML);
+					
+					
+				}// end of if(json.totalPage > 0) ------------------
+  				
+  			}
+    			
     		})
-    } --%>
+    }
 	
     
 </script>
@@ -315,23 +444,21 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>이름</th>
-                        <th>사번</th>
-                        <th>시간 차트</th>
-                        <th>초과 시간</th>
-                        <th>합계</th>
+                        <th width="15%">이름</th>
+                        <th width="5%">사번</th>
+                        <th width="35%">시간 차트</th>
+                        <th width="10%">근무 시간</th>
+                        <th width="10%">초과 시간</th>
+                        <th width="10%">합계</th>
                     </tr>
                 </thead>
                 <tbody id="data-body">
-                    <tr>
-                        <td>이름나오는 곳</td>
-                        <td>123</td>
-                        <td><div id="gagebar"></div></td>
-                        <td>20</td>
-                        <td>60</td>
-                    </tr> 
                 </tbody>    
             </table>
         </div>
+        <%-- === #136. 댓글페이지바 ==== --%>
+      <div style="display: flex; margin-bottom: 50px;">
+      	<div id="pageBar" style="margin: auto; text-align: center;"></div>
+      </div>
     </div>
 </div>
