@@ -3,6 +3,8 @@
     
 <% String ctxPath = request.getContextPath(); %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+
 <style>
 
 	div#messengerHeader {
@@ -319,29 +321,47 @@
 		}); 
 		
 		
+		// 체크박스 바뀔때 효과
+		$(document).on("change", "input.names", function(e){
+			ck_list = [];
+			
+			
+		});
+		
+		
+		// 받는 사람 닫기
 		$('#choosePerson_outside').on('click', function () {
 			choosePerson_close();
 		});
 		
 		
-		// 부서 토글
-        $("div.hid").hide();
 		
+		/* $(document).on("click", "span.arrow", function(e){
+			const idx = $("span.arrow").index($(e.target));
+			const target = $("span.arrow").eq(idx).parent().next()[0];
+			target.show();
+			console.log(target);
+		}); */
 		
 	}); // end of ready 
 	
 	
-	// dropdown 열기
+	// 받는사람 열기
 	function search_choosePerson(){
-		// toastr.info("정보 변경내역 조회 메소드 호출됨");
 		
 		$('#choosePerson').addClass('active');
 		$('button.dropdownBtn').css({'background-color':'#dddddd'});
 	    $('#choosePerson_outside').fadeIn();
+	    
+		openAjax(); // 받는 사람 목록 ajax로 불러오기
+		
+		// 부서 토글
+        $("div.hidDept").hide();
+        $("div.hidTeam").hide();
 		
 	}
 	
-	// dropdown 닫기
+	// 받는사람 닫기
 	function choosePerson_close(){
 		$('#choosePerson').removeClass('active');
 		$('button.dropdownBtn').css({'background-color':''});
@@ -349,11 +369,112 @@
 	}
 	
 	
-	// 부서 토글
-	function toggleDept() {
-		$('div#insa').toggle();
+	function toggleShow(deptno){
+		$("div[id='"+deptno+"']").toggle();
 	}
-
+	
+	// 받는 사람 목록 ajax로 불러오기
+	function openAjax(){
+		$.ajax({
+	    	url : "<%=ctxPath%>/jihyun/getDept.yolo",
+    		dataType: "JSON",
+    		async:false,
+			success: function(json){ 
+				
+				let html = "";
+				
+				if(json.length>0){
+					
+					$.each(json, function(index1, item1){
+						html += '<div style="display: flex; align-items: center;" class="py-1 pt-2">' +
+							'<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">'+item1.deptname+'</label><span class="arrow" onclick="toggleShow('+item1.deptno+')">&#128317;</span>'+
+							'</div>'+
+					        '<div class="hidDept pl-5" id="'+item1.deptno+'">';
+					        
+							// 부서 내 사람 구하기(부서장)
+							$.ajax({
+						    	url : "<%=ctxPath%>/jihyun/getDeptPerson.yolo",
+						    	data : {"deptno" : item1.deptno},
+					    		dataType: "JSON",
+					    		async:false,
+								success: function(json2){
+									
+									if(json2.length>0){
+										$.each(json2, function(index2, item2){
+											html +='<div><input type="checkbox" class="names" value="'+item2.name+'" /><label class="person ml-2">'+item2.name+'</label></div>';
+										}); // end of for each
+									}
+								},
+								error: function(request, status, error){
+					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					            }
+							}); // end of ajax (부서구하기)
+						    	
+							
+							// 부서내 팀 구하기
+							$.ajax({
+						    	url : "<%=ctxPath%>/jihyun/getTeam.yolo",
+						    	data : {"deptno" : item1.deptno},
+					    		dataType: "JSON",
+					    		async:false,
+								success: function(json3){
+									
+									if(json3.length>0){
+										$.each(json3, function(index3, item3){
+											html += '<div class="py-1 pt-2">'+
+												'<input type="checkbox"/><label class="person ml-2" style="font-weight: bold;">'+item3.deptname+'</label><span class="arrow" onclick="toggleShow('+item3.deptno+')">&#128317;</span>'+
+												'</div>'+
+												'<div class="hidTeam pl-5" id="'+item3.deptno+'">';
+												
+											
+											// 팀 내 사람 구하기(팀원들)
+											$.ajax({
+										    	url : "<%=ctxPath%>/jihyun/getTeamPerson.yolo",
+										    	data : {"deptno" : item3.deptno},
+									    		dataType: "JSON",
+									    		async:false,
+												success: function(json4){
+													
+													if(json4.length>0){
+														$.each(json4, function(index4, item4){
+															html +='<div><input type="checkbox"/><label class="person ml-2">'+item4.name+'</label></div>';
+														}); // end of for each
+														
+														
+													}
+										        
+												},
+												error: function(request, status, error){
+									                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+									            }
+											}); // end of ajax (팀 내 사람 구하기(팀원들))
+											
+											html += '</div>';
+										}); // end of for each
+										
+										
+									}
+								},
+								error: function(request, status, error){
+					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					            }
+							}); // end of ajax (팀구하기)
+							
+							html += '</div>';
+					});// end of each
+					
+				}
+				
+				console.log(html);
+				$('div#resultOfAjax').html(html);
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+			
+	    }); // end of ajax 
+	}
 	
 
 </script>
@@ -413,34 +534,24 @@
 		<div style="display: flex; align-items: center;" class="border-bottom py-2">
 			<input type="checkbox" class="ml-2"/><label class="person ml-2" style="font-weight: bold;">전체선택</label>
 		</div>
-		<div style="display: flex; align-items: center;" class="py-1 pt-2">
-			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
+		
+		<div id="resultOfAjax"></div>
+		
+		 <!-- <div style="display: flex; align-items: center;" class="py-1 pt-2">
+			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow">&#128317;</span>
 		</div>
-        <div id="insa" class="hid pl-5">
+        <div class="hidDept pl-5">
         	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        </div>
-        <div style="display: flex; align-items: center;" class="py-1">
-			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
-		</div>
-        <div id="insa" class="hid pl-5">
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        </div>
-        <div style="display: flex; align-items: center;" class="py-1">
-			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow" onclick="toggleDept()">&#128317;</span>
-		</div>
-        <div id="insa" class="hid pl-5">
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        </div>
+        	<div class="py-1 pt-2">
+				<input type="checkbox"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow">&#128317;</span>
+			</div>
+			<div class="hidTeam pl-5">
+					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+			</div>
+        </div>  -->
+        
         
 	</div>
 	<div id="rightSide">

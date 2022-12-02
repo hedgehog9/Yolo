@@ -22,8 +22,7 @@ public class EmployeeVO {
 	private String profile_color; // 프로필 색상
 
 	private String gender; // 성별 (오라클에서 func_gender()로 구해옴)
-	
-	
+
 	public String getGender() {
 		return gender;
 	}
