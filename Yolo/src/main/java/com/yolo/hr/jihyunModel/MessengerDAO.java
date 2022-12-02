@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.yolo.hr.jjy.employee.model.EmployeeVO;
+
 @Repository
 public class MessengerDAO implements InterMessengerDAO {
 	
@@ -51,6 +53,29 @@ public class MessengerDAO implements InterMessengerDAO {
 	public List<Map<String, String>> getTeamPerson(String deptno) {
 		List<Map<String, String>> teamList = sqlsession.selectList("kimjh.selectDeptPerson", deptno);
 		return teamList;
+	}
+
+
+	// 선택한 유저 목록 가져오기
+	@Override
+	public List<Map<String, String>> getChooseEmp(String str_empno) {
+		List<Map<String, String>> empList  = sqlsession.selectList("kimjh.selectChooseEmp", str_empno);
+		return empList;
+	}
+
+	
+	// 메신저 보내기
+	@Override
+	public void sendMessenger(String sql) {
+		sqlsession.insert("kimjh.insertSendMessenger", sql);
+	}
+
+
+	// 보낸 메일 리스트 가져오기
+	@Override
+	public List<Map<String, String>> getSentMsgList(String empno) {
+		List<Map<String, String>> sentMsgList  = sqlsession.selectList("kimjh.selectSentMsgList", empno);
+		return sentMsgList;
 	} 
 
 }

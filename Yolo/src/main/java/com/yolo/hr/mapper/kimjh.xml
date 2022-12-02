@@ -42,4 +42,73 @@
 	</select>
 	
 	
+	
+	<!-- 선택한 유저 목록 가져오기 -->
+	<resultMap type="HashMap" id="chooseEmpMap">
+		<result property="name" column="name" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="deptname" column="deptname" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+		<result property="empno" column="empno" javaType="String"/>
+	</resultMap>
+	<select id="selectChooseEmp" parameterType="String" resultMap="chooseEmpMap">
+		select name, position, deptname, profile_color, empno
+		from
+		(
+		    select name, position, fk_deptno, PROFILE_COLOR, empno
+		    from TBL_EMPLOYEES
+		    where empno in (${str_empno})
+		)
+		join TBL_DEPT
+		on fk_deptno = deptno
+		order by fk_deptno, empno
+	</select>
+	
+	
+	
+	<!-- 메신저 보내기 -->
+	<insert id="insertSendMessenger" parameterType="String"  >
+		${sql}
+	</insert>
+	
+	
+	
+	<!-- 보낸 메일 리스트 가져오기 -->
+	<resultMap type="HashMap" id="MsgMap">
+		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
+		<result property="deptname" column="deptname" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+		<result property="pk_msgno" column="pk_msgno" javaType="String"/>
+		<result property="fk_recipientno" column="fk_recipientno" javaType="String"/>
+		<result property="origin_msgno" column="origin_msgno" javaType="String"/>
+		<result property="subject" column="subject" javaType="String"/>
+		<result property="content" column="content" javaType="String"/>
+		<result property="view_status" column="view_status" javaType="String"/>
+		<result property="writedate" column="writedate" javaType="String"/>
+	</resultMap>
+	<select id="selectSentMsgList" parameterType="String" resultMap="MsgMap">
+		select name, substr(name, -2, 2) as nickname , deptname, position, profile_color, pk_msgno , fk_recipientno, origin_msgno, subject, content, view_status
+				,  to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
+		from
+		(
+		    select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE
+		    from tbl_messenger
+		    where FK_SENDERNO = #{empno}
+		)
+		join 
+		( 
+		    select empno, NAME, DEPTNAME, POSITION, PROFILE_COLOR
+		    from TBL_EMPLOYEES M join  TBL_DEPT D
+		    on M.fk_deptno = D.deptno
+		
+		) 
+		on FK_RECIPIENTNO = empno
+		order by WRITEDATE desc
+	
+	</select>
+	
+	
+	
 </mapper>
