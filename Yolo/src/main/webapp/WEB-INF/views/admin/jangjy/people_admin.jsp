@@ -5,12 +5,8 @@
 	String ctxPath = request.getContextPath();
 %>
 
-<script>
-
-
-</script>
-
 <style>
+
 div#peopleContent {
 	margin-right: 10px;
 }
@@ -61,7 +57,7 @@ tr {
 	width: 30px;
 	height: 30px;
 	border-radius: 40%;
-	background-color: #239afe;
+	/* background-color: #239afe; */
 	color: white;
 	text-align: center;
 	padding-top: 6px;
@@ -427,9 +423,9 @@ button#add_searchTag{
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
 	// ajax 통신방식으로 사원 조회하는 메소드		
-	function func_getEmpInfo(){ <%-- 파라미터로 사원 번호 전달 받기 --%>
+	function func_getEmpInfo(empno){ <%-- 파라미터로 사원 번호 전달 받기 --%>
 	 	<%-- 특정 사원번호 전달 --%>
-		location.href = "<%=ctxPath%>/user_detail.yolo" ;
+		location.href = "<%=ctxPath%>/userDetail.yolo?empno="+empno;
 	}
 	
 	// 전체 사원을 조회해오는 메소드 
@@ -473,10 +469,10 @@ button#add_searchTag{
 				  
 				  $.each(json,function(index,emp){
 					  
-				  html += '<tr onclick="func_getEmpInfo();">'  
+				  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
 							+'<td class="th_150">'
 								+'<div class="profile">'
-									+'<div class="profile_icon"><div>길동</div></div>'
+									+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
 									+'<div style="padding-top:3px;">'+emp.name+'</div>'
 								+'</div>'
 							+'</td>'
@@ -484,10 +480,10 @@ button#add_searchTag{
 							+'<td>'+emp.empno+'</td>'
 							+'<td>'+emp.hireDate+'</td>'
 							+'<td>'+emp.retireDate+'</td>'
-							+'<td>112개월</td>'
-							+'<td>15042일</td>'
+							+'<td>'+emp.continuousServiceMonth+'</td>'
+							+'<td>'+emp.workingDays+'</td>'
 			
-							+'<td>'+emp.dept+'</td>'
+							+'<td>'+emp.deptname+'</td>'
 							+'<td>'+emp.position+'</td>'
 			
 							+'<td>'+emp.email+'</td>'

@@ -131,9 +131,19 @@
 		from tbl_employees E join tbl_leave L
 		on E.empno = L.fk_empno
 		where E.status ='휴직'
-		and to_char(sysdate, 'yyyy-mm-dd') > to_char(enddate,'yyyy-mm-dd')
-		
+		and to_char(sysdate, 'yyyy-mm-dd') >= to_char(enddate,'yyyy-mm-dd')
 	</select>
+	
+	<!-- 휴직 처리해야하는 회원 조회하기  -->
+	<select id="getLeaveStartEmpList" resultMap="leaveEmpMap">
+		select empno
+		from tbl_employees E join tbl_leave L
+		on E.empno = L.fk_empno
+		where E.status ='재직'
+		and to_char(sysdate, 'yyyy-mm-dd') >= to_char(startdate,'yyyy-mm-dd')
+	</select>
+	
+	
 	
 	<!-- 휴직이 끝난 사원 재직 처리하기 (update) -->
 	<update id="updateLeaveEmp" parameterType="HashMap">
@@ -144,6 +154,28 @@
 		</foreach>	
 	</update>
 	
+	<!-- 휴직이 끝난 사원 재직 처리하기 (update) -->
+	<update id="updateLeaveStartEmp" parameterType="HashMap">
+		update tbl_employees set status  = '휴직'
+		where empno in
+    	<foreach collection="arr_leaveStartEmp" index="i" open="(" separator="," close=")">
+			'${arr_leaveStartEmp[i]}'
+		</foreach>	
+	</update>
+	
+	
+	<!-- 휴직 신청이 가능한 날짜인지 조회(select) -->
+	<select id="leaveCheck" parameterType="HashMap"  resultType="int">
+		select count(*)
+		from
+		(
+			select fk_empno, startdate, enddate
+			from tbl_leave
+			where #{startdate} between to_char(startdate,'yyyy-mm-dd') and to_char(enddate,'yyyy-mm-dd') 
+			or #{enddate} between to_char(startdate,'yyyy-mm-dd') and to_char(enddate,'yyyy-mm-dd') 
+		)
+		where fk_empno = #{empno}
+	</select>
 	
 	
 	

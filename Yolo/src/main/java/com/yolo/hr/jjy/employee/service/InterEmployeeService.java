@@ -8,6 +8,12 @@ import com.yolo.hr.jjy.employee.model.EmployeeVO;
 public interface InterEmployeeService {
 
 	/** 전체 사원을 조회해오는 메소드 */
-	List<EmployeeVO> getEmpList(Map<String, String> empMap);
+	List<Map<String, String>> getEmpList(Map<String, String> empMap);
+
+	/** 사원 번호를 전달받아 사원 한명의 정보를 조회해오는 메소드 */
+	Map<String, String> getEmpOne(Map<String, String> empnoMap);
+
+	/** 시작일, 종료일, 사원번호, 메모, 사원번호를 Map 으로 전달받아 휴직테이블에 insert 하는 메소드  */
+	int insertLeave(Map<String, String> leaveMap);
 
 }

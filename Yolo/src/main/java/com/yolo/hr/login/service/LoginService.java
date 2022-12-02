@@ -28,7 +28,7 @@ public class LoginService implements InterLoginServcie {
 		return leaveEmpList;
 
 	}
-
+	// 휴직중인 사원의 목록을 전달받아 배열로 변환 후 update 하는 메소드
 	@Override
 	public void updateLeaveEmp(List<Map<String, String>> empList) {
 		// update where 절에 in 을 사용하기 위해 list 를 배열로 변환
@@ -43,8 +43,37 @@ public class LoginService implements InterLoginServcie {
 	    	paraMap.put("arr_leaveEmp", arr_leaveEmp);
 	    	
 	    	dao.updateLeaveEmp(paraMap);
-		
 		}
 	}
+
+	// 로그인시 휴직 처리할 사원의 목록을 가져와 현재 날짜와 비교해 휴직 시작인 경우 휴직 상태로 변경
+	@Override
+	public List<Map<String, String>> getLeaveStartEmpList() {
+		List<Map<String, String>> leaveStartEmpList = dao.getLeaveStartEmpList();
+		return leaveStartEmpList;
+	}
+
+	// 휴직중인 사원의 목록을 전달받아 배열로 변환 후 update 하는 메소드 
+	@Override
+	public void updateLeaveStartEmp(List<Map<String, String>> leaveStartEmpList) {
+		// update where 절에 in 을 사용하기 위해 list 를 배열로 변환
+		if(leaveStartEmpList != null && leaveStartEmpList.size() > 0) {
+	    	String[] arr_leaveStartEmp = new String[leaveStartEmpList.size()];
+	    	
+	    	for(int i=0; i<leaveStartEmpList.size(); i++) {
+	    		arr_leaveStartEmp[i] = leaveStartEmpList.get(i).get("empno");
+	    	}
+	    	
+	    	Map<String,String[]> paraMap = new HashMap<>();
+	    	paraMap.put("arr_leaveStartEmp", arr_leaveStartEmp);
+	    	
+	    	dao.updateLeaveStartEmp(paraMap);
+		}
+		
+	}
+	
+	
+	
+	
 	
 }

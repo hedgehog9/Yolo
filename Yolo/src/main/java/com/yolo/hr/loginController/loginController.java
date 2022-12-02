@@ -61,6 +61,11 @@ public class loginController {
 			service.updateLeaveEmp(empList);
 			
 			
+			// 로그인시 휴직 처리할 사원의 목록을 가져와 현재 날짜와 비교해 휴직 시작인 경우 휴직 상태로 변경 
+			List<Map<String,String>> leaveStartEmpList = service.getLeaveStartEmpList();
+			service.updateLeaveStartEmp(leaveStartEmpList);
+			
+			System.out.println("확인용 leaveStartEmpList"+leaveStartEmpList);
 			
 		}
 		JSONObject jsonObj = new JSONObject();
