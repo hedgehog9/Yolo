@@ -1,6 +1,7 @@
 package com.yolo.hr.josh.service;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,13 @@ public class CommuteService implements InterCommuteService {
 		List<CommuteVO> commuteList = dao.mycommute(paraMap);
 		
 		return commuteList;
+	}
+
+	// 사원들의 근무기록을 가져오는 메소드
+	@Override
+	public List<HashMap<String, String>> totalCommuteList(Map<String, Object> paraMap) {
+		List<HashMap<String, String>> totalCommuteList = dao.totalCommuteList(paraMap);
+		return totalCommuteList;
 	}
 	
 }
