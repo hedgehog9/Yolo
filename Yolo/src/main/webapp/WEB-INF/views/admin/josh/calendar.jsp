@@ -187,7 +187,7 @@
 				  dataType:"JSON",
 				  success:function(json) {
 					  const events = [];
-					  const deptno = '${sessionScope.loginuser.deptno}';
+					  const deptno = '${sessionScope.loginuser.fk_deptno}';
 					  // console.log("deptno : " + deptno)
 					  
 					  if(json.length > 0) {
@@ -732,7 +732,7 @@
 	                   </div>
 	                   <div class="form-group">
 	                     <input type="hidden" name="fk_empno" value="${sessionScope.loginuser.empno}"/> <!-- 여기에 작성자 유저아이디 -->
-	                     <input type="hidden" name="fk_deptno" value="${sessionScope.loginuser.deptno}"/> <!-- 여기에 작성자 부서번호 -->
+	                     <input type="hidden" name="fk_deptno" value="${sessionScope.loginuser.fk_deptno}"/> <!-- 여기에 작성자 부서번호 -->
 	                   </div>
                 </div>
                 </form>
