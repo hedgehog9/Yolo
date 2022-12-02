@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
+import com.yolo.hr.login.model.InterLoginDAO;
 import com.yolo.hr.login.service.InterLoginServcie;
 
 @Controller
@@ -21,10 +22,12 @@ public class loginController {
 	@Autowired
 	private InterLoginServcie service; 
 	
+	@Autowired
+	private InterLoginDAO dao; 
+	
+	
 	@RequestMapping(value = "/login.yolo")
 	public String login() {
-		
-		
 		
 		return "login.login";
 	}
@@ -53,7 +56,11 @@ public class loginController {
 			session.setAttribute("loginuser", loginuser);
 			result = true;
 			
-			// System.out.println("확인용 loginuser ="+loginuser);
+			// 로그인시 휴직중인 사원의 목록을 가져와 현재 날짜와 비교해 휴직일이 끝난 경우 재직 상태로 변경 
+			List<Map<String,String>> empList = service.getLeaveEmpList();
+			service.updateLeaveEmp(empList);
+			
+			
 			
 		}
 		JSONObject jsonObj = new JSONObject();
