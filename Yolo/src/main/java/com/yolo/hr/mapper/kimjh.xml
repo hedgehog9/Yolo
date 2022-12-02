@@ -111,4 +111,20 @@
 	
 	
 	
+	
+	<!-- 소식 추가하기 -->
+	<insert id="insertAlarm" parameterType="String"  >
+		${sql}
+	</insert>
+	
+	
+	<!-- 소식 조회 -->
+	<select id="selectAlarm" parameterType="String" resultType="com.yolo.hr.jihyunModel.AlarmVO">
+		select PK_ALARMNO, FK_RECIPIENTNO, URL, URL2, ALARM_CONTENT, ALARM_TYPE, WRITEDATE
+		from tbl_alarm
+		where FK_RECIPIENTNO = #{empno}
+	</select>
+	
+	
+	
 </mapper>
