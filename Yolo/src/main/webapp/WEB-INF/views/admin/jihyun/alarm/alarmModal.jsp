@@ -5,7 +5,7 @@
 	
 	div#alarmModal {
 		/* border:solid 2px green; */
-		width : 420px;
+		width : 400px;
 		min-height: 200px;
 		max-height: 700px;
 		overflow: auto;
@@ -21,7 +21,9 @@
 	}
 	
 	div.alarmBody {
+		width:100%;
 		margin: 10px auto;
+		padding: 5px 15px;
 	}
 	
 	div#alarmModal.active {
@@ -41,7 +43,7 @@
 	}
 	
 	#alarmModal::-webkit-scrollbar {
-    	width: 10px;
+    	width: 8px;
   	}
   	#alarmModal::-webkit-scrollbar-thumb {
     	background-color: #ababab;
@@ -97,7 +99,7 @@
 		background: red;
 		border: 2px solid white;
 		position: relative;
-    	bottom: 34px; 
+    	bottom: 33px; 
 		left: 28px;
 	}
 	
@@ -139,6 +141,7 @@
 	// 열기
 	function openAlarm(){
 		getAlarm();
+		getPastAlarm();
 		$('#alarmModal').addClass('active');
 	    $('#alarmModal_outside').fadeIn();
 	}
@@ -149,7 +152,6 @@
 	    $('#alarmModal_outside').fadeOut();
 	}
 	
-	
 	// 새로운 소식 불러오기
 	function getAlarm(){
 		
@@ -159,12 +161,11 @@
 			success: function(json){ 
 				let html = "";
 				if(json.length>0){
-					
 					$.each(json, function(index, item){
 						
-						html += '<div class="alarmlRow" onclick="javascript:location.href=\'<%=request.getContextPath()%>' + item.url + item.url2 +'\'">' +
+						html += '<div class="alarmlRow" onclick="javascript:readAlarm(\''+item.pk_alarmno+'\'); location.href=\'<%=request.getContextPath()%>' + item.url + item.url2 +'\'; ">' +
 									'<div class="alarmRowInside">' +
-											'<div class="alarmProf">'+item.alarm_type+';<div class="redCircle"></div></div>' +
+											'<div class="alarmProf">'+item.alarm_type+'<div class="redCircle"></div></div>' +
 											'<div class="alarmcontent1 ml-3">' +
 												'<span class="spanBlock" style="font-weight: bold;">'+item.alarm_content+'</span>' +
 												'<span class="spanBlock" style="color: gray; font-size: 10pt;" >'+item.writedate+' </span>' +
@@ -175,10 +176,80 @@
 					});// end of each
 					
 				} else {
-					html+= '<span>새로운 소식이 없습니다.</span>';
+					html+= '<span class="ml-2">새로운 소식이 없습니다.</span>';
 				}
 				
 				$('div#newAlarmResult').html(html);
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+			
+	    }); // end of ajax 
+	}
+	
+	
+	function getPastAlarm(){
+		
+		$.ajax({
+	    	url : "<%=request.getContextPath()%>/alarm/getPastAlarmList.yolo",
+    		dataType: "JSON",
+			success: function(json){ 
+				let html = "";
+				if(json.length>0){
+					
+					$.each(json, function(index, item){
+						
+						html += '<div class="alarmlRow" onclick="javascript:location.href=\'<%=request.getContextPath()%>' + item.url + item.url2 +'\'; ">' +
+									'<div class="alarmRowInside">' +
+											'<div class="alarmProf">'+item.alarm_type+'</div>' +
+											'<div class="alarmcontent1 ml-3">' +
+												'<span class="spanBlock" style="font-weight: bold;">'+item.alarm_content+'</span>' +
+												'<span class="spanBlock" style="color: gray; font-size: 10pt;" >'+item.writedate+' </span>' +
+											'</div>' +
+									'</div>' +
+								'</div>';
+						
+					});// end of each
+					
+				} else {
+					html+= '<span class="ml-2">지난 소식이 없습니다.</span>';
+				}
+				
+				$('div#pastAlarmResult').html(html);
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+			
+	    }); // end of ajax 
+	}
+	
+	
+	// 새로운 소식 읽기 
+	function readAlarm(alarmno){
+		$.ajax({
+	    	url : "<%=request.getContextPath()%>/alarm/readAlarm.yolo",
+	    	data:{"alarmno":alarmno},
+	    	type: 'POST',
+			success: function(){ 
+					
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+			
+	    }); // end of ajax 
+	}
+	
+	
+	// 모든 새로운 소식 읽기
+	function readAllAlarm(){
+		$.ajax({
+	    	url : "<%=request.getContextPath()%>/alarm/readAllAlarm.yolo",
+			success: function(){ 
+				getAlarm();
+				getPastAlarm();
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -199,7 +270,7 @@
       	<!-- 새로운 소식 시작 -->
       	<div class="alarmTitle">
       		<span style="font-size: 14pt; font-weight: bold; margin-left:7px;  flex-grow: 1;">새로운 소식</span>
-      		<button id="allReadAlarm">모두 읽음</button>
+      		<button id="allReadAlarm" onclick="readAllAlarm()">모두 읽음</button>
       	</div>
       	
       	<div id="newAlarmResult"></div>
@@ -259,11 +330,15 @@
 			</div>
 		</div> -->
 		<!-- 새로운 소식 끝 -->
+		
 		<!-- 지난 소식 시작 -->
 		<div class="alarmTitle mt-5">
       		<span style="font-size: 14pt; font-weight: bold; margin-left:7px;  flex-grow: 1;">지난 소식</span>
       	</div>
-      	<div class="alarmlRow">
+      	
+      	<div id="pastAlarmResult"></div>
+      	
+      	<!-- <div class="alarmlRow">
 			<div class="alarmRowInside">
 				<div class="alarmProf">길동</div>
 				<div class="alarmcontent1 ml-3">
@@ -298,7 +373,7 @@
 					<span class="spanBlock" style="color: gray; font-size: 10pt;" >약 3시간 전 </span>
 				</div>
 			</div>
-		</div>
+		</div> -->
 		<!-- 지난 소식 끝 -->
     </div>
 </div>

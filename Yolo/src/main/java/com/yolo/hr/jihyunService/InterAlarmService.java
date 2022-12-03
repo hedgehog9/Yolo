@@ -13,5 +13,14 @@ public interface InterAlarmService {
 
 	// 알람 조회하기
 	List<AlarmVO> getAlarmList(String empno);
+	
+	// 지난 알람 조회하기
+	List<AlarmVO> getPastAlarmList(String empno);
+
+	// 알람 읽기
+	void readAlarm(String alarmno);
+
+	// 모든 알람 읽기
+	void readAllAlarm(String empno);
 
 }

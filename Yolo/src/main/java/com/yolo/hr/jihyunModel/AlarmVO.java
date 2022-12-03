@@ -8,7 +8,7 @@ public class AlarmVO {
 	private String alarm_content;
 	private String alarm_type;
 	private String view_status;
-	private String writedate;
+	private String writedate2;
 	
 	public String getPk_alarmno() {
 		return pk_alarmno;
@@ -53,9 +53,9 @@ public class AlarmVO {
 		this.view_status = view_status;
 	}
 	public String getWritedate() {
-		return writedate;
+		return writedate2;
 	}
 	public void setWritedate(String writedate) {
-		this.writedate = writedate;
+		this.writedate2 = writedate;
 	}
 }

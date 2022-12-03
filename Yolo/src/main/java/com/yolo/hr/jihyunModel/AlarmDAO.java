@@ -26,5 +26,25 @@ public class AlarmDAO implements InterAlarmDAO {
 		List<AlarmVO> alarmList = sqlsession.selectList("kimjh.selectAlarm", empno);
 		return alarmList;
 	}
+	
+	// 알람 조회하기
+	@Override
+	public List<AlarmVO> getPastAlarmList(String empno) {
+		List<AlarmVO> alarmList = sqlsession.selectList("kimjh.selectPastAlarm", empno);
+		return alarmList;
+	}
+
+	// 알람 읽기
+	@Override
+	public void readAlarm(String alarmno) {
+		sqlsession.update("kimjh.updateAlarm", alarmno);
+	}
+	
+	// 모든 알람 읽기
+	@Override
+	public void readAllAlarm(String empno) {
+		sqlsession.update("kimjh.updateAllAlarm", empno);
+		
+	}
 
 }

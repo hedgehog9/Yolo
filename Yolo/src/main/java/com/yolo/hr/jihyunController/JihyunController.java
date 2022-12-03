@@ -193,11 +193,11 @@ public class JihyunController {
 		service.sendMessenger(msgvo);
 		
 		// === AOP After Advice를 사용하기 === //
-		paraMap.put("fk_recipientno", "1050,1050"); // 받는사람 (여러명일때는 ,,으로 구분된 str)
+		paraMap.put("fk_recipientno", "1050"); // 받는사람 (여러명일때는 ,,으로 구분된 str)
 		paraMap.put("url", "/messenger/receivedMessage.yolo?pk_msgno=" );
 		paraMap.put("url2", "202212021601569430" ); // 연결되는 pknum등...  (여러개일때는 ,,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
-		paraMap.put("alarm_content", "AOP 연습 2 입니다 " );
-		paraMap.put("alarm_type", "2" );
+		paraMap.put("alarm_content", "야호~ 소식 끗나따" );
+		paraMap.put("alarm_type", "5" );
 	}
 	
 	

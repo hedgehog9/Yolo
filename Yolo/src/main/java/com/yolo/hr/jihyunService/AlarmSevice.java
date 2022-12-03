@@ -79,4 +79,26 @@ public class AlarmSevice implements InterAlarmService {
 		List<AlarmVO> alarmList = adao.getAlarmList(empno);
 		return alarmList;
 	}
+	
+	
+	// 지난 알람 조회하기
+	@Override
+	public List<AlarmVO> getPastAlarmList(String empno) {
+		List<AlarmVO> alarmList = adao.getPastAlarmList(empno);
+		return alarmList;
+	}
+
+
+	// 알람 읽기
+	@Override
+	public void readAlarm(String alarmno) {
+		adao.readAlarm(alarmno);
+	}
+	
+	
+	// 모든 알람 읽기
+	@Override
+	public void readAllAlarm(String empno) {
+		adao.readAllAlarm(empno);
+	}
 }

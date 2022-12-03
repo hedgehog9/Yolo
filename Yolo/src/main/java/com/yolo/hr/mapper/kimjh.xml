@@ -120,10 +120,34 @@
 	
 	<!-- 소식 조회 -->
 	<select id="selectAlarm" parameterType="String" resultType="com.yolo.hr.jihyunModel.AlarmVO">
-		select PK_ALARMNO, FK_RECIPIENTNO, URL, URL2, ALARM_CONTENT, ALARM_TYPE, WRITEDATE
+		select PK_ALARMNO, FK_RECIPIENTNO, URL, URL2, ALARM_CONTENT, ALARM_TYPE, func_get_alarm_time(WRITEDATE ) as WRITEDATE2
 		from tbl_alarm
-		where FK_RECIPIENTNO = #{empno}
+		where FK_RECIPIENTNO = #{empno} and view_status = 0
+		order by WRITEDATE desc
 	</select>
+	
+	
+	<!-- 지난 소식 조회 -->
+	<select id="selectPastAlarm" parameterType="String" resultType="com.yolo.hr.jihyunModel.AlarmVO">
+		select PK_ALARMNO, FK_RECIPIENTNO, URL, URL2, ALARM_CONTENT, ALARM_TYPE, func_get_alarm_time(WRITEDATE ) as WRITEDATE2
+		from tbl_alarm
+		where FK_RECIPIENTNO = #{empno} and view_status = 1 and WRITEDATE > (sysdate -7)
+		order by WRITEDATE desc
+	</select>
+	
+	
+	<!-- 소식 읽기 -->
+	<update id="updateAlarm" parameterType="String">
+		update tbl_alarm set view_status = 1
+		where pk_alarmno = #{alarmno}
+	</update>
+	
+	
+	<!-- 모든 안읽은 소식 읽기 -->
+	<update id="updateAllAlarm" parameterType="String">
+		update tbl_alarm set view_status = 1
+		where FK_RECIPIENTNO = #{empno} and view_status = 0
+	</update>
 	
 	
 	
