@@ -348,7 +348,7 @@
 			    	url : "<%=ctxPath%>/messenger/chooseUser.yolo",
 			    	data:{"str_empno":str_empno },
 		    		dataType: "JSON",
-		    		async:false,
+		    		async:true,
 					success: function(json){ 
 						let html = "";
 						if(json.length>0){
