@@ -231,7 +231,7 @@
 	}
 	
 	#leftSide::-webkit-scrollbar {
-    	width: 10px;
+    	width: 7px;
   	}
   	#leftSide::-webkit-scrollbar-thumb {
     	background-color: #ababab;
@@ -243,7 +243,7 @@
   	}
   	
   	#rightUp::-webkit-scrollbar {
-    	width: 10px;
+    	width: 7px;
   	}
   	#rightUp::-webkit-scrollbar-thumb {
     	background-color: #ababab;
@@ -334,6 +334,29 @@
 		
 		// 체크박스 바뀔때 효과
 		$(document).on("change", "input.names", function(e){
+			readChecked();
+		});// end of 체크박스 바뀔때 효과
+		
+		
+		// 전체선택
+		$("input#allCheck").change(function(){
+			const bool = $("input#allCheck").prop("checked");
+			$("input.names").prop("checked",bool); 
+			$("input.depts").prop("checked",bool); 
+			readChecked();
+		});
+		
+		
+		// 부서 선택시 부서 선택되게
+		$(document).on('change', "input.depts",  function (e) {
+			const bool = $(e.target).prop("checked");
+			$("input."+$(e.target).val()).prop("checked",bool); 
+			readChecked();
+		});
+		
+		
+		// 체크박스 표시된 내역 읽기
+		function readChecked(){
 			ck_empno_list = [];
 			$("input.names:checked").each(function(index, item){
 				ck_empno_list.push($(item).val());
@@ -372,24 +395,7 @@
 					
 			    }); // end of ajax 
 			}
-		});// end of 체크박스 바뀔때 효과
-		
-		
-		// 전체선택
-		$("input#allCheck").change(function(){
-			const bool = $("input#allCheck").prop("checked");
-			$("input.names").prop("checked",bool); 
-			$("input.depts").prop("checked",bool); 
-			$("input.names").trigger("change");
-		});
-		
-		
-		// 부서 선택시 부서 선택되게
-		$(document).on('change', "input.depts",  function (e) {
-			const bool = $(e.target).prop("checked");
-			$("input."+$(e.target).val()).prop("checked",bool); 
-			$("input.names").trigger("change");
-		});
+		}
 		
 		
 		// 프로필 클릭시 삭제 되도록 
