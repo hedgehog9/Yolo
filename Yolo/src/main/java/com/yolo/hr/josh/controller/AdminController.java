@@ -18,8 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
 import com.yolo.hr.josh.model.InterCommuteDAO;
 import com.yolo.hr.josh.service.InterCommuteService;
@@ -41,50 +43,6 @@ public class AdminController {
 		// 부서들을 가져오는 메소드
 		deptList = dao.selectDeptList();
 		
-		/*
-		String startdate = request.getParameter("startdate");
-		String enddate = request.getParameter("enddate");
-		
-		if(startdate == null && enddate == null) { // 처음으로 페이지 진입시
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-			
-			Calendar cal = Calendar.getInstance();
-			
-			//일주일의 첫날 선택
-	        cal.setFirstDayOfWeek(Calendar.MONDAY);
-	 
-	        //해당 주차 시작일과의 차이 구하기용
-	        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK) - cal.getFirstDayOfWeek();
-	 
-	        //해당 주차의 첫날 세팅
-	        cal.add(Calendar.DAY_OF_MONTH, - dayOfWeek);
-	        
-	        //해당 주차의 첫일자
-	        startdate = format.format(cal.getTime());
-	 
-	        //해당 주차의 마지막 세팅
-	        cal.add(Calendar.DAY_OF_MONTH, 4); 
-	 
-	        //해당 주차의 마지막일자
-	        enddate = format.format(cal.getTime());
-	        
-			
-			System.out.println("stDt => "+startdate);
-			System.out.println("edDt => "+enddate);
-			 
-	        
-		}
-		
-		Map<String, String> paraMap = new HashMap<>();
-        
-        paraMap.put("startdate",startdate);
-        paraMap.put("enddate",enddate);
-        
-        List<HashMap<String, String>> totalCommuteList = new ArrayList<>();
-        
-        totalCommuteList = service.totalCommuteList(paraMap);
-		*/
-		
 		request.setAttribute("deptList", deptList);
 		
 		return "josh/commute_management.admin";
@@ -93,7 +51,7 @@ public class AdminController {
 	
 	@ResponseBody
 	@RequestMapping(value="/admin/selectCommuteList.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.GET})
-	public String selectCommuteList(HttpServletRequest request, HttpServletResponse response) {
+	public String selectCommuteList(HttpServletRequest request, HttpServletResponse response, @RequestParam(name = "arrDept[]", required = false) List<String> arrDept) {
 		
 		HttpSession session = request.getSession();
 		EmployeeVO empvo = (EmployeeVO) session.getAttribute("loginuser");
@@ -114,8 +72,6 @@ public class AdminController {
 			String startdate = request.getParameter("startdate");
 			String enddate = request.getParameter("enddate");
 			String currentShowPageNo = request.getParameter("currentShowPageNo");
-			String arrDept = request.getParameter("arrDept");
-			
 			
 			System.out.println("확인용 startdate => " + startdate);
 			System.out.println("확인용 enddate => " + enddate);
@@ -128,13 +84,11 @@ public class AdminController {
 			확인용 arrDept => 
 			*/
 			
+			
 			if(currentShowPageNo == null) {
 				currentShowPageNo = "1";
 			}
 			
-			if(arrDept == null) {
-				arrDept = "";
-			}
 			
 			int sizePerPage = 10;
 			
@@ -182,15 +136,10 @@ public class AdminController {
 	
 	@ResponseBody
 	@RequestMapping(value="/admin/commuteTotalPage.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.GET})
-	public String commuteTotalPage(HttpServletRequest request) {
+	public String commuteTotalPage(HttpServletRequest request, @RequestParam(name = "arrDept[]", required = false) List<String> arrDept) {
 		
 		String startdate = request.getParameter("startdate");
 		String enddate = request.getParameter("enddate");
-		String arrDept = request.getParameter("arrDept");
-		
-		if(arrDept == null) {
-			arrDept = "";
-		}
 		
 		Map<String, Object> paraMap = new HashMap<>();
 		paraMap.put("startdate", startdate);
@@ -224,6 +173,17 @@ public class AdminController {
 		return "josh/payment.admin";
 	}
 	
+	
+	public static List<String> getStringListValue(Object obj) throws Exception {
+		
+		if(obj == null){
+			return null;
+		}
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		
+		return objectMapper.readValue((String) obj, List.class);
+	}
 	
 	
 }

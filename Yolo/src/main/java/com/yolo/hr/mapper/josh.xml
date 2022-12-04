@@ -134,7 +134,7 @@
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
 		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
-		      <if test=' arrDept != "" '>
+		      <if test=' arrDept != null '>
 		      	and fk_deptno in
 		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
 					'${arrDept[i]}'
@@ -155,9 +155,10 @@
 	
 	<select id="commuteTotalPage" parameterType="HashMap" resultType="int">
 		select ceil(count(distinct(fk_empno))/10) AS totalpage
-		from tbl_commute
+		from tbl_employees E join tbl_commute C
+		on E.empno = C.fk_empno
 		where start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
-		<if test=' arrDept != "" '>
+		<if test=' arrDept != null '>
 	      	and fk_deptno in
 	      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
 				'${arrDept[i]}'
