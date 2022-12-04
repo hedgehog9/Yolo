@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <jsp:include page="messengerHeader.jsp" />
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 
 <style>
  
@@ -141,10 +142,33 @@
 		<span style="margin-left:30px;">보낸 메신저(78)</span>
 	</div>
 	
-	<div class="mailRow">
+	
+	<c:if test="${ not empty requestScope.sentMsgList }">
+		<c:forEach var="msg" items="${requestScope.sentMsgList}">
+			<div class="mailRow">
+				<div class="mailRowInside">
+					<div style="width: 30px;">
+					</div>
+					<div id="prof" class="mt-3" style="background-color: ${msg.profile_color} ;">${msg.nickname }</div>
+					<div class="mailcontent1 ml-4" style="width: 500px;">
+						<span style="font-weight: bold;">${msg.subject }</span><span style="margin-left: 20px; font-size: 10pt;">${msg.writedate }</span>
+						<span class="spanBlock" style="font-size: 10pt;">${msg.name } · ${msg.deptname } · ${msg.position }</span>
+						<span class="spanBlock mt-1" style="color: gray">${msg.content }</span>
+					</div>
+					<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 670px;">전달하기</button>
+				</div>
+			</div>
+		</c:forEach>
+	</c:if>
+	
+	<c:if test="${empty requestScope.sentMsgList }">
+		<span>보낸 메일함이 비었습니다.</span>
+	</c:if>
+	
+	<!-- 반복시작 -->
+	<!-- <div class="mailRow">
 		<div class="mailRowInside">
 			<div style="width: 30px;">
-				<!-- <input type="checkbox" style=" margin-bottom: 45px; margin-right: 15px;"> -->
 			</div>
 			<div id="prof" class="mt-3">길동</div>
 			<div class="mailcontent1 ml-4" style="width: 500px;">
@@ -154,10 +178,7 @@
 			</div>
 			<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 670px;">전달하기</button>
 		</div>
-	</div>
-	
-	<!-- 반복시작 -->
-	
+	</div> -->
 	<!-- 반복끝 -->
 	
 	

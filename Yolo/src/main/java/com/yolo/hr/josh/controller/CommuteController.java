@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.yolo.hr.jjy.employee.model.EmployeeVO;
 import com.yolo.hr.josh.model.CommuteVO;
-import com.yolo.hr.josh.model.MemberVO;
 import com.yolo.hr.josh.service.InterCommuteService;
 
 @Controller
@@ -77,11 +77,13 @@ public class CommuteController {
 		
 		String fk_empno = request.getParameter("fk_empno");
 		String worktime = request.getParameter("worktime");
+		String overtime = request.getParameter("overtime");
 		
 		Map<String,String> paraMap = new HashMap<>();
 		
 		paraMap.put("fk_empno",fk_empno);
 		paraMap.put("worktime",worktime);
+		paraMap.put("overtime",overtime);
 		
 		int n = service.commuteEnd(paraMap);
 		
@@ -92,11 +94,12 @@ public class CommuteController {
 	}
 	
 	@RequestMapping(value="/commute/mycommute.yolo", method = {RequestMethod.GET})
-	public String myschedule(HttpServletRequest request) {
+	public String mycommute(HttpServletRequest request) {
 		
 		HttpSession session = request.getSession();
-		MemberVO mvo = (MemberVO) session.getAttribute("loginuser");
-		String empno = mvo.getEmpno();
+		EmployeeVO evo = (EmployeeVO) session.getAttribute("loginuser");
+		String empno = evo.getEmpno();
+		//System.out.println("확인용 empno => " + empno);
 		
 		String startdate = request.getParameter("startdate");
 		String enddate = request.getParameter("enddate");
@@ -140,30 +143,23 @@ public class CommuteController {
         List<CommuteVO> commuteList = service.mycommute(paraMap);
         
         long plus_worktime = 0;
-		int hour = 0;
-		int minute = 0;
-		
 		
 		if(commuteList != null) {
 			
 			for(CommuteVO commutevo :commuteList) {
 				
 				String worktime = commutevo.getWorktime();
+				//System.out.println(worktime);
 				
-				if(worktime.equals("0")) {
-					worktime = "00000000";
+				int integer_worktime = Integer.parseInt(worktime);
+				 
+				plus_worktime += integer_worktime;
+				
+				if(integer_worktime != 0) {
+					worktime = getWorkingTime(integer_worktime);
+					commutevo.setWorktime(worktime);
 				}
 				
-				hour = Integer.parseInt(worktime.substring(0,1));
-				minute = Integer.parseInt(worktime.substring(4,6));
-				
-				hour = hour*3600000;
-				minute = minute*60000;
-				
-				plus_worktime += hour;
-				plus_worktime += minute;
-				
-				// System.out.println("time => " + time);
 			}
 			
 		}
@@ -211,6 +207,19 @@ public class CommuteController {
         }
 		
 		return jsonArr.toString();
+	}
+	
+	private String getWorkingTime(int worktime) {
+		
+		String hour = "";
+		String minute = "";
+		
+		hour = String.valueOf((int)Math.floor(worktime/60));
+		minute = String.valueOf((int)Math.floor(worktime%60));
+		String workingTime = hour+"시간 "+minute+"분";
+		
+		return workingTime;
+		
 	}
 		
 }

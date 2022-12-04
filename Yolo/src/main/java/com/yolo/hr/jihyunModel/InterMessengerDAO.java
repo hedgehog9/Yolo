@@ -17,4 +17,13 @@ public interface InterMessengerDAO {
 	// 팀 사람들 구해오기
 	List<Map<String, String>> getTeamPerson(String deptno);
 
+	// 선택한 유저 목록 가져오기
+	List<Map<String, String>> getChooseEmp(String str_empno);
+
+	// 메신저 보내기
+	void sendMessenger(String sql);
+
+	// 보낸 메일 리스트 가져오기
+	List<Map<String, String>> getSentMsgList(String empno);
+
 }

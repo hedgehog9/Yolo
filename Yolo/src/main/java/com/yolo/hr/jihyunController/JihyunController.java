@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.yolo.hr.jihyunModel.MessengerVO;
 import com.yolo.hr.jihyunService.InterMessengerService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
 
@@ -23,11 +24,28 @@ public class JihyunController {
 	@Autowired
 	private InterMessengerService service;
 	
+	
+	// 보낸 메일함 열기
 	@RequestMapping(value = "/messenger/sentMessage.yolo")
-	public String sendedMessage() {
-		return "jihyun/messenger/sentMessage.admin";
+	public ModelAndView sentMessage( HttpServletRequest request, ModelAndView mav) {
+		
+		// 가라 세션
+		EmployeeVO loginuser = new EmployeeVO();
+		loginuser.setEmpno("1050");
+		HttpSession session = request.getSession();
+		session.setAttribute("loginuser", loginuser);
+		// 가라세션 끝
+		
+		List<Map<String, String>> sentMsgList = service.getSentMsgList(loginuser.getEmpno());
+		
+		mav.addObject("sentMsgList", sentMsgList);
+		mav.setViewName("jihyun/messenger/sentMessage.admin"); 
+		
+		return mav;
 	}
 	
+	
+	// 받은 메일함 열기
 	@RequestMapping(value = "/messenger/receivedMessage.yolo")
 	public ModelAndView receivedMessage( HttpServletRequest request, ModelAndView mav) {
 		
@@ -87,6 +105,30 @@ public class JihyunController {
 	}
 	
 	
+	// 부서내 팀 사람들(사원들) 조회해오기
+	@ResponseBody
+	@RequestMapping(value = "/jihyun/getTeamPerson.yolo", produces="text/plain;charset=UTF-8")
+	public String getTeamPerson( HttpServletRequest request) {
+		
+		String deptno = request.getParameter("deptno");
+		
+		// 부서사람들 조회하기
+		List<Map<String,String>> teamList = service.getTeamPerson(deptno);
+		
+		JSONArray jsonArr = new JSONArray();
+		
+		for(Map<String,String> dept: teamList) {
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("empno", dept.get("empno") );
+			jsonObj.put("name", dept.get("name") );
+			
+			jsonArr.put(jsonObj);
+		}
+		return jsonArr.toString() ;
+	}
+	
+	
+	
 	// 해당부서 팀 구해오기
 	@ResponseBody
 	@RequestMapping(value = "/jihyun/getTeam.yolo", produces="text/plain;charset=UTF-8")
@@ -110,26 +152,52 @@ public class JihyunController {
 	}
 	
 	
-	// 부서내 팀 사람들(사원들) 조회해오기
+	// 체크된 유저 목록 가져오기
 	@ResponseBody
-	@RequestMapping(value = "/jihyun/getTeamPerson.yolo", produces="text/plain;charset=UTF-8")
-	public String getTeamPerson( HttpServletRequest request) {
+	@RequestMapping(value = "/messenger/chooseUser.yolo", produces="text/plain;charset=UTF-8")
+	public String chooseUser( HttpServletRequest request) {
 		
-		String deptno = request.getParameter("deptno");
+		String str_empno = request.getParameter("str_empno");
 		
-		// 부서사람들 조회하기
-		List<Map<String,String>> teamList = service.getTeamPerson(deptno);
+		// 해당부서 팀 구해오기
+		List<Map<String, String>> empList = service.getChooseEmp(str_empno);
 		
 		JSONArray jsonArr = new JSONArray();
 		
-		for(Map<String,String> dept: teamList) {
+		for(Map<String, String> emp: empList) {
 			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("empno", dept.get("empno") );
-			jsonObj.put("name", dept.get("name") );
+			
+			
+			jsonObj.put("name", emp.get("name") );
+			jsonObj.put("nickname", emp.get("name").substring(emp.get("name").length()-2) );
+			jsonObj.put("position", emp.get("position") );
+			jsonObj.put("deptname", emp.get("deptname") );
+			jsonObj.put("profile_color", emp.get("profile_color") );
+			jsonObj.put("empno", emp.get("empno") );
 			
 			jsonArr.put(jsonObj);
 		}
 		return jsonArr.toString() ;
+	}
+	
+	
+	// 메신저 보내기
+	@ResponseBody
+	@RequestMapping(value = "/messenger/sendMessenger.yolo", produces="text/plain;charset=UTF-8")
+	public void addAlarm_sendMessenger(Map<String, String> paraMap, HttpServletRequest request, MessengerVO msgvo) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		msgvo.setFk_senderno(loginuser.getEmpno());
+		
+		service.sendMessenger(msgvo);
+		
+		// === AOP After Advice를 사용하기 === //
+		paraMap.put("fk_recipientno", "1050,1050"); // 받는사람 (여러명일때는 ,,으로 구분된 str)
+		paraMap.put("url", "/messenger/receivedMessage.yolo?pk_msgno=" );
+		paraMap.put("url2", "202212021601569430" ); // 연결되는 pknum등...  (여러개일때는 ,,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+		paraMap.put("alarm_content", "AOP 연습 2 입니다 " );
+		paraMap.put("alarm_type", "2" );
 	}
 	
 	
