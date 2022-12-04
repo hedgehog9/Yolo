@@ -24,30 +24,4 @@ public class LoginDAO implements InterLoginDAO {
 	}// end of public boolean checkLogin(Map<String, String> loginMap) {}---------------------
 
 
-	// 휴직중인 사원의 목록을 조회하는 메소드 
-	@Override
-	public List<Map<String, String>> getLeaveEmpList() {
-		List<Map<String, String>> leaveEmpList = sqlsession.selectList("jangjy.getLeaveEmpList");
-		return leaveEmpList;
-	}
-
-	// 휴직이 끝난 사원 리스트를 전달받아 재직 처리하는 메소드
-	@Override
-	public void updateLeaveEmp(Map<String, String[]> paraMap) {
-		sqlsession.selectList("jangjy.updateLeaveEmp",paraMap);
-	}
-
-	// 휴직 처리할 사원 목록을 조회하는 메소드 
-	@Override
-	public List<Map<String, String>> getLeaveStartEmpList() {
-		List<Map<String, String>> leaveStartEmpList = sqlsession.selectList("jangjy.getLeaveStartEmpList");
-		return leaveStartEmpList;
-	}
-
-	// 배열을 전달받아 휴직 처리하는 메소드 (update)
-	@Override
-	public void updateLeaveStartEmp(Map<String, String[]> paraMap) {
-		sqlsession.selectList("jangjy.updateLeaveStartEmp",paraMap);
-	}
-
 }

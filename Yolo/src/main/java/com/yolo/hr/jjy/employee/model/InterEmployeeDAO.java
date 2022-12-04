@@ -18,5 +18,17 @@ public interface InterEmployeeDAO {
 
 	// 사원번호, 휴직시작일,휴직종료일을 Map 으로 전달받아 가능한 기간인지 조회하는 메소드
 	int checkLeave(Map<String, String> leaveCheckMap);
+	
+	// 재직 처리해야 할 사원들의 목록을 조회하는 메소드  
+	List<Map<String, String>> getLeaveEmpList();
+
+	// 휴직 처리해야할 사원들의 목록을 조회하는 메소드 
+	List<Map<String, String>> getLeaveStartEmpList();
+
+	// 휴직중인 사원의 목록을 전달받아 배열로 변환 후 재직 상태로 update 하는 메소드
+	void updateLeaveEmp(Map<String, String[]> paraMap);
+
+	// 재직중인 사원의 목록을 전달받아 배열로 변환 후 휴직 상태로 update 하는 메소드
+	void updateLeaveStartEmp(Map<String, String[]> paraMap);
 
 }

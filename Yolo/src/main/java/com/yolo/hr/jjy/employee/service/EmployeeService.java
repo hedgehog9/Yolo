@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -55,6 +56,47 @@ public class EmployeeService implements InterEmployeeService {
         }
         if(leaveUpdate == 1) {result = 1;}
 		return result;
+	}
+	
+	// 재직 -> 휴직, 휴직 -> 재직 스케줄러로 처리 (매일 오전 06시)
+	@Override
+	@Scheduled(cron="0 0 6 * * *")
+	public void updateLeaveStatus() {
+		
+		// 재직 처리해야 할 사원들의 목록을 조회하는 메소드  
+		List<Map<String, String>> leaveEmpList = dao.getLeaveEmpList();
+		// 휴직 처리해야할 사원들의 목록을 조회하는 메소드 
+		List<Map<String, String>> leaveStartEmpList = dao.getLeaveStartEmpList();
+		
+		// 휴직중인 사원의 목록을 전달받아 배열로 변환 후 재직 상태로 update 하는 메소드
+		if(leaveEmpList != null && leaveEmpList.size() > 0) {
+	    	String[] arr_leaveEmp = new String[leaveEmpList.size()];
+	    	
+	    	for(int i=0; i<leaveEmpList.size(); i++) {
+	    		arr_leaveEmp[i] = leaveEmpList.get(i).get("empno");
+	    	}
+	    	
+	    	Map<String,String[]> paraMap = new HashMap<>();
+	    	paraMap.put("arr_leaveEmp", arr_leaveEmp);
+	    	
+	    	dao.updateLeaveEmp(paraMap);
+		}
+		
+		// 재직중인 사원의 목록을 전달받아 배열로 변환 후 휴직 상태로 update 하는 메소드 
+		if(leaveStartEmpList != null && leaveStartEmpList.size() > 0) {
+	    	String[] arr_leaveStartEmp = new String[leaveStartEmpList.size()];
+	    	
+	    	for(int i=0; i<leaveStartEmpList.size(); i++) {
+	    		arr_leaveStartEmp[i] = leaveStartEmpList.get(i).get("empno");
+	    	}
+	    	
+	    	Map<String,String[]> paraMap = new HashMap<>();
+	    	paraMap.put("arr_leaveStartEmp", arr_leaveStartEmp);
+	    	
+	    	dao.updateLeaveStartEmp(paraMap);
+		}
+		
+	
 	}
 
 

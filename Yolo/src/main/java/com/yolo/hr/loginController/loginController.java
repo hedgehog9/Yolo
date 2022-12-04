@@ -56,17 +56,6 @@ public class loginController {
 			session.setAttribute("loginuser", loginuser);
 			result = true;
 			
-			// 로그인시 휴직중인 사원의 목록을 가져와 현재 날짜와 비교해 휴직일이 끝난 경우 재직 상태로 변경 
-			List<Map<String,String>> empList = service.getLeaveEmpList();
-			service.updateLeaveEmp(empList);
-			
-			
-			// 로그인시 휴직 처리할 사원의 목록을 가져와 현재 날짜와 비교해 휴직 시작인 경우 휴직 상태로 변경 
-			List<Map<String,String>> leaveStartEmpList = service.getLeaveStartEmpList();
-			service.updateLeaveStartEmp(leaveStartEmpList);
-			
-			System.out.println("확인용 leaveStartEmpList"+leaveStartEmpList);
-			
 		}
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);

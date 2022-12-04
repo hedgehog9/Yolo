@@ -52,6 +52,35 @@ public class EmployeeDAO implements InterEmployeeDAO {
 	}
 	
 
+	// 재직 처리해야 할 사원들의 목록을 조회하는 메소드  
+	@Override
+	public List<Map<String, String>> getLeaveEmpList() {
+		List<Map<String, String>> leaveEmpList = sqlsession.selectList("jangjy.getLeaveEmpList");
+		return leaveEmpList;
+	}
+
+	// 휴직 처리해야할 사원들의 목록을 조회하는 메소드 
+	@Override
+	public List<Map<String, String>> getLeaveStartEmpList() {
+		List<Map<String, String>> leaveStartEmpList = sqlsession.selectList("jangjy.getLeaveStartEmpList");
+		return leaveStartEmpList;
+	}
+
+	// 휴직중인 사원의 목록을 전달받아 배열로 변환 후 재직 상태로 update 하는 메소드
+	@Override
+	public void updateLeaveEmp(Map<String, String[]> paraMap) {
+		sqlsession.selectList("jangjy.updateLeaveEmp",paraMap);
+		
+	}
+
+	// 재직중인 사원의 목록을 전달받아 배열로 변환 후 휴직 상태로 update 하는 메소드
+	@Override
+	public void updateLeaveStartEmp(Map<String, String[]> paraMap) {
+		sqlsession.selectList("jangjy.updateLeaveStartEmp",paraMap);
+		
+	}
+	
+
 	
 	
 	
