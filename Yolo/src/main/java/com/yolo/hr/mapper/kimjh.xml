@@ -81,19 +81,21 @@
 		<result property="position" column="position" javaType="String"/>
 		<result property="profile_color" column="profile_color" javaType="String"/>
 		<result property="pk_msgno" column="pk_msgno" javaType="String"/>
-		<result property="fk_recipientno" column="fk_recipientno" javaType="String"/>
+		<result property="empno" column="empno" javaType="String"/>
 		<result property="origin_msgno" column="origin_msgno" javaType="String"/>
 		<result property="subject" column="subject" javaType="String"/>
 		<result property="content" column="content" javaType="String"/>
 		<result property="view_status" column="view_status" javaType="String"/>
 		<result property="writedate" column="writedate" javaType="String"/>
+		<result property="having_attach" column="having_attach" javaType="String"/>
+		<result property="group_msgno" column="group_msgno" javaType="String"/>
 	</resultMap>
 	<select id="selectSentMsgList" parameterType="String" resultMap="MsgMap">
-		select name, substr(name, -2, 2) as nickname , deptname, position, profile_color, pk_msgno , fk_recipientno, origin_msgno, subject, content, view_status
-				,  to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
+		select name, substr(name, -2, 2) as nickname , deptname, position, profile_color, pk_msgno , empno, origin_msgno, subject, content, view_status
+				,  to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate, having_attach
 		from
 		(
-		    select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE
+		    select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE, having_attach
 		    from tbl_messenger
 		    where FK_SENDERNO = #{empno}
 		)
@@ -106,8 +108,110 @@
 		) 
 		on FK_RECIPIENTNO = empno
 		order by WRITEDATE desc
-	
 	</select>
+	
+	
+	<!-- 받은 메일 리스트 가져오기 -->
+	<select id="selectReceivedMsgList" parameterType="String" resultMap="MsgMap">
+		select name, substr(name, -2, 2) as nickname , deptname, position, profile_color, pk_msgno , empno, origin_msgno, subject, content, view_status
+				,  to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate, having_attach
+		from
+		(
+		    select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE, FK_SENDERNO, having_attach
+		    from tbl_messenger
+		    where FK_RECIPIENTNO = #{empno}
+		)
+		join 
+		( 
+		    select empno, NAME, DEPTNAME, POSITION, PROFILE_COLOR
+		    from TBL_EMPLOYEES M join  TBL_DEPT D
+		    on M.fk_deptno = D.deptno
+		
+		) 
+		on FK_SENDERNO = empno
+		order by WRITEDATE desc
+	</select>
+	
+	
+	<!-- 메신저 내용 조회하기(보낸 메신저) -->
+	<select id="selectMailContent" parameterType="String" resultMap="MsgMap">
+		select NAME, SUBSTR(NAME, -2, 2) as nickname , DEPTNAME, POSITION, PROFILE_COLOR, PK_MSGNO , empno, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS
+		    ,  to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as WRITEDATE , group_msgno, having_attach
+		from
+		(
+		    select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE, having_attach, group_msgno
+		    from tbl_messenger
+		    where PK_MSGNO = #{msgno}
+		)
+		join 
+		( 
+		    select empno, NAME, DEPTNAME, POSITION, PROFILE_COLOR
+		    from TBL_EMPLOYEES M join  TBL_DEPT D
+		    on M.fk_deptno = D.deptno
+		
+		) 
+		on FK_RECIPIENTNO = empno
+		order by WRITEDATE desc
+	</select>
+	
+	
+	<!-- 메신저 내용 조회하기(받은 메신저) -->
+	<select id="selectMailContent2" parameterType="String" resultMap="MsgMap">
+		select NAME, SUBSTR(NAME, -2, 2) as nickname , DEPTNAME, POSITION, PROFILE_COLOR, PK_MSGNO , empno, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS
+		    ,  to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as WRITEDATE , group_msgno, having_attach
+		from
+		(
+		    select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE, having_attach, group_msgno, fk_senderno
+		    from tbl_messenger
+		    where PK_MSGNO = #{msgno}
+		)
+		join 
+		( 
+		    select empno, NAME, DEPTNAME, POSITION, PROFILE_COLOR
+		    from TBL_EMPLOYEES M join  TBL_DEPT D
+		    on M.fk_deptno = D.deptno
+		
+		) 
+		on fk_senderno = empno
+		order by WRITEDATE desc
+	</select>
+	
+	
+	<!-- 조회한 메신저에 첨부파일이 있다면 조회하기 -->
+	<select id="selectMsgFileList" parameterType="String" resultType="com.yolo.hr.jihyunModel.FileVO">
+		select pk_fileno, fileName, orgFilename, fileSize
+		from tbl_messenger_file
+		where fk_msgno = #{group_msgno}
+	</select>
+	
+	
+	<!-- 메신저 조회수 변경하기 -->
+	<update id="updateViewStatus" parameterType="String" >
+		update tbl_messenger set VIEW_STATUS = 1
+		where PK_MSGNO in ( ${msgno} ) 
+	</update>
+	
+	
+	<!-- 모든 안읽은 메신저 조회수 변경하기 -->
+	<update id="updateAllMsgStatus" parameterType="String" >
+		update tbl_messenger set VIEW_STATUS = 1
+		where FK_RECIPIENTNO = #{empno} 
+	</update>
+	
+	
+	<!-- 메신저의 첨부파일 추가하기 -->
+	<insert id="insertMsgFile" parameterType="com.yolo.hr.jihyunModel.FileVO">
+		insert into tbl_messenger_file (pk_fileno, fileName, orgFilename, fileSize, fk_msgno)
+		values (seq_tbl_messenger_file_fileno.nextval, #{fileName}, #{orgFilename}, #{fileSize}, #{fk_msgno})
+	</insert>
+	
+	
+	<!-- 메신저의 첨부파일에 원본 메신저 번호 저장하기 -->
+	<update id="updateFileMsgno">
+		update tbl_messenger_file set fk_msgno = #{msgno}
+		where fk_msgno = #{time}
+	</update>
+	
 	
 	
 	

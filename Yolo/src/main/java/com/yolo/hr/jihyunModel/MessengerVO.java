@@ -9,6 +9,7 @@ public class MessengerVO {
 	private String  subject ;
 	private String  content ;
 	private String  view_status ;
+	private String  having_attach ;
 	private String  writedate ;
 	
 	public String getPk_msgno() {
@@ -58,6 +59,12 @@ public class MessengerVO {
 	}
 	public void setWritedate(String writedate) {
 		this.writedate = writedate;
+	}
+	public String getHaving_attach() {
+		return having_attach;
+	}
+	public void setHaving_attach(String having_attach) {
+		this.having_attach = having_attach;
 	}
 	
 	

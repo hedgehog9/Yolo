@@ -81,9 +81,14 @@
 		margin: 0 10% 15px 10%;
 	}
 	
+	div.filebox {
+		display: flex;
+		align-items: center;
+	}
+	
 	.filebox .upload-name {
 	    display: inline-block;
-	    height: 40px;
+	    height: 35px;
 	    padding: 0 10px;
 	    vertical-align: middle;
 	    border: 1px solid #dddddd;
@@ -94,16 +99,16 @@
 	
 	.filebox label {
 	    display: inline-block;
-	    padding: 9px 20px;
+	    padding: 7px 20px;
 	    color: #fff;
 	    vertical-align: middle;
 	    text-align: center;
 	    background-color: #88eb1e;
 	    cursor: pointer;
 	    width : 25%;
-	    height: 40px;
+	    height: 35px;
 	    margin-left: 10px;
-	    margin-top: 5px;
+	    margin-top: 6px;
 	    border-radius: 0.4rem;
 	}
 	
@@ -116,14 +121,14 @@
 	    border: 0;
 	}
 	
-	.modal::-webkit-scrollbar {
+	.modal-body::-webkit-scrollbar {
     	width: 10px;
   	}
-  	.modal::-webkit-scrollbar-thumb {
+  	.modal-body::-webkit-scrollbar-thumb {
     	background-color: #ababab;
     	border-radius: 10px;
   	}
-  	.modal::-webkit-scrollbar-track {
+  	.modal-body::-webkit-scrollbar-track {
     	background-color: #dedfe0;
     	border-radius: 10px;
   	}
@@ -290,6 +295,8 @@
 		background-color: #f9fafa;
 	}
 	
+	/* 첨부파일 개수용 */
+	
 	
 </style>
 
@@ -297,12 +304,15 @@
 	
 	$(document).ready(function(){
 		
-		$("#file").on('change',function(){
-			  var fileName = $("#file").val();
-			  $(".upload-name").val(fileName);
+	
+		// 파일 선택하면 선택창 바뀌도록 
+		$(document).on("change", ".file", function(){
+			  var fileName = $(this).val();
+			  $(this).parent().find($(".upload-name")).val(fileName.slice(fileName.lastIndexOf("\\")+1));
 		});
 		
 		
+		// 메일 보내기 창을 벗어날때 임시저장 여부 확인하는 이벤트
 		$("button.my_close").on("click", function(){
 			
 			Swal.fire({
@@ -330,6 +340,45 @@
 				});
 		  	  
 		}); 
+		
+		
+		// 추가 이미지 파일에 스피너 달아주기 // 최소값 최대값
+		$("input#spinnerImgQty").spinner({
+			spin:function(event,ui){
+	            if(ui.value > 10) {
+	               $(this).spinner("value", 10);
+	               return false;
+	            }
+	            else if(ui.value < 0) {
+	               $(this).spinner("value", 0);
+	               return false;
+	            }
+	         }
+		});
+		
+		
+		// ### 스피너의 이벤트는 클릭이 아니고 change도 아니고 "spinstop" 이다 ### //
+		// 첨부파일 개수만큼 늘고 줄어들게 만들기
+		$("input#spinnerImgQty").bind("spinstop", function(){
+
+			let html = '';
+			const cnt = $(this).val();
+			
+			//console.log(cnt);
+			
+			for(let i=0; i<Number(cnt); i++){
+				html+= '<div class="filebox">'+
+						    '<input class="upload-name" name="attachName'+i+'" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">'+
+						    '<label for="attach'+i+'">파일찾기</label>'+
+						    '<input type="file" class="file" id="attach'+i+'" name="attach'+i+'">'+
+						'</div>';
+			}
+			
+			$("div#divfileattach").html(html);
+			
+			$("input#attachCount").val(cnt);
+			
+		}); // end of 첨부파일 개수만큼 늘고 줄어들게 만들기
 		
 		
 		// 체크박스 바뀔때 효과
@@ -443,8 +492,8 @@
 		// 메세지 보내기 버튼 클릭 이벤트
 		$("button#sendMsgBnt").click(function(){
 			
-			if($('input[name="subject"]').val().trim()== "" || $('input[name="subject"]').val().lenth>=50 ){
-				Swal.fire('메신저 제목은','비워두거나, 50글자 이상 쓸 수 없습니다', 'error');
+			if($('input[name="subject"]').val().trim()== "" || $('input[name="subject"]').val().length>=30 ){
+				Swal.fire('메신저 제목은','비워두거나, 30글자 이상 쓸 수 없습니다', 'error');
 				return;
 			}
 			
@@ -458,11 +507,16 @@
 				return;
 			}
 			
-			const queryString = $("form[name='messengerFrm']").serialize();
+			var form = $("form")[0];        
+	        var queryString = new FormData(form);
 			
 			$.ajax({
 		    	url : "<%=ctxPath%>/messenger/sendMessenger.yolo",
 		    	data : queryString,
+		    	type: 'POST',
+		    	enctype: 'multipart/form-data',
+		    	processData: false,
+		        contentType: false,
 				success: function(){
 					
 					const modal_frmArr = document.querySelectorAll("form#messengerFrm");
@@ -471,6 +525,7 @@
 			  			$('button#dropdownMenuButton').find('span').text('받는 사람 선택');
 			  	  	}
 					$(".sendMail").modal('hide');
+					window.location.reload();
 					toastr.success('메세지를 발송하였습니다.');
 					
 				},
@@ -649,7 +704,7 @@
       <!-- Modal body -->
       <div class="modal-body">
       <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
-      <form id='messengerFrm' name="messengerFrm">
+      <form id='messengerFrm' name="messengerFrm"  enctype="multipart/form-data">
       	<input name="subject" placeholder="메신저 제목을 입력하세요"/>
       	
       	<button class="dropdownBtn" type="button" id="dropdownMenuButton" onclick="search_choosePerson()">
@@ -661,11 +716,16 @@
         <input type="text" name="origin_msgno" />
         
         <div id="attachArea">
-        	<div class="filebox">
-			    <input class="upload-name" value="첨부파일" placeholder="첨부파일">
+        	<span>파일 첨부하기</span>
+        	<label for="spinnerImgQty">파일갯수 : </label>
+        	<input id="spinnerImgQty" value="0" style="width: 30px; height: 20px;">
+            <div id="divfileattach"></div>
+            <input type="hidden" name="attachCount" id="attachCount" />
+        	<!-- <div class="filebox">
+			    <input class="upload-name" value="첨부파일" placeholder="첨부파일" readonly="readonly">
 			    <label for="file">파일찾기</label>
 			    <input type="file" id="file">
-			</div>
+			</div> -->
         </div>
       </form>
         
