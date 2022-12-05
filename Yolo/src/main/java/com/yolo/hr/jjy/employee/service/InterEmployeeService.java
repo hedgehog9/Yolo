@@ -19,4 +19,22 @@ public interface InterEmployeeService {
 	// 매일 오전 6시에 사원의 status 컬럼을 휴직 처리 또는 재직 처리로 바꿔주는 메소드 
 	void updateLeaveStatus();
 
+	// 전체 부서 조회하는 메소드 
+	List<Map<String, String>> getDeptList();
+
+	// 해당부서 팀 구해오기
+	List<Map<String, String>> getTeam(Map<String, String> deptMap);
+
+	// 페이징 처리를 위해 총 사원 수 구해오기 
+	int getTotalCount(Map<String, String> empMap);
+
+	// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+	List<Map<String, String>> empListSearchWithPaging(Map<String, Object> pageMap);
+
+	// 페이징 처리를 위한 총 페이지 수 구해오기
+	int getTotalPage(Map<String, Object> pageMap);
+
+	// rno 에 해당하는 사원 목록 가져오기 
+	List<Map<String, String>> empListWithRno(Map<String, String> pageMap);
+
 }

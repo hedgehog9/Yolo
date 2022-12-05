@@ -31,4 +31,22 @@ public interface InterEmployeeDAO {
 	// 재직중인 사원의 목록을 전달받아 배열로 변환 후 휴직 상태로 update 하는 메소드
 	void updateLeaveStartEmp(Map<String, String[]> paraMap);
 
+	// 전체 부서번호, 부서명 조회하는 메소드 
+	List<Map<String, String>> getDeptList();
+
+	// 해당부서 팀 구해오기
+	List<Map<String, String>> getTeam(Map<String, String> deptMap);
+
+	// 페이징 처리를 위해 총 사원 수 구해오기 
+	int getTotalCount(Map<String, String> empMap);
+
+	// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+	List<Map<String, String>> empListSearchWithPaging(Map<String, Object> pageMap);
+
+	// 페이징 처리를 위해 총 페이지 수 구해오기 
+	int getTotalPage(Map<String, Object> pageMap);
+
+	// rno 에 해당하는 사원 목록 가져오기 
+	List<Map<String, String>> empListWithRno(Map<String, String> pageMap);
+
 }

@@ -55,6 +55,31 @@
 		      ,deptname
 		from tbl_employees E left join TBL_DEPT D
 		on E.fk_deptno = d.deptno
+		
+		where 1 = 1 
+		<if test='keyword != "" '>
+			<choose>
+		    	<when test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</when>
+		    	<when test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</when>
+		    	<otherwise>
+		    	   
+		    	</otherwise>
+		    </choose>
+	    </if>
+		<!-- 
+		
+		<if test='keyword != "" and searchType="empno"'>
+		and empno = #{keyword}
+		</if>
+		<if test='keyword != "" and searchType="name"'>
+		and name like '%'||#{keyword}||'%'
+		</if>
+		 -->
+		
 	</select>
 	
 	<resultMap type="HashMap" id="EmployeeMap">
@@ -178,8 +203,165 @@
 	</select>
 	
 	
+	<!-- 부서 조회하기 -->
+	<resultMap type="HashMap" id="deptMap">
+		<result property="deptname" column="deptname" javaType="String"/>
+		<result property="deptno" column="deptno" javaType="String"/>
+	</resultMap>
+	<select id="selectDept"  parameterType="String" resultMap="deptMap">
+		select  deptname, deptno
+		from TBL_DEPT
+		where upper_deptno = #{deptno}
+	</select>
+	
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+		
+		select count(*)
+		from tbl_employees E left join TBL_DEPT D
+		on E.fk_deptno = d.deptno
+		
+		where 1 = 1 
+		<if test='keyword != "" '>
+			<choose>
+		    	<when test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</when>
+		    	<when test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</when>
+		    	<otherwise>
+		    	   
+		    	</otherwise>
+		    </choose>
+	    </if>
+	</select>
 	
 	
+	<resultMap type="HashMap" id="EmployeePagingList_Map">
+		<result property="empno"     				column="empno"    				 javaType="String"/>
+		<result property="name"          			column="name"         			 javaType="String"/>
+		<result property="lastname" 				column="lastname"   			 javaType="String"/>
+		<result property="firstname"           		column="firstname"             	 javaType="String"/>
+		<result property="email" 		   			column="email"              	 javaType="String"/>
+		<result property="pwd" 		   				column="pwd"              		 javaType="String"/>
+		<result property="mobile" 		   			column="mobile"                  javaType="String"/>
+		<result property="hiredate" 		   		column="hiredate"                javaType="String"/>
+		<result property="retiredate" 		 	    column="retiredate"              javaType="String"/>
+		<result property="fk_deptno" 		   		column="fk_deptno"               javaType="String"/>
+		<result property="time_salary" 		   		column="time_salary"             javaType="String"/>
+		<result property="rrn" 		     			column="rrn"              		 javaType="String"/>
+		<result property="position" 		        column="position"              	 javaType="String"/>
+		<result property="continuousServiceMonth"   column="continuousServiceMonth"  javaType="String"/>
+		<result property="workingDays" 		        column="workingDays"             javaType="String"/>
+		<result property="address" 		   			column="address"              	 javaType="String"/>
+		<result property="account" 		   			column="account"              	 javaType="String"/>
+		<result property="introduce" 		   		column="introduce"               javaType="String"/>
+		<result property="status" 		   			column="status"              	 javaType="String"/>
+		<result property="profile_color" 		   	column="profile_color"           javaType="String"/>
+		<result property="gender" 		   			column="gender"              	 javaType="String"/>
+		<result property="deptname" 		   		column="deptname"                javaType="String"/>
+	</resultMap>
+	
+	<select id="empListSearchWithPaging" parameterType="HashMap" resultMap="EmployeePagingList_Map">
+		select rno, empno, name, lastname, firstname, email
+		      ,pwd, mobile,hiredate ,retiredate
+		      ,fk_deptno,time_salary, rrn, position
+		      ,continuousServiceMonth ,workingDays
+		      ,address, account, introduce
+		      ,status, profile_color ,gender ,deptname
+		from 
+		(
+		select rownum as rno, empno, name, lastname, firstname, email
+		      ,pwd, mobile, to_char(hiredate,'yyyy.mm.dd') as hiredate
+		      , nvl(to_char(retiredate,'yyyy.mm.dd'),' ') as retiredate
+		      ,fk_deptno,time_salary, rrn, position
+		      , trunc(MONTHS_BETWEEN(sysdate, hiredate),0)|| '개월' as continuousServiceMonth
+		      , trunc(sysdate - hiredate,0) as workingDays
+		      ,address, account, introduce
+		      ,status, profile_color
+		      ,func_gender(rrn) as gender
+		      ,deptname
+		from tbl_employees E left join TBL_DEPT D
+		on E.fk_deptno = d.deptno
+		where 1 = 1 
+			<if test='keyword != "" '>
+		
+		    	<if test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</if>
+		    	
+		    	<if test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</if>
+		    	
+	    	</if>
+		    	
+	    	<if test="arr_position != null">
+	    		and E.position in
+		    	<foreach collection="arr_position" index="i" open="(" separator="," close=")">
+					'${arr_position[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_dept != null">
+	    		and D.deptname in
+		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
+					'${arr_dept[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_status != null">
+	    		and E.status in
+		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
+					'${arr_status[i]}'
+				</foreach>	
+	    	</if>
+		)V
+		where rno between #{startRno} and #{endRno}	
+	</select>
+	
+	
+	<!-- 페이징 처리를 위한 총 페이지수 구해오기  -->
+	<select id="getTotalPage" parameterType="HashMap" resultType="int">
+		select ceil (count(*)/10)
+		from tbl_employees E join tbl_dept D
+		on E.fk_deptno = D.deptno
+		where 1 = 1
+			<if test='keyword != "" '>
+		
+		    	<if test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</if>
+		    	
+		    	<if test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</if>
+		    	
+	    	</if>
+		    	
+	    	<if test="arr_position != null">
+	    		and position in
+		    	<foreach collection="arr_position" index="i" open="(" separator="," close=")">
+					'${arr_position[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_dept != null">
+	    		and deptname in
+		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
+					'${arr_dept[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_status != null">
+	    		and status in
+		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
+					'${arr_status[i]}'
+				</foreach>	
+	    	</if>
+		    
+	    
+	</select>
 	
 	
 	

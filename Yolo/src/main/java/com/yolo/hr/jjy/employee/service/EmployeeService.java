@@ -3,6 +3,7 @@ package com.yolo.hr.jjy.employee.service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,7 +23,26 @@ public class EmployeeService implements InterEmployeeService {
 	// 전체 사원을 조회 해오는 메소드 
 	@Override
 	public List<Map<String, String>> getEmpList(Map<String, String> empMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = empMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		
+		empMap.put("searchType", searchType);
+		
 		List<Map<String, String>> empList = dao.getEmpList(empMap);
+		
+		
 		return empList;
 	}
 
@@ -97,6 +117,99 @@ public class EmployeeService implements InterEmployeeService {
 		}
 		
 	
+	}
+
+	// 전체 부서 조회하기 
+	@Override
+	public List<Map<String, String>> getDeptList() {
+		List<Map<String, String>> deptList = dao.getDeptList();
+		return deptList;
+	}
+
+	// 해당부서 팀 구해오기
+	@Override
+	public List<Map<String, String>> getTeam(Map<String, String> deptMap) {
+		List<Map<String, String>> teamList = dao.getTeam(deptMap);
+		return teamList;
+	}
+
+	// 페이징 처리를 위해 총 사원 수 구해오기 
+	@Override
+	public int getTotalCount(Map<String, String> empMap) {
+		
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = empMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		empMap.put("searchType", searchType);
+		
+		int totalCount = dao.getTotalCount(empMap);
+		return totalCount;
+	}
+
+	// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+	@Override
+	public List<Map<String, String>> empListSearchWithPaging(Map<String, Object> pageMap) {
+		
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) pageMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		pageMap.put("searchType", searchType);
+		List<Map<String, String>> empListPaging = dao.empListSearchWithPaging(pageMap);
+		return empListPaging;
+	}
+
+	// 페이징 처리를 위한 총 페이지 수 구해오기
+	@Override
+	public int getTotalPage(Map<String, Object> pageMap) {
+		
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) pageMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		pageMap.put("searchType", searchType);
+		
+		int totalPage = dao.getTotalPage(pageMap);
+		return totalPage;
+	}
+
+	// rno 에 해당하는 사원 목록 가져오기 
+	@Override
+	public List<Map<String, String>> empListWithRno(Map<String, String> pageMap) {
+		
+		List<Map<String, String>> empList = dao.empListWithRno(pageMap);
+		return empList;
 	}
 
 

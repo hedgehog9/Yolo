@@ -19,6 +19,7 @@ public class EmployeeDAO implements InterEmployeeDAO {
 	public List<Map<String, String>> getEmpList(Map<String, String> empMap) {
 		
 		List<Map<String, String>> empList = sqlsession.selectList("jangjy.getEmpList", empMap);
+		
 		return empList;
 	}
 	
@@ -80,6 +81,49 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		
 	}
 	
+	// 전체 부서번호, 부서명 조회하는 메소드 
+	@Override
+	public List<Map<String, String>> getDeptList() {
+		String deptno = "1";
+		List<Map<String, String>> deptList = sqlsession.selectList("jangjy.selectDept", deptno);
+		return deptList;
+	}
+	
+	
+	// 해당부서 팀 구해오기
+	@Override
+	public List<Map<String, String>> getTeam(Map<String, String> deptMap) {
+		List<Map<String, String>> teamList = sqlsession.selectList("jangjy.getTeamName", deptMap);
+		return teamList;
+	}
+
+	// 페이징 처리를 위해 총 사원 수 구해오기 
+	@Override
+	public int getTotalCount(Map<String, String> empMap) {
+		int totalCount = sqlsession.selectOne("jangjy.getTotalCount",empMap);
+		return totalCount;
+	}
+
+	// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+	@Override
+	public List<Map<String, String>> empListSearchWithPaging(Map<String, Object> pageMap) {
+		List<Map<String,String>> empListPaging = sqlsession.selectList("jangjy.empListSearchWithPaging", pageMap);
+		return empListPaging;
+	}
+
+	// 페이징 처리를 위해 총 페이지 수 구해오기 
+	@Override
+	public int getTotalPage(Map<String, Object> pageMap) {
+		int totalPage = sqlsession.selectOne("jangjy.getTotalPage",pageMap);
+		return totalPage;
+	}
+
+	// rno 에 해당하는 사원 목록 가져오기 
+	@Override
+	public List<Map<String, String>> empListWithRno(Map<String, String> pageMap) {
+		List<Map<String,String>> empList = sqlsession.selectList("jangjy.empListWithRno",pageMap);
+		return empList;
+	}
 
 	
 	
