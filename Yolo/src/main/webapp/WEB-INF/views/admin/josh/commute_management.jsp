@@ -97,12 +97,18 @@
     $(document).ready(function() {
 
         let today = new Date();
+        
+        let arrDept = new Array();
 
         getCurrentWeek();
         
         $("#dept-select").select2({
         		theme: 'bootstrap4',
         		placeholder:"조직을 선택하세요",
+        		allowClear: true,
+        		tags: true,
+        	    tokenSeparators: [',', ' '],
+        	    //data : data , // 실제 Select Option에 들어갈 데이터 
         });
         
         const a = $('#management-categoty-div > div > span > span.selection > span').val()
@@ -184,7 +190,13 @@
                 $("span#startdate").text(start)
                 $("span#enddate").text("~ "+end)
 
+                $('select#dept-select').each(function(){
+				    arrDept = $(this).val();
+				    console.log(arrDept)
+            		});
+                
                 // 여기서 ajax 시작
+                totalCommuteList(1, arrDept);
             });
             // end of $("input#daterange").daterangepicker
 
@@ -193,53 +205,32 @@
 
                 getCurrentWeek();
                 $("input#daterange").val(today.toISOString().slice(0, 10))
+                
+                $('select#dept-select').each(function(){
+				    arrDept = $(this).val();
+				    console.log(arrDept)
+            		});
 
                 // 여기서 ajax 시작
+                totalCommuteList(1, arrDept);
 
             });// end of $("span#today-btn").click -------------
 
-            ////////////////////////////////////////////////////////////////////////////////////////////////
-            // 이 코드가 ajax 실행후 들어가게 만들자
-            /*
-            html = "";
+            /* $("select#dept-select").on("select2:select", function (e) {
+            		alert("asd")
+            	}); */
             
-            for(var i=0; i<10; i++) {
-
-                html += "<tr>"+
-                            "<td class='d-flex'>"+
-                            "<div class='profile'>길동</div>"+
-							"<div>"+
-							"<span style='display: block; padding-top: 3px;'>홍길동</span>"+
-							"<span style='font-weight: normal; color: gray; font-size: 10pt;'>인사 · 관리자</span>"+
-							"</div>"+
-                            "</td>"+
-                            "<td>123</td>"+
-                            "<td><div id ='gagebar"+i+"' style='width: 400px; height: 8px;'></div></td>"+
-                            "<td>20</td>"+
-                            "<td>60</td>"+
-                        "</tr>"
-                
-            }
-
-            $("#data-body").html(html);
-
-            for(var i=0; i<10; i++) {
-                var bar = new ProgressBar.Line('#gagebar'+i, { // 게이지바 생성
-                    strokeWidth: 4,
-                    easing: 'easeInOut',
-                    duration: 1400,
-                    color: 'yellow',
-                    trailColor: '#eee',
-                    trailWidth: 1,
-                    svgStyle: {width: '100%', height: '100%'}
-                });
-
-                bar.animate(0.1*i);  // 게이지바 화면에 뿌리는 코드
-                
-            }
-            */
-            /////////////////////////////////////////////////////////////////////////////////////////////////
-    
+            
+            $("select#dept-select").change(function() {
+            	
+            		$('select#dept-select').each(function(){
+				    arrDept = $(this).val();
+				    console.log(arrDept)
+            		});
+            		
+            		 totalCommuteList(1, arrDept);
+            	
+            });// end of $("select#dept-select").change ------------ 
 
         
     })// end of $(document).ready 
@@ -283,6 +274,7 @@
     				  "currentShowPageNo":currentShowPageNo,
     				  "arrDept":arrDept},
     			dataType:"JSON",
+    			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
     			success:function(json) {
     				
     				let html = "";
@@ -331,6 +323,11 @@
     					makePageBar(currentShowPageNo, arrDept, startdate, enddate);
     				}
     				
+    				else {
+    					$("#data-body").empty();
+    					$("div#pageBar").empty();
+    				}
+    				
     			},
     			error: function(request, status, error){
 		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -347,6 +344,7 @@
   				  "enddate":enddate,
   				  "arrDept":arrDept},
   			dataType:"JSON",
+  			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
   			success:function(json) {
   				
   				if(json.totalPage > 0) {
@@ -400,7 +398,10 @@
 					
 					
 				}// end of if(json.totalPage > 0) ------------------
-  				
+				else {
+					$("#data-body").empty();
+					$("div#pageBar").empty();
+				}
   			}
     			
     		})
