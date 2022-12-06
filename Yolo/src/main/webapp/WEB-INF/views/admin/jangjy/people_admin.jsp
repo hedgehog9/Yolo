@@ -1118,7 +1118,7 @@ arr_status = [];
 									급여<span style="color: red;">*</span>
 								</div>
 								<input name="salary" class="input_modal" type="text"
-									autocomplete="off" placeholder="급여 입력" />
+									autocomplete="off" placeholder="급여 입력" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
 							</div>
 
 							<%-- =========== 부서 선택 =========== --%>
