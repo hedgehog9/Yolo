@@ -164,25 +164,25 @@ public class EmployeeController {
 		JSONArray jsonArr = new JSONArray();
 		
 		if(empListPaging.size() != 0) {
-			for(Map<String,String> EmpMap: empListPaging) {
+			for(Map<String,String> empMap: empListPaging) {
 				
 				JSONObject jsonObj = new JSONObject();
 				
-				jsonObj.put("empno",EmpMap.get("empno")); // 사번
-				jsonObj.put("profile_color",EmpMap.get("profile_color")); // 프로필 아이콘 색상
-				jsonObj.put("profileName", EmpMap.get("name").substring(1)); // 프로필이름 
-				jsonObj.put("name", EmpMap.get("name")); // 이름 
-				jsonObj.put("status", EmpMap.get("status")); // 재직상태
-				jsonObj.put("hireDate", EmpMap.get("hiredate")); // 입사일
-				jsonObj.put("retireDate", EmpMap.get("retiredate")); // 퇴사일
-				jsonObj.put("continuousServiceMonth", EmpMap.get("continuousServiceMonth")); // 근속기간
-				jsonObj.put("workingDays",EmpMap.get("workingDays")); // 근무일수
-				jsonObj.put("dept", EmpMap.get("dept")); // 부서
-				jsonObj.put("position", EmpMap.get("position")); // 직위
-				jsonObj.put("email", EmpMap.get("email")); // 이메일
-				jsonObj.put("gender", EmpMap.get("gender")); // 성별
-				jsonObj.put("mobile", EmpMap.get("mobile")); // 핸드폰번호
-				jsonObj.put("deptname", EmpMap.get("deptname")); // 부서명
+				jsonObj.put("empno",empMap.get("empno")); // 사번
+				jsonObj.put("profile_color",empMap.get("profile_color")); // 프로필 아이콘 색상
+				jsonObj.put("profileName", empMap.get("name").substring(1)); // 프로필이름 
+				jsonObj.put("name", empMap.get("name")); // 이름 
+				jsonObj.put("status", empMap.get("status")); // 재직상태
+				jsonObj.put("hireDate", empMap.get("hiredate")); // 입사일
+				jsonObj.put("retireDate", empMap.get("retiredate")); // 퇴사일
+				jsonObj.put("continuousServiceMonth", empMap.get("continuousServiceMonth")); // 근속기간
+				jsonObj.put("workingDays",empMap.get("workingDays")); // 근무일수
+				jsonObj.put("dept", empMap.get("dept")); // 부서
+				jsonObj.put("position", empMap.get("position")); // 직위
+				jsonObj.put("email", empMap.get("email")); // 이메일
+				if(empMap.get("rrn") != null) { jsonObj.put("gender", empMap.get("gender")); }
+				jsonObj.put("mobile", empMap.get("mobile")); // 핸드폰번호
+				jsonObj.put("deptname", empMap.get("deptname")); // 부서명
 				jsonObj.put("totalCount", totalCount); // 총 결과물 수 
 				
 				jsonArr.put(jsonObj);
@@ -268,8 +268,10 @@ public class EmployeeController {
 		
 		int result = service.insertLeave(leaveMap);
 		System.out.println("휴직처리 insert 결과 : "+ result);
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
 		
-		return "";
+		return jsonObj.toString();
 	}
 	
 	// 부서 이름 조회 

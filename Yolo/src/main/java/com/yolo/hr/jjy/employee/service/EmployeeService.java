@@ -74,8 +74,10 @@ public class EmployeeService implements InterEmployeeService {
 				leaveUpdate = dao.updateLeave(leaveMap);
 			}
         }
-        if(leaveUpdate == 1) {result = 1;}
-		return result;
+        if(leaveUpdate == 1) {
+        	result = 1;
+        }
+		return leaveInsert;
 	}
 	
 	// 재직 -> 휴직, 휴직 -> 재직 스케줄러로 처리 (매일 오전 06시)

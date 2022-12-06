@@ -110,7 +110,7 @@
 	
 	<!-- 사원 번호를 전달받아 사원 정보 조회하기  -->
 	<select id="getEmpOne" resultMap="EmployeeMap" parameterType="HashMap">
-		select empno , name , firstname ||' '|| lastname as englishName
+		<!-- select empno , name , firstname ||' '|| lastname as englishName
 			 , substr(name,2) as profileName
 		     , email , substr(mobile,1,3) || '-' || substr(mobile,4,4)|| '-' || substr(mobile,8,4) as mobile
 		     , to_char(hiredate,'yyyy.mm.dd') as hiredate
@@ -122,6 +122,26 @@
 		     , address , account , introduce , status , profile_color
 		     ,func_gender(rrn) as gender
 		     ,func_birthday(rrn) as birthday
+		     ,D1.deptname as teamname
+		     ,D2.deptname as deptname
+		from tbl_employees E left join TBL_DEPT D1
+		on E.fk_deptno = D1.deptno
+		left join tbl_dept D2
+		on D1.upper_deptno = D2.deptno
+		where empno = #{empno} -->
+		select empno , name , nvl2( lastname , firstname ||' '|| lastname,'정보 미입력') as englishName
+			 , substr(name,2) as profileName
+		     , email 
+             , nvl2(mobile,substr(mobile,1,3) || '-' || substr(mobile,4,4)|| '-' || substr(mobile,8,4),'정보 미입력') as mobile
+		     , to_char(hiredate,'yyyy.mm.dd') as hiredate
+		     , nvl(to_char(retiredate,'yyyy.mm.dd'),' ') as retiredate
+		     , fk_deptno , time_salary , position
+		     , nvl2(rrn, substr(rrn,1,6) || '-' ||substr(rrn,7),'정보 미입력') as rrn
+		     , trunc(MONTHS_BETWEEN(sysdate, hiredate),0)|| '개월' as continuousServiceMonth
+		     , trunc(sysdate - hiredate,0) as workingDays
+		     , nvl(address,'정보 미입력') as address , nvl(account,'정보 미입력') as account , nvl(introduce,'정보 미입력') as introduce , status , profile_color
+		     ,nvl2(rrn,func_gender(rrn),' ') as gender
+		     ,nvl2(rrn,func_birthday(rrn),'정보 미입력') as birthday
 		     ,D1.deptname as teamname
 		     ,D2.deptname as deptname
 		from tbl_employees E left join TBL_DEPT D1

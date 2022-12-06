@@ -610,10 +610,12 @@
 								+"<th class='th_title'>입사일</th>"				
 								+"<th class='th_content'><span>"+`${requestScope.employeeMap.hiredate}`+"</span>&nbsp;&nbsp;<span class='span_badge'>"+`${requestScope.employeeMap.continuousServiceMonth}`+"</span></th>"				
 							+"</tr>"			
+							<%--
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>입사 유형</th>"				
 								+"<th class='th_content'>3</th>"				
 							+"</tr>"			
+							--%>
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>부서</th>"				
 								+"<th class='th_content'><span>"+`${requestScope.employeeMap.teamname}`+"</span>&nbsp;&nbsp;<span class='span_badge'>"+`${requestScope.employeeMap.deptname}`+"</span></th>"				
@@ -684,9 +686,13 @@
 						if("${requestScope.employeeMap.gender}"=="남"){		
 							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>남</span></th>";
 						}
-						else{
+						else if("${requestScope.employeeMap.gender}"=="여"){
 							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>여</span></th>";
 						}
+						else{
+							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;</th>";
+						}
+						
 								
 						html+="</tr>"			
 							+"<tr style='height:40px;'>"
@@ -734,7 +740,14 @@
 				  type : "POST",
 				  dataType : "JSON",
 				  success : function(json){
-					  alert("success");
+					  
+					  if(json.result == 1){
+						  toastr.success('휴직 처리가 완료되었습니다.');
+						  $("textarea#memo_leave").val("");
+					  }
+					  else{
+						  toastr.warning('휴직 처리가 취소되었습니다.');
+					  }
 					  
 				  },
 				  error: function(request, status, error){
@@ -1013,6 +1026,15 @@
 		
 		
 	});// end of $(document).ready-----------------------------
+	
+	//null값 체크 
+	function isEmpty(value){
+	    if(value == null || value.length === 0) {
+	           return "";
+	     } else{
+	            return "정보 미입력";
+	     }
+	}	
 	
 	
 	// textarea 자동 크기조절 
@@ -1387,7 +1409,7 @@
 				</tr>
 				<tr>
 					<th class="dept_position">부서</th>				
-					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;${requestScope.employeeMap.deptname}</th>				
+					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;${requestScope.employeeMap.teamname}</th>				
 				</tr>
 				<tr>
 					<th class="dept_position">직책</th>				

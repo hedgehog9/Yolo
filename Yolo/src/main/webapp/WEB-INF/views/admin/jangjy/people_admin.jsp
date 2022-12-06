@@ -782,8 +782,8 @@ arr_status = [];
 								+'<td>'+emp.position+'</td>'
 				
 								+'<td>'+emp.email+'</td>'
-								+'<td>'+emp.gender+'</td>'
-								+'<td>'+emp.mobile+'</td>'
+								+'<td>'+isEmpty(emp.gender)+'</td>'
+								+'<td>'+isEmpty(emp.mobile)+'</td>'
 							+'</tr>'
 							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
 						
@@ -804,9 +804,16 @@ arr_status = [];
 		
 	}// end of function viewEmpList(currentShowPageNo){}----------------------------
 		
-		
+	//null값 체크 
+	function isEmpty(value){
+	    if(value == null || value.length === 0) {
+	           return "";
+	     } else{
+	            return value;
+	     }
+	}	
 	
-	
+	<%--
 	// 사원 목록 조회하는 메소드 
 	function func_getEmpList(){
 		let keyword = $("input#searchWord").val();
@@ -868,7 +875,6 @@ arr_status = [];
 								+'<td>'+emp.gender+'</td>'
 								+'<td>'+emp.mobile+'</td>'
 							+'</tr>'
-							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
 						
 				    });// end of $.each(json,function(index,emp){}----------------------------
 					
@@ -884,7 +890,7 @@ arr_status = [];
 		}); // end of ajax()----------------------------------------------------------------------
 		
 	}// end of function func_getEmpList(){}------------------------------
-	
+	--%>
 	
 	<%--
 	// 전체 사원을 조회해오는 메소드 
@@ -1005,9 +1011,6 @@ arr_status = [];
 							  alert('가입 성공!');
 						  }
 					  }
-					  
-					  
-					  
 					  
 				  },
 				  error: function(request, status, error){
