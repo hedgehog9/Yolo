@@ -5,12 +5,8 @@
 	String ctxPath = request.getContextPath();
 %>
 
-<script>
-
-
-</script>
-
 <style>
+
 div#peopleContent {
 	margin-right: 10px;
 }
@@ -61,7 +57,7 @@ tr {
 	width: 30px;
 	height: 30px;
 	border-radius: 40%;
-	background-color: #239afe;
+	/* background-color: #239afe; */
 	color: white;
 	text-align: center;
 	padding-top: 6px;
@@ -296,11 +292,57 @@ button#add_searchTag{
 }
 
 
+<%-- dropdown level 2 css (검색조건 필터) --%>
+.dropdown-menu li {
+position: relative;
+}
+.dropdown-menu .dropdown-submenu {
+display: none;
+position: absolute;
+left: 100%;
+top: -7px;
+}
+.dropdown-menu .dropdown-submenu-left {
+right: 100%;
+left: auto;
+}
+.dropdown-menu > li:hover > .dropdown-submenu {
+display: block;
+}
+
+<%-- 검색 필터 span 태그 css --%>
+span.span_tag{
+    border: solid 1px gray;
+    padding: 3px;
+    border-radius: 10px;
+}
+button.closeTag{
+	background-color: transparent;
+    border: none;
+}
+
+
+
+
 </style>
 
 <script>
 
+let currentShowPageNo = 1;
+arr_position = [];
+arr_dept = [];
+arr_status = [];
+
 	$(document).ready(function(){
+		
+		makeCommentPageBar(currentShowPageNo);
+		
+		<%-- bootstrap 툴팁 --%>
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+		<%-- bootstrap 드롭다운 multi level --%>
+		$('.dropdown-toggle').dropdown();
 		
 		<%-- ===== 달력 하나만 출력 시작 =====  --%>
 		$("input.daterange").daterangepicker({
@@ -342,10 +384,6 @@ button#add_searchTag{
         });
 		<%-- ===== 달력 하나만 출력 끝 =====  --%>
 		
-		<%-- bootstrap 툴팁 --%>
-		$(function () {
-			$('[data-toggle="tooltip"]').tooltip()
-		});
 		
 		// 테이블 형식 또는 리스트 형식 출력 버튼 클릭시 버튼 css 변경 
 		$(document).on("click","button.btn_view_style",function(){
@@ -357,7 +395,6 @@ button#add_searchTag{
 		$(document).on("click","button#btn_search",function(){
 			$("div#div_search").css("display","block");	
 			$("button#btn_search").addClass("hidden");
-			
 		});
 		// 검색 div 이외 영역 클릭시 값이 비어있는 경우 div 숨기기
 		$('html').click(function(e) {   
@@ -367,6 +404,11 @@ button#add_searchTag{
 				$("button#btn_search").removeClass("hidden");
 			}
 		});
+		// 검색버튼에서 검색어 입력시 
+		$(document).on("keyup","input#searchWord",function(){
+			viewEmpList(currentShowPageNo);
+			
+		})// end of $(document).on("keyup","input#searchWord",function(){}------
 		
 		
 		
@@ -379,7 +421,6 @@ button#add_searchTag{
 		// 사원 관련 모든 정보 table 로 보여주는 버튼
 		$(document).on("click","button#view_table",function(){
 			func_getEmpList();
-			
 		});
 		
 		// 사원 관련 부서, 이름 , 직위, 아이콘만 보여주는 버튼
@@ -410,10 +451,10 @@ button#add_searchTag{
 			$("div#search_result").html(html);
 		});
 		
-		
 		// 문서 로딩 시 기본값 테이블 보기로 설정
-		$("button#view_table").trigger("click");
-		
+		// $("button#view_table").trigger("click");
+		// $("input#searchWord").trigger("keyup");
+		viewEmpList(1);
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
 		$(document).on("click","button.btn_label",function(){
@@ -421,17 +462,401 @@ button#add_searchTag{
 			$(this).parent().parent().find("input").val(selected);
 		});
 		
+		// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
+		$(document).on("click","a.dropdown-item",function(e){
+			
+			let flag = true;
+			
+			let searchWord = $(e.target).text();
+			let searchType = $(e.target).find("input").val();
+			
+			if(searchType == undefined){
+				return;
+			}
+			
+			$("span.span_tag").each(function(index,item){
+				let val = $(this).text();
+				if(searchType == val.substr(-2) && searchWord == val.substr(0,val.indexOf("|"))){
+					flag = false;
+					return;
+				}
+			})
+			
+			if(flag){
+				$("button#add_searchTag").parent().find("span#span_searchTag").prepend("<span class='span_tag'>"+searchWord+"|"+searchType+"<button class='closeTag'><i class='fas fa-times'></i></button></span>");
+
+				switch (searchType)
+				  {
+				    case "직위" :    
+				    	arr_position.push(searchWord);
+				      break;     
+
+				    case "부서" :    
+				    	arr_dept.push(searchWord);
+				      break;  
+				      
+				    case "상태" :    
+				    	arr_status.push(searchWord);
+				      break;   
+				  }
+			  	
+			}// end of if(flag){}-----------------------------------------
+			
+			viewEmpList(currentShowPageNo);
+			
+		});
+		
+		// 검색태그에 있는 닫기 버튼 클릭시(필터 삭제시 )
+		$(document).on("click","button.closeTag",function(e){
+			let searchWord = $(this).parent().text();
+			searchWord = searchWord.substr(0,searchWord.indexOf("|"));
+			
+			let searchType =  $(this).parent().text();
+			searchType = searchType.substr(-2);
+			
+			switch(searchType) {
+			    case "직위" :
+			    	arr_position.splice(arr_position.indexOf(searchWord),1);
+					// console.log(arr_position);
+			      break;     
+
+			    case "부서" :    
+			    	arr_dept.splice(arr_dept.indexOf(searchWord),1);
+					// console.log(arr_dept);
+			      break;  
+			      
+			    case "상태" :    
+			    	arr_status.splice(arr_status.indexOf(searchWord),1);
+					// console.log(arr_status);
+			      break;   
+			  }
+			
+			$(this).parent().remove();
+			
+			viewEmpList(currentShowPageNo);
+		});
+		
+		// 필터 초기화 버튼 클릭시 
+		$(document).on("click","button#filter_clear",function(){
+			$("span#span_searchTag").empty();
+			arr_position.length = 0;
+			arr_dept.length = 0;
+			arr_status.length = 0;
+			
+			<%-- 
+			console.log(arr_position);
+			console.log(arr_dept);
+			console.log(arr_status);
+			--%>
+			
+			viewEmpList(currentShowPageNo);
+			
+		})// end of "click","buton.filter_clear"------------------------------------
 		
 		
 		
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
-	// ajax 통신방식으로 사원 조회하는 메소드		
-	function func_getEmpInfo(){ <%-- 파라미터로 사원 번호 전달 받기 --%>
-	 	<%-- 특정 사원번호 전달 --%>
-		location.href = "<%=ctxPath%>/user_detail.yolo" ;
+			
+			
+	// 검색 조건 필터를 위해 상위부서 이름 조회하는 메소드
+	function getDeptName(){
+		
+		let html = "";
+		
+		$.ajax({
+			 // 부서 이름 구해오기 
+			  url : "<%= ctxPath%>/getDeptList.yolo",
+			  dataType : "JSON",
+			  success : function(json){
+				  let html ='';
+				  $.each(json,function(index,dept){
+					  html += '<li id=li_'+dept.deptno+'><a class="dropdown-item" href="javascript:void(0);" onmouseover="getTeam('+dept.deptno+');"><input type="hidden" value="부서" />'+dept.deptname+'</a></li>'
+					  
+			    });// end of $.each(json,function(index,emp){}----------------------------
+			    	
+				$("ul#ul_dept").html(html);
+				
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		
+		}); // end of ajax()----------------------------------------------------------------------
+		
+		
+	}// end of function getDeptName(){}--------------------------------------		
+			
+	// 부서번호를 전달받아 팀 구해오기 
+	function getTeam(deptno){
+		 $.ajax({
+			  url : "<%=ctxPath%>/getTeamList.yolo",
+			  data:{"deptno":deptno},
+			  dataType : "JSON",
+			  success : function(json2){
+				  let html ='<ul class="dropdown-menu dropdown-submenu">';
+				  
+				  $.each(json2,function(index,team){
+				  		html += '<li><a class="dropdown-item" href="#"><input type="hidden" value="부서" />'+team.deptname+'</a></li>';
+			    	});// end of $.each(json,function(index,emp){}----------------------------
+			      html += '</ul>';
+			      
+			      $("li#li_"+deptno).append(html);
+			      
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of ajax()----------------------------------------------------------------------
 	}
 	
+	// ajax 통신방식으로 사원 조회하는 메소드		
+	function func_getEmpInfo(empno){ <%-- 파라미터로 사원 번호 전달 받기 --%>
+	 	<%-- 특정 사원번호 전달 --%>
+		location.href = "<%=ctxPath%>/userDetail.yolo?empno="+empno;
+	}
+	
+	// 사원 목록 페이징바 만들기 
+	function makeCommentPageBar(currentShowPageNo){
+		<%-- === 원글에 대한 댓글의 총 페이지수(totalPage)를 알아야 한다. === --%>
+		
+		let keyword = $("input#searchWord").val();
+		
+		$.ajax({
+			url:"<%=request.getContextPath()%>/getTotalPage.yolo",
+			data:{"sizePerPage":"10"
+				 ,"keyword":keyword
+				 ,"arr_position":arr_position
+				 ,"arr_dept":arr_dept
+				 ,"arr_status":arr_status},
+			type:"GET",
+			dataType:"JSON", 
+			success:function(json){
+				// json ==>  {"totalPage":4} 또는 {"totalPage":0}
+				if(json.totalPage > 0){// 댓글이 있는 경우 
+					
+					const totalPage = json.totalPage;
+					
+					const blockSize = 10;
+					
+					let loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize)] 까지만 증가하는 용도이다.
+			        
+			        if( typeof currentShowPageNo == "string"){ // 마우스를 클릭해서 들어오는경우는 보고있는 페이지 번호가 string 타입으로 들어오므로 정수형으로 바꿔줘야 한다.
+			        	currentShowPageNo = Number(currentShowPageNo);
+			        }
+			        
+					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
+					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
+					
+					let pageBarHTML = "<ul style='list-style:none'>";
+					
+					// ==== [맨처음] [이전] 만들기 === // 
+					if(pageNo != 1 ) {
+						pageBarHTML +="<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:viewEmpList(\"1\")' >[맨처음]</a></li>";
+						pageBarHTML +="<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:viewEmpList(\""+(pageNo-1)+"\")' >[이전]</a></li>";
+					}
+					while( !(loop > blockSize || pageNo > totalPage ) ) {
+						
+						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
+							pageBarHTML +="<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>";
+						}
+						else {
+							pageBarHTML +="<li style='display:inline-block; width:30px; font-size:12pt;'><a href='javascript:viewEmpList(\""+pageNo+"\")' >"+pageNo+"</a></li>";
+						}
+						loop++;
+						pageNo++;
+					}// end of while()------------------------
+					
+					
+					// ==== [다음] [마지막] 만들기 === //
+					if(pageNo <= totalPage) {
+						pageBarHTML +="<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:viewEmpList(\""+pageNo+"\")' >[다음]</a></li>";
+						pageBarHTML +="<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:viewEmpList(\""+totalPage+"\")' >[마지막]</a></li>";
+					}
+					
+					pageBarHTML +="</ul>";
+				
+					$("div#pageBar").html(pageBarHTML);
+				}// end of if(json.totalPage > 0){}----------------------------------
+				
+			},
+			error: function(request, status, error){
+	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        }
+			
+		});
+		
+	}// end of function makeCommentPageBar(currentShowPageNo){}-----------------------
+	
+	// 페이징 처리된 사원 출력 
+	function viewEmpList(currentShowPageNo){
+		
+		let keyword = $("input#searchWord").val();
+		
+		$.ajax({
+			url:"<%=request.getContextPath()%>/empListPaging.yolo",
+			data:{"currentShowPageNo":currentShowPageNo
+				 ,"keyword":keyword
+				 ,"arr_position":arr_position
+				 ,"arr_dept":arr_dept
+				 ,"arr_status":arr_status},
+			dataType:"JSON",
+			success:function(json){
+				
+				$("div#search_result").empty();
+				  let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
+						+'<thead>'
+							+'<tr>'
+								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
+								+'<th colspan=6>기본 정보</th>'
+								+'<th colspan=2>인사 정보</th>'
+								+'<th colspan=3>개인 정보</th>'
+							+'</tr>'
+							+'<tr>'
+								+'<th style="width:5%">상태</th>'
+								+'<th class="th_50">사번</th>'
+								+'<th style="width:7%">입사일</th>'
+								+'<th style="width:7%">퇴직일</th>'
+								+'<th style="width:7%">근속기간</th>'
+								+'<th class="th_100">근무일수</th>'
+								
+								+'<th class="th_50">부서</th>'
+								+'<th class="th_50">직위</th>'
+								
+								+'<th class="th_150">이메일</th>'
+								+'<th style="width:5%">성별</th>'
+								+'<th class="th_150">휴대전화</th>'
+								
+							+'</tr>'
+						+'</thead>'
+						+'<tbody>';
+				  $.each(json,function(index,emp){
+					  $("span#result_cnt").text(emp.totalCount+" 명");
+					  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
+								+'<td class="th_150">'
+									+'<div class="profile">'
+										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
+										+'<div style="padding-top:3px;">'+emp.name+'</div>'
+									+'</div>'
+								+'</td>'
+								+'<td>'+emp.status+'</td>'
+								+'<td>'+emp.empno+'</td>'
+								+'<td>'+emp.hireDate+'</td>'
+								+'<td>'+emp.retireDate+'</td>'
+								+'<td>'+emp.continuousServiceMonth+'</td>'
+								+'<td>'+emp.workingDays+'</td>'
+				
+								+'<td>'+emp.deptname+'</td>'
+								+'<td>'+emp.position+'</td>'
+				
+								+'<td>'+emp.email+'</td>'
+								+'<td>'+emp.gender+'</td>'
+								+'<td>'+emp.mobile+'</td>'
+							+'</tr>'
+							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
+						
+				    });// end of $.each(json,function(index,emp){}----------------------------
+					
+				    html +='</tbody>'   	
+						 +'</table>';
+					$("div#search_result").html(html);
+				
+				// 페이지바 함수 호출
+				makeCommentPageBar(currentShowPageNo);
+			},
+			error: function(request, status, error){
+	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        }
+		
+		}); // end of $.ajax({})---------------------------------------
+		
+	}// end of function viewEmpList(currentShowPageNo){}----------------------------
+		
+		
+	
+	
+	
+	
+	// 사원 목록 조회하는 메소드 
+	function func_getEmpList(){
+		let keyword = $("input#searchWord").val();
+		$.ajax({
+			  // 검색어가 있는 사원 조회 
+			  url : "<%= ctxPath%>/getEmpList.yolo",
+			  data:{"keyword":keyword
+				   ,"currentShowPageNo":currentShowPageNo},
+			  dataType : "JSON",
+			  success : function(json){
+				  
+				  $("div#search_result").empty();
+				  let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
+						+'<thead>'
+							+'<tr>'
+								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
+								+'<th colspan=6>기본 정보</th>'
+								+'<th colspan=2>인사 정보</th>'
+								+'<th colspan=3>개인 정보</th>'
+							+'</tr>'
+							+'<tr>'
+								+'<th style="width:5%">상태</th>'
+								+'<th class="th_50">사번</th>'
+								+'<th style="width:7%">입사일</th>'
+								+'<th style="width:7%">퇴직일</th>'
+								+'<th style="width:7%">근속기간</th>'
+								+'<th class="th_100">근무일수</th>'
+								
+								+'<th class="th_50">부서</th>'
+								+'<th class="th_50">직위</th>'
+								
+								+'<th class="th_150">이메일</th>'
+								+'<th style="width:5%">성별</th>'
+								+'<th class="th_150">휴대전화</th>'
+								
+							+'</tr>'
+						+'</thead>'
+						+'<tbody>';
+				  $.each(json,function(index,emp){
+					  $("span#result_cnt").text(emp.totalCount+" 명");
+					  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
+								+'<td class="th_150">'
+									+'<div class="profile">'
+										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
+										+'<div style="padding-top:3px;">'+emp.name+'</div>'
+									+'</div>'
+								+'</td>'
+								+'<td>'+emp.status+'</td>'
+								+'<td>'+emp.empno+'</td>'
+								+'<td>'+emp.hireDate+'</td>'
+								+'<td>'+emp.retireDate+'</td>'
+								+'<td>'+emp.continuousServiceMonth+'</td>'
+								+'<td>'+emp.workingDays+'</td>'
+				
+								+'<td>'+emp.deptname+'</td>'
+								+'<td>'+emp.position+'</td>'
+				
+								+'<td>'+emp.email+'</td>'
+								+'<td>'+emp.gender+'</td>'
+								+'<td>'+emp.mobile+'</td>'
+							+'</tr>'
+							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
+						
+				    });// end of $.each(json,function(index,emp){}----------------------------
+					
+				    html +='</tbody>'   	
+					+'</table>';
+					$("div#search_result").html(html);
+					  
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		
+		}); // end of ajax()----------------------------------------------------------------------
+		
+	}// end of function func_getEmpList(){}------------------------------
+	
+	
+	<%--
 	// 전체 사원을 조회해오는 메소드 
 	function func_getEmpList(){
 		
@@ -469,14 +894,14 @@ button#add_searchTag{
 			  // type : "POST",
 			  dataType : "JSON",
 			  success : function(json){
-				  <%-- ========================== 반복해서 출력할 부분 시작 ========== --%>
+			 
 				  
 				  $.each(json,function(index,emp){
 					  
-				  html += '<tr onclick="func_getEmpInfo();">'  
+				  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
 							+'<td class="th_150">'
 								+'<div class="profile">'
-									+'<div class="profile_icon"><div>길동</div></div>'
+									+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
 									+'<div style="padding-top:3px;">'+emp.name+'</div>'
 								+'</div>'
 							+'</td>'
@@ -484,17 +909,16 @@ button#add_searchTag{
 							+'<td>'+emp.empno+'</td>'
 							+'<td>'+emp.hireDate+'</td>'
 							+'<td>'+emp.retireDate+'</td>'
-							+'<td>112개월</td>'
-							+'<td>15042일</td>'
+							+'<td>'+emp.continuousServiceMonth+'</td>'
+							+'<td>'+emp.workingDays+'</td>'
 			
-							+'<td>'+emp.dept+'</td>'
+							+'<td>'+emp.deptname+'</td>'
 							+'<td>'+emp.position+'</td>'
 			
 							+'<td>'+emp.email+'</td>'
 							+'<td>'+emp.gender+'</td>'
 							+'<td>'+emp.mobile+'</td>'
 						+'</tr>'
-						<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
 					
 			    });// end of $.each(json,function(index,emp){}----------------------------
 				
@@ -509,7 +933,10 @@ button#add_searchTag{
 		  }); // end of ajax{}----------------------------------------------
 		
 	}// end of function func_getEmpList(){}--------------------------------------------
-
+	--%>
+	
+	
+	
 </script>
 
 <div id="peopleContent">
@@ -688,8 +1115,7 @@ button#add_searchTag{
 	<div id="search_buttons">
 		<%-- 검색어 입력 input 태그 --%>
 		<div id="div_search">
-			<i class="fas fa-search"></i> <input id="searchWord"
-				class="input_search" type="text" placeholder="검색" />
+			<i class="fas fa-search"></i> <input id="searchWord" class="input_search" type="text" placeholder="검색" />
 		</div>
 
 		<%-- 검색 버튼 (클릭시 input태그 출력)  --%>
@@ -719,31 +1145,59 @@ button#add_searchTag{
 	<div id="div_searchTag">
 		<div id="serchTag_content">
 			<div class="dropdown">
-				<button id="add_searchTag" data-toggle="dropdown" type="button" class="btn">
+			
+			<span id="span_searchTag"></span>
+				
+				<button id="add_searchTag" data-toggle="dropdown" type="button"
+					class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
+					data-mdb-toggle="dropdown" aria-expanded="false">
 					<i class="fas fa-plus"></i>필터 추가하기
 				</button>
-				
-				<div class="dropdown-menu">
-					<button class="btn_label dropdown-item" type="button" data-toggle="dropdown">직위</button>
-					<div class="dropdown-menu">asdf</div>
-					<button class="btn_label dropdown-item" type="button" id="btn_dept"data-toggle="dropdown">부서</button>
-					<button class="btn_label dropdown-item" type="button"id="btn_status"data-toggle="dropdown">재직상태</button>
-					<button class="btn_label dropdown-item" type="button"id="btn_status"data-toggle="dropdown">입사일</button>
-				</div>
+
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<li><a class="dropdown-item" href="#">직위</a>
+					<ul class="dropdown-menu dropdown-submenu">
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>사장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>부서장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>차장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>팀장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>대리</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>사원</a></li>
+					</ul>
+				</li>
+				<li><a class="dropdown-item" href="javascript:void(0);" onmouseover="getDeptName();">부서</a>
+					<ul id="ul_dept" class="dropdown-menu dropdown-submenu"></ul>
+				</li>
+				<li><a class="dropdown-item" href="#">재직상태 </a>
+					<ul class="dropdown-menu dropdown-submenu">
+						<li><a class="dropdown-item" href="#"><input type="hidden" value="상태" />재직</a></li>
+						<li><a class="dropdown-item" href="#"><input type="hidden" value="상태" />휴직</a></li>
+					</ul>
+				</li>
+			</ul>
 			</div>
 			
 		</div>
 		
 		<div id="div_search_result">
-			<span>n명</span>		
-			<button type="button" class="btn filter_clear" >필터초기화</button>
+			<span id="result_cnt">명</span>		
+			<button id="filter_clear" type="button" class="btn filter_clear" >필터초기화</button>
 		</div>		
 	</div>
 	<%-- 검색필터 추가 시작  --%>
 
 
+
+
 	<div id="search_result"></div>
 	<%-- end of  <div id="search_result">====== --%>
+	
+	<%-- 페이지바 출력 --%>
+	<div id="pageBar" style="border:solid 1px red; width: 80%; height: 100px;" >
+		페이지바 들어올 div <br>
+		
+		
+	</div>
 
 </div>
 <%-- end of peopleContiner div====== --%>
