@@ -517,17 +517,17 @@ arr_status = [];
 			switch(searchType) {
 			    case "직위" :
 			    	arr_position.splice(arr_position.indexOf(searchWord),1);
-					console.log(arr_position);
+					// console.log(arr_position);
 			      break;     
 
 			    case "부서" :    
 			    	arr_dept.splice(arr_dept.indexOf(searchWord),1);
-					console.log(arr_dept);
+					// console.log(arr_dept);
 			      break;  
 			      
 			    case "상태" :    
 			    	arr_status.splice(arr_status.indexOf(searchWord),1);
-					console.log(arr_status);
+					// console.log(arr_status);
 			      break;   
 			  }
 			
@@ -539,6 +539,15 @@ arr_status = [];
 		// 필터 초기화 버튼 클릭시 
 		$(document).on("click","button#filter_clear",function(){
 			$("span#span_searchTag").empty();
+			arr_position.length = 0;
+			arr_dept.length = 0;
+			arr_status.length = 0;
+			
+			<%-- 
+			console.log(arr_position);
+			console.log(arr_dept);
+			console.log(arr_status);
+			--%>
 			
 			viewEmpList(currentShowPageNo);
 			
