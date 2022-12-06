@@ -470,24 +470,14 @@ arr_status = [];
 		// 구성원 등록 모달에서 입력완료 버튼 클릭시 
 		$("button#regist_member_btn").click(function(){
 			
-			let name = $("input[name='name']").val();
-			let email = $("input[name='email']").val();
-			let hire_date = $("input[name='hire_date']").val();
-			let salary = $("input[name='salary']").val();
-			let department = $("input[name='department']").val();
-			let team = $("input[name='team']").val();
-			let position = $("input[name='position']").val();
-			console.log(name);
-			console.log(email);
-			console.log(hire_date);
-			console.log(salary);
-			console.log(department);
-			console.log(team);
-			console.log(position);
-			
 			registEmployee();
 			
+			
 		}); 
+		// 구성원 등록 모달 닫기 시 
+		$('.modal').on('hidden.bs.modal', function (e) {
+			$(this).find('form')[0].reset();
+		});
 		
 		// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
 		$(document).on("click","a.dropdown-item",function(e){
@@ -583,7 +573,6 @@ arr_status = [];
 		// 구성원 추가하기 버튼 클릭시 
 		$(document).on("click","button#registMember",function(){
 			getDeptNameModal();
-			
 		})// end of $(document).on("click","button#registMember",function(){}-----------
 		
 		
@@ -1097,7 +1086,7 @@ arr_status = [];
 				<!-- Modal header -->
 				<div class="modal-header">
 					<h2>구성원 등록</h2>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<button id="btn_close_registModal" type="button" class="close" data-dismiss="modal">&times;</button>
 				</div>
 				<!-- Modal body -->
 				<div class="modal-body">
