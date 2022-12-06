@@ -45,7 +45,7 @@ public class EmployeeController {
 		
 	    // 총 게시물 건수(totalCount)
 	    int totalCount = service.getTotalCount(empMap);
-	    System.out.println("~~~~~~ 확인용 totalCount : " + totalCount);
+//	    System.out.println("~~~~~~ 확인용 totalCount : " + totalCount);
 	    
 		// 전체 사원을 조회해오는 메소드 (검색어가 있는 경우 검색어 입력 )
 		List<Map<String,String>> empList = service.getEmpList(empMap);
@@ -111,7 +111,7 @@ public class EmployeeController {
 		
 		int totalPage = service.getTotalPage(pageMap);
 		
-		System.out.println("############## 확인용 ############"+totalPage);
+		// System.out.println("############## 확인용 ############"+totalPage);
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("totalPage",totalPage); // 1 이상인경우 휴직 신청 불가 
@@ -150,16 +150,16 @@ public class EmployeeController {
 	    pageMap.put("endRno", String.valueOf(endRno));
 	    
 	    
-	    System.out.println("currentShowPageNo : "+currentShowPageNo);
-		System.out.println("String.valueOf(startRno) : "+String.valueOf(startRno));
-		System.out.println("String.valueOf(endRno) : "+String.valueOf(endRno));
+//	    System.out.println("currentShowPageNo : "+currentShowPageNo);
+//		System.out.println("String.valueOf(startRno) : "+String.valueOf(startRno));
+//		System.out.println("String.valueOf(endRno) : "+String.valueOf(endRno));
 		
 //		List<Map<String,String>> empList = service.empListWithRno(pageMap);
 		
 		// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
 	    List<Map<String,String>> empListPaging = service.empListSearchWithPaging(pageMap);
 		
-		System.out.println("확인용 페이징 empList : "+ empListPaging);
+//		System.out.println("확인용 페이징 empList : "+ empListPaging);
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -237,7 +237,7 @@ public class EmployeeController {
 		// 등록하려는 날짜가 이미 등록된 날짜와 포함된다면 경고창 출력
 
 		int result = dao.checkLeave(leaveCheckMap);
-		System.out.println("휴직가능 여부 조회  결과 : " + result);
+//		System.out.println("휴직가능 여부 조회  결과 : " + result);
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result",result); // 1 이상인경우 휴직 신청 불가 
