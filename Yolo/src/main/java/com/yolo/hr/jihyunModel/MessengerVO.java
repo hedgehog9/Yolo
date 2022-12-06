@@ -3,14 +3,15 @@ package com.yolo.hr.jihyunModel;
 public class MessengerVO {
 	
 	private String pk_msgno;
-	private String  fk_senderno ;
-	private String  fk_recipientno ;
-	private String  origin_msgno ;
-	private String  subject ;
-	private String  content ;
-	private String  view_status ;
-	private String  having_attach ;
-	private String  writedate ;
+	private String fk_senderno ;
+	private String fk_recipientno ;
+	private String origin_msgno ;
+	private String subject ;
+	private String content ;
+	private String view_status ;
+	private String having_attach ;
+	private String writedate ;
+	private String group_msgno;
 	
 	public String getPk_msgno() {
 		return pk_msgno;
@@ -65,6 +66,12 @@ public class MessengerVO {
 	}
 	public void setHaving_attach(String having_attach) {
 		this.having_attach = having_attach;
+	}
+	public String getGroup_msgno() {
+		return group_msgno;
+	}
+	public void setGroup_msgno(String group_msgno) {
+		this.group_msgno = group_msgno;
 	}
 	
 	

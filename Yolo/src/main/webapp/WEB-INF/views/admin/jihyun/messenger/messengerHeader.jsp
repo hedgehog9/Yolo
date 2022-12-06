@@ -334,9 +334,14 @@
 					  const modal_frmArr = document.querySelectorAll("form#messengerFrm");
 				  	  for(let i=0; i<modal_frmArr.length; i++) {
 				  		  modal_frmArr[i].reset();
-				  		$('button#dropdownMenuButton').find('span').text('받는 사람 선택');
+				  	  }
+				 	  const modal_frmArr2 = document.querySelectorAll("form#messengerdeliverFrm");
+				  	  for(let i=0; i<modal_frmArr2.length; i++) {
+				  		  modal_frmArr2[i].reset();
 				  	  }
 				   }
+				   $('button#dropdownMenuButton').find('span').text('받는 사람 선택');
+				   
 				});
 		  	  
 		}); 
@@ -492,17 +497,17 @@
 		// 메세지 보내기 버튼 클릭 이벤트
 		$("button#sendMsgBnt").click(function(){
 			
-			if($('input[name="subject"]').val().trim()== "" || $('input[name="subject"]').val().length>=30 ){
+			if($('div.sendMail input[name="subject"]').val().trim()== "" || $('div.sendMail input[name="subject"]').val().length>=30 ){
 				Swal.fire('메신저 제목은','비워두거나, 30글자 이상 쓸 수 없습니다', 'error');
 				return;
 			}
 			
-			if($('textarea[name="content"]').val().trim()== "" || $('textarea[name="content"]').val().lenth>=1000 ){
+			if($('div.sendMail textarea[name="content"]').val().trim()== "" || $('div.sendMail textarea[name="content"]').val().lenth>=1000 ){
 				Swal.fire('메신저 내용은','비워두거나, 1000글자 이상 쓸 수 없습니다', 'error');
 				return;
 			}
 			
-			if($('input[name="fk_recipientno"]').val() == "" ){
+			if($('div.sendMail input[name="fk_recipientno"]').val() == "" ){
 				Swal.fire('받는사람을 선택하세요','', 'error');
 				return;
 			}
@@ -536,6 +541,50 @@
 			
 		}); // end of 메세지 보내기 버튼 클릭 이벤트
 		
+		
+		
+		// 메세지 전달하기 버튼 클릭 이벤트
+		$("button#deliverMsgBnt").click(function(){
+			
+			if($('div.deliverMail input[name="subject"]').val().trim()== "" || $('div.deliverMail input[name="subject"]').val().length>=30 ){
+				Swal.fire('메신저 제목은','비워두거나, 30글자 이상 쓸 수 없습니다', 'error');
+				return;
+			}
+			
+			if($('div.deliverMail textarea[name="content"]').val().trim()== "" || $('div.deliverMail textarea[name="content"]').val().lenth>=1000 ){
+				Swal.fire('메신저 내용은','비워두거나, 1000글자 이상 쓸 수 없습니다', 'error');
+				return;
+			}
+			
+			if($('div.deliverMail input[name="fk_recipientno"]').val() == "" ){
+				Swal.fire('받는사람을 선택하세요','', 'error');
+				return;
+			}
+			
+			const queryString = $("form[name='messengerdeliverFrm']").serialize();
+			
+			$.ajax({
+		    	url : "<%=ctxPath%>/messenger/deleverMessenger.yolo",
+		    	data : queryString,
+		    	type: 'POST',
+				success: function(){
+					
+					const modal_frmArr = document.querySelectorAll("form#messengerdeliverFrm");
+			  	  	for(let i=0; i<modal_frmArr.length; i++) {
+			  			modal_frmArr[i].reset();
+			  			$('button#dropdownMenuButton').find('span').text('받는 사람 선택');
+			  	  	}
+					$(".deliverMail").modal('hide');
+					window.location.reload();
+					toastr.success('메세지를 전달하였습니다.');
+					
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+			}); // end of ajax
+			
+		}); // end of 메세지 전달하기 버튼 클릭 이벤트
 		
 		
 		
@@ -694,7 +743,7 @@
 </div>
 
 
-<!-- Modal -->
+<!-- 메세지 보내기 Modal -->
 <!-- Modal 구성 요소는 현재 페이지 상단에 표시되는 대화 상자/팝업 창입니다. -->
 <div class="modal fade sendMail"  id="staticBackdrop" data-backdrop="static">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
@@ -712,8 +761,8 @@
 	  	</button>
 	  	
         <textarea name="content"></textarea>
-        <input type="text" name="fk_recipientno" />
-        <input type="text" name="origin_msgno" />
+        <input type="hidden" name="fk_recipientno" />
+        <input type="hidden" name="origin_msgno" />
         
         <div id="attachArea">
         	<span>파일 첨부하기</span>
@@ -731,6 +780,41 @@
         
         <button type="button" class="headerBtn" id="sendMsgBnt" style="width: 80%; margin: 10px 10% 50px 10%;">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 보내기
+		</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 전달하기 Modal -->
+<!-- Modal 구성 요소는 현재 페이지 상단에 표시되는 대화 상자/팝업 창입니다. -->
+<div class="modal fade deliverMail"  id="staticBackdrop" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
+  <!-- .modal-dialog-scrollable을 .modal-dialog에 추가하여 페이지 자체가 아닌 모달 내부에서만 스크롤할 수 있습니다. -->
+    <div class="modal-content">
+
+      <!-- Modal body -->
+      <div class="modal-body">
+      <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
+      <form id='messengerdeliverFrm' name="messengerdeliverFrm" >
+      	<input name="subject" placeholder="메신저 제목을 입력하세요"/>
+      	
+      	<button class="dropdownBtn" type="button" id="dropdownMenuButton" onclick="search_choosePerson()">
+		   <div class="sentPsnProf"><i class="fas fa-solid fa-user"></i></div> <span style="color: #757575; font-size: 11pt; margin-left: 10px;">받는 사람 선택</span>
+	  	</button>
+	  	
+        <textarea name="content"></textarea>
+        <input type="hidden" name="fk_recipientno" />
+        <input type="hidden" name="origin_msgno" />
+        
+        <div id="mailAttachArea"></div>
+      </form>
+        
+        <button type="button" class="headerBtn" id="deliverMsgBnt" style="width: 80%; margin: 10px 10% 50px 10%;">
+			<i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 전달하기
 		</button>
       </div>
       
