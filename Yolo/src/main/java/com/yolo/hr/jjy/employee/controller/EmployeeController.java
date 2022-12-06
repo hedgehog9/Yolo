@@ -94,12 +94,12 @@ public class EmployeeController {
 		String sizePerPage = request.getParameter("sizePerPage");
 		String keyword = request.getParameter("keyword");
 		
-		System.out.println(arr_position);
-		System.out.println(arr_dept);
-		System.out.println(arr_status);
-		
-		System.out.println("sizePerPage"+sizePerPage);
-		System.out.println("keyword"+keyword);
+//		System.out.println(arr_position);
+//		System.out.println(arr_dept);
+//		System.out.println(arr_status);
+//		
+//		System.out.println("sizePerPage"+sizePerPage);
+//		System.out.println("keyword"+keyword);
 		
 		
 		Map<String,Object> pageMap = new HashMap<>();
