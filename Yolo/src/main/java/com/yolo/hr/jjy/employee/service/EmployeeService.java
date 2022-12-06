@@ -212,5 +212,20 @@ public class EmployeeService implements InterEmployeeService {
 		return empList;
 	}
 
+	// 신규 사원 등록하기 
+	@Override
+	public int registEployee(Map<String, Object> paraMap) {
+		
+		// 프로필 색상 랜덤 지정하기 
+		Random rand = new Random();
+		String[] arr_profile_color = {"#FFADC5","#CCD1FF","#A8C8F9","#B8F3B8","#FFDDA6","#FFA9B0","#FFCCCC","#C3C95E","#FC9EBD"};
+		
+		paraMap.put("profile_color", arr_profile_color[rand.nextInt(9)]);
+//		System.out.println("확인용 랜덤 프로필 색상 "+paraMap.get("profile_color"));
+		
+		int registResult = dao.registEployee(paraMap);
+		return registResult;
+	}
+
 
 }
