@@ -135,10 +135,10 @@ public class EmployeeService implements InterEmployeeService {
 
 	// 페이징 처리를 위해 총 사원 수 구해오기 
 	@Override
-	public int getTotalCount(Map<String, String> empMap) {
+	public int getTotalCount(Map<String, Object> empMap) {
 		
 		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
-		String str = empMap.get("keyword"); 
+		String str = (String) empMap.get("keyword"); 
 		
 		boolean result = Pattern.matches(pattern, str);
 		

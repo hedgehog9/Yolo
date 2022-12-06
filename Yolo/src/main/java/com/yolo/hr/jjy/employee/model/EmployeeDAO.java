@@ -99,7 +99,7 @@ public class EmployeeDAO implements InterEmployeeDAO {
 
 	// 페이징 처리를 위해 총 사원 수 구해오기 
 	@Override
-	public int getTotalCount(Map<String, String> empMap) {
+	public int getTotalCount(Map<String, Object> empMap) {
 		int totalCount = sqlsession.selectOne("jangjy.getTotalCount",empMap);
 		return totalCount;
 	}

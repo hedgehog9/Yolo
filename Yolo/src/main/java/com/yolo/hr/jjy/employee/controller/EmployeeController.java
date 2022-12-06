@@ -44,7 +44,7 @@ public class EmployeeController {
 		empMap.put("keyword", keyword);
 		
 	    // 총 게시물 건수(totalCount)
-	    int totalCount = service.getTotalCount(empMap);
+//	    int totalCount = service.getTotalCount(empMap);
 //	    System.out.println("~~~~~~ 확인용 totalCount : " + totalCount);
 	    
 		// 전체 사원을 조회해오는 메소드 (검색어가 있는 경우 검색어 입력 )
@@ -73,7 +73,7 @@ public class EmployeeController {
 				jsonObj.put("gender", EmpMap.get("gender")); // 성별
 				jsonObj.put("mobile", EmpMap.get("mobile")); // 핸드폰번호
 				jsonObj.put("deptname", EmpMap.get("deptname")); // 부서명
-				jsonObj.put("totalCount", totalCount); // 조회 결과물 수 
+//				jsonObj.put("totalCount", totalCount); // 조회 결과물 수 
 				
 				jsonArr.put(jsonObj);
 				
@@ -136,6 +136,8 @@ public class EmployeeController {
 		pageMap.put("arr_dept", arr_dept);
 		pageMap.put("arr_status", arr_status);
 		
+		// 총 페이지수 구해오기 
+		int totalCount = service.getTotalCount(pageMap); 
 		
 		if(currentShowPageNo == null) {
 			currentShowPageNo ="1";
@@ -183,6 +185,7 @@ public class EmployeeController {
 				jsonObj.put("gender", EmpMap.get("gender")); // 성별
 				jsonObj.put("mobile", EmpMap.get("mobile")); // 핸드폰번호
 				jsonObj.put("deptname", EmpMap.get("deptname")); // 부서명
+				jsonObj.put("totalCount", totalCount); // 총 결과물 수 
 				
 				jsonArr.put(jsonObj);
 				

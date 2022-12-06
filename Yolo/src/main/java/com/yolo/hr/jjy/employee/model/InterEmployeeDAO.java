@@ -38,7 +38,7 @@ public interface InterEmployeeDAO {
 	List<Map<String, String>> getTeam(Map<String, String> deptMap);
 
 	// 페이징 처리를 위해 총 사원 수 구해오기 
-	int getTotalCount(Map<String, String> empMap);
+	int getTotalCount(Map<String, Object> empMap);
 
 	// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
 	List<Map<String, String>> empListSearchWithPaging(Map<String, Object> pageMap);
