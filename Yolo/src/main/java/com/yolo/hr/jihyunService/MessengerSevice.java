@@ -28,8 +28,8 @@ public class MessengerSevice implements InterMessengerService {
 
 	// 부서사람들 조회하기
 	@Override
-	public List<Map<String, String>> getDeptPersonList(String deptno) {
-		List<Map<String, String>> deptPersonList = mdao.getDeptPersonList(deptno);
+	public List<Map<String, String>> getDeptPersonList(Map<String, String> paraMap) {
+		List<Map<String, String>> deptPersonList = mdao.getDeptPersonList(paraMap);
 		return deptPersonList;
 	}
 
@@ -42,8 +42,8 @@ public class MessengerSevice implements InterMessengerService {
 
 	// 팀 사람들 구해오기
 	@Override
-	public List<Map<String, String>> getTeamPerson(String deptno) {
-		List<Map<String, String>> teamPersonList = mdao.getTeamPerson(deptno);
+	public List<Map<String, String>> getTeamPerson(Map<String, String> paraMap) {
+		List<Map<String, String>> teamPersonList = mdao.getTeamPerson(paraMap);
 		return teamPersonList;
 	}
 
@@ -93,16 +93,16 @@ public class MessengerSevice implements InterMessengerService {
 	
 	// 보낸 메일 리스트 가져오기
 	@Override
-	public List<Map<String, String>> getSentMsgList(String empno) {
-		List<Map<String, String>>  sentMsgList = mdao.getSentMsgList(empno);
+	public List<Map<String, String>> getSentMsgList(Map<String, String> paraMap) {
+		List<Map<String, String>>  sentMsgList = mdao.getSentMsgList(paraMap);
 		return sentMsgList;
 	}
 
 	
 	// 받은 메일 리스트 가져오기
 	@Override
-	public List<Map<String, String>> getReceivedMsgList(String empno) {
-		List<Map<String, String>>  receivedMsgList = mdao.getReceivedMsgList(empno);
+	public List<Map<String, String>> getReceivedMsgList(Map<String, String> paraMap) {
+		List<Map<String, String>>  receivedMsgList = mdao.getReceivedMsgList(paraMap);
 		return receivedMsgList;
 	}
 
@@ -156,6 +156,53 @@ public class MessengerSevice implements InterMessengerService {
 	public List<FileVO> getMsgFileList(String group_msgno) {
 		List<FileVO> msgFileList = mdao.getMsgFileList(group_msgno);
 		return msgFileList;
+	}
+
+	
+	// 전달할 메신저 상세사항 얻어오기
+	@Override
+	public MessengerVO getDeliverMsg(String msgno) {
+		MessengerVO msgvo = mdao.getDeliverMsg(msgno);
+		return msgvo;
+	}
+
+	
+	// 메신저 전달하기
+	@Override
+	public void deleverMessenger(MessengerVO deliverMsgvo, MessengerVO msgvo) {
+		Calendar currentDate = Calendar.getInstance();
+		SimpleDateFormat dateft = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		
+		String time = dateft.format(currentDate.getTime());
+		
+		String str_fk_recipientno = msgvo.getFk_recipientno();
+		String[] arr_fk_recipientno = str_fk_recipientno.split(",");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(" INSERT ALL ");
+		
+		String startLine = " into tbl_messenger(group_msgno, having_attach, pk_msgno, fk_senderno, fk_recipientno, origin_msgno, subject, content ) values ("+deliverMsgvo.getGroup_msgno()+", "+deliverMsgvo.getHaving_attach()+", ";
+		String endLine = ", null , '" + msgvo.getSubject() + "', '" + msgvo.getContent() + "') ";
+		
+		for( int i=0; i<arr_fk_recipientno.length; i++) {
+			sb.append(startLine);
+			sb.append( time+i +" , "+ msgvo.getFk_senderno() +", " +arr_fk_recipientno[i] );
+			sb.append(endLine);
+		}
+		
+		sb.append(" SELECT * FROM DUAL ");
+		
+		//System.out.println(sql));
+		mdao.sendMessenger(sb.toString()); 
+		
+	}
+
+	
+	// 총 게시물 건 수 알아오기 (페이지네이션 용)
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = mdao.getTotalCount(paraMap);
+		return totalCount;
 	}
 
 }

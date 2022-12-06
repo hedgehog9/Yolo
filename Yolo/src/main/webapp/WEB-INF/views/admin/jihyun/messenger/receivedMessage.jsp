@@ -84,7 +84,6 @@
 		color: white;
 	 }
 	 
-	 
 	 div#mailSubject{
 		display: flex;
   		align-items: center;
@@ -127,6 +126,18 @@
 		color: black;
 		cursor: pointer;
 	}
+	
+	
+	button.headerBtn2 {
+		border-radius: 0.5rem;
+		border: 1px solid gray;
+		/* background: linear-gradient( to left ,#5bd3ff, #88eb1e ); */
+		width: 47%;
+		height: 45px;
+		border: none;
+		color: white;
+		font-weight: bold;
+	}
 
 </style>
 
@@ -168,15 +179,45 @@
 			let empno = $(this).parent().find($("input#empno")).val();
 			let sender = $(this).parent().find($("span#sender")).text();
 			
-			$("input[name='origin_msgno']").val(msgno);
-			$("input[name='subject']").val("Re:"+subject);
-			$('button#dropdownMenuButton').find('span').text(sender);
-			$('input[name="fk_recipientno"]').val(empno);
+			$("div.sendMail input[name='origin_msgno']").val(msgno);
+			$("div.sendMail input[name='subject']").val("Re:"+subject);
+			$('div.sendMail button#dropdownMenuButton').find('span').text(sender);
+			$('div.sendMail input[name="fk_recipientno"]').val(empno);
 			
 			$(".sendMail").modal('show');
 		});
 		
 		
+		// 메신저 상세에서 답장하기
+		$("button#modalReplyBtn").click(function(){
+			let msgno = $(this).parent().parent().find($("input#hidden_pk_msgno")).val();
+			let subject = $(this).parent().parent().find($("span#mailSubject")).text();
+			let empno = $(this).parent().parent().find($("input#hidden_empno")).val();
+			let sender = $(this).parent().parent().find($("span#empName")).text();
+			
+			$("div.sendMail input[name='origin_msgno']").val(msgno);
+			$("div.sendMail input[name='subject']").val("Re:"+subject);
+			$('div.sendMail button#dropdownMenuButton').find('span').text(sender);
+			$('div.sendMail input[name="fk_recipientno"]').val(empno);
+			
+			$("#MessengerContentModal").modal('hide');
+			$(".sendMail").modal('show');
+		});
+		
+		
+		// 메일 리스트에서 전달하기 누르면 
+		$("button.deliver").click(function(){
+			let msgno = $(this).parent().find($("input#pk_msgno")).val();
+			openDeliverMsg(msgno);
+		});
+		
+		
+		// 메신저 상세에서 전달하기 누르면
+		$("button#modalDeliverBtn").click(function(){
+			let msgno = $(this).parent().parent().find($("input#hidden_pk_msgno")).val();
+			$("#MessengerContentModal").modal('hide');
+			openDeliverMsg(msgno);
+		});
 		
 		
 	}); // end of ready
@@ -245,6 +286,8 @@
 				$("div#empProf").css("background-color", json.profile_color);
 				$("span#empName").text(json.name);
 				$("span#empTeam").text(json.deptname+ " · "+ json.position);
+				$("input#hidden_pk_msgno").val(json.pk_msgno);
+				$("input#hidden_empno").val(json.empno);
 				
 				if(json.origin_msgno!=null){
 					$("div#readOrigin").html('<span style="flex-grow: 1;"></span><button onclick="readOrigin(\''+json.origin_msgno+'\')" class="btn btn-outline-secondary btn-sm" style="border-radius: 1rem;">원글보기</button>');
@@ -283,6 +326,54 @@
 		}); // end of ajax
 		
 		$('div#MessengerContentModal').modal('show');
+	}
+	
+	
+	// 메신저 전달하기 
+	function openDeliverMsg(msgno) {
+			$.ajax({
+		    	url : "<%=ctxPath%>/messenger/getMailContent2.yolo",
+		    	type: 'POST',
+		    	data : {"msgno" : msgno},
+		    	dataType: "JSON",
+				success: function(json){
+					
+					$("div.deliverMail input[name='subject']").val(json.subject);
+					$("div.deliverMail textarea[name='content']").val(json.content);
+					$("div.deliverMail input[name='origin_msgno']").val(json.pk_msgno);
+					
+					// 첨부 파일을 구해오는 ajax
+					if(Number(json.having_attach) >0){
+						$.ajax({
+					    	url : "<%=ctxPath%>/messenger/getMailFile.yolo",
+					    	data : {"group_msgno" : json.group_msgno},
+					    	dataType: "JSON",
+							success: function(json2){
+								if(json2.length>0){
+									let html = '<span style="display: block; margin-bottom:5px; font-weight: bold">첨부파일</span>';
+									$.each(json2, function(index2, item2){
+										html+='<span style="font-size: 10pt; color: gray;"><i class="fas fa-solid fa-paperclip ml-3 mr-1"></i></span>'+
+								        	'<span class="mailFiles" onclick="javascript:location.href=\'<%=ctxPath%>/messenger/downloadMailFile.yolo?fileName='+item2.fileName+'&orgFilename='+item2.orgFilename+'\'" >'+item2.orgFilename+'</span><br>';
+									});
+									
+									$("div.deliverMail div#mailAttachArea").html(html);
+								}
+							},
+							error: function(request, status, error){
+				                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				            }
+						}); // end of 첨부파일 ajax
+					} else {
+						$("div.deliverMail div#mailAttachArea").html('');
+					}
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+			}); // end of ajax
+			
+			$(".deliverMail").modal('show');
+		
 	}
 	
 
@@ -326,7 +417,7 @@
 						<span class="spanBlock" style="font-size: 10pt;" id="sender">${msg.name } · ${msg.deptname } · ${msg.position }</span>
 						<span class="spanBlock mt-1" style="color: gray">${msg.content }</span>
 					</div>
-					<button class="mailBnt" style="background-color: white; color: #07b419; ">전달하기</button>
+					<button class="mailBnt deliver" style="background-color: white; color: #07b419; ">전달하기</button>
 					<button class="mailBnt reply">답장하기</button>				
 				</div>
 			</div>
@@ -364,7 +455,7 @@
 	
 	      <!-- Modal body -->
 	      <div class="modal-body">
-	      <!-- <form id='my_form'> -->
+	      
 	      	<div style="display: flex" id="readOrigin"></div>
 	      	<div id="mailSubject">
 	      		<span id="mailSubject"></span><span id="writedate"></span>
@@ -377,17 +468,23 @@
 			</div>
 	        <span id="mailContent"></span>
 	        <div id="mailAttachArea"></div>
-	      <!-- </form> -->
-	        <button type="button" class="headerBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
-				<i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 보내기
-			</button>
-			
+	      	<input id="hidden_pk_msgno" type="hidden">
+	      	<input id="hidden_empno" type="hidden">
+	      	
+	      	<div style="width: 80%; margin: 10px 10% 50px 10%; display: block;">
+		        <button type="button" class="headerBtn2" id="modalDeliverBtn" style="background: linear-gradient( to left ,#68dabc, #88eb1e ); margin-right: 5%;">
+					<i class="fas fa-solid fa-retweet mr-2"></i>전달하기
+				</button>
+				<button type="button" class="headerBtn2" id="modalReplyBtn" style="background: linear-gradient( to left ,#5bd3ff, #68dabc );">
+					<i class="fas fa-solid fa-reply mr-2"></i>답장하기
+				</button>
+			</div>
 	      </div>
 	      
 	    </div>
 	  </div>
 	</div>
-	
+	<jsp:include page="messengerPageBar.jsp" />
 </div>
 	
 	

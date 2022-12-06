@@ -35,8 +35,8 @@ public class MessengerDAO implements InterMessengerDAO {
 
 	// 부서사람들 조회하기
 	@Override
-	public List<Map<String, String>> getDeptPersonList(String deptno) {
-		List<Map<String, String>> deptPersonList = sqlsession.selectList("kimjh.selectDeptPerson", deptno);
+	public List<Map<String, String>> getDeptPersonList(Map<String, String> paraMap) {
+		List<Map<String, String>> deptPersonList = sqlsession.selectList("kimjh.selectDeptPerson", paraMap);
 		return deptPersonList;
 	}
 
@@ -50,8 +50,8 @@ public class MessengerDAO implements InterMessengerDAO {
 
 	// 팀 사람들 구해오기
 	@Override
-	public List<Map<String, String>> getTeamPerson(String deptno) {
-		List<Map<String, String>> teamList = sqlsession.selectList("kimjh.selectDeptPerson", deptno);
+	public List<Map<String, String>> getTeamPerson(Map<String, String> paraMap) {
+		List<Map<String, String>> teamList = sqlsession.selectList("kimjh.selectDeptPerson", paraMap);
 		return teamList;
 	}
 
@@ -73,16 +73,16 @@ public class MessengerDAO implements InterMessengerDAO {
 
 	// 보낸 메일 리스트 가져오기
 	@Override
-	public List<Map<String, String>> getSentMsgList(String empno) {
-		List<Map<String, String>> sentMsgList  = sqlsession.selectList("kimjh.selectSentMsgList", empno);
+	public List<Map<String, String>> getSentMsgList(Map<String, String> paraMap) {
+		List<Map<String, String>> sentMsgList  = sqlsession.selectList("kimjh.selectSentMsgList", paraMap);
 		return sentMsgList;
 	}
 
 
 	// 받은 메일 리스트 가져오기
 	@Override
-	public List<Map<String, String>> getReceivedMsgList(String empno) {
-		List<Map<String, String>> receivedMsgList  = sqlsession.selectList("kimjh.selectReceivedMsgList", empno);
+	public List<Map<String, String>> getReceivedMsgList(Map<String, String> paraMap) {
+		List<Map<String, String>> receivedMsgList  = sqlsession.selectList("kimjh.selectReceivedMsgList", paraMap);
 		return receivedMsgList;
 	}
 
@@ -136,6 +136,22 @@ public class MessengerDAO implements InterMessengerDAO {
 	public List<FileVO> getMsgFileList(String group_msgno) {
 		List<FileVO> msgFileList = sqlsession.selectList("kimjh.selectMsgFileList", group_msgno);
 		return msgFileList;
+	}
+
+
+	// 전달할 메신저 상세사항 얻어오기
+	@Override
+	public MessengerVO getDeliverMsg(String msgno) {
+		MessengerVO msgvo = sqlsession.selectOne("kimjh.selectDeliverMsg", msgno);
+		return msgvo;
+	}
+
+
+	// 총 게시물 건 수 알아오기 (페이지네이션 용)
+	@Override
+	public int getTotalCount(Map<String, String> paraMap) {
+		int totalCount = sqlsession.selectOne("kimjh.getTotalCount", paraMap);
+		return totalCount;
 	} 
 
 }

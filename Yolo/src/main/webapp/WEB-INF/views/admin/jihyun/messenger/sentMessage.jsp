@@ -146,54 +146,20 @@
 			const msgno = $(this).find($('input')).val();
 			readMailContent(msgno);
 			
-			// 메신저 내용 불러오기
-			<%-- $.ajax({
-		    	url : "<%=ctxPath%>/messenger/getMailContent.yolo",
-		    	type: 'POST',
-		    	data : {"msgno" : msgno},
-		    	dataType: "JSON",
-				success: function(json){
-					
-					$("span#mailSubject").text(json.subject);
-					$("span#writedate").text(json.writedate);
-					$("span#mailContent").text(json.content);
-					$("span#empNick").text(json.nickname);
-					$("div#empProf").css("background-color", json.profile_color);
-					$("span#empName").text(json.name);
-					$("span#empTeam").text(json.deptname+ " · "+ json.position);
-					
-					// 첨부 파일을 구해오는 ajax
-					if(Number(json.having_attach) >0){
-						$.ajax({
-					    	url : "<%=ctxPath%>/messenger/getMailFile.yolo",
-					    	data : {"group_msgno" : json.group_msgno},
-					    	dataType: "JSON",
-							success: function(json2){
-								if(json2.length>0){
-									let html = '<span style="display: block; margin-bottom:5px; font-weight: bold">첨부파일</span>';
-									$.each(json2, function(index2, item2){
-										html+='<span style="font-size: 10pt; color: gray;"><i class="fas fa-solid fa-paperclip ml-3 mr-1"></i></span>'+
-								        	'<span class="mailFiles" onclick="javascript:location.href=\'<%=ctxPath%>/messenger/downloadMailFile.yolo?fileName='+item2.fileName+'&orgFilename='+item2.orgFilename+'\'" >'+item2.orgFilename+'</span><br>';
-									});
-									
-									$("div#mailAttachArea").html(html);
-								}
-							},
-							error: function(request, status, error){
-				                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				            }
-						}); // end of 첨부파일 ajax
-					} else {
-						$("div#mailAttachArea").html('');
-					}
-					
-				},
-				error: function(request, status, error){
-	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	            }
-			}); // end of ajax
-			
-			$('div#MessengerContentModal').modal('show'); --%>
+		});
+		
+		
+		// 메일 리스트에서 전달하기 누르면 
+		$("button.deliver").click(function(){
+			let msgno = $(this).parent().find($("input#pk_msgno")).val();
+			openDeliverMsg(msgno);
+		});
+		
+		// 메신저 상세에서 전달하기 누르면
+		$("button#modalDeliverBtn").click(function(){
+			let msgno = $(this).parent().find($("input#hidden_pk_msgno")).val();
+			$("#MessengerContentModal").modal('hide');
+			openDeliverMsg(msgno);
 		});
 		
 	}); // end of ready
@@ -221,6 +187,7 @@
 				$("div#empProf").css("background-color", json.profile_color);
 				$("span#empName").text(json.name);
 				$("span#empTeam").text(json.deptname+ " · "+ json.position);
+				$("input#hidden_pk_msgno").val(json.pk_msgno);
 				
 				if(json.origin_msgno!=null){
 					$("div#readOrigin").html('<span style="flex-grow: 1;"></span><button onclick="readOrigin(\''+json.origin_msgno+'\')" class="btn btn-outline-secondary btn-sm" style="border-radius: 1rem;">원글보기</button>');
@@ -260,6 +227,53 @@
 		
 		$('div#MessengerContentModal').modal('show');
 	}
+	
+	
+	// 메신저 전달하기
+	function openDeliverMsg(msgno){
+		$.ajax({
+	    	url : "<%=ctxPath%>/messenger/getMailContent.yolo",
+	    	type: 'POST',
+	    	data : {"msgno" : msgno},
+	    	dataType: "JSON",
+			success: function(json){
+				
+				$("div.deliverMail input[name='subject']").val(json.subject);
+				$("div.deliverMail textarea[name='content']").val(json.content);
+				$("div.deliverMail input[name='origin_msgno']").val(json.pk_msgno);
+				
+				// 첨부 파일을 구해오는 ajax
+				if(Number(json.having_attach) >0){
+					$.ajax({
+				    	url : "<%=ctxPath%>/messenger/getMailFile.yolo",
+				    	data : {"group_msgno" : json.group_msgno},
+				    	dataType: "JSON",
+						success: function(json2){
+							if(json2.length>0){
+								let html = '<span style="display: block; margin-bottom:5px; font-weight: bold">첨부파일</span>';
+								$.each(json2, function(index2, item2){
+									html+='<span style="font-size: 10pt; color: gray;"><i class="fas fa-solid fa-paperclip ml-3 mr-1"></i></span>'+
+							        	'<span class="mailFiles" onclick="javascript:location.href=\'<%=ctxPath%>/messenger/downloadMailFile.yolo?fileName='+item2.fileName+'&orgFilename='+item2.orgFilename+'\'" >'+item2.orgFilename+'</span><br>';
+								});
+								
+								$("div.deliverMail div#mailAttachArea").html(html);
+							}
+						},
+						error: function(request, status, error){
+			                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			            }
+					}); // end of 첨부파일 ajax
+				} else {
+					$("div.deliverMail div#mailAttachArea").html('');
+				}
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of ajax
+		
+		$(".deliverMail").modal('show');
+	}
 
 </script>
 
@@ -286,7 +300,7 @@
 					</div>
 					<div id="prof" class="mt-3" style="background-color: ${msg.profile_color} ;">${msg.nickname }</div>
 					<div class="mailcontent1 ml-4" style="width: 500px; flex-grow: 1;">
-						<input type="hidden" value="${msg.pk_msgno}">
+						<input type="hidden" id="pk_msgno" value="${msg.pk_msgno}">
 						<span style="font-weight: bold;">${msg.subject }</span>
 						<c:if test="${ msg.having_attach ne 0 }">
 							<span style="font-size: 10pt; color: gray; margin-left: 5px;"><i class="fas fa-solid fa-paperclip"></i></span>
@@ -295,7 +309,7 @@
 						<span class="spanBlock" style="font-size: 10pt;">${msg.name } · ${msg.deptname } · ${msg.position }</span>
 						<span class="spanBlock mt-1" style="color: gray">${msg.content }</span>
 					</div>
-					<button class="mailBnt" style="background-color: white; color: #07b419; margin-left: 670px;">전달하기</button>
+					<button class="mailBnt deliver" style="background-color: white; color: #07b419;">전달하기</button>
 				</div>
 			</div>
 		</c:forEach>
@@ -331,7 +345,7 @@
 	
 	      <!-- Modal body -->
 	      <div class="modal-body">
-	      <!-- <form id='my_form'> -->
+	      
 	      	<div style="display: flex" id="readOrigin"></div>
 	      	<div id="mailSubject">
 	      		<span id="mailSubject"></span><span id="writedate"></span>
@@ -344,16 +358,18 @@
 			</div>
 	        <span id="mailContent"></span>
 	        <div id="mailAttachArea"></div>
-	      <!-- </form> -->
+	      	<input id="hidden_pk_msgno" type="hidden">
 	        
-	        <button type="button" class="headerBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
-				<i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 보내기
+	        <button type="button" id="modalDeliverBtn" class="headerBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
+				<i class="fas fa-regular fa-paper-plane" id="icon"></i>메신저 전달하기
 			</button>
 	      </div>
 	      
 	    </div>
 	  </div>
 	</div>
+	<jsp:include page="messengerPageBar.jsp" />
 </div>
 	
-	
+
+
