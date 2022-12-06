@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.yolo.hr.jjy.employee.model.EmployeeVO;
 import com.yolo.hr.jjy.employee.model.InterEmployeeDAO;
 import com.yolo.hr.jjy.employee.service.InterEmployeeService;
-import com.yolo.hr.login.service.InterLoginServcie;
 
 @Controller
 public class EmployeeController {
@@ -318,6 +316,29 @@ public class EmployeeController {
 			jsonArr.put(jsonObj);
 		}
 		return jsonArr.toString() ;
+	}
+	
+	// 사원 등록 
+	@ResponseBody
+	@RequestMapping(value = "/registEmployee.yolo", produces="text/plain;charset=UTF-8")
+	public String registEmployee(@RequestParam Map<String,Object>paraMap) {
+		
+		System.out.println("사원 등록 Map" + paraMap);
+		JSONObject jsonObj = new JSONObject();
+		
+		// 회원가입시 이메일 중복 여부 확인 
+		int duplicateEmail = dao.checkDuplicateEmail(paraMap);
+		
+		jsonObj.put("duplicateEmail", duplicateEmail );
+//		System.out.println("확인용 이메일 중복 여부 "+ duplicateEmail);
+		
+		if(duplicateEmail != 1) { // 중복이 아닌 경우 
+			int registResult = service.registEployee(paraMap);
+			jsonObj.put("registResult", registResult);
+//			System.out.println("신규사원 등록 여부 "+registResult);
+		}
+		
+		return jsonObj.toString() ;
 	}
 	
 	

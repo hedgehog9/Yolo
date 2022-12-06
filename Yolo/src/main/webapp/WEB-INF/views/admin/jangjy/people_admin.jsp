@@ -177,20 +177,21 @@ div.div_empInfo:hover {
 	vertical-align: middle;
 }
 
-<%--
-조직도 상단 조직도 펼치기, 수정 버튼 css --%> button.org_btn:hover {
+<%-- 조직도 상단 조직도 펼치기, 수정 버튼 css --%> 
+button.org_btn:hover {
 	background-color: #ebebeb;
 }
 
 <%--
-조직도에 버튼 오른쪽 끝으로 정렬 --%> div#org_buttons {
+조직도에 버튼 오른쪽 끝으로 정렬 --%> 
+div#org_buttons {
 	display: flex;
 	justify-content: flex-end;
 }
 
 <%--
-회원 가입 모달 css 시작  --%> <%-- 구성원 초대하기 버튼 css --%> button#regist_member_btn
-	{
+회원 가입 모달 css 시작  --%> <%-- 구성원 초대하기 버튼 css --%> 
+button#regist_member_btn {
 	height: 50px;
 	width: 100%;
 	border-radius: 10px;
@@ -458,9 +459,35 @@ arr_status = [];
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
 		$(document).on("click","button.btn_label",function(){
-			let selected = $(this).text();
-			$(this).parent().parent().find("input").val(selected);
+			let selected = $(this).text(); // 부서, 부서장 
+			let val = $(this).find("input.input_registValue").val(); // 10, 20, 부서장
+			
+			$(this).parent().parent().find("input").val(val); // 전송을 위해 input 태그에 값 입력
+			$(this).parent().parent().find("div.regist_value").text(selected);
+			
 		});
+		
+		// 구성원 등록 모달에서 입력완료 버튼 클릭시 
+		$("button#regist_member_btn").click(function(){
+			
+			let name = $("input[name='name']").val();
+			let email = $("input[name='email']").val();
+			let hire_date = $("input[name='hire_date']").val();
+			let salary = $("input[name='salary']").val();
+			let department = $("input[name='department']").val();
+			let team = $("input[name='team']").val();
+			let position = $("input[name='position']").val();
+			console.log(name);
+			console.log(email);
+			console.log(hire_date);
+			console.log(salary);
+			console.log(department);
+			console.log(team);
+			console.log(position);
+			
+			registEmployee();
+			
+		}); 
 		
 		// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
 		$(document).on("click","a.dropdown-item",function(e){
@@ -553,6 +580,11 @@ arr_status = [];
 			
 		})// end of "click","buton.filter_clear"------------------------------------
 		
+		// 구성원 추가하기 버튼 클릭시 
+		$(document).on("click","button#registMember",function(){
+			getDeptNameModal();
+			
+		})// end of $(document).on("click","button#registMember",function(){}-----------
 		
 		
 	});// end of $(document).ready(function(){}------------------------------------------------
@@ -775,8 +807,6 @@ arr_status = [];
 		
 	
 	
-	
-	
 	// 사원 목록 조회하는 메소드 
 	function func_getEmpList(){
 		let keyword = $("input#searchWord").val();
@@ -937,6 +967,108 @@ arr_status = [];
 	
 	
 	
+	// 신규 사원 등록하는 메소드 
+	function registEmployee(){
+		
+		let regist_flag = true;
+		
+		let name = $("input[name='name']").val();
+		let email = $("input[name='email']").val();
+		let hire_date = $("input[name='hire_date']").val();
+		let salary = $("input[name='salary']").val();
+		let department = $("input[name='department']").val();
+		let team = $("input[name='team']").val();
+		let position = $("input[name='position']").val();
+		
+		
+		if(name.trim() == "" || email.trim() == "" || hire_date.trim()==""|| salary.trim() == "" ||department.trim() == "" || position.trim() == "" ){
+			regist_flag = false;
+			alert("필수 정보를 입력해주세요");
+		}
+		
+		let formValues = $("form[name=regist_frm]").serialize() ;
+		
+		if(regist_flag){ // 값이 모두 입력된 경우 
+			$.ajax({
+				  url : "<%= ctxPath%>/registEmployee.yolo",
+				  data : formValues,    
+				  type : "POST",
+				  dataType : "JSON",
+				  success : function(json){
+					  
+					  if(json.duplicateEmail == 1){
+						  alert('중복된 이메일입니다.');
+						  return;
+					  }
+					  else{
+						  if(json.registResult == 1){
+							  alert('가입 성공!');
+						  }
+					  }
+					  
+					  
+					  
+					  
+				  },
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			  }); // end of ajax{}-------------------
+	  		
+	  		}
+			
+		}
+	
+	// 부서 명, 부서번호 구해오는 메소드(모달용)
+	function getDeptNameModal(){
+		
+		let html = "";
+		
+		$.ajax({
+			 // 부서 이름 구해오기 
+			  url : "<%= ctxPath%>/getDeptList.yolo",
+			  dataType : "JSON",
+			  success : function(json){
+				  let html ='';
+				  $.each(json,function(index,dept){
+					  html += '<button class="btn_label dropdown-item" type="button" onclick="getTeamModal('+dept.deptno+')"><input class="input_registValue" type="hidden" value='+dept.deptno+'>'+dept.deptname+'</button>';
+					  
+			    });// end of $.each(json,function(index,emp){}----------------------------
+			    	
+				$("div#div_dept").html(html);
+				
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of ajax()----------------------------------------------------------------------
+	}// end of function getDeptName(){}--------------------------------------	
+	
+	
+	// 부서에 해당하는 팀 구해오는 메소드 (모달 출력용)
+	function getTeamModal(deptno){
+		 $.ajax({
+			  url : "<%=ctxPath%>/getTeamList.yolo",
+			  data:{"deptno":deptno},
+			  dataType : "JSON",
+			  success : function(json2){
+				  let html ='';
+				  $.each(json2,function(index,team){
+				  		html += '<button class="btn_label dropdown-item" type="button"><input class="input_registValue" type="hidden" value='+team.deptno+'>'+team.deptname+'</button>';
+			    	});// end of $.each(json,function(index,emp){}----------------------------
+			      
+			      $("div#div_team").html(html);
+			      
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of ajax()----------------------------------------------------------------------
+	}
+	
+	
+	
+	
 </script>
 
 <div id="peopleContent">
@@ -970,18 +1102,15 @@ arr_status = [];
 						<div id="div_regist">
 							<div style="display: flex; justify-content: space-between;">
 								<div>
-									<div class="regitst_title">
-										이름<span style="color: red;">*</span>
+									<div class="regitst_title"> 이름<span style="color: red;">*</span>
 									</div>
-									<input name="name" class="input_modal" type="text"
-										autocomplete="off" placeholder="이름 입력" />
+									<input name="name" class="input_modal" type="text" autocomplete="off" placeholder="이름 입력" />
 								</div>
 								<div>
 									<div class="regitst_title">
 										이메일<span style="color: red;">*</span>
 									</div>
-									<input name="email" class="input_modal" type="text"
-										autocomplete="off" placeholder="이메일 입력" />
+									<input name="email" class="input_modal" type="text" autocomplete="off" placeholder="이메일 입력" />
 								</div>
 							</div>
 
@@ -990,14 +1119,13 @@ arr_status = [];
 								<div class="regitst_title">
 									입사일<span style="color: red;">*</span>
 								</div>
-								<input name="hire_date" type="text"
-									class="input_modal daterange" placeholder="입사일 입력"></input>
+								<input name="hire_date" type="text" class="input_modal daterange" placeholder="입사일 입력"></input>
 							</div>
 								<div>
 								<div class="regitst_title">
 									급여<span style="color: red;">*</span>
 								</div>
-								<input name="name" class="input_modal" type="text"
+								<input name="salary" class="input_modal" type="text"
 									autocomplete="off" placeholder="급여 입력" />
 							</div>
 
@@ -1006,20 +1134,14 @@ arr_status = [];
 								<div class="regitst_title">부서 선택</div>
 								<input type="hidden" id="department" name="department" />
 
-								<button id="btn" class=" btn choice_type" type="button"
-									data-toggle="dropdown">
+								<button id="btn" class=" btn choice_type" type="button" data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">부서 선택</div>
+										<div class="regist_value">부서 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
 
-								<div class="dropdown-menu">
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-								</div>
+								<div id="div_dept" class="dropdown-menu"></div>
 							</div>
 							<%-- =========== 부서 선택 =========== --%>
 
@@ -1027,23 +1149,18 @@ arr_status = [];
 							<%-- =========== 세부부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">세부부서 선택</div>
-								<input type="hidden" id="detail_department"
-									name="detail_department" />
+								<input type="hidden" id="team" name="team" />
 
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">세부부서 선택</div>
+										<div class="regist_value">세부부서 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
 
-								<div class="dropdown-menu">
-									<button class="btn_label dropdown-item" type="button">세부부서1</button>
-									<button class="btn_label dropdown-item" type="button">세부부서2</button>
-									<button class="btn_label dropdown-item" type="button">세부부서3</button>
-									<button class="btn_label dropdown-item" type="button">세부부서4</button>
-									<button class="btn_label dropdown-item" type="button">세부부서5</button>
+								<div id="div_team" class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button">세부부서 선택</button>
 								</div>
 							</div>
 							<%-- =========== 세부부서 선택 =========== --%>
@@ -1057,17 +1174,19 @@ arr_status = [];
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">직위 선택</div>
+										<div class="regist_value">직위 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
 
-								<div class="dropdown-menu">
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
+								<div id="div_position" class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="사장" />사장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="부서장" />부서장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="차장" />차장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="팀장" />팀장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="대리" />대리</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="사원" />사원</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="관리자" />관리자</button>
 								</div>
 							</div>
 							<%-- =========== 직위 선택 =========== --%>
@@ -1075,13 +1194,13 @@ arr_status = [];
 							
 							<%-- =========== 직속상관 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">직속 상관</div>
-								<input type="hidden" name="position" id="position" />
+								<div class="regitst_title">직속 상관(삭제예정)</div>
+								<input type="hidden" name="managerid" id="managerid" />
 
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">직속상관 선택</div>
+										<div class="regist_value">직속상관 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>

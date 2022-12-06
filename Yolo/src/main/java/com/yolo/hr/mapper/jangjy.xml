@@ -378,9 +378,27 @@
 					'${arr_status[i]}'
 				</foreach>	
 	    	</if>
-		    
-	    
 	</select>
+	
+	<!-- 신규 사원 등록시 이메일 중복 확인 -->
+	<select id="checkDuplicateEmail" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_employees
+		where email = #{email}
+	</select>
+	
+	<!-- 신규 사원 insert -->
+	<insert id="registEmployee" parameterType="HashMap">
+		
+		insert into tbl_employees(empno, name, email,pwd, hiredate, time_salary, fk_deptno, position,profile_color) 
+		<if test="teamno == null" >
+        	values(seq_empno.nextval,#{name},#{email},'Qwer1234$',#{hire_date},#{salary},#{department},#{position},#{profile_color})
+        </if>
+        <if test="teamno != null">
+        	values(seq_empno.nextval,#{name},#{email},'Qwer1234$',#{hire_date},#{salary},#{team},#{position},#{profile_color})
+        </if>
+	
+	</insert>
 	
 	
 	
