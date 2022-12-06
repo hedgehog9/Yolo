@@ -1,9 +1,8 @@
 package com.yolo.hr.jjy.employee.service;
 
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import com.yolo.hr.jjy.employee.model.EmployeeVO;
 
 public interface InterEmployeeService {
 
@@ -26,7 +25,7 @@ public interface InterEmployeeService {
 	List<Map<String, String>> getTeam(Map<String, String> deptMap);
 
 	// 페이징 처리를 위해 총 사원 수 구해오기 
-	int getTotalCount(Map<String, String> empMap);
+	int getTotalCount(Map<String, Object> pageMap);
 
 	// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
 	List<Map<String, String>> empListSearchWithPaging(Map<String, Object> pageMap);
@@ -36,5 +35,8 @@ public interface InterEmployeeService {
 
 	// rno 에 해당하는 사원 목록 가져오기 
 	List<Map<String, String>> empListWithRno(Map<String, String> pageMap);
+
+	/** 신규 사원 등록하기  */
+	int registEployee(Map<String, Object> paraMap);
 
 }

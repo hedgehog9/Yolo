@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.yolo.hr.jjy.employee.model.EmployeeVO;
 import com.yolo.hr.jjy.employee.model.InterEmployeeDAO;
 import com.yolo.hr.jjy.employee.service.InterEmployeeService;
-import com.yolo.hr.login.service.InterLoginServcie;
 
 @Controller
 public class EmployeeController {
@@ -44,7 +42,7 @@ public class EmployeeController {
 		empMap.put("keyword", keyword);
 		
 	    // 총 게시물 건수(totalCount)
-	    int totalCount = service.getTotalCount(empMap);
+//	    int totalCount = service.getTotalCount(empMap);
 //	    System.out.println("~~~~~~ 확인용 totalCount : " + totalCount);
 	    
 		// 전체 사원을 조회해오는 메소드 (검색어가 있는 경우 검색어 입력 )
@@ -73,7 +71,7 @@ public class EmployeeController {
 				jsonObj.put("gender", EmpMap.get("gender")); // 성별
 				jsonObj.put("mobile", EmpMap.get("mobile")); // 핸드폰번호
 				jsonObj.put("deptname", EmpMap.get("deptname")); // 부서명
-				jsonObj.put("totalCount", totalCount); // 조회 결과물 수 
+//				jsonObj.put("totalCount", totalCount); // 조회 결과물 수 
 				
 				jsonArr.put(jsonObj);
 				
@@ -136,6 +134,8 @@ public class EmployeeController {
 		pageMap.put("arr_dept", arr_dept);
 		pageMap.put("arr_status", arr_status);
 		
+		// 총 페이지수 구해오기 
+		int totalCount = service.getTotalCount(pageMap); 
 		
 		if(currentShowPageNo == null) {
 			currentShowPageNo ="1";
@@ -183,6 +183,7 @@ public class EmployeeController {
 				jsonObj.put("gender", EmpMap.get("gender")); // 성별
 				jsonObj.put("mobile", EmpMap.get("mobile")); // 핸드폰번호
 				jsonObj.put("deptname", EmpMap.get("deptname")); // 부서명
+				jsonObj.put("totalCount", totalCount); // 총 결과물 수 
 				
 				jsonArr.put(jsonObj);
 				
@@ -315,6 +316,29 @@ public class EmployeeController {
 			jsonArr.put(jsonObj);
 		}
 		return jsonArr.toString() ;
+	}
+	
+	// 사원 등록 
+	@ResponseBody
+	@RequestMapping(value = "/registEmployee.yolo", produces="text/plain;charset=UTF-8")
+	public String registEmployee(@RequestParam Map<String,Object>paraMap) {
+		
+		System.out.println("사원 등록 Map" + paraMap);
+		JSONObject jsonObj = new JSONObject();
+		
+		// 회원가입시 이메일 중복 여부 확인 
+		int duplicateEmail = dao.checkDuplicateEmail(paraMap);
+		
+		jsonObj.put("duplicateEmail", duplicateEmail );
+//		System.out.println("확인용 이메일 중복 여부 "+ duplicateEmail);
+		
+		if(duplicateEmail != 1) { // 중복이 아닌 경우 
+			int registResult = service.registEployee(paraMap);
+			jsonObj.put("registResult", registResult);
+//			System.out.println("신규사원 등록 여부 "+registResult);
+		}
+		
+		return jsonObj.toString() ;
 	}
 	
 	

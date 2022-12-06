@@ -222,18 +222,37 @@
 		
 		where 1 = 1 
 		<if test='keyword != "" '>
-			<choose>
-		    	<when test="searchType eq 'empno'">
+		
+		    	<if test="searchType eq 'empno'">
 		    	    and empno = #{keyword}
-		    	</when>
-		    	<when test="searchType eq 'name'">
+		    	</if>
+		    	
+		    	<if test="searchType eq 'name'">
 		    		and name like '%'||#{keyword}||'%'
-		    	</when>
-		    	<otherwise>
-		    	   
-		    	</otherwise>
-		    </choose>
-	    </if>
+		    	</if>
+		    	
+	    	</if>
+		    	
+	    	<if test="arr_position != null">
+	    		and E.position in
+		    	<foreach collection="arr_position" index="i" open="(" separator="," close=")">
+					'${arr_position[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_dept != null">
+	    		and D.deptname in
+		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
+					'${arr_dept[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_status != null">
+	    		and E.status in
+		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
+					'${arr_status[i]}'
+				</foreach>	
+	    	</if>
 	</select>
 	
 	
@@ -359,9 +378,27 @@
 					'${arr_status[i]}'
 				</foreach>	
 	    	</if>
-		    
-	    
 	</select>
+	
+	<!-- 신규 사원 등록시 이메일 중복 확인 -->
+	<select id="checkDuplicateEmail" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_employees
+		where email = #{email}
+	</select>
+	
+	<!-- 신규 사원 insert -->
+	<insert id="registEmployee" parameterType="HashMap">
+		
+		insert into tbl_employees(empno, name, email,pwd, hiredate, time_salary, fk_deptno, position,profile_color) 
+		<if test="teamno == null" >
+        	values(seq_empno.nextval,#{name},#{email},'Qwer1234$',#{hire_date},#{salary},#{department},#{position},#{profile_color})
+        </if>
+        <if test="teamno != null">
+        	values(seq_empno.nextval,#{name},#{email},'Qwer1234$',#{hire_date},#{salary},#{team},#{position},#{profile_color})
+        </if>
+	
+	</insert>
 	
 	
 	

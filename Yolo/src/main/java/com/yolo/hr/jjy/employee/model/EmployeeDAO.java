@@ -1,7 +1,6 @@
 package com.yolo.hr.jjy.employee.model;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.annotation.Resource;
 
@@ -19,7 +18,6 @@ public class EmployeeDAO implements InterEmployeeDAO {
 	public List<Map<String, String>> getEmpList(Map<String, String> empMap) {
 		
 		List<Map<String, String>> empList = sqlsession.selectList("jangjy.getEmpList", empMap);
-		
 		return empList;
 	}
 	
@@ -99,7 +97,7 @@ public class EmployeeDAO implements InterEmployeeDAO {
 
 	// 페이징 처리를 위해 총 사원 수 구해오기 
 	@Override
-	public int getTotalCount(Map<String, String> empMap) {
+	public int getTotalCount(Map<String, Object> empMap) {
 		int totalCount = sqlsession.selectOne("jangjy.getTotalCount",empMap);
 		return totalCount;
 	}
@@ -123,6 +121,20 @@ public class EmployeeDAO implements InterEmployeeDAO {
 	public List<Map<String, String>> empListWithRno(Map<String, String> pageMap) {
 		List<Map<String,String>> empList = sqlsession.selectList("jangjy.empListWithRno",pageMap);
 		return empList;
+	}
+
+	// 회원가입시 이메일 중복 여부 확인 
+	@Override
+	public int checkDuplicateEmail(Map<String, Object> paraMap) {
+		int duplicateEmail = sqlsession.selectOne("jangjy.checkDuplicateEmail",paraMap);
+		return duplicateEmail;
+	}
+
+	// 신규 사원 등록 
+	@Override
+	public int registEployee(Map<String, Object> paraMap) {
+		int registResult = sqlsession.insert("jangjy.registEmployee", paraMap);
+		return registResult;
 	}
 
 	
