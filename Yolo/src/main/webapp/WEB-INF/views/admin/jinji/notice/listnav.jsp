@@ -3,6 +3,9 @@
 
 <% String ctxPath=request.getContextPath(); %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
+
 <style type="text/css">
 
 	#noticeNav {
@@ -129,149 +132,165 @@
   	/* 받는 사람 드롭다운 시작 */
      
      div.sentPsnProf{
-        display: inline-block;
-      width: 30px; 
-      height: 30px; 
-      border-radius: 40%; 
-      text-align: center;
-      background-color: #757575;
-      color : white;
-      font-size: 12pt;
-      display: flex;
-        align-items: center;
-   }
+  		display: inline-block;
+		width: 30px; 
+		height: 30px; 
+		border-radius: 40%; 
+		text-align: center;
+		background-color: #757575;
+		color : white;
+		font-size: 12pt;
+		padding-top: 3px;
+	}
+	
    
    i.fa-user {
-      margin: auto;
-   }
-   
-   button.dropdownBtn {
-      width: 22%;
-      margin-left : 10%;
-      display: flex;
-      align-items: center;
-      background-color: white;
-      border-radius: 0.4rem;
-      border: none;
-   }
-   
-   button.dropdownBtn:hover {
-       background-color: #dddddd;
-   }
-   
-   
-   /* 받는 사람 팝업 */
-   
-   div#choosePerson {
-      
-      /* border:solid 2px green; */
-      min-height: 300px;
-      max-height: 400px;
-      width: 470px;
-      display: flex;
-      position: fixed;
-      top: 1000px;
-      left: 0px;
-      z-index: 1052;
-      background: white;
-      border-radius: 0.3rem;
-      color: black;
-      /* transition: all 0.5s; */
-      padding: 10px;
-   }
-   
-   div#choosePerson.active {
-      top: 208px;
-      left: 654px;
-   }
-   
-   div#choosePerson_outside {
-      position: fixed;
-      top: 0px;
-      left: 0px;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.2);
-      z-index: 1051;
-      display: none;
-   }
-   
-   div#leftSide {
-      width: 55%;
-      max-height: 390px;
-      overflow: auto;
-   }
-   
-   div#rightSide {
-      width: 45%;
-      display: flex;
-      flex-direction: column;
-   }
-   
-   div#rightUp {
-      width: 100%;
-      height: 85%;
-      max-height: 390px;
-      overflow: auto;
-   }
-   
-   div#rightDown {
-      width: 100%;
-      height: 15%;
-   }
-   
-   #leftSide::-webkit-scrollbar {
-       width: 10px;
-    }
-    
-    #leftSide::-webkit-scrollbar-thumb {
-      background-color: #ababab;
-      border-radius: 10px;
-    }
-    
-    #leftSide::-webkit-scrollbar-track {
-      background-color: #dedfe0;
-      border-radius: 10px;
-    }
-    
-    #rightUp::-webkit-scrollbar {
-      width: 10px;
-    }
-    
-    #rightUp::-webkit-scrollbar-thumb {
-      background-color: #ababab;
-      border-radius: 10px;
-    }
-    
-    #rightUp::-webkit-scrollbar-track {
-      background-color: #dedfe0;
-      border-radius: 10px;
-    }
-    
-    label.person {
-       font-size: 11pt;
-       margin: auto 5px;
-    }
-    
-    label.person:hover, span.arrow:hover {
-       cursor: pointer;
-    }
-    
-    button#addPersonBtn {
-       display: inline-block;
-      color: #fff;
-      font-size: 11pt;
-       font-weight: bold;
-      vertical-align: middle;
-      text-align: center;
-      background-color: #88eb1e;
-      border: none;
-      cursor: pointer;
-      width : 90px;
-      hight : 35px;
-      margin-top: 5px;
-      border-radius: 0.4rem;
-    }
+		margin: auto;
+	}
+	
+	button.dropdownBtn {
+		min-width: 22%;
+		max-width : 100%;
+		height : 40px;
+		margin-left : 10%;
+		display: flex;
+		align-items: center;
+		background-color: white;
+		border-radius: 0.4rem;
+		border: none;
+	}
+	
+	button.dropdownBtn:hover {
+		 background-color: #dddddd;
+	}
+	
+	
+	/* 받는 사람 팝업 */
+	
+	div#choosePerson {
+		/* border:solid 2px green; */
+		min-height: 300px;
+		max-height: 400px;
+		width: 500px;
+		display: flex;
+		position: fixed;
+		top: 1000px;
+		left: 0px;
+		z-index: 1052;
+		background: white;
+		border-radius: 0.3rem;
+		color: black;
+		/* transition: all 0.5s; */
+		padding: 10px;
+	}
+	
+	div#choosePerson.active {
+		top: 208px;
+		left: 654px;
+	}
+	
+	div#choosePerson_outside {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.2);
+		z-index: 1051;
+		display: none;
+	}
+	
+	div#leftSide {
+		width: 50%;
+		max-height: 390px;
+		overflow: auto;
+	}
+	
+	div#rightSide {
+		width: 50%;
+		display: flex;
+		flex-direction: column;
+	}
+	
+	div#rightTitle {
+		width: 100%;
+		height: 35px;
+		padding: 3px auto;
+	}
+	
+	div#rightUp {
+	
+		width: 100%;
+		height: 100%;
+		max-height: 390px;
+		overflow: auto;
+	}
+	
+	div#rightDown {
+		width: 100%;
+		height: 45px;
+		padding: 3px 0px;
+	}
+	
+	#leftSide::-webkit-scrollbar {
+    	width: 10px;
+  	}
+  	#leftSide::-webkit-scrollbar-thumb {
+    	background-color: #ababab;
+    	border-radius: 10px;
+  	}
+  	#leftSide::-webkit-scrollbar-track {
+    	background-color: #dedfe0;
+    	border-radius: 10px;
+  	}
+  	
+  	#rightUp::-webkit-scrollbar {
+    	width: 10px;
+  	}
+  	#rightUp::-webkit-scrollbar-thumb {
+    	background-color: #ababab;
+    	border-radius: 10px;
+  	}
+  	#rightUp::-webkit-scrollbar-track {
+    	background-color: #dedfe0;
+    	border-radius: 10px;
+  	}
+  	
+  	label.person {
+  		font-size: 11pt;
+  		margin: auto 5px;
+  	}
+  	
+  	label.person:hover, span.arrow:hover {
+  		cursor: pointer;
+  	}
+  	
+  	button#addPersonBtn {
+  		display: inline-block;
+	    color: #fff;
+	    font-size: 11pt;
+	  	font-weight: bold;
+	    vertical-align: middle;
+	    text-align: center;
+	    background-color: #88eb1e;
+	    border: none;
+	    cursor: pointer;
+	    width : 70%;
+	    hight : 38px;
+	    margin: 3px 15%;
+	    border-radius: 0.4rem;
+  	}
+  	
+  	div.choosedPsn{
+  		width: 100%;
+  		border-radius: 0.4rem;
+  		padding: 5px 5%;
+  	}
+  	
+  	div.choosedPsn:hover {
+		cursor: pointer;
+		background-color: #f9fafa;
+	}
   	
   	/* Modal 끝  */
 	
@@ -287,44 +306,174 @@
 		});
 		
 		
-		// 공지 작성 버튼 입력시
-		$("button.writeSubmitBtn").click(function(){
-				
-				// 글제목 유효성 검사
-				const subject = $("input#subject").val().trim();
-				if(subject == "") {
-					toastr.options = {
-		                      closeButton: true,
-		                      progressBar: true,
-		                      showMethod: 'slideDown',
-		                      timeOut: 2000,
-		                      positionClass: 'toast-top-center'
-		                  };
-		                  toastr.error('', '글제목을 입력하세요');
-					return;
-				}
-	
-				// 글내용 유효성 검사
-				const content = $("textarea#noticecontent").val().trim();
-				if(content == "") {
-					toastr.options = {
-		                      closeButton: true,
-		                      progressBar: true,
-		                      showMethod: 'slideDown',
-		                      timeOut: 2000,
-		                      positionClass: 'toast-top-center'
-		                  };
-		                  toastr.error('', '글내용을 입력하세요');
-					return;
-				}
-		
-			});	
-		
 		
 		// 공지 작성 시 받는 사람 설정할 경우
+		//$('#choosePerson_outside').on('click', function () {
+	    //     choosePerson_close();
+	    //});
+		
+		
+		// 체크박스 바뀔때 효과
+		$(document).on("change", "input.names", function(e){
+			ck_empno_list = [];
+			$("input.names:checked").each(function(index, item){
+				ck_empno_list.push($(item).val());
+			});
+			
+			$('div#choosedPsnResult').empty();
+			
+			if(ck_empno_list.length>0){
+				str_empno = ck_empno_list.join(",");
+				
+				$.ajax({
+			    	url : "<%=ctxPath%>/notice/chooseUser.yolo",
+			    	data:{"str_empno":str_empno },
+		    		dataType: "JSON",
+		    		async:false,
+					success: function(json){ 
+						let html = "";
+						if(json.length>0){
+							
+							$.each(json, function(index, item){
+								
+								html += '<div class="choosedPsn" style="width: 100%;" name="'+item.empno+'">'+
+										'<div class="sentPsnProf ml-2" style="background-color: '+item.profile_color+';"></div>'+
+										'<span class="ml-3" style="padding-top: 3px;">'+item.name+'</span>'+
+										'<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">'+item.deptname+' · '+item.position+'</span>'+
+										'</div>';
+									
+							});// end of each
+						}
+						
+						$('div#choosedPsnResult').html(html);
+					},
+					error: function(request, status, error){
+		                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		            }
+					
+			    }); // end of ajax 
+			}
+		});// end of 체크박스 바뀔때 효과
+		
+		
+		// 전체선택
+		$("input#allCheck").change(function(){
+			const bool = $("input#allCheck").prop("checked");
+			$("input.names").prop("checked",bool); 
+			$("input.depts").prop("checked",bool); 
+			$("input.names").trigger("change");
+		});
+		
+		
+		// 부서 선택시 부서 선택되게
+		$(document).on('change', "input.depts",  function (e) {
+			const bool = $(e.target).prop("checked");
+			$("input."+$(e.target).val()).prop("checked",bool); 
+			$("input.names").trigger("change");
+		});
+		
+		
+		// 프로필 클릭시 삭제 되도록 
+		$(document).on('click', "div.choosedPsn",  function () {
+			$('input#'+$(this).attr('name')).prop("checked",false); 
+			$(this).remove()
+		});
+		
+		
+		// 받는 사람 닫기
 		$('#choosePerson_outside').on('click', function () {
-	         choosePerson_close();
-	    });
+			choosePerson_close();
+		});
+		
+		
+		// 받는사람 선택 버튼 클릭이벤트
+		$('button#addPersonBtn').click(function(){
+			ck_empno_list = [];
+			ck_name_list = [];
+			
+			$("input.names:checked").each(function(index, item){
+				ck_empno_list.push($(item).val());
+				ck_name_list.push($(item).next().text());
+			});
+			
+			if(ck_empno_list.length>0){
+				str_empno = ck_empno_list.join(",");
+				str_name = ck_name_list.join(", ");
+				
+				if(str_name.length>50){
+					str_name = str_name.substr(0, 50)+" ...";
+				}
+				
+				$('input[name="fk_recipientno"]').val(str_empno);
+				$('button#dropdownMenuButton').find('span').text(str_name);
+				choosePerson_close();
+				
+			} else {
+				Swal.fire('받는사람이 선택되지 않았습니다.','받는 사람은 한명이상 선택해주세요.', 'error');
+			}
+		});
+		
+		
+		
+		// 공지 보내기 버튼 클릭 이벤트
+		$("button#sendNotiBtn").click(function(){
+			
+			// 글제목 유효성 검사
+			const subject = $("input#subject").val().trim();
+			if(subject == "") {
+				toastr.options = {
+	                      closeButton: true,
+	                      progressBar: true,
+	                      showMethod: 'slideDown',
+	                      timeOut: 2000,
+	                      positionClass: 'toast-top-center'
+	                  };
+	                  toastr.error('', '글제목을 입력하세요');
+				return;
+			}
+	
+			// 글내용 유효성 검사
+			const content = $("textarea#noticecontent").val().trim();
+			if(content == "") {
+				toastr.options = {
+	                      closeButton: true,
+	                      progressBar: true,
+	                      showMethod: 'slideDown',
+	                      timeOut: 2000,
+	                      positionClass: 'toast-top-center'
+	                  };
+	                  toastr.error('', '글내용을 입력하세요');
+				return;
+			}
+			
+			// 받는 사람 유효성 검사
+			if($('input[name="fk_recipientno"]').val() == "" ){
+				Swal.fire('받는사람을 선택하세요','', 'error');
+				return;
+			}
+		
+			const queryString = $("form[name='noticeFrm']").serialize();
+			
+			$.ajax({
+		    	url : "<%=ctxPath%>/notice/sendNotice.yolo",
+		    	data : queryString,
+				success: function(){
+					
+					const modal_frmArr = document.querySelectorAll("form#noticeFrm");
+			  	  	for(let i=0; i<modal_frmArr.length; i++) {
+			  			modal_frmArr[i].reset();
+			  			$('button#dropdownMenuButton').find('span').text('받는 사람 선택');
+			  	  	}
+					$(".sendNotice").modal('hide');
+					toastr.success('공지작성이 완료되었습니다.');
+					
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+			}); // end of ajax
+			
+		}); // end of 메세지 보내기 버튼 클릭 이벤트
 		
 		
 	}); // end of $(document).ready(function()
@@ -332,7 +481,7 @@
 	
 	
 	
-	// dropdown 열기
+	// 받는 사람 dropdown 열기
    function search_choosePerson(){
       // toastr.info("정보 변경내역 조회 메소드 호출됨");
       
@@ -340,16 +489,137 @@
       $('button.dropdownBtn').css({'background-color':'#dddddd'});
       $('#choosePerson_outside').fadeIn();
       
+   
+	
+	   openAjax(); // 받는 사람 목록 ajax로 불러오기
+	   
+	   // 부서 토글
+	   $("div.hidDept").hide();
+	   $("div.hidTeam").hide();
+	
    }
    
-   // dropdown 닫기
+   
+   // 받는 사람 dropdown 닫기
    function choosePerson_close(){
-      $('#choosePerson').removeClass('active');
-      $('button.dropdownBtn').css({'background-color':''});
-      $('#choosePerson_outside').fadeOut();
-   }
+	   	$('div#choosedPsnResult').empty();
+		$('#choosePerson').removeClass('active');
+		$('button.dropdownBtn').css({'background-color':''});
+	    $('#choosePerson_outside').fadeOut();
+	}
 	
 	
+	// 부서 토글
+	function toggleShow(deptno){
+		$("div[id='"+deptno+"']").toggle();
+	}
+	
+
+	// 받는 사람 목록 ajax로 불러오기
+	function openAjax(){
+		$.ajax({
+	    	url : "<%=ctxPath%>/jinji/getDept.yolo",
+    		dataType: "JSON",
+    		async:false,
+			success: function(json){ 
+				
+				let html = "";
+				
+				if(json.length>0){
+					
+					$.each(json, function(index1, item1){
+						html += '<div style="display: flex; align-items: center;" class="py-1 pt-2">' +
+									'<input type="checkbox" class="ml-3 depts" value="'+item1.deptno+'" /><label class="person ml-2" style="font-weight: bold;" onclick="toggleShow('+item1.deptno+')">'+item1.deptname+'</label>'+
+									'<span class="arrow" onclick="toggleShow('+item1.deptno+')">&#128317;</span>'+
+								'</div>'+
+						        '<div class="hidDept pl-5" id="'+item1.deptno+'">';
+						        
+							// 부서 내 사람 구하기(부서장)
+							$.ajax({
+						    	url : "<%=ctxPath%>/jinji/getDeptPerson.yolo",
+						    	data : {"deptno" : item1.deptno},
+					    		dataType: "JSON",
+					    		async:false,
+								success: function(json2){
+									
+									if(json2.length>0){
+										$.each(json2, function(index2, item2){
+											html +='<div><input type="checkbox" class="names '+item1.deptno+'" value="'+item2.empno+'" id="'+item2.empno+'" /><label class="person ml-2" for="'+item2.empno+'">'+item2.name+'</label></div>';
+										}); // end of for each
+									}
+								},
+								error: function(request, status, error){
+					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					            }
+							}); // end of ajax (부서구하기)
+						    	
+							
+							// 부서내 팀 구하기
+							$.ajax({
+						    	url : "<%=ctxPath%>/jinji/getTeam.yolo",
+						    	data : {"deptno" : item1.deptno},
+					    		dataType: "JSON",
+					    		async:false,
+								success: function(json3){
+									
+									if(json3.length>0){
+										$.each(json3, function(index3, item3){
+											html += '<div class="py-1 pt-2">'+
+												'<input type="checkbox" class="depts '+item1.deptno+'" value="'+item3.deptno+'" /><label class="person ml-2" style="font-weight: bold;" onclick="toggleShow('+item3.deptno+')">'+item3.deptname+'</label><span class="arrow" onclick="toggleShow('+item3.deptno+')">&#128317;</span>'+
+												'</div>'+
+												'<div class="hidTeam pl-5" id="'+item3.deptno+'">';
+												
+											
+											// 팀 내 사람 구하기(팀원들)
+											$.ajax({
+										    	url : "<%=ctxPath%>/jinji/getTeamPerson.yolo",
+										    	data : {"deptno" : item3.deptno},
+									    		dataType: "JSON",
+									    		async:false,
+												success: function(json4){
+													
+													if(json4.length>0){
+														$.each(json4, function(index4, item4){
+															html +='<div><input type="checkbox" class="names '+item1.deptno+' '+item3.deptno+'" value="'+item4.empno+'" id="'+item4.empno+'" /><label class="person ml-2" for="'+item4.empno+'" >'+item4.name+'</label></div>';
+														}); // end of for each
+														
+														
+													}
+										        
+												},
+												error: function(request, status, error){
+									          alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+									        }
+										}); // end of ajax (팀 내 사람 구하기(팀원들))
+											
+											html += '</div>';
+											
+										}); // end of for each
+										
+										
+									}
+								},
+								error: function(request, status, error){
+					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					            }
+							}); // end of ajax (팀구하기)
+							
+							html += '</div>';
+					});// end of each
+					
+				}
+				
+				$('div#resultOfAjax').html(html);
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+			
+	    }); // end of ajax 
+	    
+	    
+	}
 	
 </script>
 
@@ -357,7 +627,7 @@
 	<div id="category">
 		<span style="font-size: 20pt; font-weight: bold;" onclick="">공지사항</span>
 		<button type="button" class="headerBtn" data-toggle="modal" data-target=".sendNotice">
-		<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 작성하기
+			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 작성하기
 		</button>
 	</div>
 	<br>
@@ -380,12 +650,18 @@
       <!-- Modal body -->
       <div class="modal-body">
       <button type="button" class="close my_writeClose" data-dismiss="modal" aria-label="Close">&times;</button> 
-      <form id='my_form'>
+      
+      <form id='noticeFrm' name="noticeFrm">
       	<input name="subject" id="subject" placeholder="공지 제목을 입력하세요"/>
+      	
       	<button class="dropdownBtn" type="button" id="dropdownMenuButton" onclick="search_choosePerson()">
-         <div class="sentPsnProf"><i class="fas fa-solid fa-user"></i></div> <span style="color: #757575; font-size: 11pt; margin-left: 10px;">받는 사람 선택</span>
+        	<div class="sentPsnProf"><i class="fas fa-solid fa-user"></i></div> <span style="color: #757575; font-size: 11pt; margin-left: 10px;">받는 사람 선택</span>
         </button>
+        
         <textarea rows="" cols="" name="content" id="noticecontent"></textarea>
+        <input type="text" name="fk_recipientno" />
+       <!--  <input type="text" name="notino" /> -->
+        
         <div id="attachArea">
         	<div class="filebox">
 			    <input class="upload-name" value="첨부파일" placeholder="첨부파일">
@@ -395,7 +671,7 @@
         </div>
       </form>
         
-        <button type="button" class="writeSubmitBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
+        <button type="button" class="writeSubmitBtn" id="sendNotiBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 작성하기
 		</button>
       </div>
@@ -409,49 +685,45 @@
 <div id="choosePerson_outside"></div>
 
 <div id="choosePerson">
-   <div id="leftSide">
-      <div style="display: flex; align-items: center;" class="border-bottom">
-         <label class="person ml-2" style="font-weight: bold;">전체선택</label><input type="checkbox" class="ml-2"/>
-      </div>
-      <div style="display: flex; align-items: center;">
-         <span class="mr-1 arrow" onclick="toggleDept()">&#128317;</span><label class="person" style="font-weight: bold;">인사부</label><input type="checkbox" class="ml-2"/>
-      </div>
-        <div id="insa" class="hid ml-5">
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        </div>
-        <div style="display: flex; align-items: center;">
-         <span class="mr-1 arrow" onclick="toggleDept()">&#128317;</span><label class="person" style="font-weight: bold;">인사부</label><input type="checkbox" class="ml-2"/>
-      </div>
-        <div id="insa" class="hid ml-5">
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        </div>
-        <div style="display: flex; align-items: center;">
-         <span class="mr-1 arrow" onclick="toggleDept()">&#128317;</span><label class="person" style="font-weight: bold;">인사부</label><input type="checkbox" class="ml-2"/>
-      </div>
-        <div id="insa" class="hid ml-5">
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-           <div><label class="person">조상운<input type="checkbox"  class="ml-2"/></label></div>
-        </div>
+	<div id="leftSide">
+		<div style="display: flex; align-items: center;" class="border-bottom py-2">
+			<input type="checkbox" class="ml-2" id="allCheck" /><label class="person ml-2" style="font-weight: bold;">전체선택</label>
+		</div>
+		
+		<div id="resultOfAjax"></div>
+		
+		 <!-- <div style="display: flex; align-items: center;" class="py-1 pt-2">
+			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow">&#128317;</span>
+		</div>
+        <div class="hidDept pl-5">
+        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+        	<div class="py-1 pt-2">
+				<input type="checkbox"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow">&#128317;</span>
+			</div>
+			<div class="hidTeam pl-5">
+					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
+			</div>
+        </div>  -->
         
-   </div>
-   <div id="rightSide">
-      <div id="rightUp">
-      
-      </div>
-      <div id="rightDown">
-         <button type="button" id="addPersonBtn" style="width: 80%; margin: 10px 10% 50px 10%;">받는사람 추가</button>
-      </div>
-   
-   </div>
+        
+	</div>
+	<div id="rightSide">
+		<div id="rightTitle"><span style="font-weight:bold;" class="mx-3 mt-2">받는사람 목록</span></div>
+		<div id="rightUp">
+			<div id="choosedPsnResult"></div>
+			
+			<!-- <div class="choosedPsn" style="width: 100%;">
+				<div class="sentPsnProf ml-2" style="background-color: orange;"><span style="font-size: 9pt;">길동</span></div>
+				<span class="ml-2" style="padding-top: 3px;">홍길동</span>
+				<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">인사 · 관리자</span>
+			</div> -->
+		</div>
+		<div id="rightDown">
+			<button type="button" id="addPersonBtn">받는사람 추가</button>
+		</div>
+	
+	</div>
+	
 </div>		

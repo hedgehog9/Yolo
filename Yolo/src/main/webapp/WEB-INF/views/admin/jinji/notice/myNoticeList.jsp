@@ -1,6 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
 <% String ctxPath=request.getContextPath(); %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
+
 
 <jsp:include page="listnav.jsp" />
 
@@ -123,25 +128,64 @@
 			$(this).find("button").css("display","")
 		});
 		
-	});
+		// 모달 바깥영역 누르면 닫히는거
+		$('#myListModal_outside').on('click', function () {
+			closemyListModal();
+		});
+		
+		// 모달 닫기 x 자 누르면 닫히는거
+		$("button.close").on('click', function () {
+			closemyListModal();
+		});
+		
+	}); // end of $(document).ready(function() ------
+
+	
+	// 모달 열기
+	function openmyListModal(){
+		$('#myListModal').addClass('active');
+	    $('#myListModal_outside').fadeIn();
+		
+	}
+	
+	// 모달 닫기
+	function closemyListModal(){
+		$('#myListModal').removeClass('active');
+	    $('#myListModal_outside').fadeOut();
+	}
 
 </script>
 
     
-<%-- 공지 리스트 시작 --%>
-<div id="boardList" data-toggle="modal" data-target="#myListModal">
+<%-- 게시판 리스트 시작 --%>
+<div id="boardList">
+
 	<div class="listRow">
 		<div class="listRowInside">
-			<div id="prof" class="mt-3">내공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;">
-				<span style="font-weight: bold;">연말 파티에 모두 참석하나요?</span>&nbsp;
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">나공지 ▶ 전체</span> 
-				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
-			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
-			<button class="listBnt">삭제하기</button>
+		
+			<c:if test="${ not empty requestScope.sentNoticeList}">
+				<c:forEach var="notice" items="${requestScope.sentNoticeList}">
+					<div id="prof" class="mt-3" style="background-color: ${notice.profile_color};">${notice.name}</div>
+					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
+						<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
+							${notice.subject}</span>&nbsp;
+						<span style="color: green;">${notice.readCount}</span>	
+						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
+						<span style="margin-left: 20px; font-size: 10pt;">${writedate}</span>
+						<span class="spanBlock" style="font-size: 10pt;">${notice.name } ▶ ${notice.deptname }</span> 
+						<span class="spanBlock mt-2" style="color: gray">${notice.content}</span>
+						&nbsp;&nbsp;
+						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
+					</div>
+					<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
+					<button class="listBnt">삭제하기</button>
+				</c:forEach>
+			</c:if>
+			
+			<c:if test="${empty requestScope.sentNoticeList }">
+				<span>작성된 공지사항이 없습니다.</span>
+			</c:if>
+	
 		</div>
 	</div>
 	
@@ -150,12 +194,12 @@
 	
 	<div class="listRow" data-toggle="modal" data-target="#myListModal">
 		<div class="listRowInside">
-			<div id="prof" class="mt-3">내공지</div>
+			<div id="prof" class="mt-3">김공지</div>
 			<div class="listcontent1 ml-4" style="width: 500px;">
 				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
 				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;"> 나공지 ▶ 인사부</span>
+				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 인사부</span>
 				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
 			</div>
 			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
@@ -165,12 +209,12 @@
 	
 	<div class="listRow" data-toggle="modal" data-target="#myListModal">
 		<div class="listRowInside">
-			<div id="prof" class="mt-3">내공지</div>
+			<div id="prof" class="mt-3">김공지</div>
 			<div class="listcontent1 ml-4" style="width: 500px;">
 				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
+				<span></span> <%-- 파일 첨부 파일 없는 경우 --%>
 				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;"> 나공지 ▶ 전체</span>
+				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 개발부</span>
 				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
 			</div>
 			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
@@ -180,12 +224,12 @@
 	
 	<div class="listRow" data-toggle="modal" data-target="#myListModal">
 		<div class="listRowInside">
-			<div id="prof" class="mt-3">내공지</div>
+			<div id="prof" class="mt-3">김공지</div>
 			<div class="listcontent1 ml-4" style="width: 500px;">
 				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
+				<span></span> <%-- 파일 첨부 파일 없는 경우 --%>
 				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;"> 나공지 ▶ 인사부</span>
+				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 개발부</span>
 				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
 			</div>
 			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
@@ -193,7 +237,10 @@
 		</div>
 	</div>
 	
-</div> <%-- 공지리스트 끝 --%>
+</div> <%-- 공지 리스트(boardlist) 끝 --%>
+
+<%-- 공지 수정 모달 --%>
+<%@ include file="edit/noticeEdit.jsp" %>
 
 <%-- 공지 상세 모달 --%>
 <%@ include file="detail/myNoticeDetail.jsp" %>
