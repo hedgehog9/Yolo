@@ -22,6 +22,15 @@ public class EmployeeVO {
 	private String profile_color; // 프로필 색상
 
 	private String gender; // 성별 (오라클에서 func_gender()로 구해옴)
+	private String deptname; // 부서명 
+
+	public String getDeptname() {
+		return deptname;
+	}
+
+	public void setDeptname(String deptname) {
+		this.deptname = deptname;
+	}
 
 	public String getGender() {
 		return gender;

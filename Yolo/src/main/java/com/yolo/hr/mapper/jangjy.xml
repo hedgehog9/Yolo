@@ -10,8 +10,9 @@
 			  ,pwd, mobile, hiredate, retiredate
 			  ,fk_deptno,time_salary, rrn, position
 			  ,address, account, introduce
-			  ,status, profile_color
-		from tbl_employees
+			  ,status, profile_color , deptname
+		from tbl_employees E join tbl_dept D
+		on E.fk_deptno = d.deptno
 		where email = #{email} and pwd = #{pwd}
 	</select>
 	

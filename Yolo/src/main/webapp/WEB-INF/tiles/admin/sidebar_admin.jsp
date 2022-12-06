@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath = request.getContextPath(); %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style type="text/css">
 
@@ -445,11 +447,14 @@
 		<div id="sideBar">
 		
 			<div id="sideTop" class="border-bottom">
-				<div class="sideTr mt-2" style="height: 70px;" onclick="javascript:location.href='<%= ctxPath%>/user_detail.yolo'">
-					<div id="prof">길동</div>
+				<div class="sideTr mt-2" style="height: 70px;" onclick="javascript:location.href='<%= ctxPath%>/userDetail.yolo?empno=${sessionScope.loginuser.empno}'">
+					<div id="prof" style="background-color:${sessionScope.loginuser.profile_color}">
+						<c:set var="name" value="${sessionScope.loginuser.name}" />
+						${fn:substring(name,1,3) }
+					</div>
 					<div>
-						<span class="ml-2" style="display: block; padding-top: 3px;">홍길동</span>
-						<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">인사 · 관리자</span>
+						<span class="ml-2" style="display: block; padding-top: 3px;">${sessionScope.loginuser.name}</span>
+						<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">${sessionScope.loginuser.deptname} · ${sessionScope.loginuser.position}</span>
 					</div>
 				</div>
 				<div class="dropdown my-4" id="commute-div">
