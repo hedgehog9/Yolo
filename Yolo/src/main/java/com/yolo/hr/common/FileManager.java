@@ -60,7 +60,7 @@ public class FileManager {
 			// 만약에 파일을 저장할 경로인 폴더가 실제로 존재하지 않는다면
 			
 			// 파일을 저장할 경로인 폴더를 생성한다.
-			dir.mkdir();
+			dir.mkdirs();
 		}
 		
 		String pathname = path + File.separator + newFileName;
