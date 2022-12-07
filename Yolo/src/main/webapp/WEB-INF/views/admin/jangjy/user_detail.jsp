@@ -450,7 +450,8 @@
 
 <script>
 	let leaveFlag = false; // 휴직 신청 가능 여부 저장
-
+	let html = "";
+	
 	$(document).ready(function(){
 		
 		// 모달에서 x 버튼 클릭스 안의 form 초기화
@@ -554,27 +555,6 @@
 		
 		<%-- ===== 달력 두개짜리 출력 끝 =====  --%>
 		
-		let html = "";
-		
-		<%-- 근무시간 progressBar 시작  --%>
-		let bar = new ProgressBar.Circle(progressBar, {
-			color: '#FFEA82',
-			trailColor: '#eee',
-			trailWidth: 1,
-			duration: 1400,
-			easing: 'bounce',
-			strokeWidth: 15,
-			from: {color: '#FFEA82', a:0},
-			to: {color: '#ED6A5A', a:1},
-			// Set default step function for all animate calls
-			step: function(state, circle) {
-				circle.path.setAttribute('stroke', state.color);	
-			}
-		});
-		
-		bar.animate(0.8);  // progress bar 퍼센트 0.0 ~ 1.0
-		<%-- 근무시간 progressBar 끝  --%>
-		
 		<%-- 말풍선 --%>
 	  	$('[data-toggle="tooltip"]').tooltip();   
 		
@@ -593,7 +573,7 @@
 						+"</button>"
 						
 						+"<div class='dropdown-menu'>"
-							+"<a id ='a_edit_hrInfo'class='dropdown-item' href='javascript:void(0);' onclick='edit_hrInfo();'><i class='fas fa-user-alt'></i>&nbsp;&nbsp;인사 정보 변경&nbsp;&nbsp;"
+							+"<a id ='a_edit_hrInfo'class='dropdown-item' href='javascript:void(0);' onclick='edit_hrInfo("+`${requestScope.employeeMap.empno}`+");'><i class='fas fa-user-alt'></i>&nbsp;&nbsp;인사 정보 변경&nbsp;&nbsp;"
 								+"<span class='badge' style='background-color:#3B86C8; color:white;'>발령</span>"
 							+"</a>"
 							+"<a id='a_edit_basicInfo' class='dropdown-item' href='javascript:void(0);'onclick='edit_basicInfo()'><i class='fas fa-pen'></i>&nbsp;&nbsp;기본 정보 변경</a>" 
@@ -604,7 +584,7 @@
 						+"<thead>"
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title' style='width:200px'>사번</th>"				
-								+"<th class='th_content'>"+`${requestScope.employeeMap.empno}`+"</th>"				
+								+"<th id='th_empno' class='th_content'>"+`${requestScope.employeeMap.empno}`+"</th>"				
 							+"</tr>"			
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>입사일</th>"				
@@ -775,8 +755,6 @@
 		
 		$("div#div_annual").text("DB에서 조회한 값");
 		
-		$("div#div_workTime").text("DB에서 조회한 값");
-		
 		
 		$('#record_outside').on('click', function () {
 			record_close();
@@ -926,11 +904,8 @@
 		});
 		
 		<%-- 기본정보 변경에서 경력 div 클릭시 --%>
-
 		$(document).on("click","button#btn_edit_psInfo",function(){
 			 editInfo();
-			 
-			 
 			 
 		});
 		
@@ -1025,6 +1000,30 @@
 		$("div#div_edit").css({"max-height":web_browser_height});
 		
 		
+		// 인사발령 모달에서 항목 선택시 
+		$(document).on("click","button.dropdown-item",function(e){
+			let parent = $(this).parent();
+			let deptno = $(this).val(); // 부서번호
+			 // $(this).text() 부서명 
+			
+			$(this).parent().find("input").val(deptno);
+			parent.parent().find("div.retirement_type").text($(this).text());
+			
+		})// end of $(document).on("click","button.dropdown-item",function(){}-------------------
+		
+		// 인사발령 모달에서 저장하기 버튼 클릭시 
+		$(document).on("click","#edit_info > div > form > div:nth-child(8) > button:nth-child(2)",function(){
+			
+			const frm = document.frm_ps_appointment;
+			frm.action="<%= ctxPath%>/personnelAppointment.yolo";
+			frm.method="POST";
+			frm.submit();
+			
+		});
+		
+		// 해당 사원 주 총 근무시간 구하기 
+		getWorkTime($("th#th_empno").text());
+		
 	});// end of $(document).ready-----------------------------
 	
 	//null값 체크 
@@ -1057,8 +1056,88 @@
 	}
 
 	
+	// 현재 날짜에 해당하는 주 구하는 메소드 
+   function getCurrentWeek() { 
+
+        let start;
+        let end;
+		
+        const day = new Date();
+        const sunday = day.getTime() - 86400000 * day.getDay();
+		
+        day.setTime(sunday);
+
+        const result = [day.toISOString().slice(0, 10)];
+
+        for (let i = 1; i < 7; i++) {
+            day.setTime(day.getTime() + 86400000);
+            result.push(day.toISOString().slice(0, 10));
+        }
+
+        start = result[1];
+        end = result[5];
+        
+        console.log(start);
+        console.log(end);
+        
+        let arr_workTime = [];
+        
+        arr_workTime.push(start);
+        arr_workTime.push(end);
+        
+        return arr_workTime;
+    }
+	
+	// 상세보기를 한 사원의 주별 근무시간 알아오는 메소드 (progressbar 출력)
+	function getWorkTime(empno){
+		
+		let arr_workTime = getCurrentWeek();
+		
+		let start_date = arr_workTime[0];
+		let end_date = arr_workTime[1];
+		
+		$.ajax({
+			 // 부서 이름 구해오기 
+			  url : "<%= ctxPath%>/getWorkTime.yolo",
+			  data: {"start_date":start_date
+				    ,"end_date":end_date
+				    ,"empno":empno},
+			  dataType : "JSON",
+			  success : function(json){
+				  let time = Number(json.time);
+				  
+				  let t = Math.floor(time/60);
+				  let m = time%60;
+				  
+				  $("div#div_workTime").text(t+"시간"+m+"분");
+				  
+				  <%-- 근무시간 progressBar 시작  --%>
+				  var bar = new ProgressBar.Circle(progressBar, {
+					  strokeWidth: 15,
+					  easing: 'easeInOut',
+					  duration: 1000,
+					  color: '#00C6c3',
+					  trailColor: '#ebecee',
+					  trailWidth: 0,
+					  svgStyle: null
+					});
+					
+					bar.animate(time/2400);  // progress bar 퍼센트 0.0 ~ 1.0
+					<%-- 근무시간 progressBar 끝  --%>
+				
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		
+		}); // end of ajax()----------------------------------------------------------------------
+		
+	}
+	
+	
+	
 	//인사정보 페이지에서 인사 정보 변경 버튼 클릭시
-	function edit_hrInfo(){
+	function edit_hrInfo(empno){
 		$("div#edit_info").empty();
 		$('#edit_info').addClass('active');
 	    $('#record_outside').fadeIn();
@@ -1075,25 +1154,27 @@
 							+'</button>'
 						+'</div>'
 						
-					+'<form name="frm_basicInfo">'
+					+'<form name="frm_ps_appointment">'
+						+'<input name = "empno" type="hidden" value="'+empno+'"/>'
+						
 						+'<div style="padding-bottom: 10px;">'
 							+'<div>발령일<span style="color: red;">＊</span></div>'
-							+'<input type="text" class="daterange" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" />'
+							+'<input name="psa_date" type="text" class="daterange" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" />'
 						+'</div>'
 						
 						+'<div style="margin:5px 0; padding-bottom: 10px;">'		
 							+'<div>발령 라벨</div>'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-									+'<div id="retirement_type">발령 라벨</div>'
+									+'<div class="retirement_type">발령 라벨</div>'
 									+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 								+'</div>'
 							+'</button>'
 					
 							+'<div class="dropdown-menu">'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">직무 변경</button>'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">부서 변경</button>'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">인사 발령</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" value="직무 변경" style="width: 100%;">직무 변경</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" value="부서 변경" style="width: 100%;">부서 변경</button>'
+								+'<button class="btn_retirement dropdown-item" type="button" value="인사 변경" style="width: 100%;">인사 발령</button>'
 								+'<input id="changeType" name="changeType" type="hidden" />'
 							+'</div>'
 						+'</div>'
@@ -1101,37 +1182,29 @@
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
 							+'<div>부서</div>'
-							+'<button id="btn" class=" btn communication" type="button"'
+							+'<button onclick="getDeptName()" id="btn" class=" btn communication" type="button"'
 								+'data-toggle="dropdown"'
 								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-									+'<div id="retirement_type">부서</div>'
+									+'<div class="retirement_type">부서</div>'
 									+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 								+'</div>'
 							+'</button>'
 					
-							+'<div class="dropdown-menu">'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="부서">부서 1</button>'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="부서">부서 1</button>'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="부서">부서 1</button>'
-								+'<input id="dept" name="dept" type="hidden" />'
-							+'</div>'
+							+'<div class="div_dept dropdown-menu"></div>'
 						+'</div>'
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
 							+'<div>세부 부서</div>'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-									+'<div id="retirement_type">세부 부서</div>'
+									+'<div class="retirement_type">세부 부서</div>'
 										+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 								+'</div>'
 							+'</button>'
 					
-							+'<div class="dropdown-menu">'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="세부부서">세부 부서 1</button>'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="세부부서">세부 부서 2</button>'
-								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="세부부서">세부 부서 3</button>'
-								+'<input id="detailDept" name="detailDept" type="hidden" />'
+							+'<div class="div_team dropdown-menu">'
+								+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="세부부서">부서를 선택하세요</button>'
 							+'</div>'
 						+'</div>'
 						
@@ -1141,15 +1214,19 @@
 								+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"'
 									+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 									+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-										+'<div id="retirement_type">직위</div>'
+										+'<div class="retirement_type">직위</div>'
 										+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 									+'</div>'
 								+'</button>'
 					
 								+'<div class="dropdown-menu">'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">직위1</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">직위2</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">직위3</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">사장</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">부서장</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">차장</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">팀장</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">대리</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">사원</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">관리자</button>'
 									+'<input id="position" name="position" type="hidden" />'
 								+'</div>'
 							+'</div>'
@@ -1157,12 +1234,12 @@
 				
 						+'<div style="margin-bottom:290px;">'
 							+'<div class="modal_title" style="width:100%;">메모</div>'
-							+'<textarea class="memo" rows="5" cols="30" style="width:100%;"></textarea>'
+							+'<textarea name="memo" class="memo" rows="5" cols="30" style="width:100%;"></textarea>'
 						+'</div>'
 				
 				
 						+'<div style="display: flex; justify-content: flex-end;">'
-							+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6; border: solid 1px #d9d9d9;" onclick="record_close();">취소</button>'
+							+'<button type="reset" class="btn btn_save_cancel" style="background-color: #F6F6F6; border: solid 1px #d9d9d9;" onclick="record_close();">취소</button>'
 							+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left: 10px;">'
 								+'<i style="color: white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기'
 						+'</button>'
@@ -1374,8 +1451,55 @@
             }
         });
 		<%-- ===== 달력 하나만 출력 끝 =====  --%>
+	}// end of function daterange(){}----------------------
+	
+	// 인사발령 부서 select 해오는 메소드 
+	function getDeptName(){
 		
-	}
+	  let html ='';
+		$.ajax({
+			 // 부서 이름 구해오기 
+			  url : "<%= ctxPath%>/getDeptList.yolo",
+			  dataType : "JSON",
+			  success : function(json){
+				  $.each(json,function(index,dept){
+					  html += "<button onclick='getTeam("+dept.deptno+")' class='btn_retirement dropdown-item' type='button' style='width: 100%;' value='"+dept.deptno+"'>"+dept.deptname+"</button>";
+			      });// end of $.each(json,function(index,emp){}----------------------------
+			      html +='<input id="deptno" name="deptno" type="hidden"/>';
+				  $("div.div_dept").html(html);
+				
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		
+		}); // end of ajax()----------------------------------------------------------------------
+		
+	}// end of function getDeptName(){}--------------------------------------	
+	
+	
+	// 부서번호를 전달받아 팀 구해오기 
+	function getTeam(deptno){
+		  let html ='';
+		 $.ajax({
+			  url : "<%=ctxPath%>/getTeamList.yolo",
+			  data:{"deptno":deptno},
+			  dataType : "JSON",
+			  success : function(json){
+				  
+				  $.each(json,function(index,team){
+				  		html +='<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="'+team.deptno+'">'+team.deptname+'</button>';
+			      });// end of $.each(json,function(index,emp){}----------------------------
+			      html +='<input id="teamno" name="teamno" type="hidden"/>';
+			      $("div.div_team").html(html);
+			      
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of ajax()----------------------------------------------------------------------
+	}// end of function getTeam(deptno){}--------------------------------------
+	
 	
 	
 </script>

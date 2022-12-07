@@ -344,6 +344,48 @@ public class EmployeeController {
 	}
 	
 	
+	// 사원 근무시간 구해오기 
+	@ResponseBody
+	@RequestMapping(value = "/getWorkTime.yolo", produces="text/plain;charset=UTF-8")
+	public String getWorkTime( @RequestParam Map<String,Object>workTimeMap) {
+		
+		String time = dao.getWorkTime(workTimeMap);
+
+//		System.out.println("근무시간 Map" + workTimeMap);
+//		System.out.println("확인용 time" + time);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("time", time);
+		
+		return jsonObj.toString() ;
+	}
+	
+	
+	
+	
+	@RequestMapping(value = "/personnelAppointment.yolo", produces="text/plain;charset=UTF-8")
+	public String personnelAppointment(HttpServletRequest request , @RequestParam Map<String,Object>paraMap) {
+		
+//		String psa_date = request.getParameter("psa_date");
+//		String changeType = request.getParameter("changeType");
+//		String position = request.getParameter("position");
+//		String memo = request.getParameter("memo");
+//		String deptno = request.getParameter("deptno");
+//		String teamno = request.getParameter("teamno");
+		
+//		System.out.println("확인용 :"+psa_date);
+//		System.out.println("확인용 :"+changeType);
+//		System.out.println("확인용 :"+position);
+//		System.out.println("확인용 :"+memo);
+//		System.out.println("확인용 :"+deptno);
+//		System.out.println("확인용 :"+teamno);
+		
+		System.out.println("paraMap"+paraMap);
+		
+		return "jangjy/user_detail.admin";
+	}
+	
+	
 	
 	
 	

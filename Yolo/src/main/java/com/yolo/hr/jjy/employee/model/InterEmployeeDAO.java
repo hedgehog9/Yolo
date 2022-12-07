@@ -55,4 +55,7 @@ public interface InterEmployeeDAO {
 	// 신규 사원 등록 
 	int registEployee(Map<String, Object> paraMap);
 
+	//** 사원번호, 월요일(날짜), 금요일(날짜) 를 전달받아 한 주의 총 근무시간 구해오기 */
+	String getWorkTime(Map<String, Object> workTimeMap);
+
 }

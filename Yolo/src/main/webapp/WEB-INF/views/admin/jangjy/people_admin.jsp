@@ -95,11 +95,7 @@ div#search_buttons {
 	display: flex;
 	justify-content: end;
 	border-bottom: solid 1px #d9d9d9;
-	padding: 20px;
-}
-
-button.btn_search {
-	margin-top: 15px;
+	padding: 10px 20px;
 }
 
 button.btn_search:hover {
@@ -110,7 +106,6 @@ div#div_toggle_buttons {
 	background-color: #ebebeb;
 	padding: 3px;
 	border-radius: 5px;
-	margin-top: 15px;
 }
 
 button.btn_view_style:focus {
@@ -275,23 +270,36 @@ th,td{
 
 <%-- 검색태그 div css --%>
 div#div_searchTag{
-	border: solid 1px gray;
-	
-	padding: 40px 16px;
+
+	border-bottom: solid 1px #d9d9d9;
+	padding: 10px 16px;
 	display: flex;
 	justify-content: space-between;
 	
 }
+
+div#serchTag_content{
+	display: flex;
+    align-items: center;
+}
+
 <%-- 필터초기화 버튼 css --%>
 button.filter_clear{
-	border: solid 1px #d9d9d9;
+	color:#3C4651;
+	font-weight:700;
+	font-size:13px;
+	background-color: #ebebeb;
 }
 <%-- 필터 추가 버튼 css --%>
 button#add_searchTag{
 	border: solid 1px #d9d9d9;
-	padding: 0;
+	padding: 0 5px 0 0 ;
+    color: #9e9e9e;
 }
 
+span#result_cnt{
+	margin-right:10px;
+}
 
 <%-- dropdown level 2 css (검색조건 필터) --%>
 .dropdown-menu li {
@@ -313,15 +321,66 @@ display: block;
 
 <%-- 검색 필터 span 태그 css --%>
 span.span_tag{
-    border: solid 1px gray;
+    border : solid 1px #d9d9d9;
     padding: 3px;
-    border-radius: 10px;
+    border-radius: 5px;
+    color: #9e9e9e;
+    margin-right: 5px;
 }
 button.closeTag{
 	background-color: transparent;
     border: none;
 }
 
+
+ul.ul_pagebar{
+	display: flex;
+	align-items: baseline;
+	padding: 0;
+	justify-content: center;
+}
+
+
+li.li_pagebar{
+	display: inline-block;
+    padding-top: 9px;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-weight: 700;
+}
+
+li.li_pagebar > a{
+	text-decoration: none;
+	font-size: 14px;
+	color:#2ecc71;
+}
+
+li.li_currentpage{
+	background-color: #2ecc71;
+    color: white;
+    font-weight: 700;
+
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 9px;
+}
+
+
+.dropdown-toggle::after {
+    display: none;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+}
 
 
 
@@ -470,24 +529,14 @@ arr_status = [];
 		// 구성원 등록 모달에서 입력완료 버튼 클릭시 
 		$("button#regist_member_btn").click(function(){
 			
-			let name = $("input[name='name']").val();
-			let email = $("input[name='email']").val();
-			let hire_date = $("input[name='hire_date']").val();
-			let salary = $("input[name='salary']").val();
-			let department = $("input[name='department']").val();
-			let team = $("input[name='team']").val();
-			let position = $("input[name='position']").val();
-			console.log(name);
-			console.log(email);
-			console.log(hire_date);
-			console.log(salary);
-			console.log(department);
-			console.log(team);
-			console.log(position);
-			
 			registEmployee();
 			
+			
 		}); 
+		// 구성원 등록 모달 닫기 시 
+		$('.modal').on('hidden.bs.modal', function (e) {
+			$(this).find('form')[0].reset();
+		});
 		
 		// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
 		$(document).on("click","a.dropdown-item",function(e){
@@ -510,7 +559,7 @@ arr_status = [];
 			})
 			
 			if(flag){
-				$("button#add_searchTag").parent().find("span#span_searchTag").prepend("<span class='span_tag'>"+searchWord+"|"+searchType+"<button class='closeTag'><i class='fas fa-times'></i></button></span>");
+				$("button#add_searchTag").parent().find("span#span_searchTag").prepend("<span class='span_tag'>"+searchWord+"|<span style='color:#3C4651;'>"+searchType+"</span><button class='closeTag'><i style='color:#9e9e9e; font-size:14px;' class='fas fa-times'></i></button></span>");
 
 				switch (searchType)
 				  {
@@ -583,7 +632,6 @@ arr_status = [];
 		// 구성원 추가하기 버튼 클릭시 
 		$(document).on("click","button#registMember",function(){
 			getDeptNameModal();
-			
 		})// end of $(document).on("click","button#registMember",function(){}-----------
 		
 		
@@ -616,7 +664,6 @@ arr_status = [];
 		
 		}); // end of ajax()----------------------------------------------------------------------
 		
-		
 	}// end of function getDeptName(){}--------------------------------------		
 			
 	// 부서번호를 전달받아 팀 구해오기 
@@ -647,6 +694,7 @@ arr_status = [];
 	 	<%-- 특정 사원번호 전달 --%>
 		location.href = "<%=ctxPath%>/userDetail.yolo?empno="+empno;
 	}
+	
 	
 	// 사원 목록 페이징바 만들기 
 	function makeCommentPageBar(currentShowPageNo){
@@ -680,20 +728,20 @@ arr_status = [];
 					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
 					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
 					
-					let pageBarHTML = "<ul style='list-style:none'>";
+					let pageBarHTML = "<ul class='ul_pagebar' style='width:500px; list-style:none; margin:0 auto;'>";
 					
 					// ==== [맨처음] [이전] 만들기 === // 
 					if(pageNo != 1 ) {
-						pageBarHTML +="<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:viewEmpList(\"1\")' >[맨처음]</a></li>";
+						pageBarHTML +="<li class='li_pagebar' style='display:inline-block;'><a href='javascript:viewEmpList(\"1\")' >[맨처음]</a></li>";
 						pageBarHTML +="<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:viewEmpList(\""+(pageNo-1)+"\")' >[이전]</a></li>";
 					}
 					while( !(loop > blockSize || pageNo > totalPage ) ) {
 						
 						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
-							pageBarHTML +="<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>";
+							pageBarHTML +="<li class='li_currentpage'>"+pageNo+"</li>";
 						}
 						else {
-							pageBarHTML +="<li style='display:inline-block; width:30px; font-size:12pt;'><a href='javascript:viewEmpList(\""+pageNo+"\")' >"+pageNo+"</a></li>";
+							pageBarHTML +="<li class='li_pagebar'><a href='javascript:viewEmpList(\""+pageNo+"\")' >"+pageNo+"</a></li>";
 						}
 						loop++;
 						pageNo++;
@@ -1097,7 +1145,7 @@ arr_status = [];
 				<!-- Modal header -->
 				<div class="modal-header">
 					<h2>구성원 등록</h2>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<button id="btn_close_registModal" type="button" class="close" data-dismiss="modal">&times;</button>
 				</div>
 				<!-- Modal body -->
 				<div class="modal-body">
@@ -1129,7 +1177,7 @@ arr_status = [];
 									급여<span style="color: red;">*</span>
 								</div>
 								<input name="salary" class="input_modal" type="text"
-									autocomplete="off" placeholder="급여 입력" />
+									autocomplete="off" placeholder="급여 입력" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
 							</div>
 
 							<%-- =========== 부서 선택 =========== --%>
@@ -1271,9 +1319,9 @@ arr_status = [];
 			<span id="span_searchTag"></span>
 				
 				<button id="add_searchTag" data-toggle="dropdown" type="button"
-					class="btn dropdown-toggle" type="button" id="dropdownMenuButton"
+					class="btn dropdown-toggle" id="dropdownMenuButton"
 					data-mdb-toggle="dropdown" aria-expanded="false">
-					<i class="fas fa-plus"></i>필터 추가하기
+					<i class="fas fa-plus" style="font-size: 13px; padding: 0 5px;"></i>필터 추가하기
 				</button>
 
 				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -1315,11 +1363,7 @@ arr_status = [];
 	<%-- end of  <div id="search_result">====== --%>
 	
 	<%-- 페이지바 출력 --%>
-	<div id="pageBar" style="border:solid 1px red; width: 80%; height: 100px;" >
-		페이지바 들어올 div <br>
-		
-		
-	</div>
+	<div id="pageBar" style="width: 80%; height: 100px; margin:0 auto;" ></div>
 
 </div>
 <%-- end of peopleContiner div====== --%>
