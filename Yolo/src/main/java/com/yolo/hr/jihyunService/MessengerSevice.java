@@ -198,10 +198,18 @@ public class MessengerSevice implements InterMessengerService {
 	}
 
 	
-	// 총 게시물 건 수 알아오기 (페이지네이션 용)
+	// 총 게시물 건 수 알아오기 (페이지네이션 용 - 보낸)
 	@Override
 	public int getTotalCount(Map<String, String> paraMap) {
 		int totalCount = mdao.getTotalCount(paraMap);
+		return totalCount;
+	}
+	
+	
+	// 총 게시물 건 수 알아오기 (페이지네이션 용 - 받은)
+	@Override
+	public int getTotalCount2(Map<String, String> paraMap) {
+		int totalCount = mdao.getTotalCount2(paraMap);
 		return totalCount;
 	}
 

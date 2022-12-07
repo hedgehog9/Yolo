@@ -18,7 +18,7 @@
 		color: #575757;
 		font-size:10pt;
 		font-weight: bold;
-		height: 35px;
+		height: 40px;
 		width: 100%;
 		display: flex;
   		align-items: center;
@@ -157,6 +157,21 @@
 								, function(){
 									$(this).find("button").css("display","")
 								});
+		
+		
+		// 검색시 검색조건 및 검색어 값 유지시키기
+		// paraMap 있는지 없는지 까바야징
+		if( ${ not empty requestScope.searchWord} ){
+			$("input#searchWord").val("${requestScope.searchWord}");
+		}
+		
+		// 검색어에 엔터를 햇을경우
+		$("input#searchWord").keyup(function(e){
+			if(e.keyCode==13){
+				goSearch();
+			}
+		});
+		
 		
 		// 전체선택
 		$("input#checkAllMsg").change(function(){
@@ -376,6 +391,14 @@
 		
 	}
 	
+	
+	// 검색 클릭 이벤트
+	function goSearch(){
+		
+		const searchWord = $("input#searchWord").val()
+		location.href = "<%=ctxPath%>/messenger/receivedMessage.yolo?searchWord="+searchWord;
+	}
+	
 
 </script>
 
@@ -387,6 +410,10 @@
 		<span class="ml-2" style="flex-grow: 1;">안 읽은 메신저(4)</span>
 		<button type="button" class="mailTopBtn" onclick="readCheckedMsg()">선택 메신저 읽기</button>
 		<button type="button"  class="mailTopBtn" onclick="readAllMsg()">안 읽은 메신저 모두 읽기</button>
+		<button class="btn" id="advanced-search-button" onclick="goSearch()" type="button" style="border:none; background-color: gray; height: 35px; color: white;">
+	    	<i class="fa fa-search"></i>
+	  	</button> 
+	  	<input id="searchWord" style="padding-left:7px; height: 35px; width: 300px; margin-right: 15px; margin-left:2px; border: solid 1px gray; border-radius: 0.4rem;" type="text" placeholder="보낸 사원명, 제목, 내용으로 검색 가능합니다." />
 	</div>
 	
 	<c:if test="${ not empty requestScope.receivedMsgList }">
