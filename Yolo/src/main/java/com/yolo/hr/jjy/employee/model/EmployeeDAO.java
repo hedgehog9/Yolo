@@ -137,6 +137,13 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return registResult;
 	}
 
+	// 사원번호, 월요일(날짜), 금요일(날짜) 를 전달받아 한 주의 총 근무시간 구해오기 
+	@Override
+	public String getWorkTime(Map<String, Object> workTimeMap) {
+		String time = sqlsession.selectOne("jangjy.getWorkTime", workTimeMap);
+		return time;
+	}
+
 	
 	
 	

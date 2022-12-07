@@ -418,8 +418,15 @@
         <if test="teamno != null">
         	values(seq_empno.nextval,#{name},#{email},'Qwer1234$',#{hire_date},#{salary},#{team},#{position},#{profile_color})
         </if>
-	
 	</insert>
+	
+	<!-- 사원번호, 월요일(날짜), 금요일(날짜) 를 전달받아 한 주의 총 근무시간 구해오기  -->
+	<select id="getWorkTime" resultType="String"  parameterType="HashMap">
+		select SUM((overtime + worktime)) as time
+		from tbl_commute
+		where fk_empno = #{empno}
+		and start_work_time between #{start_date} and #{end_date}
+	</select>
 	
 	
 	
