@@ -422,7 +422,7 @@
 	
 	<!-- 사원번호, 월요일(날짜), 금요일(날짜) 를 전달받아 한 주의 총 근무시간 구해오기  -->
 	<select id="getWorkTime" resultType="String"  parameterType="HashMap">
-		select SUM((overtime + worktime)) as time
+		select nvl(SUM((overtime + worktime)),0) as time
 		from tbl_commute
 		where fk_empno = #{empno}
 		and start_work_time between #{start_date} and #{end_date}

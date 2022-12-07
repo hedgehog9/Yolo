@@ -1112,19 +1112,14 @@
 				  $("div#div_workTime").text(t+"시간"+m+"분");
 				  
 				  <%-- 근무시간 progressBar 시작  --%>
-					let bar = new ProgressBar.Circle(progressBar, {
-						color: '#FFEA82',
-						trailColor: '#eee',
-						trailWidth: 1,
-						duration: 1400,
-						easing: 'bounce',
-						strokeWidth: 15,
-						from: {color: '#FFEA82', a:0},
-						to: {color: '#ED6A5A', a:1},
-						// Set default step function for all animate calls
-						step: function(state, circle) {
-							circle.path.setAttribute('stroke', state.color);	
-						}
+				  var bar = new ProgressBar.Circle(progressBar, {
+					  strokeWidth: 15,
+					  easing: 'easeInOut',
+					  duration: 1000,
+					  color: '#00C6c3',
+					  trailColor: '#ebecee',
+					  trailWidth: 0,
+					  svgStyle: null
 					});
 					
 					bar.animate(time/2400);  // progress bar 퍼센트 0.0 ~ 1.0

@@ -351,8 +351,8 @@ public class EmployeeController {
 		
 		String time = dao.getWorkTime(workTimeMap);
 
-		System.out.println("근무시간 Map" + workTimeMap);
-		System.out.println("확인용 time" + time);
+//		System.out.println("근무시간 Map" + workTimeMap);
+//		System.out.println("확인용 time" + time);
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("time", time);
