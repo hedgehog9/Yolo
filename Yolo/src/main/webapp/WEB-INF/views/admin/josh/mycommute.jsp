@@ -67,7 +67,7 @@
         getCurrentWeek();
         
         let plus_worktime = "${requestScope.plus_worktime}";
-        let hour = Math.floor((plus_worktime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let hour = Math.floor((plus_worktime/60));
         
         $("span#plus_worktime").text(hour+"시간");
         
@@ -129,8 +129,6 @@
             "maxDate": today
         }, function(start, end, label) {
         			let html = "";
-        			plus_worktime = 0;
-        			hour = 0;
         	
                 start = new Date(start.format('YYYY-MM-DD'))
                 const sunday = start.getTime() - 86400000 * start.getDay();
@@ -158,6 +156,9 @@
                 			  "fk_empno":'${sessionScope.loginuser.empno}'},
                 		dataType:"JSON",
                 		success:function(json){
+                			plus_worktime = 0;
+                			let hour = 0;
+                			let minute = 0;
                 			
                 			if(json.length > 0) {
                 				
@@ -165,22 +166,32 @@
 	                					
 	            					let worktime = item.worktime;
 	            					let overtime = item.overtime;
+	            					plus_worktime += Number(worktime);
+	            					plus_worktime += Number(overtime);
 	            					
 	            					if(worktime == 0) {
 	            						worktime = worktime+" 시간" 
 	            					}
 	            					else {
-	            						plus_worktime += worktime.substring(0,1)*3600000;
-	            						plus_worktime += worktime.substring(4,6)*60000;
-	            						
+	            						hour = worktime/60;
+	            						minute = worktime%60;
+	            						worktime = hour+"시간 "+minute+"분"
 	            					}
 	            					
 	            					if(overtime == 0) {
 	            						overtime = overtime+" 시간" 
 	            					}
+	            					else {
+	            						hour = overtime/60;
+	            						minute = overtime%60;
+	            						overtime = hour+"시간 "+minute+"분"
+	            					}
 	            					
 	            					if(item.start_work_time == 'X') {
-	            						
+	            						item.start_work_time = "<i class='fas fa-times'></i>";
+	            					}
+	            					if(item.end_work_time == 'X') {
+	            						item.end_work_time = "<i class='fas fa-times'></i>";
 	            					}
 	            					
 	            					html += "<tr>"+
@@ -194,7 +205,8 @@
                 				
                 				$("tbody#schedule-data").html(html)
                 				
-                				hour = Math.floor((plus_worktime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                				hour = Math.floor((plus_worktime/60));
+							
 							$("span#plus_worktime").text(hour+"시간");
 						    bar.animate(hour/40);
                 			}
@@ -209,64 +221,8 @@
 
             $("span#today-btn").click(function() { // '오늘' 버튼을 클릭할시
 
-            		let html = "";
-            		plus_worktime = 0;
-        			hour = 0;
-            	
-                getCurrentWeek();
-                $("input#daterange").val(today.toISOString().slice(0, 10))
-                // 여기서 ajax 시작
-                const start = $("span#startdate").text();
-        		    const end = $("span#enddate").text().substring(2);
-        		    
-                $.ajax({
-                		url:"<%=ctxPath%>/commute/ajaxMycommute.yolo",
-                		data:{"startdate":start,
-                			  "enddate":end,
-                			  "fk_empno":'${sessionScope.loginuser.empno}'},
-                		dataType:"JSON",
-                		success:function(json){
-                			
-                			if(json.length > 0) {
-                				
-                				$.each(json, function(index,item){
-                					
-	            					let worktime = item.worktime;
-	            					let overtime = item.overtime;
-	            					
-	            					if(worktime == 0) {
-	            						worktime = worktime+" 시간" 
-	            					}
-	            					else {
-	            						plus_worktime += worktime.substring(0,1)*3600000;
-	            						plus_worktime += worktime.substring(4,6)*60000;
-	            						
-	            					}
-	            					
-	            					if(overtime == 0) {
-	            						overtime = overtime+" 시간" 
-	            					}
-	            					
-	            					html += "<tr>"+
-	            								"<td>"+item.dt+"</td>"+
-	            								"<td>"+item.start_work_time+"</td>"+
-	            								"<td>"+item.end_work_time+"</td>"+
-	            								"<td>"+worktime+"</td>"+
-	            								"<td>"+overtime+"</td>"+
-	            							"</tr>"
-	            				})// end of $.each ------------------------------
-                				
-                				$("tbody#schedule-data").html(html)
-                				
-                				hour = Math.floor((plus_worktime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                				$("span#plus_worktime").text(hour+"시간");
-						    bar.animate(hour/40);
-                			}
-                			
-                		}
-                		
-                })// end of ajax
-
+            		location.reload();
+            		
             });// end of $("span#today-btn").click -------------
 
             
@@ -310,7 +266,9 @@
     <nav class="top-nav border-bottom">
         <div class="category">
             <a href="#" class="h4 mr-2 text-dark font-weight-bold">나의 출퇴근</a>
-            <a href="<%= ctxPath %>/admin/commuteManagement.yolo" class="h4 mr-2 text-secondary font-weight-bold">관리</a>
+            <c:if test="${sessionScope.loginuser.empno == 9999}">
+            		<a href="<%= ctxPath %>/admin/commuteManagement.yolo" class="h4 mr-2 text-secondary font-weight-bold">관리</a>
+            </c:if>
         </div>
     </nav>
     <div id="commute-content">
@@ -334,8 +292,8 @@
                 <thead class="table-light">
                     <tr>
                         <th>날짜</th>
-                        <th class="text-center">출근시각</th>
-                        <th class="text-center">퇴근시각</th>   
+                        <th>출근시각</th>
+                        <th>퇴근시각</th>   
                         <th>근무시간</th>   
                         <th>초과근무시간</th>   
                     </tr>
@@ -345,16 +303,16 @@
                 			<tr>
 	                         <td>${commute.dt}</td>
 	                         <c:if test="${commute.start_work_time != 'X'}">
-	                         	<td class="text-center">${commute.start_work_time}</td>
+	                         	<td>${commute.start_work_time}</td>
 	                         </c:if>
 	                         <c:if test="${commute.start_work_time == 'X'}">
-	                         	<td class="text-center"><i class="fas fa-times"></i></td>
+	                         	<td><i class="fas fa-times"></i></td>
 	                         </c:if>
 	                         <c:if test="${commute.end_work_time != 'X'}">
-	                         	<td class="text-center">${commute.end_work_time}</td>
+	                         	<td>${commute.end_work_time}</td>
 	                         </c:if>
 	                         <c:if test="${commute.end_work_time == 'X'}">
-	                         	<td class="text-center"><i class="fas fa-times"></i></td>
+	                         	<td><i class="fas fa-times"></i></td>
 	                         </c:if>
 	                         <c:if test="${commute.worktime == '0'}">
 	                         	<td>${commute.worktime} 시간</td>

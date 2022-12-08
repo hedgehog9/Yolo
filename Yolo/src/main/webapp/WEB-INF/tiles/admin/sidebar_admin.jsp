@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath = request.getContextPath(); %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style type="text/css">
 
@@ -224,13 +226,13 @@
 			let endtime = distance;
 			let message = "";
 			
-			const getminute = getMinute().substring(0,2);
+			const getminute = getMinute().substring(0,2); // 현재시간을 가져오는 메소드
 			
-			console.log(start_work_time.toTimeString().split(' ')[0].substring(0,2))
+			// console.log(start_work_time.toTimeString().split(' ')[0].substring(0,2))
 			
 			let chul = start_work_time.toTimeString().split(' ')[0].substring(0,2)
 		
-			if(endtime > 18000000 && chul < 14) { 
+			if(endtime > 18000000 && chul < 14) { // 출근한지 5시간 이상이고 14시 이전에 출근하였으면 -1시간을 해준다
 				endtime = endtime - 3600000;
 				
 			}
@@ -242,28 +244,31 @@
     				minute = "0"+minute;
     	    		}
 		    
-			const worktime = hour +"시간 "+minute+"분";
+			const showWorktime = hour +"시간 "+minute+"분";
+			const worktime = Math.floor(endtime/60000);
 			
 			let overtime;
 			
 			if(endtime > 28800000) {
 				overtime = endtime - 28800000;
+				overtime = Math.floor(overtime / 60000);
 				const overtime_hour = Math.floor((endtime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 				const overtime_minute = Math.floor((endtime % (1000 * 60 * 60)) / (1000 * 60));
-				overtime = hour +"시간 "+minute+"분";
+				showOvertime = overtime_hour +"시간 "+overtime_minute+"분";
 			}
 			else {
 				overtime = 0;
 			}
 			
 			if(endtime > 18000000) { // 13시라면 1시간 휴계시간 공제
-				message = '<b style="color: blue">'+worktime+' 근무 </b><br>'+
+				message = '<b style="color: blue">'+showWorktime+' 근무 </b><br>'+
   			  			  '<small>휴게시간 1시간 공제</small>';
 			}
 			else {
-				message = '<b style="color: blue">'+worktime+' 근무 </b><br>'
+				message = '<b style="color: blue">'+showWorktime+' 근무 </b><br>'
 			}
-			
+			console.log(worktime)
+			   console.log(overtime)
 			
 			Swal.fire({
 				   title: '퇴근하시겠습니까?',
@@ -280,7 +285,7 @@
 				}).then(result => {
 				   // 만약 Promise리턴을 받으면,
 				   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-				   	  
+					   
 					  $.ajax({
 						  url:"<%= ctxPath %>/commute/commuteEnd.yolo",
 						  type:"POST",
@@ -442,11 +447,14 @@
 		<div id="sideBar">
 		
 			<div id="sideTop" class="border-bottom">
-				<div class="sideTr mt-2" style="height: 70px;" onclick="javascript:location.href='<%= ctxPath%>/user_detail.yolo'">
-					<div id="prof">길동</div>
+				<div class="sideTr mt-2" style="height: 70px;" onclick="javascript:location.href='<%= ctxPath%>/userDetail.yolo?empno=${sessionScope.loginuser.empno}'">
+					<div id="prof" style="background-color:${sessionScope.loginuser.profile_color}">
+						<c:set var="name" value="${sessionScope.loginuser.name}" />
+						${fn:substring(name,1,3) }
+					</div>
 					<div>
-						<span class="ml-2" style="display: block; padding-top: 3px;">홍길동</span>
-						<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">인사 · 관리자</span>
+						<span class="ml-2" style="display: block; padding-top: 3px;">${sessionScope.loginuser.name}</span>
+						<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">${sessionScope.loginuser.deptname} · ${sessionScope.loginuser.position}</span>
 					</div>
 				</div>
 				<div class="dropdown my-4" id="commute-div">

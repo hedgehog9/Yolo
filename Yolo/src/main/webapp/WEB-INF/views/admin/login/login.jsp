@@ -174,31 +174,26 @@ div#findPW:hover {
  	    	goContents();
 	    });
  	 	
+ 		// 이메일 입력후 엔터 입력시
+ 		$("input#email").keydown(function(e){
+ 			if (e.keyCode == 13) {
+ 				$("input#pwd").focus();
+ 			  }
+ 		});
+ 		
+ 		// 비밀번호 입력 후 엔터 입력시 로그인
+ 		$(document).on("keydown","input#pwd",function(e){
+ 			if (e.keyCode == 13) {
+ 				func_login();
+ 			}
+ 		});
  	 	
  	 	// 로그인 버튼 클릭시 
  	 	$(document).on("click","button#btn_login",function(){
  	 		
  	 		console.log("로그인 버튼 클릭됨");
  	 		
- 	 		const email = $("input#email").val(); // 입력받은 아이디 
- 	 		const pwd = $("input#pwd").val(); // 입력받은 비밀번호
- 	 		
- 	 		if(email.trim() == ""){
- 	 			toastr.error('아이디를 입력하세요.');
- 	 			$("input#email").focus();
- 	 			return false;
- 	 		}
- 	 		
- 	 		if(pwd.trim() == ""){
- 	 			toastr.error('비밀번호를 입력하세요.');
- 	 			$("input#pwd").focus();
- 	 			return false;
- 	 		}
- 	 		
  	 		func_login();
- 	 		
-				 		
- 	 		
  	 		
  	 		<%-- 
  	 		const frm = document.loginFrm;
@@ -227,8 +222,20 @@ div#findPW:hover {
 	
  	function func_login(){
  		
- 		const email = $("input#email").val(); // 입력받은 아이디 
+		const email = $("input#email").val(); // 입력받은 아이디 
  		const pwd = $("input#pwd").val(); // 입력받은 비밀번호
+ 		
+ 		if(email.trim() == ""){
+ 			toastr.error('아이디를 입력하세요.');
+ 			$("input#email").focus();
+ 			return false;
+ 		}
+ 		
+ 		if(pwd.trim() == ""){
+ 			toastr.error('비밀번호를 입력하세요.');
+ 			$("input#pwd").focus();
+ 			return false;
+ 		}
  		
  		$.ajax({
 			  url : "<%= request.getContextPath()%>/loginContinue.yolo",
@@ -243,7 +250,6 @@ div#findPW:hover {
 				  }
 				  else{ // 아이디 비밀번호가 일치하지 않는 경우 
 					  toastr.error('아이디 또는 비밀번호가 틀립니다.');
-					  $("input#email").val("");	
 					  $("input#pwd").val("");
 					  $("input#email").focus();
 				  }// end of if(result){}----------------------------------
@@ -270,7 +276,7 @@ div#findPW:hover {
 					  html += 
 						"<div class='borderPW' id='text'>"+
 							"<span class='icon'><i class='bi bi-key'></i></span>"+
-						 	"<input placeholder='비밀번호' id='pwd' name='pwd' class='search'/>"+
+						 	"<input placeholder='비밀번호' type='password' id='pwd' name='pwd' class='search'/>"+
 						"</div>"+
 						"<div style='margin-top: 20px;'>"+
 							"<button id='btn_login' type='button' class='headerBtn'>"+

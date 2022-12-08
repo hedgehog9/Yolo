@@ -1,6 +1,6 @@
 package com.yolo.hr.login.service;
 
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,5 +20,5 @@ public class LoginService implements InterLoginServcie {
 		EmployeeVO loginuser = dao.checkLogin(loginMap);
 		return loginuser;
 	}
-
+	
 }

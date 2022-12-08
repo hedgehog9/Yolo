@@ -5,12 +5,8 @@
 	String ctxPath = request.getContextPath();
 %>
 
-<script>
-
-
-</script>
-
 <style>
+
 div#peopleContent {
 	margin-right: 10px;
 }
@@ -61,7 +57,7 @@ tr {
 	width: 30px;
 	height: 30px;
 	border-radius: 40%;
-	background-color: #239afe;
+	/* background-color: #239afe; */
 	color: white;
 	text-align: center;
 	padding-top: 6px;
@@ -99,11 +95,7 @@ div#search_buttons {
 	display: flex;
 	justify-content: end;
 	border-bottom: solid 1px #d9d9d9;
-	padding: 20px;
-}
-
-button.btn_search {
-	margin-top: 15px;
+	padding: 10px 20px;
 }
 
 button.btn_search:hover {
@@ -114,7 +106,6 @@ div#div_toggle_buttons {
 	background-color: #ebebeb;
 	padding: 3px;
 	border-radius: 5px;
-	margin-top: 15px;
 }
 
 button.btn_view_style:focus {
@@ -181,20 +172,21 @@ div.div_empInfo:hover {
 	vertical-align: middle;
 }
 
-<%--
-조직도 상단 조직도 펼치기, 수정 버튼 css --%> button.org_btn:hover {
+<%-- 조직도 상단 조직도 펼치기, 수정 버튼 css --%> 
+button.org_btn:hover {
 	background-color: #ebebeb;
 }
 
 <%--
-조직도에 버튼 오른쪽 끝으로 정렬 --%> div#org_buttons {
+조직도에 버튼 오른쪽 끝으로 정렬 --%> 
+div#org_buttons {
 	display: flex;
 	justify-content: flex-end;
 }
 
 <%--
-회원 가입 모달 css 시작  --%> <%-- 구성원 초대하기 버튼 css --%> button#regist_member_btn
-	{
+회원 가입 모달 css 시작  --%> <%-- 구성원 초대하기 버튼 css --%> 
+button#regist_member_btn {
 	height: 50px;
 	width: 100%;
 	border-radius: 10px;
@@ -278,29 +270,139 @@ th,td{
 
 <%-- 검색태그 div css --%>
 div#div_searchTag{
-	border: solid 1px gray;
-	
-	padding: 40px 16px;
+
+	border-bottom: solid 1px #d9d9d9;
+	padding: 10px 16px;
 	display: flex;
 	justify-content: space-between;
 	
 }
+
+div#serchTag_content{
+	display: flex;
+    align-items: center;
+}
+
 <%-- 필터초기화 버튼 css --%>
 button.filter_clear{
-	border: solid 1px #d9d9d9;
+	color:#3C4651;
+	font-weight:700;
+	font-size:13px;
+	background-color: #ebebeb;
 }
 <%-- 필터 추가 버튼 css --%>
 button#add_searchTag{
 	border: solid 1px #d9d9d9;
-	padding: 0;
+	padding: 0 5px 0 0 ;
+    color: #9e9e9e;
 }
+
+span#result_cnt{
+	margin-right:10px;
+}
+
+<%-- dropdown level 2 css (검색조건 필터) --%>
+.dropdown-menu li {
+position: relative;
+}
+.dropdown-menu .dropdown-submenu {
+display: none;
+position: absolute;
+left: 100%;
+top: -7px;
+}
+.dropdown-menu .dropdown-submenu-left {
+right: 100%;
+left: auto;
+}
+.dropdown-menu > li:hover > .dropdown-submenu {
+display: block;
+}
+
+<%-- 검색 필터 span 태그 css --%>
+span.span_tag{
+    border : solid 1px #d9d9d9;
+    padding: 3px;
+    border-radius: 5px;
+    color: #9e9e9e;
+    margin-right: 5px;
+}
+button.closeTag{
+	background-color: transparent;
+    border: none;
+}
+
+
+ul.ul_pagebar{
+	display: flex;
+	align-items: baseline;
+	padding: 0;
+	justify-content: center;
+}
+
+
+li.li_pagebar{
+	display: inline-block;
+    padding-top: 9px;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-weight: 700;
+}
+
+li.li_pagebar > a{
+	text-decoration: none;
+	font-size: 14px;
+	color:#2ecc71;
+}
+
+li.li_currentpage{
+	background-color: #2ecc71;
+    color: white;
+    font-weight: 700;
+
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 9px;
+}
+
+
+.dropdown-toggle::after {
+    display: none;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+}
+
 
 
 </style>
 
 <script>
 
+let currentShowPageNo = 1;
+arr_position = [];
+arr_dept = [];
+arr_status = [];
+
 	$(document).ready(function(){
+		
+		makeCommentPageBar(currentShowPageNo);
+		
+		<%-- bootstrap 툴팁 --%>
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip();
+		});
+		<%-- bootstrap 드롭다운 multi level --%>
+		$('.dropdown-toggle').dropdown();
 		
 		<%-- ===== 달력 하나만 출력 시작 =====  --%>
 		$("input.daterange").daterangepicker({
@@ -342,10 +444,6 @@ button#add_searchTag{
         });
 		<%-- ===== 달력 하나만 출력 끝 =====  --%>
 		
-		<%-- bootstrap 툴팁 --%>
-		$(function () {
-			$('[data-toggle="tooltip"]').tooltip()
-		});
 		
 		// 테이블 형식 또는 리스트 형식 출력 버튼 클릭시 버튼 css 변경 
 		$(document).on("click","button.btn_view_style",function(){
@@ -357,7 +455,6 @@ button#add_searchTag{
 		$(document).on("click","button#btn_search",function(){
 			$("div#div_search").css("display","block");	
 			$("button#btn_search").addClass("hidden");
-			
 		});
 		// 검색 div 이외 영역 클릭시 값이 비어있는 경우 div 숨기기
 		$('html').click(function(e) {   
@@ -367,6 +464,11 @@ button#add_searchTag{
 				$("button#btn_search").removeClass("hidden");
 			}
 		});
+		// 검색버튼에서 검색어 입력시 
+		$(document).on("keyup","input#searchWord",function(){
+			viewEmpList(currentShowPageNo);
+			
+		})// end of $(document).on("keyup","input#searchWord",function(){}------
 		
 		
 		
@@ -379,7 +481,6 @@ button#add_searchTag{
 		// 사원 관련 모든 정보 table 로 보여주는 버튼
 		$(document).on("click","button#view_table",function(){
 			func_getEmpList();
-			
 		});
 		
 		// 사원 관련 부서, 이름 , 직위, 아이콘만 보여주는 버튼
@@ -410,28 +511,436 @@ button#add_searchTag{
 			$("div#search_result").html(html);
 		});
 		
-		
 		// 문서 로딩 시 기본값 테이블 보기로 설정
-		$("button#view_table").trigger("click");
-		
+		// $("button#view_table").trigger("click");
+		// $("input#searchWord").trigger("keyup");
+		viewEmpList(1);
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
 		$(document).on("click","button.btn_label",function(){
-			let selected = $(this).text();
-			$(this).parent().parent().find("input").val(selected);
+			let selected = $(this).text(); // 부서, 부서장 
+			let val = $(this).find("input.input_registValue").val(); // 10, 20, 부서장
+			
+			$(this).parent().parent().find("input").val(val); // 전송을 위해 input 태그에 값 입력
+			$(this).parent().parent().find("div.regist_value").text(selected);
+			
 		});
 		
+		// 구성원 등록 모달에서 입력완료 버튼 클릭시 
+		$("button#regist_member_btn").click(function(){
+			
+			registEmployee();
+			
+			
+		}); 
+		// 구성원 등록 모달 닫기 시 
+		$('.modal').on('hidden.bs.modal', function (e) {
+			$(this).find('form')[0].reset();
+		});
 		
+		// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
+		$(document).on("click","a.dropdown-item",function(e){
+			
+			let flag = true;
+			
+			let searchWord = $(e.target).text();
+			let searchType = $(e.target).find("input").val();
+			
+			if(searchType == undefined){
+				return;
+			}
+			
+			$("span.span_tag").each(function(index,item){
+				let val = $(this).text();
+				if(searchType == val.substr(-2) && searchWord == val.substr(0,val.indexOf("|"))){
+					flag = false;
+					return;
+				}
+			})
+			
+			if(flag){
+				$("button#add_searchTag").parent().find("span#span_searchTag").prepend("<span class='span_tag'>"+searchWord+"|<span style='color:#3C4651;'>"+searchType+"</span><button class='closeTag'><i style='color:#9e9e9e; font-size:14px;' class='fas fa-times'></i></button></span>");
+
+				switch (searchType)
+				  {
+				    case "직위" :    
+				    	arr_position.push(searchWord);
+				      break;     
+
+				    case "부서" :    
+				    	arr_dept.push(searchWord);
+				      break;  
+				      
+				    case "상태" :    
+				    	arr_status.push(searchWord);
+				      break;   
+				  }
+			  	
+			}// end of if(flag){}-----------------------------------------
+			
+			viewEmpList(currentShowPageNo);
+			
+		});
+		
+		// 검색태그에 있는 닫기 버튼 클릭시(필터 삭제시 )
+		$(document).on("click","button.closeTag",function(e){
+			let searchWord = $(this).parent().text();
+			searchWord = searchWord.substr(0,searchWord.indexOf("|"));
+			
+			let searchType =  $(this).parent().text();
+			searchType = searchType.substr(-2);
+			
+			switch(searchType) {
+			    case "직위" :
+			    	arr_position.splice(arr_position.indexOf(searchWord),1);
+					// console.log(arr_position);
+			      break;     
+
+			    case "부서" :    
+			    	arr_dept.splice(arr_dept.indexOf(searchWord),1);
+					// console.log(arr_dept);
+			      break;  
+			      
+			    case "상태" :    
+			    	arr_status.splice(arr_status.indexOf(searchWord),1);
+					// console.log(arr_status);
+			      break;   
+			  }
+			
+			$(this).parent().remove();
+			
+			viewEmpList(currentShowPageNo);
+		});
+		
+		// 필터 초기화 버튼 클릭시 
+		$(document).on("click","button#filter_clear",function(){
+			$("span#span_searchTag").empty();
+			arr_position.length = 0;
+			arr_dept.length = 0;
+			arr_status.length = 0;
+			
+			<%-- 
+			console.log(arr_position);
+			console.log(arr_dept);
+			console.log(arr_status);
+			--%>
+			
+			viewEmpList(currentShowPageNo);
+			
+		})// end of "click","buton.filter_clear"------------------------------------
+		
+		// 구성원 추가하기 버튼 클릭시 
+		$(document).on("click","button#registMember",function(){
+			getDeptNameModal();
+		})// end of $(document).on("click","button#registMember",function(){}-----------
 		
 		
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
-	// ajax 통신방식으로 사원 조회하는 메소드		
-	function func_getEmpInfo(){ <%-- 파라미터로 사원 번호 전달 받기 --%>
-	 	<%-- 특정 사원번호 전달 --%>
-		location.href = "<%=ctxPath%>/user_detail.yolo" ;
+			
+			
+	// 검색 조건 필터를 위해 상위부서 이름 조회하는 메소드
+	function getDeptName(){
+		
+		let html = "";
+		
+		$.ajax({
+			 // 부서 이름 구해오기 
+			  url : "<%= ctxPath%>/getDeptList.yolo",
+			  dataType : "JSON",
+			  success : function(json){
+				  let html ='';
+				  $.each(json,function(index,dept){
+					  html += '<li id=li_'+dept.deptno+'><a class="dropdown-item" href="javascript:void(0);" onmouseover="getTeam('+dept.deptno+');"><input type="hidden" value="부서" />'+dept.deptname+'</a></li>'
+					  
+			    });// end of $.each(json,function(index,emp){}----------------------------
+			    	
+				$("ul#ul_dept").html(html);
+				
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		
+		}); // end of ajax()----------------------------------------------------------------------
+		
+	}// end of function getDeptName(){}--------------------------------------		
+			
+	// 부서번호를 전달받아 팀 구해오기 
+	function getTeam(deptno){
+		 $.ajax({
+			  url : "<%=ctxPath%>/getTeamList.yolo",
+			  data:{"deptno":deptno},
+			  dataType : "JSON",
+			  success : function(json2){
+				  let html ='<ul class="dropdown-menu dropdown-submenu">';
+				  
+				  $.each(json2,function(index,team){
+				  		html += '<li><a class="dropdown-item" href="#"><input type="hidden" value="부서" />'+team.deptname+'</a></li>';
+			    	});// end of $.each(json,function(index,emp){}----------------------------
+			      html += '</ul>';
+			      
+			      $("li#li_"+deptno).append(html);
+			      
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of ajax()----------------------------------------------------------------------
 	}
 	
+	// ajax 통신방식으로 사원 조회하는 메소드		
+	function func_getEmpInfo(empno){ <%-- 파라미터로 사원 번호 전달 받기 --%>
+	 	<%-- 특정 사원번호 전달 --%>
+		location.href = "<%=ctxPath%>/userDetail.yolo?empno="+empno;
+	}
+	
+	
+	// 사원 목록 페이징바 만들기 
+	function makeCommentPageBar(currentShowPageNo){
+		<%-- === 원글에 대한 댓글의 총 페이지수(totalPage)를 알아야 한다. === --%>
+		
+		let keyword = $("input#searchWord").val();
+		
+		$.ajax({
+			url:"<%=request.getContextPath()%>/getTotalPage.yolo",
+			data:{"sizePerPage":"10"
+				 ,"keyword":keyword
+				 ,"arr_position":arr_position
+				 ,"arr_dept":arr_dept
+				 ,"arr_status":arr_status},
+			type:"GET",
+			dataType:"JSON", 
+			success:function(json){
+				// json ==>  {"totalPage":4} 또는 {"totalPage":0}
+				if(json.totalPage > 0){// 댓글이 있는 경우 
+					
+					const totalPage = json.totalPage;
+					
+					const blockSize = 10;
+					
+					let loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize)] 까지만 증가하는 용도이다.
+			        
+			        if( typeof currentShowPageNo == "string"){ // 마우스를 클릭해서 들어오는경우는 보고있는 페이지 번호가 string 타입으로 들어오므로 정수형으로 바꿔줘야 한다.
+			        	currentShowPageNo = Number(currentShowPageNo);
+			        }
+			        
+					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
+					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
+					
+					let pageBarHTML = "<ul class='ul_pagebar' style='width:500px; list-style:none; margin:0 auto;'>";
+					
+					// ==== [맨처음] [이전] 만들기 === // 
+					if(pageNo != 1 ) {
+						pageBarHTML +="<li class='li_pagebar' style='display:inline-block;'><a href='javascript:viewEmpList(\"1\")' >[맨처음]</a></li>";
+						pageBarHTML +="<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:viewEmpList(\""+(pageNo-1)+"\")' >[이전]</a></li>";
+					}
+					while( !(loop > blockSize || pageNo > totalPage ) ) {
+						
+						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
+							pageBarHTML +="<li class='li_currentpage'>"+pageNo+"</li>";
+						}
+						else {
+							pageBarHTML +="<li class='li_pagebar'><a href='javascript:viewEmpList(\""+pageNo+"\")' >"+pageNo+"</a></li>";
+						}
+						loop++;
+						pageNo++;
+					}// end of while()------------------------
+					
+					
+					// ==== [다음] [마지막] 만들기 === //
+					if(pageNo <= totalPage) {
+						pageBarHTML +="<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:viewEmpList(\""+pageNo+"\")' >[다음]</a></li>";
+						pageBarHTML +="<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:viewEmpList(\""+totalPage+"\")' >[마지막]</a></li>";
+					}
+					
+					pageBarHTML +="</ul>";
+				
+					$("div#pageBar").html(pageBarHTML);
+				}// end of if(json.totalPage > 0){}----------------------------------
+				
+			},
+			error: function(request, status, error){
+	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        }
+			
+		});
+		
+	}// end of function makeCommentPageBar(currentShowPageNo){}-----------------------
+	
+	// 페이징 처리된 사원 출력 
+	function viewEmpList(currentShowPageNo){
+		
+		let keyword = $("input#searchWord").val();
+		
+		$.ajax({
+			url:"<%=request.getContextPath()%>/empListPaging.yolo",
+			data:{"currentShowPageNo":currentShowPageNo
+				 ,"keyword":keyword
+				 ,"arr_position":arr_position
+				 ,"arr_dept":arr_dept
+				 ,"arr_status":arr_status},
+			dataType:"JSON",
+			success:function(json){
+				
+				$("div#search_result").empty();
+				  let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
+						+'<thead>'
+							+'<tr>'
+								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
+								+'<th colspan=6>기본 정보</th>'
+								+'<th colspan=2>인사 정보</th>'
+								+'<th colspan=3>개인 정보</th>'
+							+'</tr>'
+							+'<tr>'
+								+'<th style="width:5%">상태</th>'
+								+'<th class="th_50">사번</th>'
+								+'<th style="width:7%">입사일</th>'
+								+'<th style="width:7%">퇴직일</th>'
+								+'<th style="width:7%">근속기간</th>'
+								+'<th class="th_100">근무일수</th>'
+								
+								+'<th class="th_50">부서</th>'
+								+'<th class="th_50">직위</th>'
+								
+								+'<th class="th_150">이메일</th>'
+								+'<th style="width:5%">성별</th>'
+								+'<th class="th_150">휴대전화</th>'
+								
+							+'</tr>'
+						+'</thead>'
+						+'<tbody>';
+				  $.each(json,function(index,emp){
+					  $("span#result_cnt").text(emp.totalCount+" 명");
+					  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
+								+'<td class="th_150">'
+									+'<div class="profile">'
+										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
+										+'<div style="padding-top:3px;">'+emp.name+'</div>'
+									+'</div>'
+								+'</td>'
+								+'<td>'+emp.status+'</td>'
+								+'<td>'+emp.empno+'</td>'
+								+'<td>'+emp.hireDate+'</td>'
+								+'<td>'+emp.retireDate+'</td>'
+								+'<td>'+emp.continuousServiceMonth+'</td>'
+								+'<td>'+emp.workingDays+'</td>'
+				
+								+'<td>'+emp.deptname+'</td>'
+								+'<td>'+emp.position+'</td>'
+				
+								+'<td>'+emp.email+'</td>'
+								+'<td>'+isEmpty(emp.gender)+'</td>'
+								+'<td>'+isEmpty(emp.mobile)+'</td>'
+							+'</tr>'
+							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
+						
+				    });// end of $.each(json,function(index,emp){}----------------------------
+					
+				    html +='</tbody>'   	
+						 +'</table>';
+					$("div#search_result").html(html);
+				
+				// 페이지바 함수 호출
+				makeCommentPageBar(currentShowPageNo);
+			},
+			error: function(request, status, error){
+	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        }
+		
+		}); // end of $.ajax({})---------------------------------------
+		
+	}// end of function viewEmpList(currentShowPageNo){}----------------------------
+		
+	//null값 체크 
+	function isEmpty(value){
+	    if(value == null || value.length === 0) {
+	           return "";
+	     } else{
+	            return value;
+	     }
+	}	
+	
+	<%--
+	// 사원 목록 조회하는 메소드 
+	function func_getEmpList(){
+		let keyword = $("input#searchWord").val();
+		$.ajax({
+			  // 검색어가 있는 사원 조회 
+			  url : "<%= ctxPath%>/getEmpList.yolo",
+			  data:{"keyword":keyword
+				   ,"currentShowPageNo":currentShowPageNo},
+			  dataType : "JSON",
+			  success : function(json){
+				  
+				  $("div#search_result").empty();
+				  let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
+						+'<thead>'
+							+'<tr>'
+								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
+								+'<th colspan=6>기본 정보</th>'
+								+'<th colspan=2>인사 정보</th>'
+								+'<th colspan=3>개인 정보</th>'
+							+'</tr>'
+							+'<tr>'
+								+'<th style="width:5%">상태</th>'
+								+'<th class="th_50">사번</th>'
+								+'<th style="width:7%">입사일</th>'
+								+'<th style="width:7%">퇴직일</th>'
+								+'<th style="width:7%">근속기간</th>'
+								+'<th class="th_100">근무일수</th>'
+								
+								+'<th class="th_50">부서</th>'
+								+'<th class="th_50">직위</th>'
+								
+								+'<th class="th_150">이메일</th>'
+								+'<th style="width:5%">성별</th>'
+								+'<th class="th_150">휴대전화</th>'
+								
+							+'</tr>'
+						+'</thead>'
+						+'<tbody>';
+				  $.each(json,function(index,emp){
+					  $("span#result_cnt").text(emp.totalCount+" 명");
+					  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
+								+'<td class="th_150">'
+									+'<div class="profile">'
+										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
+										+'<div style="padding-top:3px;">'+emp.name+'</div>'
+									+'</div>'
+								+'</td>'
+								+'<td>'+emp.status+'</td>'
+								+'<td>'+emp.empno+'</td>'
+								+'<td>'+emp.hireDate+'</td>'
+								+'<td>'+emp.retireDate+'</td>'
+								+'<td>'+emp.continuousServiceMonth+'</td>'
+								+'<td>'+emp.workingDays+'</td>'
+				
+								+'<td>'+emp.deptname+'</td>'
+								+'<td>'+emp.position+'</td>'
+				
+								+'<td>'+emp.email+'</td>'
+								+'<td>'+emp.gender+'</td>'
+								+'<td>'+emp.mobile+'</td>'
+							+'</tr>'
+						
+				    });// end of $.each(json,function(index,emp){}----------------------------
+					
+				    html +='</tbody>'   	
+					+'</table>';
+					$("div#search_result").html(html);
+					  
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		
+		}); // end of ajax()----------------------------------------------------------------------
+		
+	}// end of function func_getEmpList(){}------------------------------
+	--%>
+	
+	<%--
 	// 전체 사원을 조회해오는 메소드 
 	function func_getEmpList(){
 		
@@ -469,14 +978,14 @@ button#add_searchTag{
 			  // type : "POST",
 			  dataType : "JSON",
 			  success : function(json){
-				  <%-- ========================== 반복해서 출력할 부분 시작 ========== --%>
+			 
 				  
 				  $.each(json,function(index,emp){
 					  
-				  html += '<tr onclick="func_getEmpInfo();">'  
+				  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
 							+'<td class="th_150">'
 								+'<div class="profile">'
-									+'<div class="profile_icon"><div>길동</div></div>'
+									+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
 									+'<div style="padding-top:3px;">'+emp.name+'</div>'
 								+'</div>'
 							+'</td>'
@@ -484,17 +993,16 @@ button#add_searchTag{
 							+'<td>'+emp.empno+'</td>'
 							+'<td>'+emp.hireDate+'</td>'
 							+'<td>'+emp.retireDate+'</td>'
-							+'<td>112개월</td>'
-							+'<td>15042일</td>'
+							+'<td>'+emp.continuousServiceMonth+'</td>'
+							+'<td>'+emp.workingDays+'</td>'
 			
-							+'<td>'+emp.dept+'</td>'
+							+'<td>'+emp.deptname+'</td>'
 							+'<td>'+emp.position+'</td>'
 			
 							+'<td>'+emp.email+'</td>'
 							+'<td>'+emp.gender+'</td>'
 							+'<td>'+emp.mobile+'</td>'
 						+'</tr>'
-						<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
 					
 			    });// end of $.each(json,function(index,emp){}----------------------------
 				
@@ -509,7 +1017,109 @@ button#add_searchTag{
 		  }); // end of ajax{}----------------------------------------------
 		
 	}// end of function func_getEmpList(){}--------------------------------------------
-
+	--%>
+	
+	
+	
+	// 신규 사원 등록하는 메소드 
+	function registEmployee(){
+		
+		let regist_flag = true;
+		
+		let name = $("input[name='name']").val();
+		let email = $("input[name='email']").val();
+		let hire_date = $("input[name='hire_date']").val();
+		let salary = $("input[name='salary']").val();
+		let department = $("input[name='department']").val();
+		let team = $("input[name='team']").val();
+		let position = $("input[name='position']").val();
+		
+		
+		if(name.trim() == "" || email.trim() == "" || hire_date.trim()==""|| salary.trim() == "" ||department.trim() == "" || position.trim() == "" ){
+			regist_flag = false;
+			alert("필수 정보를 입력해주세요");
+		}
+		
+		let formValues = $("form[name=regist_frm]").serialize() ;
+		
+		if(regist_flag){ // 값이 모두 입력된 경우 
+			$.ajax({
+				  url : "<%= ctxPath%>/registEmployee.yolo",
+				  data : formValues,    
+				  type : "POST",
+				  dataType : "JSON",
+				  success : function(json){
+					  
+					  if(json.duplicateEmail == 1){
+						  alert('중복된 이메일입니다.');
+						  return;
+					  }
+					  else{
+						  if(json.registResult == 1){
+							  alert('가입 성공!');
+						  }
+					  }
+					  
+				  },
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			  }); // end of ajax{}-------------------
+	  		
+	  		}
+			
+		}
+	
+	// 부서 명, 부서번호 구해오는 메소드(모달용)
+	function getDeptNameModal(){
+		
+		let html = "";
+		
+		$.ajax({
+			 // 부서 이름 구해오기 
+			  url : "<%= ctxPath%>/getDeptList.yolo",
+			  dataType : "JSON",
+			  success : function(json){
+				  let html ='';
+				  $.each(json,function(index,dept){
+					  html += '<button class="btn_label dropdown-item" type="button" onclick="getTeamModal('+dept.deptno+')"><input class="input_registValue" type="hidden" value='+dept.deptno+'>'+dept.deptname+'</button>';
+					  
+			    });// end of $.each(json,function(index,emp){}----------------------------
+			    	
+				$("div#div_dept").html(html);
+				
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of ajax()----------------------------------------------------------------------
+	}// end of function getDeptName(){}--------------------------------------	
+	
+	
+	// 부서에 해당하는 팀 구해오는 메소드 (모달 출력용)
+	function getTeamModal(deptno){
+		 $.ajax({
+			  url : "<%=ctxPath%>/getTeamList.yolo",
+			  data:{"deptno":deptno},
+			  dataType : "JSON",
+			  success : function(json2){
+				  let html ='';
+				  $.each(json2,function(index,team){
+				  		html += '<button class="btn_label dropdown-item" type="button"><input class="input_registValue" type="hidden" value='+team.deptno+'>'+team.deptname+'</button>';
+			    	});// end of $.each(json,function(index,emp){}----------------------------
+			      
+			      $("div#div_team").html(html);
+			      
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of ajax()----------------------------------------------------------------------
+	}
+	
+	
+	
+	
 </script>
 
 <div id="peopleContent">
@@ -535,7 +1145,7 @@ button#add_searchTag{
 				<!-- Modal header -->
 				<div class="modal-header">
 					<h2>구성원 등록</h2>
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<button id="btn_close_registModal" type="button" class="close" data-dismiss="modal">&times;</button>
 				</div>
 				<!-- Modal body -->
 				<div class="modal-body">
@@ -543,18 +1153,15 @@ button#add_searchTag{
 						<div id="div_regist">
 							<div style="display: flex; justify-content: space-between;">
 								<div>
-									<div class="regitst_title">
-										이름<span style="color: red;">*</span>
+									<div class="regitst_title"> 이름<span style="color: red;">*</span>
 									</div>
-									<input name="name" class="input_modal" type="text"
-										autocomplete="off" placeholder="이름 입력" />
+									<input name="name" class="input_modal" type="text" autocomplete="off" placeholder="이름 입력" />
 								</div>
 								<div>
 									<div class="regitst_title">
 										이메일<span style="color: red;">*</span>
 									</div>
-									<input name="email" class="input_modal" type="text"
-										autocomplete="off" placeholder="이메일 입력" />
+									<input name="email" class="input_modal" type="text" autocomplete="off" placeholder="이메일 입력" />
 								</div>
 							</div>
 
@@ -563,15 +1170,14 @@ button#add_searchTag{
 								<div class="regitst_title">
 									입사일<span style="color: red;">*</span>
 								</div>
-								<input name="hire_date" type="text"
-									class="input_modal daterange" placeholder="입사일 입력"></input>
+								<input name="hire_date" type="text" class="input_modal daterange" placeholder="입사일 입력"></input>
 							</div>
 								<div>
 								<div class="regitst_title">
 									급여<span style="color: red;">*</span>
 								</div>
-								<input name="name" class="input_modal" type="text"
-									autocomplete="off" placeholder="급여 입력" />
+								<input name="salary" class="input_modal" type="text"
+									autocomplete="off" placeholder="급여 입력" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" />
 							</div>
 
 							<%-- =========== 부서 선택 =========== --%>
@@ -579,20 +1185,14 @@ button#add_searchTag{
 								<div class="regitst_title">부서 선택</div>
 								<input type="hidden" id="department" name="department" />
 
-								<button id="btn" class=" btn choice_type" type="button"
-									data-toggle="dropdown">
+								<button id="btn" class=" btn choice_type" type="button" data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">부서 선택</div>
+										<div class="regist_value">부서 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
 
-								<div class="dropdown-menu">
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-									<button class="btn_label dropdown-item" type="button">부서1</button>
-								</div>
+								<div id="div_dept" class="dropdown-menu"></div>
 							</div>
 							<%-- =========== 부서 선택 =========== --%>
 
@@ -600,23 +1200,18 @@ button#add_searchTag{
 							<%-- =========== 세부부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">세부부서 선택</div>
-								<input type="hidden" id="detail_department"
-									name="detail_department" />
+								<input type="hidden" id="team" name="team" />
 
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">세부부서 선택</div>
+										<div class="regist_value">세부부서 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
 
-								<div class="dropdown-menu">
-									<button class="btn_label dropdown-item" type="button">세부부서1</button>
-									<button class="btn_label dropdown-item" type="button">세부부서2</button>
-									<button class="btn_label dropdown-item" type="button">세부부서3</button>
-									<button class="btn_label dropdown-item" type="button">세부부서4</button>
-									<button class="btn_label dropdown-item" type="button">세부부서5</button>
+								<div id="div_team" class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button">세부부서 선택</button>
 								</div>
 							</div>
 							<%-- =========== 세부부서 선택 =========== --%>
@@ -630,17 +1225,19 @@ button#add_searchTag{
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">직위 선택</div>
+										<div class="regist_value">직위 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
 
-								<div class="dropdown-menu">
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
-									<button class="btn_label dropdown-item" type="button">직위</button>
+								<div id="div_position" class="dropdown-menu">
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="사장" />사장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="부서장" />부서장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="차장" />차장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="팀장" />팀장</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="대리" />대리</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="사원" />사원</button>
+									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="관리자" />관리자</button>
 								</div>
 							</div>
 							<%-- =========== 직위 선택 =========== --%>
@@ -648,13 +1245,13 @@ button#add_searchTag{
 							
 							<%-- =========== 직속상관 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">직속 상관</div>
-								<input type="hidden" name="position" id="position" />
+								<div class="regitst_title">직속 상관(삭제예정)</div>
+								<input type="hidden" name="managerid" id="managerid" />
 
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
-										<div id="retirement_type">직속상관 선택</div>
+										<div class="regist_value">직속상관 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
@@ -688,8 +1285,7 @@ button#add_searchTag{
 	<div id="search_buttons">
 		<%-- 검색어 입력 input 태그 --%>
 		<div id="div_search">
-			<i class="fas fa-search"></i> <input id="searchWord"
-				class="input_search" type="text" placeholder="검색" />
+			<i class="fas fa-search"></i> <input id="searchWord" class="input_search" type="text" placeholder="검색" />
 		</div>
 
 		<%-- 검색 버튼 (클릭시 input태그 출력)  --%>
@@ -719,31 +1315,55 @@ button#add_searchTag{
 	<div id="div_searchTag">
 		<div id="serchTag_content">
 			<div class="dropdown">
-				<button id="add_searchTag" data-toggle="dropdown" type="button" class="btn">
-					<i class="fas fa-plus"></i>필터 추가하기
-				</button>
+			
+			<span id="span_searchTag"></span>
 				
-				<div class="dropdown-menu">
-					<button class="btn_label dropdown-item" type="button" data-toggle="dropdown">직위</button>
-					<div class="dropdown-menu">asdf</div>
-					<button class="btn_label dropdown-item" type="button" id="btn_dept"data-toggle="dropdown">부서</button>
-					<button class="btn_label dropdown-item" type="button"id="btn_status"data-toggle="dropdown">재직상태</button>
-					<button class="btn_label dropdown-item" type="button"id="btn_status"data-toggle="dropdown">입사일</button>
-				</div>
+				<button id="add_searchTag" data-toggle="dropdown" type="button"
+					class="btn dropdown-toggle" id="dropdownMenuButton"
+					data-mdb-toggle="dropdown" aria-expanded="false">
+					<i class="fas fa-plus" style="font-size: 13px; padding: 0 5px;"></i>필터 추가하기
+				</button>
+
+				<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				<li><a class="dropdown-item" href="#">직위</a>
+					<ul class="dropdown-menu dropdown-submenu">
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>사장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>부서장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>차장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>팀장</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>대리</a></li>
+						<li><a class="dropdown-item" data-category="직위"><input type="hidden" value="직위"/>사원</a></li>
+					</ul>
+				</li>
+				<li><a class="dropdown-item" href="javascript:void(0);" onmouseover="getDeptName();">부서</a>
+					<ul id="ul_dept" class="dropdown-menu dropdown-submenu"></ul>
+				</li>
+				<li><a class="dropdown-item" href="#">재직상태 </a>
+					<ul class="dropdown-menu dropdown-submenu">
+						<li><a class="dropdown-item" href="#"><input type="hidden" value="상태" />재직</a></li>
+						<li><a class="dropdown-item" href="#"><input type="hidden" value="상태" />휴직</a></li>
+					</ul>
+				</li>
+			</ul>
 			</div>
 			
 		</div>
 		
 		<div id="div_search_result">
-			<span>n명</span>		
-			<button type="button" class="btn filter_clear" >필터초기화</button>
+			<span id="result_cnt">명</span>		
+			<button id="filter_clear" type="button" class="btn filter_clear" >필터초기화</button>
 		</div>		
 	</div>
 	<%-- 검색필터 추가 시작  --%>
 
 
+
+
 	<div id="search_result"></div>
 	<%-- end of  <div id="search_result">====== --%>
+	
+	<%-- 페이지바 출력 --%>
+	<div id="pageBar" style="width: 80%; height: 100px; margin:0 auto;" ></div>
 
 </div>
 <%-- end of peopleContiner div====== --%>

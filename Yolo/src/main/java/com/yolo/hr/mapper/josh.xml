@@ -64,7 +64,8 @@
 	
 	<update id="commuteEnd" parameterType="Map">
 		update tbl_commute set end_work_time = sysdate,
-                       		   worktime = '${worktime}'
+                       		   worktime = '${worktime}',
+                       		   overtime = '${overtime}'
 		where to_char(start_work_time,'yyyy-mm-dd') = to_char(sysdate, 'yyyy-mm-dd') 
 		      and fk_empno = '${fk_empno}'	
 	</update>
@@ -108,5 +109,74 @@
 		start with upper_deptno=1
 		connect by prior deptno = upper_deptno
 	</select>
+	
+	
+	<resultMap type="HashMap" id="selectCommuteListMap">
+		<result property="name" 				column="name" 				javaType="String"/>
+		<result property="empno" 			column="empno" 				javaType="String"/>
+		<result property="total_worktime" 	column="total_worktime" 		javaType="String"/>
+		<result property="total_overtime" 	column="total_overtime" 		javaType="String"/>
+		<result property="fk_deptno" 		column="fk_deptno" 			javaType="String"/>
+		<result property="deptname" 			column="deptname" 			javaType="String"/>
+		<result property="upper_deptname" 	column="upper_deptname" 		javaType="String"/>
+		<result property="profile_color" 	column="profile_color" 		javaType="String"/>
+	</resultMap>
+	
+	<select id="totalCommuteList" parameterType="HashMap" resultMap="selectCommuteListMap">
+		select name, empno, total_worktime, total_overtime, fk_deptno, deptname, upper_deptname, profile_color
+		from
+		(
+		select name, empno, row_number() over(order by empno desc) as rno, total_worktime, total_overtime, fk_deptno, deptname, upper_deptname, profile_color
+		from 
+		(
+		select E.name, E.empno, sum(C.worktime) AS total_worktime, 
+		       sum(C.overtime) AS total_overtime, E.fk_deptno, E.profile_color
+		from tbl_employees E join tbl_commute C
+		on E.empno = C.fk_empno
+		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
+		      <if test=' arrDept != null '>
+		      	and fk_deptno in
+		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
+					'${arrDept[i]}'
+				</foreach>
+		      </if>
+		group by E.name, E.empno, E.fk_deptno, E.profile_color
+		)A join 
+		(
+		select D.deptno, D.deptname, Z.deptname AS upper_deptname
+		from tbl_dept D
+		join tbl_dept Z
+		on D.upper_deptno = Z.deptno
+		)B
+		on A.fk_deptno = B.deptno
+		)
+		where rno between #{startRno} and #{endRno}
+	</select>
+	
+	<select id="commuteTotalPage" parameterType="HashMap" resultType="int">
+		select ceil(count(distinct(fk_empno))/10) AS totalpage
+		from tbl_employees E join tbl_commute C
+		on E.empno = C.fk_empno
+		where start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
+		<if test=' arrDept != null '>
+	      	and fk_deptno in
+	      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
+				'${arrDept[i]}'
+			</foreach>
+	      </if>
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 </mapper>

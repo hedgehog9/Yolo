@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
+import com.yolo.hr.login.model.InterLoginDAO;
 import com.yolo.hr.login.service.InterLoginServcie;
 
 @Controller
@@ -21,10 +22,12 @@ public class loginController {
 	@Autowired
 	private InterLoginServcie service; 
 	
+	@Autowired
+	private InterLoginDAO dao; 
+	
+	
 	@RequestMapping(value = "/login.yolo")
 	public String login() {
-		
-		
 		
 		return "login.login";
 	}
@@ -52,8 +55,6 @@ public class loginController {
 			HttpSession session = request.getSession();
 			session.setAttribute("loginuser", loginuser);
 			result = true;
-			
-			// System.out.println("확인용 loginuser ="+loginuser);
 			
 		}
 		JSONObject jsonObj = new JSONObject();

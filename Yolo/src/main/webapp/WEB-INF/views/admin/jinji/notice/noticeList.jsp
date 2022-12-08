@@ -6,7 +6,7 @@
 <jsp:include page="listnav.jsp" />
 
 <style type="text/css">
-	
+	 
 	/* nav 시작 */
 	
 	#cate2, #cate3 {
@@ -78,8 +78,32 @@
 			$(this).find("button").css("display","")
 		});
 		
-	});
-
+		// 모달 바깥영역 누르면 닫히는거
+		$('#myListModal_outside').on('click', function () {
+			closemyListModal();
+		});
+		
+		// 모달 닫기 x 자 누르면 닫히는거
+		$("button.close").on('click', function () {
+			closemyListModal();
+		});
+		
+	}); // end of $(document).ready(function() ------
+			
+	
+	// 모달 열기
+	function openmyListModal(){
+		$('#myListModal').addClass('active');
+	    $('#myListModal_outside').fadeIn();
+		
+	}
+	
+	// 모달 닫기
+	function closemyListModal(){
+		$('#myListModal').removeClass('active');
+	    $('#myListModal_outside').fadeOut();
+	}
+			
 </script>
 
     
@@ -89,7 +113,7 @@
 	<div class="listRow">
 		<div class="listRowInside">
 			<div id="prof" class="mt-3">전공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;" data-toggle="modal" data-target="#myListModal">
+			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
 				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
 				<span style="color: green;">[6]</span>	
@@ -108,47 +132,59 @@
 	
 	<%-- test row --%>
 	
-	<div class="listRow" data-toggle="modal" data-target="#myListModal">
+	<div class="listRow">
 		<div class="listRowInside">
-			<div id="prof" class="mt-3">김공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;">
-				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
+			<div id="prof" class="mt-3">전공지</div>
+			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
+				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
+					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
+				<span style="color: green;">[6]</span>	
 				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 인사부</span>
-				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
+				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 
+				<span class="spanBlock mt-2" style="color: gray">공지 내용 보여주는 곳입니다</span>
+				&nbsp;&nbsp;
+				<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
 			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
+			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
 			<button class="listBnt">삭제하기</button>
 		</div>
 	</div>
 	
-	<div class="listRow" data-toggle="modal" data-target="#myListModal">
+	<div class="listRow">
 		<div class="listRowInside">
-			<div id="prof" class="mt-3">김공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;">
-				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-				<span></span> <%-- 파일 첨부 파일 없는 경우 --%>
+			<div id="prof" class="mt-3">전공지</div>
+			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
+				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
+					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
+				<span style="color: green;">[6]</span>	
+				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 개발부</span>
-				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
+				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 
+				<span class="spanBlock mt-2" style="color: gray">공지 내용 보여주는 곳입니다</span>
+				&nbsp;&nbsp;
+				<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
 			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
+			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
 			<button class="listBnt">삭제하기</button>
 		</div>
 	</div>
 	
-	<div class="listRow" data-toggle="modal" data-target="#myListModal">
+	<div class="listRow">
 		<div class="listRowInside">
-			<div id="prof" class="mt-3">김공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;">
-				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-				<span></span> <%-- 파일 첨부 파일 없는 경우 --%>
+			<div id="prof" class="mt-3">전공지</div>
+			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
+				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
+					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
+				<span style="color: green;">[6]</span>	
+				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 개발부</span>
-				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
+				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 
+				<span class="spanBlock mt-2" style="color: gray">공지 내용 보여주는 곳입니다</span>
+				&nbsp;&nbsp;
+				<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
 			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
+			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
 			<button class="listBnt">삭제하기</button>
 		</div>
 	</div>
@@ -158,6 +194,7 @@
 
 <%-- 공지 수정 모달 --%>
 <%@ include file="edit/noticeEdit.jsp" %>
+
 
 <%-- 공지 상세 모달 --%>
 <%@ include file="detail/noticeDetail.jsp" %>
