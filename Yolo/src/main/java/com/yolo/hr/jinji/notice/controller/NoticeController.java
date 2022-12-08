@@ -212,7 +212,7 @@ public class NoticeController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		session.setAttribute("loginuser", loginuser);
 		
-		List<Map<String, String>> sentNoticeList = service.getSentNoticeList(loginuser.getEmpno());
+		List<Map<String, String>> sentNoticeList = service.getSentNoticeList(loginuser.getFk_deptno());
 		
 		mav.addObject("sentNoticeList", sentNoticeList);
 		mav.setViewName("jinji/notice/myNoticeList.admin"); 
