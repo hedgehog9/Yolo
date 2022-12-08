@@ -53,75 +53,6 @@ public class NoticeController {
  		return jsonArr.toString() ;
  	}
  	
- 	// 부서 사람들(부서장) 조회해오기
- 	@ResponseBody
- 	@RequestMapping(value = "/jinji/getDeptPerson.yolo", produces="text/plain;charset=UTF-8")
- 	public String getDeptPerson( HttpServletRequest request) {
- 		
- 		String deptno = request.getParameter("deptno");
- 		
- 		// 부서사람들 조회하기
- 		List<Map<String,String>> deptList = service.getDeptPersonList(deptno);
- 		
- 		JSONArray jsonArr = new JSONArray();
- 		
- 		for(Map<String,String> dept: deptList) {
- 			JSONObject jsonObj = new JSONObject();
- 			jsonObj.put("empno", dept.get("empno") );
- 			jsonObj.put("name", dept.get("name") );
- 			
- 			jsonArr.put(jsonObj);
- 		}
- 		return jsonArr.toString() ;
- 	}
- 	
- 	
- 	// 부서내 팀 사람들(사원들) 조회해오기
- 	@ResponseBody
- 	@RequestMapping(value = "/jinji/getTeamPerson.yolo", produces="text/plain;charset=UTF-8")
- 	public String getTeamPerson( HttpServletRequest request) {
- 		
- 		String deptno = request.getParameter("deptno");
- 		
- 		// 부서사람들 조회하기
- 		List<Map<String,String>> teamList = service.getTeamPerson(deptno);
- 		
- 		JSONArray jsonArr = new JSONArray();
- 		
- 		for(Map<String,String> dept: teamList) {
- 			JSONObject jsonObj = new JSONObject();
- 			jsonObj.put("empno", dept.get("empno") );
- 			jsonObj.put("name", dept.get("name") );
- 			
- 			jsonArr.put(jsonObj);
- 		}
- 		return jsonArr.toString() ;
- 	}
- 	
- 	
- 	
- 	// 해당부서 팀 구해오기
- 	@ResponseBody
- 	@RequestMapping(value = "/jinji/getTeam.yolo", produces="text/plain;charset=UTF-8")
- 	public String getTeam( HttpServletRequest request) {
- 		
- 		String deptno = request.getParameter("deptno");
- 		
- 		// 해당부서 팀 구해오기
- 		List<Map<String,String>> deptList = service.getTeam(deptno);
- 		
- 		JSONArray jsonArr = new JSONArray();
- 		
- 		for(Map<String,String> dept: deptList) {
- 			JSONObject jsonObj = new JSONObject();
- 			jsonObj.put("deptname", dept.get("deptname") );
- 			jsonObj.put("deptno", dept.get("deptno") );
- 			
- 			jsonArr.put(jsonObj);
- 		}
- 		return jsonArr.toString() ;
- 	}
-    
  	
  	// 체크된 유저 목록 가져오기
  	@ResponseBody
@@ -131,7 +62,7 @@ public class NoticeController {
  		String str_empno = request.getParameter("str_empno");
  		
  		// 해당부서 팀 구해오기
- 		List<Map<String, String>> empList = service.getChooseEmp(str_empno);
+ 		List<Map<String, String>> empList = service.getChooseDept(str_empno);
  		
  		JSONArray jsonArr = new JSONArray();
  		
@@ -212,7 +143,7 @@ public class NoticeController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		session.setAttribute("loginuser", loginuser);
 		
-		List<Map<String, String>> sentNoticeList = service.getSentNoticeList(loginuser.getFk_deptno());
+		List<Map<String, String>> sentNoticeList = service.getMyNoticeList(loginuser.getFk_deptno());
 		
 		mav.addObject("sentNoticeList", sentNoticeList);
 		mav.setViewName("jinji/notice/myNoticeList.admin"); 
