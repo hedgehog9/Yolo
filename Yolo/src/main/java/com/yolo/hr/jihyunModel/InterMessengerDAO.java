@@ -59,4 +59,7 @@ public interface InterMessengerDAO {
 	// 총 게시물 건 수 알아오기 (페이지네이션 용 - 받은)
 	int getTotalCount2(Map<String, String> paraMap);
 
+	// 메세지 발송을 위해 사람이름 알아오기
+	String getEmpName(String empno);
+
 }

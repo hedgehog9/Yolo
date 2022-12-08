@@ -287,6 +287,13 @@
 	</select>
 	
 	
+	<!-- 메세지 발송을 위해 사람이름 알아오기 -->
+	<select id="getEmpName" parameterType="String" resultType="String">
+		select name
+		from TBL_EMPLOYEES
+		where empno = #{empno}
+	</select>
+	
 	
 	
 	<!-- 소식 추가하기 -->

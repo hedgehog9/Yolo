@@ -49,8 +49,8 @@ public class JihyunController {
 		
 		// 가라 세션
 		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1050");
-		// loginuser.setEmpno("1001");
+		// loginuser.setEmpno("1050");
+		loginuser.setEmpno("1001");
 		HttpSession session = request.getSession();
 		session.setAttribute("loginuser", loginuser);
 		// 가라세션 끝
@@ -250,11 +250,15 @@ public class JihyunController {
 		
 		// 가라 세션
 		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1001");
-		// loginuser.setEmpno("1050");
+		// loginuser.setEmpno("1001");
+		loginuser.setEmpno("1050");
 		HttpSession session = request.getSession();
 		session.setAttribute("loginuser", loginuser);
 		// 가라세션 끝
+		
+		// empno 넘어오면 request 영역에 담아줘야 한다
+		String empno = request.getParameter("empno"); 
+		mav.addObject("empno", empno);
 		
 		
 		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 시작 === //
@@ -873,6 +877,17 @@ public class JihyunController {
 		msgvo.setFk_senderno(loginuser.getEmpno());
 		
 		service.deleverMessenger(deliverMsgvo, msgvo); // 메신저 전달하기
+		
+	}
+	
+	
+	// 메신저 발송을 위해서 이름 알아오기
+	@ResponseBody
+	@RequestMapping(value = "/messenger/getEmpName.yolo", produces="text/plain;charset=UTF-8")
+	public String getEmpName(HttpServletRequest request) {
+		
+		String empno = request.getParameter("empno");
+		return service.getEmpName(empno); // 메세지 발송을 위해 사람이름 알아오기
 		
 	}
 	

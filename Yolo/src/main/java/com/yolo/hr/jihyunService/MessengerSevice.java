@@ -213,4 +213,12 @@ public class MessengerSevice implements InterMessengerService {
 		return totalCount;
 	}
 
+	
+	// 메세지 발송을 위해 사람이름 알아오기
+	@Override
+	public String getEmpName(String empno) {
+		String name = mdao.getEmpName(empno);
+		return name;
+	}
+
 }

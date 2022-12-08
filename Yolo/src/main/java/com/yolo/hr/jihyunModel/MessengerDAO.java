@@ -160,6 +160,14 @@ public class MessengerDAO implements InterMessengerDAO {
 	public int getTotalCount2(Map<String, String> paraMap) {
 		int totalCount = sqlsession.selectOne("kimjh.getTotalCount2", paraMap);
 		return totalCount;
+	}
+
+
+	// 메세지 발송을 위해 사람이름 알아오기
+	@Override
+	public String getEmpName(String empno) {
+		String name = sqlsession.selectOne("kimjh.getEmpName", empno);
+		return name;
 	} 
 
 }

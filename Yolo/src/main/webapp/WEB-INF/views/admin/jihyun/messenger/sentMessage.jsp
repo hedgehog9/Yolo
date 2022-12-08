@@ -143,7 +143,7 @@
 		// 검색시 검색조건 및 검색어 값 유지시키기
 		// paraMap 있는지 없는지 까바야징
 		if( ${ not empty requestScope.searchWord} ){
-			$("input#searchWord").val("${requestScope.searchWord}");
+			$("input#searchWord").val("${requestScope.searchWord}").focus();
 		}
 		
 		// 검색어에 엔터를 햇을경우

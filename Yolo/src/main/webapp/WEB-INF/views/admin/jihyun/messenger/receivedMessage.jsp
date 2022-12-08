@@ -158,6 +158,25 @@
 									$(this).find("button").css("display","")
 								});
 		
+		// 사원 정보에서 empno 받으면 바로 메신저 전송으로 연결하기
+		if( ${ not empty requestScope.empno }){
+			const empno = '${requestScope.empno}';
+			$.ajax({
+		    	url : "<%=ctxPath%>/messenger/getEmpName.yolo",
+		    	data:{"empno": empno},
+	    		dataType: "TEXT",
+	    		async:true,
+				success: function(text){ 
+					$('div.sendMail button#dropdownMenuButton').find('span').text(text);
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+			});// end of ajax
+			
+			$('div.sendMail input[name="fk_recipientno"]').val(empno);
+			$(".sendMail").modal('show');
+		}
 		
 		// 검색시 검색조건 및 검색어 값 유지시키기
 		// paraMap 있는지 없는지 까바야징
