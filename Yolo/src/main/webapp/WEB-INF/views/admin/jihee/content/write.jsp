@@ -97,20 +97,24 @@ div#contents {
 	
 	table#mytable{
     border: 1px solid #ccced0;
+   
 
    /*  border-style: hidden; */
     
     
    /*  box-shadow: 1 1 1 1px #ccced0; */
     width: 400px;
-    height : 500px; 
+   /*  height : 500px;   */
 	font-size: 15pt;
+	
     
   }
   
-  td {
+  td.td-1 {
   	/* padding :10px 15px; */ /* 이거만 살리기 */
   	/* border : 1px solid; */
+  	padding-top: 14.5px;
+  	padding-bottom: 14.5px;
   }
   
   td.td-2 {
@@ -119,7 +123,7 @@ div#contents {
    
   span#status2{
 	width: 60px; 
-	height: 30px; 
+     height: 30px; 
 	background-color: #c1f0c1;
 	border-radius: 0.5rem;
 	font-weight : bold;
@@ -145,13 +149,20 @@ textarea:focus {
 }
 
 
-div#attachArea {
-	width: 80%;
-	margin: 0 10% 15px 5px;
-}
+
+	
+	textarea::placeholder {
+    color: #999999;
+    font-weight: normal;
+	}
 	
 	
-.filebox .upload-name {
+	div#attachArea {
+		width: 80%;
+		margin: 0 10% 15px 0px;
+	}
+	
+	.filebox .upload-name {
 	    display: inline-block;
 	    height: 40px;
 	    padding: 0 10px;
@@ -161,7 +172,12 @@ div#attachArea {
 	    border-radius: 0.4rem;
 	    color: #999999;
 	}
- .filebox label {
+	
+	.filebox .upload-name:focus {
+		outline : 2px solid #66cc66;
+	}
+	
+	.filebox label {
 	    display: inline-block;
 	    padding: 9px 20px;
 	    color: #fff;
@@ -171,7 +187,7 @@ div#attachArea {
 	    cursor: pointer;
 	    width : 25%;
 	    height: 40px;
-	    margin-left: 0px;
+	    margin-left: 5px;
 	    margin-top: 5px;
 	    border-radius: 0.4rem;
 	}
@@ -183,18 +199,19 @@ div#attachArea {
 	    padding: 0;
 	    overflow: hidden;
 	    border: 0;
-	} 
-	
-	textarea::placeholder {
-    color: #999999;
-    font-weight: normal;
 	}
+	
 
 </style>
 
 <script type="text/javascript">
 
 	$(document).ready (function(){
+		
+		$("#file").on('change',function(){
+			  var fileName = $("#file").val();
+			  $(".upload-name").val(fileName);
+		});
 		
 
 		
@@ -260,31 +277,32 @@ div#attachArea {
 					<span id="fontSubject">${requestScope.subject}</span>	
 					<div id="information">${requestScope.information}</div>
 					
-					<input type="hidden" name="icon" value="${requestScopr.icon}" readonly />
-					<input type="hidden" name="name" value="${requestScope.subject}" readonly />
+					<input type="hidden" name="fk_writer_empno" value="${requestScope.empno}" readonly />
+					<input type="hidden" name="deptno" value="${requestScope.deptno}" readonly />
+					<input type="hidden" name="icon" value="${requestScope.icon}" readonly />
+					<input type="hidden" name="doc_subject" value="${requestScope.subject}" readonly />
 					<input type="hidden" name="information" value="${requestScope.information}" readonly />
 					
 					<div id="contents">
 						내용
 						<div style="margin-top: 5px;">
-						<textarea class="search" name="contents" id="daterange" placeholder="내용을 입력하세요" style="margin-top: 5px; padding: 6px 10px; "></textarea>
+						<textarea class="search" name="doc_contents" id="daterange" placeholder="내용을 입력하세요" style="margin-top: 5px; padding: 6px 10px; "></textarea>
 						</div>
 					</div>
 					<div id="contents">
 						희망마감날짜<br>
 						<div class="daterange" style="margin-top: 5px;">
-						 <input type="text" class="startdate search" id="daterange" name="start_Date" placeholder="날짜 선택" style="margin-top: 5px; padding-left: 10px;"/>
+						 <input type="text" class="startdate search" id="daterange" name="D_day" placeholder="날짜 선택" style="margin-top: 5px; padding-left: 10px;"/>
 						 
 						</div>
 						<!-- <input id="search" name="date" placeholder="날짜 선택" style="margin-top: 5px; padding-left: 10px;"/> -->
 					</div>
 						  
-	                 <div id="attachArea">
+			       <div id="attachArea">
 			        	<div class="filebox">
-			        		<label for="file">파일찾기</label> 
-			        		<input type="file" id="file">
+			        		<label for="file">파일 찾기</label> 
 						    <input class="upload-name" value="첨부파일" placeholder="첨부파일">
-						    
+						    <input type="file" id="file" multiple="multiple" name="attach">
 						</div>
 			        </div>
 
@@ -308,16 +326,16 @@ div#attachArea {
 			    		</tr>
 			    		<tr> 
 			    			<c:set var="TextValue" value="${map.name}"/>
-			    			<td rowspan="2" style="padding-left: 25px;"><span id="modalprof" style="background-color: ${map.profile_color}">${fn:substring(TextValue,1,3)}</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">${map.name} </td>
-			    			<td rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
+			    			<td class="td-1" rowspan="2" style="padding-left: 25px;"><span id="modalprof" style="background-color: ${map.profile_color}">${fn:substring(TextValue,1,3)}</span></td>
+			    		    <td class="td-2 td-1" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;">${map.name} </td>
+			    			<td class="td-1" rowspan="2" style="padding-right: 25px;"><span id="status2" style="font-size: 12pt; padding: 3px 5px; float: right;"> 
 			    			승인</span>	</td>		    			
 			    		</tr>    		
 			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">${map.position} · ${map.deptname}</td>
+			    			<td class="td-1" style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;">${map.position} · ${map.deptname}</td>
 			    		</tr>
 			    		<tr>
-			    			<td colspan="3" style="padding: 0px 20px;"><hr></td>
+			    			<td class="td-1" colspan="3" style="padding: 0px 20px;"><hr></td>
 			    		</tr>
 			    		</c:forEach>
 			    		</c:if>

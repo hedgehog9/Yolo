@@ -12,9 +12,10 @@
    	   <result property="position"       column="position"      		javaType="String"/>
 	   <result property="name"       	 column="name"      			javaType="String"/>	
 	   <result property="profile_color"  column="profile_color"      	javaType="String"/>	
-   	   <result property="deptname" 		 column="deptname"      	javaType="String"/>
+   	   <result property="deptname" 		 column="deptname"      		javaType="String"/>
    </resultMap> 
 
+	<!-- 결재라인 알아오기 -->
 	<select id="appList" parameterType="HashMap" resultMap="approvalMap">
 		select G.gradeno AS levelno ,G.deptno , G.FK_EMPNO , E.position, E.name, E.profile_color, G.deptname
 		from
@@ -31,8 +32,132 @@
 		) G
 		join TBL_EMPLOYEES E
 		on E.empno = G.FK_EMPNO
+		where not empno =#{empno}
 		order by levelno asc
 	</select>
+	
+	<!-- 글작성하기(기안문서 테이블) 첨부파일 없는경우 -->
+	<insert id="add" parameterType="com.yolo.hr.jihee.workflow.model.documentVO">
+		insert into tbl_documents(doc_no, fk_writer_empno, doc_subject , doc_contents ,writeday ,modificationday ,icon, D_day)
+		values(#{doc_no}, #{fk_writer_empno} ,#{doc_subject},#{doc_contents}, default, default ,#{icon}, to_date(#{D_day},'yyyy-mm-dd'))
+	</insert>
+	
+	<!-- 기안번호 채굴하기  -->
+	<select id="docno" resultType="int">
+		select seq_doc_no.nextval as document_no
+		from dual
+	</select>
+	
+	<!-- 결재번호 채굴하기 -->
+	<select id="appno" resultType="int">
+		select seq_decision_no.nextval as approval_no
+		from dual
+	</select>
+
+		
+	<!-- 결재 라인에 기안문서 넣어주기(결재 상신하기) -->
+	<insert id="addApproval" parameterType="HashMap">
+		insert into tbl_approval (approval_no,fk_doc_no ,fk_senior_empno ,levelno ,approval)
+		values(#{app_no}, #{doc_no} , #{FK_EMPNO}, #{levelno} ,default)
+	</insert>
+	
+	<!-- 글작성하기(기안문서 테이블) 첨부파일 있는 경우 -->
+	<insert id="add_withFile" parameterType="com.yolo.hr.jihee.workflow.model.documentVO">
+		insert into tbl_documents(doc_no, fk_writer_empno, doc_subject , doc_contents ,writeday ,modificationday ,icon, D_day,fileName, orgFilename,fileSize)
+		values(#{doc_no}, #{fk_writer_empno} ,#{doc_subject},#{doc_contents}, default, default ,#{icon}, to_date(#{D_day},'yyyy-mm-dd'), #{fileName},#{orgFilename}, #{fileSize})
+	</insert>
+
+	<!--내문서함 리스트 가져오기  -->
+	<resultMap type="HashMap" id="documentMap">
+   	   <result property="doc_subject"    	 column="doc_subject"    			javaType="String"/>
+   	   <result property="doc_contents"  	 column="doc_contents"  			javaType="String"/>
+   	   <result property="writeday"      	 column="writeday"      			javaType="String"/>
+   	   <result property="modificationday"    column="modificationday"      		javaType="String"/>
+	   <result property="filename"       	 column="filename"      			javaType="String"/>	
+	   <result property="orgfilename"  		 column="orgfilename"      			javaType="String"/>	
+   	   <result property="filesize" 			 column="filesize"      			javaType="String"/>
+   	   <result property="d_day" 			 column="d_day"      				javaType="String"/>
+   	   <result property="approval_day" 		 column="approval_day"      		javaType="String"/>
+   	   <result property="approval" 		 	 column="approval"      		javaType="String"/>
+   	   <result property="name" 		 		 column="name"      		javaType="String"/>
+   	   <result property="doc_no" 		 		 column="doc_no"      		javaType="String"/>
+   </resultMap> 
+   
+   <!--내문서함 리스트  -->
+	<select id="documentList" parameterType="HashMap" resultMap="documentMap">
+		select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no
+		from 
+		(   
+		    select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no    
+		    from tbl_documents 
+		    join TBL_approval
+		    on doc_no = fk_doc_no
+		    where fK_writer_empno =#{empno} or fk_senior_empno=#{empno}
+		) V
+		join tbl_employees E
+		on V.fk_writer_empno = E.empno
+		order by writeday desc
+	</select>
+	
+	<!-- 페이지 로드시 첫번째 문서번호 -->
+	 <select id="getdoc_no" parameterType="String" resultType="String">
+		select doc_no
+		from (select doc_no
+		      from tbl_documents
+		      join tbl_approval
+		      on doc_no = fk_doc_no
+		        where fK_writer_empno =#{empno} or fk_senior_empno=#{empno}
+		      order by writeday desc
+		      )
+		where rownum=1
+	</select> 
+	
+	<!-- 작성자인지 아닌지  -->
+	
+	<select id="checkWriter" parameterType="HashMap" resultType="String">
+		select fk_writer_empno
+		from tbl_documents
+		where fk_writer_empno =#{empno} and doc_no=#{doc_no}
+	</select>
+	
+	<!-- 문서 자세히 가져오기  -->
+	 <resultMap type="HashMap" id="docDetailMap">
+	 	<result property="fk_writer_empno"   column="fk_writer_empno"    		javaType="String"/>
+	 	<result property="doc_no"    	     column="doc_no"    				javaType="String"/>
+   	   <result property="doc_subject"    	 column="doc_subject"    			javaType="String"/>
+   	   <result property="doc_contents"  	 column="doc_contents"  			javaType="String"/>
+   	   <result property="writeday"      	 column="writeday"      			javaType="String"/>
+   	   <result property="modificationday"    column="modificationday"      		javaType="String"/>
+	   <result property="filename"       	 column="filename"      			javaType="String"/>	
+	   <result property="orgfilename"  		 column="orgfilename"      			javaType="String"/>	
+   	   <result property="filesize" 			 column="filesize"      			javaType="String"/>
+   	   <result property="d_day" 			 column="d_day"      				javaType="String"/>
+   	   <result property="icon" 		 	 	 column="icon"      				javaType="String"/>
+   	   <result property="name" 		 		 column="name"      				javaType="String"/>
+   	   <result property="position" 		     column="position"      			javaType="String"/>
+   	   <result property="fk_deptno" 		 column="fk_deptno"      			javaType="String"/>
+   </resultMap>  
+   
+ 	<select id="getDocDetail" parameterType="HashMap" resultMap="docDetailMap">
+		<if test='writer !=""'>
+		select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno
+		from tbl_documents 
+		join tbl_employees
+		on fk_writer_empno = empno
+		where fK_writer_empno =#{empno} and  doc_no =#{doc_no}
+		</if>
+		
+		<if test='writer ==""'>
+		 select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, comments, approval_day  
+         from tbl_documents 
+         join TBL_approval
+         on doc_no = fk_doc_no
+         where fk_senior_empno=#{empno} and  doc_no =#{doc_no}
+		</if>
+		
+		
+	</select>	 
+
 
 	 
 
