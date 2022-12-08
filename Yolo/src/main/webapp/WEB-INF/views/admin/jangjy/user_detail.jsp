@@ -201,7 +201,7 @@
 		height: 50px;
 	}
 	
-	i.sideIcon {
+	i.i_sideIcon {
 		margin: 15px 0 0 20px;
 		color: #242A30;
 	}
@@ -1739,7 +1739,7 @@
 			
 			<a class="a_side" href="<%= ctxPath%>/commute/mycommute.yolo">
 				<div class="div_rightside" id="work_time">
-					<i class="far fa-clock fa-lg sideIcon"></i>
+					<i class="far fa-clock fa-lg i_sideIcon"></i>
 					<div style="display: flex; justify-content: space-between; margin-top: 5px;">
 						<div style="margin:15px 0 0 20px;">
 							<div style="font-size: 12px; font-weight:600; color:#556372;">근무시간</div>
@@ -1752,7 +1752,7 @@
 			
 			<a class="a_side" href="<%= ctxPath%>/leaveSummary.yolo">
 				<div class="div_rightside" id="annual">
-					<i class="fas fa-leaf fa-lg sideIcon"></i>
+					<i class="fas fa-leaf fa-lg i_sideIcon"></i>
 					<div style="display: flex; justify-content: space-between; margin-top: 5px;">
 						<div style="margin:15px 0 0 20px;">
 							<div style="font-size: 12px; font-weight:600; color:#556372;">남은연차</div>
@@ -1764,7 +1764,7 @@
 			
 			<a class="a_side" href="<%= ctxPath%>/admin/payStub.yolo">
 				<div class="div_rightside" id="pay_stub">
-					<i class="fas fa-won-sign fa-lg sideIcon"></i>
+					<i class="fas fa-won-sign fa-lg i_sideIcon"></i>
 					<div style="display: flex; justify-content: space-between; margin-top: 5px;">
 						<div style="margin:15px 0 0 20px;">
 							<div style="font-size: 12px; font-weight:600; color:#556372;">급여</div>
