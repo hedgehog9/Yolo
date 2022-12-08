@@ -79,11 +79,6 @@
         height: 8px;
     }
     
-    .table td, .table th {
-    padding: 0.75rem;
-    vertical-align: middle;
-    border-top: 1px solid #dee2e6;
-	}
 	
 	.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
 		border: none;
@@ -110,8 +105,6 @@
         	    tokenSeparators: [',', ' '],
         	    //data : data , // 실제 Select Option에 들어갈 데이터 
         });
-        
-        const a = $('#management-categoty-div > div > span > span.selection > span').val()
         
         totalCommuteList(1, null);
         
@@ -457,7 +450,8 @@
                 </tbody>    
             </table>
         </div>
-        <%-- === #136. 댓글페이지바 ==== --%>
+        
+        <%-- === 페이지바 ==== --%>
       <div style="display: flex; margin-bottom: 50px;">
       	<div id="pageBar" style="margin: auto; text-align: center;"></div>
       </div>

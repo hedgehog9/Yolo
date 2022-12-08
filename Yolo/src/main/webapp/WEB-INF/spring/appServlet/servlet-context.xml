@@ -90,29 +90,23 @@
    
    <!-- ====== 인터셉터 시작  ====== -->
    <!-- 로그인 여부 체크하는 인터셉터 등록 -->
-   <!--  
-   	<beans:bean id="loginCheckInterceptor" class="com.yolo.interceptor.controller.LoginCheckInterceptor" />
-   -->
+   	<beans:bean id="loginCheckInterceptor" class="com.yolo.hr.interceptor.controller.LoginCheckInterceptor" />
    <!-- 로그인되어진 사용자가 관리자등급 인지 여부를 체크하는 인터셉터 등록 -->
    <!--  
    <beans:bean id="adminLoginCheckInterceptor" class="com.yolo.interceptor.controller.AdminLoginCheckInterceptor" />
    -->
+   <!-- 기능 완성될 경우 아래 코드 주석해제 후 인터셉터로 로그인해야 접근 가능하도록 모든 페이지 막기! -->
    
-   <!-- <mvc:interceptors>
-         특정 URL에 대해서만 로그인 여부 체크하는 인터셉터 매핑시키기
-         <mvc:interceptor>
-            <mvc:mapping path="/member_only/member_a.action"/> 포함되는 url
-            <mvc:mapping path="/member_only/member_b.action"/> 포함되는 url
-            <beans:ref bean="loginCheckInterceptor"/> 로그인유무 검사
-         </mvc:interceptor>
-         
-         <mvc:interceptor>
-            <mvc:mapping path="/special_member/special_member_a.action"/> 포함되는 url
-            <mvc:mapping path="/special_member/special_member_b.action"/> 포함되는 url
-            <beans:ref bean="adminLoginCheckInterceptor"/> 로그인 한 사용자가 특정회원인지 확인함
-         </mvc:interceptor>
-   
-   </mvc:interceptors> -->
+   <!--<mvc:interceptors>-->
+       <!--<mvc:interceptor>-->
+			<!--<mvc:mapping path="/**"/> -->                        <!-- 모든 URL -->
+			<!--<mvc:exclude-mapping path="/"/> -->			      <!-- 제외되는 URL -->
+			<!--<mvc:exclude-mapping path="/login.yolo"/> -->      <!-- 제외되는 URL -->
+			<!--<mvc:exclude-mapping path="/loginContinue.yolo"/>-->       <!-- 제외되는 URL -->
+			<!--<mvc:exclude-mapping path="/loginpw.yolo"/>-->    <!-- 제외되는 URL -->
+			<!--<beans:ref bean="loginCheckInterceptor"/>-->   <!-- 회원 사용자인지 검사 -->
+		<!--</mvc:interceptor>-->
+   <!--</mvc:interceptors> -->
    
    <!-- ====== 인터셉터 끝  ====== -->
    

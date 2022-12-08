@@ -49,16 +49,194 @@ public class JihyunController {
 		
 		// 가라 세션
 		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1050");
-		// loginuser.setEmpno("1001");
+		// loginuser.setEmpno("1050");
+		loginuser.setEmpno("1001");
 		HttpSession session = request.getSession();
 		session.setAttribute("loginuser", loginuser);
 		// 가라세션 끝
 		
-		List<Map<String, String>> sentMsgList = service.getSentMsgList(loginuser.getEmpno());
+		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 시작 === //
+		/*
+			페이징 처리를 통한 글 목록을 보여주기는 
+			예를 들어 2페이지의 내용을 보고자 한다면 검색을 할 경우는 아래와 같이 
+			list.action?searchType=subject&searchWord=java&currentShowPageNo=2 와 같이 해주어야 한다
+			
+			또는 
+			
+			검색이 없는 전체를 볼때는 아래와 같이
+			list.action  또는
+			list.action?searchType=&searchWord=&currentShowPageNo=2 또는
+			list.action?searchType=subject&searchWord=&currentShowPageNo=2 또는
+			list.action?searchType=name&searchWord=&currentShowPageNo=2 또는
+		*/
+		
+		String searchWord = request.getParameter("searchWord"); 
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+		
+		
+		if(searchWord==null || "".equals(searchWord.trim())){
+			searchWord = "";
+		}
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("searchWord", searchWord);
+		paraMap.put("empno", loginuser.getEmpno());
+		
+		// 먼저 총 게시물 건수 (total Count를 구해와야 한다 )
+		// 1. 검색조건이 있을때    2. 검색조건이 없을때
+		int totalCount = 0;        // 총 게시물 건수
+		int sizePerPage = 10;       // 한 페이지당 보여줄 게시물 건수 
+		int currentShowPageNo = 0; // 현재 보여주는 페이지번호로서, 초기치로는 1페이지로 설정함.
+		int totalPage = 0;         // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
+      
+		int startRno = 0; // 시작 행번호
+		int endRno = 0;   // 끝 행번호
+		
+		// 총 게시물 건수 (total Count) 
+		totalCount = service.getTotalCount(paraMap);
+		// System.out.println("확인용 totalCount : " + totalCount);
+		
+		// 만약에 총 게시물 건수(totalCount)가 22라면 총페이지수는 3개가 되어야 한다
+		totalPage = (int) Math.ceil( (double)totalCount/sizePerPage );
+		// (double)22/10 ==> 2.2 ==> Math.ceil(2.2) == > 3.0 ==> 3
+		// (double)30/10 ==> 3.0 ==> Math.ceil(3.0) == > 3.0 ==> 3
+		
+		
+		// 만약에 str_currentShowPageNo이 null 이라면 즉, 게시판에 보여지는 초기화면이라면
+		if(str_currentShowPageNo == null) {
+			currentShowPageNo =1 ;
+		} else {
+			try {
+				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+				
+				// 또 장난쳐올 경우 ( 숫자인데 없는 페이지 )
+				if(currentShowPageNo <1 || currentShowPageNo> totalPage) {
+					currentShowPageNo =1 ;
+				}
+				
+			} catch (NumberFormatException e) {
+				currentShowPageNo =1 ;
+			}
+		}
+		
+		
+		// **** 가져올 게시글의 범위를 구한다.(공식임!!!) **** 
+		/*
+           currentShowPageNo      startRno     endRno
+          --------------------------------------------
+               1 page        ===>    1           10
+               2 page        ===>    11          20
+               3 page        ===>    21          30
+               4 page        ===>    31          40
+               ......                ...         ...
+		 */
+		
+		startRno = ((currentShowPageNo - 1) * sizePerPage) + 1;
+	    endRno = startRno + sizePerPage - 1;
+		
+	    paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+	    
+		List<Map<String, String>> sentMsgList = service.getSentMsgList(paraMap); // 페이징처리를 한 메신저 가져오기 검색 잇 없 모두 포함
+		
+		if(!"".equals(searchWord)) {
+			mav.addObject("searchWord", searchWord);
+		}
+		
+		// === #121. 페이지바 만들기 === //
+		int blockSize = 10;
+		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
+		/*
+	                 	  1  2  3  4  5  6  7  8  9 10 [다음][마지막]  -- 1개블럭
+	         [맨처음][이전]  11 12 13 14 15 16 17 18 19 20 [다음][마지막]  -- 1개블럭
+	         [맨처음][이전]  21 22 23
+		 */
+		
+		int loop = 1;
+	     /*
+	          loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+	     */
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+	    
+	      
+		
+		// *** !! 공식이다. !! *** //
+	   /*
+	       1  2  3  4  5  6  7  8  9  10  -- 첫번째 블럭의 페이지번호 시작값(pageNo)은 1 이다.
+	       11 12 13 14 15 16 17 18 19 20  -- 두번째 블럭의 페이지번호 시작값(pageNo)은 11 이다.
+	       21 22 23 24 25 26 27 28 29 30  -- 세번째 블럭의 페이지번호 시작값(pageNo)은 21 이다.
+	       
+	       currentShowPageNo         pageNo
+	      ----------------------------------
+	            1                      1 = ((1 - 1)/10) * 10 + 1
+	            2                      1 = ((2 - 1)/10) * 10 + 1
+	            3                      1 = ((3 - 1)/10) * 10 + 1
+	            4                      1
+	            5                      1
+	            6                      1
+	            7                      1 
+	            8                      1
+	            9                      1
+	            10                     1 = ((10 - 1)/10) * 10 + 1
+	           
+	            11                    11 = ((11 - 1)/10) * 10 + 1
+	            12                    11 = ((12 - 1)/10) * 10 + 1
+	            13                    11 = ((13 - 1)/10) * 10 + 1
+	            14                    11
+	            15                    11
+	            16                    11
+	            17                    11
+	            18                    11 
+	            19                    11 
+	            20                    11 = ((20 - 1)/10) * 10 + 1
+	            
+	            21                    21 = ((21 - 1)/10) * 10 + 1
+	            22                    21 = ((22 - 1)/10) * 10 + 1
+	            23                    21 = ((23 - 1)/10) * 10 + 1
+	            ..                    ..
+	            29                    21
+	            30                    21 = ((30 - 1)/10) * 10 + 1
+	   */
+		
+		String pageBar = "<ul>";
+		String url = "sentMessage.yolo";
+		
+		
+		// === [처음][이전] 만들기 === //
+		if(pageNo!=1) {
+			pageBar += "<a class='last' style='margin-left:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo=1'><li><<</li></a>";
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><li>Previous</li></a>";
+		}
+		
+		
+		while( !(loop  > blockSize || totalPage < pageNo) ) {
+			
+			// 현재 보고있는 페이지와 같은 페이지 번호라면 앵커태그를 줄 필요가 업잔슴
+			if(pageNo == currentShowPageNo) { 
+				pageBar += "<a class='is-active' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+				
+			} else {
+				pageBar += "<a href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+			}
+			
+			loop++;
+			pageNo++;
+		} // end of while
+		
+		
+		// === [다음][마지막] 만들기 === //
+		if(pageNo<=totalPage) {
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo)+"'><li>Next</li></a>";
+			pageBar += "<a class='last' style='margin-right:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><li>>></li></a>";
+		}
+		
+		pageBar += "</ul>";
 		
 		mav.addObject("sentMsgList", sentMsgList);
-		mav.addObject("sentMsgCnt", sentMsgList.size());
+		mav.addObject("sentMsgCnt", totalCount);
+		mav.addObject("pageBar", pageBar);
+				
 		
 		mav.setViewName("jihyun/messenger/sentMessage.admin"); 
 		
@@ -78,9 +256,191 @@ public class JihyunController {
 		session.setAttribute("loginuser", loginuser);
 		// 가라세션 끝
 		
-		List<Map<String, String>> receivedMsgList = service.getReceivedMsgList(loginuser.getEmpno());
+		// empno 넘어오면 request 영역에 담아줘야 한다
+		String empno = request.getParameter("empno"); 
+		mav.addObject("empno", empno);
+		
+		
+		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 시작 === //
+		/*
+			페이징 처리를 통한 글 목록을 보여주기는 
+			예를 들어 2페이지의 내용을 보고자 한다면 검색을 할 경우는 아래와 같이 
+			list.action?searchType=subject&searchWord=java&currentShowPageNo=2 와 같이 해주어야 한다
+			
+			또는 
+			
+			검색이 없는 전체를 볼때는 아래와 같이
+			list.action  또는
+			list.action?searchType=&searchWord=&currentShowPageNo=2 또는
+			list.action?searchType=subject&searchWord=&currentShowPageNo=2 또는
+			list.action?searchType=name&searchWord=&currentShowPageNo=2 또는
+		*/
+		
+		String searchWord = request.getParameter("searchWord"); 
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+		
+		if(searchWord==null || "".equals(searchWord.trim())){
+			searchWord = "";
+		}
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("searchWord", searchWord);
+		paraMap.put("empno", loginuser.getEmpno());
+		
+		// 먼저 총 게시물 건수 (total Count를 구해와야 한다 )
+		// 1. 검색조건이 있을때    2. 검색조건이 없을때
+		int totalCount = 0;        // 총 게시물 건수
+		int sizePerPage = 2;       // 한 페이지당 보여줄 게시물 건수 
+		int currentShowPageNo = 0; // 현재 보여주는 페이지번호로서, 초기치로는 1페이지로 설정함.
+		int totalPage = 0;         // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
+      
+		int startRno = 0; // 시작 행번호
+		int endRno = 0;   // 끝 행번호
+		
+		// 총 게시물 건수 (total Count) 
+		totalCount = service.getTotalCount2(paraMap);
+		// System.out.println("확인용 totalCount : " + totalCount);
+		
+		// 만약에 총 게시물 건수(totalCount)가 22라면 총페이지수는 3개가 되어야 한다
+		totalPage = (int) Math.ceil( (double)totalCount/sizePerPage );
+		// (double)22/10 ==> 2.2 ==> Math.ceil(2.2) == > 3.0 ==> 3
+		// (double)30/10 ==> 3.0 ==> Math.ceil(3.0) == > 3.0 ==> 3
+		
+		
+		// 만약에 str_currentShowPageNo이 null 이라면 즉, 게시판에 보여지는 초기화면이라면
+		if(str_currentShowPageNo == null) {
+			currentShowPageNo =1 ;
+		} else {
+			try {
+				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+				
+				// 또 장난쳐올 경우 ( 숫자인데 없는 페이지 )
+				if(currentShowPageNo <1 || currentShowPageNo> totalPage) {
+					currentShowPageNo =1 ;
+				}
+				
+			} catch (NumberFormatException e) {
+				currentShowPageNo =1 ;
+			}
+		}
+		
+		
+		// **** 가져올 게시글의 범위를 구한다.(공식임!!!) **** 
+		/*
+           currentShowPageNo      startRno     endRno
+          --------------------------------------------
+               1 page        ===>    1           10
+               2 page        ===>    11          20
+               3 page        ===>    21          30
+               4 page        ===>    31          40
+               ......                ...         ...
+		 */
+		
+		startRno = ((currentShowPageNo - 1) * sizePerPage) + 1;
+	    endRno = startRno + sizePerPage - 1;
+		
+	    paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+	    
+		List<Map<String, String>> receivedMsgList = service.getReceivedMsgList(paraMap); // 페이징처리를 한 메신저 가져오기 검색 잇 없 모두 포함
+		
+		if(!"".equals(searchWord)) {
+			mav.addObject("searchWord", searchWord);
+		}
+		
+		// === #121. 페이지바 만들기 === //
+		int blockSize = 10;
+		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
+		/*
+	                 	  1  2  3  4  5  6  7  8  9 10 [다음][마지막]  -- 1개블럭
+	         [맨처음][이전]  11 12 13 14 15 16 17 18 19 20 [다음][마지막]  -- 1개블럭
+	         [맨처음][이전]  21 22 23
+		 */
+		
+		int loop = 1;
+	     /*
+	          loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+	     */
+		
+		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+	    
+	      
+		
+		// *** !! 공식이다. !! *** //
+	   /*
+	       1  2  3  4  5  6  7  8  9  10  -- 첫번째 블럭의 페이지번호 시작값(pageNo)은 1 이다.
+	       11 12 13 14 15 16 17 18 19 20  -- 두번째 블럭의 페이지번호 시작값(pageNo)은 11 이다.
+	       21 22 23 24 25 26 27 28 29 30  -- 세번째 블럭의 페이지번호 시작값(pageNo)은 21 이다.
+	       
+	       currentShowPageNo         pageNo
+	      ----------------------------------
+	            1                      1 = ((1 - 1)/10) * 10 + 1
+	            2                      1 = ((2 - 1)/10) * 10 + 1
+	            3                      1 = ((3 - 1)/10) * 10 + 1
+	            4                      1
+	            5                      1
+	            6                      1
+	            7                      1 
+	            8                      1
+	            9                      1
+	            10                     1 = ((10 - 1)/10) * 10 + 1
+	           
+	            11                    11 = ((11 - 1)/10) * 10 + 1
+	            12                    11 = ((12 - 1)/10) * 10 + 1
+	            13                    11 = ((13 - 1)/10) * 10 + 1
+	            14                    11
+	            15                    11
+	            16                    11
+	            17                    11
+	            18                    11 
+	            19                    11 
+	            20                    11 = ((20 - 1)/10) * 10 + 1
+	            
+	            21                    21 = ((21 - 1)/10) * 10 + 1
+	            22                    21 = ((22 - 1)/10) * 10 + 1
+	            23                    21 = ((23 - 1)/10) * 10 + 1
+	            ..                    ..
+	            29                    21
+	            30                    21 = ((30 - 1)/10) * 10 + 1
+	   */
+		
+		String pageBar = "<ul>";
+		String url = "receivedMessage.yolo";
+		
+		
+		// === [처음][이전] 만들기 === //
+		if(pageNo!=1) {
+			pageBar += "<a class='last' style='margin-left:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo=1'><li><<</li></a>";
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><li>Previous</li></a>";
+		}
+		
+		
+		while( !(loop  > blockSize || totalPage < pageNo) ) {
+			
+			// 현재 보고있는 페이지와 같은 페이지 번호라면 앵커태그를 줄 필요가 업잔슴
+			if(pageNo == currentShowPageNo) { 
+				pageBar += "<a class='is-active' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+				
+			} else {
+				pageBar += "<a href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+			}
+			
+			loop++;
+			pageNo++;
+		} // end of while
+		
+		
+		// === [다음][마지막] 만들기 === //
+		if(pageNo<=totalPage) {
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo)+"'><li>Next</li></a>";
+			pageBar += "<a class='last' style='margin-right:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><li>>></li></a>";
+		}
+		
+		pageBar += "</ul>";
 		
 		mav.addObject("receivedMsgList", receivedMsgList);
+		mav.addObject("pageBar", pageBar);
+				
 		mav.setViewName("jihyun/messenger/receivedMessage.admin"); 
 		return mav;
 		
@@ -274,10 +634,18 @@ public class JihyunController {
 	@RequestMapping(value = "/jihyun/getDeptPerson.yolo", produces="text/plain;charset=UTF-8")
 	public String getDeptPerson( HttpServletRequest request) {
 		
+		
 		String deptno = request.getParameter("deptno");
 		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("deptno", deptno);
+		paraMap.put("empno", loginuser.getEmpno());
+		
 		// 부서사람들 조회하기
-		List<Map<String,String>> deptList = service.getDeptPersonList(deptno);
+		List<Map<String,String>> deptList = service.getDeptPersonList(paraMap);
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -299,8 +667,15 @@ public class JihyunController {
 		
 		String deptno = request.getParameter("deptno");
 		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("deptno", deptno);
+		paraMap.put("empno", loginuser.getEmpno());
+		
 		// 부서사람들 조회하기
-		List<Map<String,String>> teamList = service.getTeamPerson(deptno);
+		List<Map<String,String>> teamList = service.getTeamPerson(paraMap);
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -485,6 +860,37 @@ public class JihyunController {
 			service.updateMsgno(paraMap);
 		}
 	}// end of  메신저 보내기
+	
+	
+	
+	// 메신저 전달하기
+	@ResponseBody
+	@RequestMapping(value = "/messenger/deleverMessenger.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public void deleverMessenger(MessengerVO msgvo, HttpServletRequest request) {
+		
+		String msgno = msgvo.getOrigin_msgno();
+		MessengerVO deliverMsgvo = service.getDeliverMsg(msgno); // 원본 메신저 조회하기
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		msgvo.setFk_senderno(loginuser.getEmpno());
+		
+		service.deleverMessenger(deliverMsgvo, msgvo); // 메신저 전달하기
+		
+	}
+	
+	
+	// 메신저 발송을 위해서 이름 알아오기
+	@ResponseBody
+	@RequestMapping(value = "/messenger/getEmpName.yolo", produces="text/plain;charset=UTF-8")
+	public String getEmpName(HttpServletRequest request) {
+		
+		String empno = request.getParameter("empno");
+		return service.getEmpName(empno); // 메세지 발송을 위해 사람이름 알아오기
+		
+	}
+	
 	
 	
 	/*

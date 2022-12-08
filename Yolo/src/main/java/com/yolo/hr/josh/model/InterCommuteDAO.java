@@ -27,4 +27,13 @@ public interface InterCommuteDAO {
 	// 토탈페이지를 가져오는 메소드
 	int commuteTotalPage(Map<String, Object> paraMap);
 
+	// 급여정산 후에 리스트 불러오기
+	List<HashMap<String, String>> getPaymentList(Map<String, Object> paraMap);
+
+	// 급여정산 totalPage
+	int paymentListTotalPage(Map<String, Object> paraMap);
+
+	// 급여정보 보내서 insert 하기
+	int checkedPayment(List<Map<String, Object>> paraList);
+
 }
