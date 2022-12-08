@@ -41,6 +41,7 @@ public class HRAOP {
 	@After("addAlarm()") // 이 메소드를 실행 하기 전에 아래의 메소드를 실행해준다 
 	public void addAlarm(JoinPoint joinpoint) { // JoinPoint joinpoint는 포인트컷 되어진 주업무의 메소드이다. (requiredLogin_jumun 메소드 등등/...)
 		
+		
 		Map<String, String> paraMap = (Map<String, String>) joinpoint.getArgs()[0]; // return타입이 Object의 배열이다 (주업무에 잇던 파라미터를 몽땅 가져온다. 파라미터의 개수가 복수개일수 잇으니..)
 		// 첫번째 파라미터인 맵을 넣어준 것임 
 		

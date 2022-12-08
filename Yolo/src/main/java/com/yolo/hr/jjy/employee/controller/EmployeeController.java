@@ -260,11 +260,13 @@ public class EmployeeController {
 		String memo = request.getParameter("memo");
 		String empno = request.getParameter("empno");
 		
-		paraMap.put("fk_recipientno ", empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
-		paraMap.put("url", "userDetail.yolo?empno=" );
+		System.out.println("확인용 휴직처리할 사원번호 "+empno);
+		
+		paraMap.put("fk_recipientno", empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
+		paraMap.put("url", "/userDetail.yolo?empno=" );
 		paraMap.put("url2", empno ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
 		paraMap.put("alarm_content", "휴직 처리되었습니다." );
-		paraMap.put("alarm_type", "4" );
+		paraMap.put("alarm_type","4" );
 		
 		Map<String,String> leaveMap = new HashMap<>();
 		
