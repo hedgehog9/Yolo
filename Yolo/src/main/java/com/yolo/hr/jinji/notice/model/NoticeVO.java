@@ -4,8 +4,8 @@ public class NoticeVO {
 
 	// insert용
 	private String notino; 		// 공지번호
-	private String fk_senderno; 	// 보내는 사람 사원번호
-	private String fk_recipientno; // 받는 사람 사원번호
+	private String fk_senderno; // 보내는 사람 사원번호
+	private String fk_deptno; 	// 받는 사람 사원번호
 	private String notiLevel; 	// 공지레벨 ㅡ default 0 
 	private String writedate; 	// 공지작성일
 	private String subject; 	// 공지제목
@@ -18,12 +18,12 @@ public class NoticeVO {
 	// 생성자
 	public NoticeVO() {}
 	
-	public NoticeVO(String notino, String fk_senderno, String fk_recipientno, String notiLevel,
+	public NoticeVO(String notino, String fk_senderno, String fk_deptno, String notiLevel,
 					String writedate, String subject, String content, String readCount, String cmtCount, String status) 
 	{
 		this.notino = notino;
 		this.fk_senderno = fk_senderno;
-		this.fk_recipientno = fk_recipientno;
+		this.fk_deptno = fk_deptno;
 		this.notiLevel = notiLevel;
 		this.writedate = writedate;
 		this.subject = subject;
@@ -51,12 +51,12 @@ public class NoticeVO {
 		this.fk_senderno = fk_senderno;
 	}
 
-	public String getFk_recipientno() {
-		return fk_recipientno;
+	public String getFk_deptno() {
+		return fk_deptno;
 	}
 
-	public void setFk_recipientno(String fk_recipientno) {
-		this.fk_recipientno = fk_recipientno;
+	public void setFk_deptno(String fk_deptno) {
+		this.fk_deptno = fk_deptno;
 	}
 
 	public String getNotiLevel() {
@@ -115,10 +115,6 @@ public class NoticeVO {
 		this.status = status;
 	}
 
-	
-	
-	
-	
 	
 	
 	

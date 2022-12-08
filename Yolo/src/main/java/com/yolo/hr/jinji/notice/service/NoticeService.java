@@ -23,33 +23,11 @@ public class NoticeService implements InterNoticeService {
 		return deptList;
 	}
 
-	// 부서사람들 조회하기
+	// 체크된 부서 목록 가져오기
 	@Override
-	public List<Map<String, String>> getDeptPersonList(String deptno) {
-		List<Map<String, String>> deptPersonList = dao.getDeptPersonList(deptno);
-		return deptPersonList;
-	}
-
-	// 해당부서 팀 구해오기
-	@Override
-	public List<Map<String, String>> getTeam(String deptno) {
-		List<Map<String, String>> teamList = dao.getTeam(deptno);
-		return teamList;
-	}
-
-	// 팀 사람들 구해오기
-	@Override
-	public List<Map<String, String>> getTeamPerson(String deptno) {
-		List<Map<String, String>> teamPersonList = dao.getTeamPerson(deptno);
-		return teamPersonList;
-	}
-
-
-	// 체크된 유저 목록 가져오기
-	@Override
-	public List<Map<String, String>> getChooseEmp(String str_empno) {
-		List<Map<String, String>>  empList = dao.getChooseEmp(str_empno);
-		return empList;
+	public List<Map<String, String>> getChooseDept(String str_empno) {
+		List<Map<String, String>>  deptList = dao.getChooseDept(str_empno);
+		return deptList;
 		
 	}
 	
@@ -57,40 +35,38 @@ public class NoticeService implements InterNoticeService {
 	@Override
 	public void sendNotice(NoticeVO noticevo) {
 		
-		String str_fk_recipientno = noticevo.getFk_recipientno();
-		String[] arr_fk_recipientno = str_fk_recipientno.split(",");
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(" INSERT ALL ");
-
-		
-		String startLine = " into tbl_notice(notino, fk_senderno, fk_recipientno, subject, content ) values (";
-		String endLine = ", '" + noticevo.getSubject() + "', '" + noticevo.getContent() + "') ";
-		
-		for( int i=0; i<arr_fk_recipientno.length; i++) {
-			sb.append(startLine);
-			sb.append( noticevo.getFk_senderno() +", " +arr_fk_recipientno[i] );
-			sb.append(endLine);
-		}
-		
-		sb.append(" SELECT * FROM DUAL ");
-		
-		//System.out.println(sql));
-		dao.sendNotice(sb.toString());
-		
+		dao.getSenNotice(noticevo);
+	
 	}
-		
-	///////////////////////
+
+	
 	// 전체 공지 리스트 보여주기
+	@Override
+	public List<Map<String, String>> getAllNoticeList(String fk_deptno) {
+		List<Map<String, String>> allNoticeList = dao.getAllNoticeList(fk_deptno);
+		return allNoticeList;
+	}
 
+	// 전체 공지사항 공지글 1개 보여주기(ajax)
+	@Override
+	public Map<String, String> showNoticeContent(String notino) {
+		 Map<String, String>  noticeContent = dao.showNoticeContent(notino);
+		return noticeContent;
+	}
 
+	
 	// 내가 쓴 공지리스트 가져오기
 	@Override
-	public List<Map<String, String>> getSentNoticeList(String empno) {
-		List<Map<String, String>> sentNoticeList = dao.getSentNoticeList(empno);
-		return sentNoticeList;
+	public List<Map<String, String>> getMyNoticeList(String fk_deptno) {
+		List<Map<String, String>> myNotice = dao.getMyNoticeList(fk_deptno);
+		return myNotice;
 	}
 
+
+
+	
+
+	
 	
 
 	

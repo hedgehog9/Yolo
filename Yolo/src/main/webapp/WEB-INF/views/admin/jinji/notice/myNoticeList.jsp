@@ -159,36 +159,39 @@
     
 <%-- 게시판 리스트 시작 --%>
 <div id="boardList">
-
-	<div class="listRow">
-		<div class="listRowInside">
-		
-			<c:if test="${ not empty requestScope.sentNoticeList}">
-				<c:forEach var="notice" items="${requestScope.sentNoticeList}">
-					<div id="prof" class="mt-3" style="background-color: ${notice.profile_color};">${notice.name}</div>
-					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
-						<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
-							${notice.subject}</span>&nbsp;
-						<span style="color: green;">${notice.readCount}</span>	
+	<c:if test="${ not empty requestScope.myNoticeList}">
+		<c:forEach var="myNoti" items="${requestScope.myNoticeList}">
+			<div class="listRow">
+				<div class="listRowInside" style="width: 100%;">
+					<div id="prof" class="mt-3 style= "background-color: ${myNoti.profile_color};"> ${myNoti.name}</div>
+					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal(${myNoti.notino})">
+						<span style="font-weight: bold;" id="subject"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
+						${myNoti.subject}</span>&nbsp;
+						<c:if test="${myNoti.readCount ne 0 }">	
+							<span id="readCount"  style="color: green;">[${myNoti.readCount}]</span>	
+						</c:if>
 						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-						<span style="margin-left: 20px; font-size: 10pt;">${writedate}</span>
-						<span class="spanBlock" style="font-size: 10pt;">${notice.name } ▶ ${notice.deptname }</span> 
-						<span class="spanBlock mt-2" style="color: gray">${notice.content}</span>
+						<span id="writedate" style="margin-left: 20px; font-size: 10pt;">${myNoti.writedate}</span>
+						<span id="name" style="display:block; font-size: 10pt;">${myNoti.name} · ${myNoti.position } ▶ <span id="deptname" style="font-size: 10pt;">{myNoti.deptname }</span></span>  
+						
+						<span id="content" class="spanBlock mt-2" style="color: gray">${myNoti.content}</span>
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
 					</div>
 					<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
 					<button class="listBnt">삭제하기</button>
-				</c:forEach>
-			</c:if>
-			
-			<c:if test="${empty requestScope.sentNoticeList }">
-				<span>작성된 공지사항이 없습니다.</span>
-			</c:if>
+				</div>
+			</div>
+		</c:forEach>
+	</c:if>
 	
+	<c:if test="${empty requestScope.myNoticeList }">
+		<div style="width: 100%; margin: 0 auto;" >
+			<span style="margin: 0 10%;">작성된 공지사항이 없습니다.</span>
 		</div>
-	</div>
-	
+	</c:if>
+</div>
+
 	
 	<%-- test row --%>
 	
@@ -237,7 +240,7 @@
 		</div>
 	</div>
 	
-</div> <%-- 공지 리스트(boardlist) 끝 --%>
+<%-- 공지 리스트(boardlist) 끝 --%>
 
 <%-- 공지 수정 모달 --%>
 <%@ include file="edit/noticeEdit.jsp" %>

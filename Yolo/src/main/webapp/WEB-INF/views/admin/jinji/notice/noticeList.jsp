@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
+
 <% String ctxPath=request.getContextPath(); %>
 
 <jsp:include page="listnav.jsp" />
@@ -92,7 +95,32 @@
 			
 	
 	// 모달 열기
-	function openmyListModal(){
+	function openmyListModal(notino){
+		
+		// alert("notino:" + request.alert);
+		
+		// notino 로 해당 공지 내용 Ajax로 가져오기 (전체공지글 1개 조회에 대한 상데 모달은 noticeDetail.jsp 참조)
+		$.ajax({
+	    	url : "<%=ctxPath%>/notice/getNoticeContent.yolo",
+	    	type: 'POST',
+	    	data : {"notino" : notino},
+	    	dataType: "JSON",
+			success: function(json){
+			//	console.log(json);
+				$("#myListModal span#prof").text(json.name);
+				$("#myListModal span#prof").css("background-color", json.profile_color);
+				$("#myListModal span#name").text(json.name + " · " + json.position + " ▶ " + json.deptname );
+				$("#myListModal span#writedate").text(json.writedate);
+				$("#myListModal span#subject").text(json.subject);
+				// 추후에 + 파일 첨부 넣기
+				$("#myListModal span#content").text(json.content);
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of 첨부파일 ajax
+		
+		
 		$('#myListModal').addClass('active');
 	    $('#myListModal_outside').fadeIn();
 		
@@ -109,92 +137,38 @@
     
 <%-- 게시판 리스트 시작 --%>
 <div id="boardList">
-
-	<div class="listRow">
-		<div class="listRowInside">
-			<div id="prof" class="mt-3">전공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
-				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
-					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
-				<span style="color: green;">[6]</span>	
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 
-				<span class="spanBlock mt-2" style="color: gray">공지 내용 보여주는 곳입니다</span>
-				&nbsp;&nbsp;
-				<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
+	<c:if test="${ not empty requestScope.noticeList }">			
+		<c:forEach var="noticevo" items="${requestScope.noticeList}">
+			<div class="listRow">
+				<div class="listRowInside" style="width: 100%;">
+					<div id="prof" class="mt-3 style= "background-color: ${noticevo.profile_color};"> ${noticevo.name}</div>
+					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal(${noticevo.notino})">
+						<span style="font-weight: bold;" id="subject"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
+						${noticevo.subject}</span>&nbsp;
+						<c:if test="${noticevo.readCount ne 0 }">	
+							<span id="readCount"  style="color: green;">[${noticevo.readCount}]</span>	
+						</c:if>
+						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
+						<span id="writedate" style="margin-left: 20px; font-size: 10pt;">${noticevo.writedate}</span>
+						<span id="name" style="display:block; font-size: 10pt;">${noticevo.name} · ${noticevo.position } ▶ <span id="deptname" style="font-size: 10pt;">{noticevo.deptname }</span></span>  
+						
+						<span id="content" class="spanBlock mt-2" style="color: gray">${noticevo.content}</span>
+						&nbsp;&nbsp;
+						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
+					</div>
+					<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
+					<button class="listBnt">삭제하기</button>
+				</div>
 			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-			<button class="listBnt">삭제하기</button>
-		</div>
-	</div>
+		</c:forEach>
+	</c:if>	
+</div> <%-- 공지 리스트(boardlist) 끝 --%>	
 	
-	
-	<%-- test row --%>
-	
-	<div class="listRow">
-		<div class="listRowInside">
-			<div id="prof" class="mt-3">전공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
-				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
-					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
-				<span style="color: green;">[6]</span>	
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 
-				<span class="spanBlock mt-2" style="color: gray">공지 내용 보여주는 곳입니다</span>
-				&nbsp;&nbsp;
-				<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
-			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-			<button class="listBnt">삭제하기</button>
-		</div>
-	</div>
-	
-	<div class="listRow">
-		<div class="listRowInside">
-			<div id="prof" class="mt-3">전공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
-				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
-					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
-				<span style="color: green;">[6]</span>	
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 
-				<span class="spanBlock mt-2" style="color: gray">공지 내용 보여주는 곳입니다</span>
-				&nbsp;&nbsp;
-				<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
-			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-			<button class="listBnt">삭제하기</button>
-		</div>
-	</div>
-	
-	<div class="listRow">
-		<div class="listRowInside">
-			<div id="prof" class="mt-3">전공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal()">
-				<span style="font-weight: bold;"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
-					연말까지 모두 열심히 일하도록 합시다.</span>&nbsp;
-				<span style="color: green;">[6]</span>	
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 전체</span> 
-				<span class="spanBlock mt-2" style="color: gray">공지 내용 보여주는 곳입니다</span>
-				&nbsp;&nbsp;
-				<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
-			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-			<button class="listBnt">삭제하기</button>
-		</div>
-	</div>
-	
-</div> <%-- 공지 리스트(boardlist) 끝 --%>
+<%-- 공지 상세 모달 --%>
+<%@ include file="detail/noticeDetail.jsp" %>
 
 
 <%-- 공지 수정 모달 --%>
 <%@ include file="edit/noticeEdit.jsp" %>
 
 
-<%-- 공지 상세 모달 --%>
-<%@ include file="detail/noticeDetail.jsp" %>

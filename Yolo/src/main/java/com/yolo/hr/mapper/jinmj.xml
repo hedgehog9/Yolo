@@ -15,43 +15,17 @@
 		from TBL_DEPT
 		where upper_deptno = #{deptno}
 	</select>
+
 	
-	
-	<!-- <resultMap type="HashMap" id="deptPeopleMap">
-		<result property="empno" column="empno" javaType="String"/>
-		<result property="name" column="name" javaType="String"/>
-	</resultMap>
-	<select id="selectDept" resultMap="deptPeopleMap" parameterType="String">
-		select M.empno, M.name
-		from TBL_EMPLOYEES M join  TBL_DEPT D
-		on M.fk_deptno = D.deptno
-		where  STATUS='재직' AND ( fk_deptno = #{deptno} OR upper_deptno = #{deptno} )
-		order by M.fk_deptno asc;
-	</select> -->
-	
-	
-	<!-- 부서 사람들 조회하기 -->
-	<resultMap type="HashMap" id="deptPeopleMap">
-		<result property="empno" column="empno" javaType="String"/>
-		<result property="name" column="name" javaType="String"/>
-	</resultMap>
-	<select id="selectDeptPerson" parameterType="String" resultMap="deptPeopleMap">
-		select empno, name
-		from TBL_EMPLOYEES
-		where STATUS='재직' AND fk_deptno = #{deptno}
-	</select>
-	
-	
-	
-	<!-- 선택한 유저 목록 가져오기 -->
-	<resultMap type="HashMap" id="chooseEmpMap">
+	<!-- 선택한 부서, 직원 목록 가져오기 -->
+	<resultMap type="HashMap" id="chooseDeptMap">
 		<result property="name" column="name" javaType="String"/>
 		<result property="position" column="position" javaType="String"/>
 		<result property="deptname" column="deptname" javaType="String"/>
 		<result property="profile_color" column="profile_color" javaType="String"/>
 		<result property="empno" column="empno" javaType="String"/>
 	</resultMap>
-	<select id="selectChooseEmp" parameterType="String" resultMap="chooseEmpMap">
+	<select id="selectChooseDept" parameterType="String" resultMap="chooseDeptMap">
 		select name, position, deptname, profile_color, empno
 		from
 		(
@@ -66,61 +40,96 @@
 	
 	
 	
-	<!-- 공지 알림 보내기 -->
-	<insert id="insertSendNotice" parameterType="String"  >
-		${sql}
+	<!-- 공지 작성하기 -->
+	<insert id="insertSendNotice" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		insert into tbl_notice (notino, fk_senderno, fk_deptno, notiLevel, writedate, subject, content, readCount, cmtCount, status)
+ 		values(seq_notino.nextval, #{fk_senderno}, #{fk_deptno}, default, default, #{subject}, #{content}, default, default, default)
 	</insert>
 	
 	
 	
 	<!-- 작성한 공지 리스트 가져오기 -->
 	<resultMap type="HashMap" id="NoticeMap">
+		<result property="notino" column="notino" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+		<result property="subject" column="subject" javaType="String"/>
 		<result property="name" column="name" javaType="String"/>
 		<result property="deptname" column="deptname" javaType="String"/>
 		<result property="position" column="position" javaType="String"/>
-		<result property="profile_color" column="profile_color" javaType="String"/>
-		<result property="notino" column="notino" javaType="String"/>
-		<result property="fk_recipientno" column="fk_recipientno" javaType="String"/>
-		<result property="subject" column="subject" javaType="String"/>
+		<result property="readCount" column="readCount" javaType="String"/>
 		<result property="content" column="content" javaType="String"/>
-		<result property="status" column="status" javaType="String"/>
 		<result property="writedate" column="writedate" javaType="String"/>
 		<result property="notiLevel" column="notiLevel" javaType="String"/>
-		<result property="readCount" column="readCount" javaType="String"/>
 		<result property="cmtCount" column="cmtCount" javaType="String"/>
 	</resultMap>
-	<select id="selectSentNoticeList" parameterType="String" resultMap="NoticeMap">
-		select name, deptname, position, profile_color, notino , fk_recipientno, subject, content, status
-			,  to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
-			, notiLevel, readCount, cmtCount
-		from
+	<select id="allNoticeList" parameterType="String" resultMap="NoticeMap">
+		
+	 select notino, profile_color, subject, name, deptname, position, readCount, content 
+      	  , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
+      	  , notiLevel, cmtCount
+	 from
+	 (  
+	 	   select notino, fk_deptno, fk_senderno, subject, content, writedate, notiLevel, readCount, cmtCount
+	 	   from tbl_notice
+	 	   where status = 1 and fk_deptno = func_get_notice_deptno(#{fk_deptno})
+    
+	 )
+	 join 
+	 ( 
+		   select name, deptname, position, profile_color, empno
+	       from TBL_EMPLOYEES M join TBL_DEPT D
+	 	   on M.fk_deptno = D.deptno
+	
+	) 
+	on fk_senderno = empno
+ 
+	order by WRITEDATE desc
+	
+	</select>
+
+	
+	<!-- 전체 공지사항 공지글 1개 조회하기 -->
+ 	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
+	<select id="showNoticeContent" parameterType="String" resultMap="NoticeMap">
+		select subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, position, profile_color
+		from 
+		( 
+		  select subject, content, writedate, fk_senderno
+		  from tbl_notice
+		  where notino = #{notino}
+		)
+		join 
 		(
-		    select notino , FK_RECIPIENTNO, SUBJECT, CONTENT, STATUS, WRITEDATE, notiLevel, readCount, cmtCount
+		  select name, deptname, position, profile_color, empno, deptno
+		  from TBL_EMPLOYEES M join TBL_DEPT D
+		  on M.fk_deptno = D.deptno
+		)
+		on fk_senderno = empno
+	</select>
+	
+
+
+	<!-- 내가 쓴 글 공지리스트 -->
+	<select id="MyNoticeList" parameterType="String" resultMap="NoticeMap">
+		select profile_color, subject, name, deptname, position, readCount, content
+      		 , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
+      		 , notiLevel, cmtCount
+		from
+		(  
+		    select notino, fk_deptno, fk_senderno, subject, content, writedate, notiLevel, readCount, cmtCount
 		    from tbl_notice
-		    where FK_SENDERNO = #{empno}
+		    where status = 1 and fk_deptno = func_get_notice_deptno(#{fk_deptno})
 		)
 		join 
 		( 
-		    select empno, NAME, position, DEPTNAME, PROFILE_COLOR
-		    from TBL_EMPLOYEES M join  TBL_DEPT D
+		    select name, deptname, position, profile_color, empno
+		    from TBL_EMPLOYEES M join TBL_DEPT D
 		    on M.fk_deptno = D.deptno
 		
 		) 
-		on FK_RECIPIENTNO = empno
+		on fk_senderno = empno
+  		where fk_senderno = #{empno}
 		order by WRITEDATE desc
-	
 	</select>
-	
-	<!--  
-	<select id="wholeNoticeList" resultType="com.yolo.hr.jinji.notice.model.NoticeVO">
-		SELECT N.notino, N.fk_senderno, N.notiLevel, to_char(N.writedate, 'yyyy-mm-dd') AS writedate, N.subject, N.content, N.readCount, N.cmtCount
-		      , E.name, E.profile_color
-		FROM tbl_notice N
-		JOIN tbl_employees E
-		ON N.fk_senderno = E.empno
-		order by notino desc
-	</select>
-	-->
-
 
 </mapper>
