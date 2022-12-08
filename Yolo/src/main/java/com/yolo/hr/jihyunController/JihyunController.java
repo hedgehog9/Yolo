@@ -49,8 +49,8 @@ public class JihyunController {
 		
 		// 가라 세션
 		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1050");
-		// loginuser.setEmpno("1001");
+		// loginuser.setEmpno("1050");
+		loginuser.setEmpno("1001");
 		HttpSession session = request.getSession();
 		session.setAttribute("loginuser", loginuser);
 		// 가라세션 끝
@@ -70,23 +70,16 @@ public class JihyunController {
 			list.action?searchType=name&searchWord=&currentShowPageNo=2 또는
 		*/
 		
-		String searchType = request.getParameter("searchType");
 		String searchWord = request.getParameter("searchWord"); 
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		
-		if(searchType==null || !("subject".equals(searchType) || "name".equals(searchType) )){ // 호옥시나 "null"이 들어오면 매퍼에서 못골라주잔슴
-			searchType = "";
-		}
 		
 		if(searchWord==null || "".equals(searchWord.trim())){
 			searchWord = "";
 		}
 		
 		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("searchType", searchType);
 		paraMap.put("searchWord", searchWord);
-		paraMap.put("empnoType", "FK_SENDERNO");
 		paraMap.put("empno", loginuser.getEmpno());
 		
 		// 먼저 총 게시물 건수 (total Count를 구해와야 한다 )
@@ -146,8 +139,8 @@ public class JihyunController {
 	    
 		List<Map<String, String>> sentMsgList = service.getSentMsgList(paraMap); // 페이징처리를 한 메신저 가져오기 검색 잇 없 모두 포함
 		
-		if(!"".equals(searchType) && !"".equals(searchWord)) {
-			mav.addObject("paraMap", paraMap);
+		if(!"".equals(searchWord)) {
+			mav.addObject("searchWord", searchWord);
 		}
 		
 		// === #121. 페이지바 만들기 === //
@@ -212,8 +205,8 @@ public class JihyunController {
 		
 		// === [처음][이전] 만들기 === //
 		if(pageNo!=1) {
-			pageBar += "<a class='last' style='margin-left:auto;' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'><li><<</li></a>";
-			pageBar += "<a class='box' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><li>Previous</li></a>";
+			pageBar += "<a class='last' style='margin-left:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo=1'><li><<</li></a>";
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><li>Previous</li></a>";
 		}
 		
 		
@@ -221,10 +214,10 @@ public class JihyunController {
 			
 			// 현재 보고있는 페이지와 같은 페이지 번호라면 앵커태그를 줄 필요가 업잔슴
 			if(pageNo == currentShowPageNo) { 
-				pageBar += "<a class='is-active' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+				pageBar += "<a class='is-active' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
 				
 			} else {
-				pageBar += "<a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+				pageBar += "<a href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
 			}
 			
 			loop++;
@@ -234,8 +227,8 @@ public class JihyunController {
 		
 		// === [다음][마지막] 만들기 === //
 		if(pageNo<=totalPage) {
-			pageBar += "<a class='box' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo)+"'><li>Next</li></a>";
-			pageBar += "<a class='last' style='margin-right:auto;' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><li>>></li></a>";
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo)+"'><li>Next</li></a>";
+			pageBar += "<a class='last' style='margin-right:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><li>>></li></a>";
 		}
 		
 		pageBar += "</ul>";
@@ -257,11 +250,15 @@ public class JihyunController {
 		
 		// 가라 세션
 		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1001");
-		// loginuser.setEmpno("1050");
+		// loginuser.setEmpno("1001");
+		loginuser.setEmpno("1050");
 		HttpSession session = request.getSession();
 		session.setAttribute("loginuser", loginuser);
 		// 가라세션 끝
+		
+		// empno 넘어오면 request 영역에 담아줘야 한다
+		String empno = request.getParameter("empno"); 
+		mav.addObject("empno", empno);
 		
 		
 		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 시작 === //
@@ -279,23 +276,15 @@ public class JihyunController {
 			list.action?searchType=name&searchWord=&currentShowPageNo=2 또는
 		*/
 		
-		String searchType = request.getParameter("searchType");
 		String searchWord = request.getParameter("searchWord"); 
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
-		
-		
-		if(searchType==null || !("subject".equals(searchType) || "name".equals(searchType) )){ // 호옥시나 "null"이 들어오면 매퍼에서 못골라주잔슴
-			searchType = "";
-		}
 		
 		if(searchWord==null || "".equals(searchWord.trim())){
 			searchWord = "";
 		}
 		
 		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("searchType", searchType);
 		paraMap.put("searchWord", searchWord);
-		paraMap.put("empnoType", "FK_RECIPIENTNO");
 		paraMap.put("empno", loginuser.getEmpno());
 		
 		// 먼저 총 게시물 건수 (total Count를 구해와야 한다 )
@@ -309,7 +298,7 @@ public class JihyunController {
 		int endRno = 0;   // 끝 행번호
 		
 		// 총 게시물 건수 (total Count) 
-		totalCount = service.getTotalCount(paraMap);
+		totalCount = service.getTotalCount2(paraMap);
 		// System.out.println("확인용 totalCount : " + totalCount);
 		
 		// 만약에 총 게시물 건수(totalCount)가 22라면 총페이지수는 3개가 되어야 한다
@@ -355,8 +344,8 @@ public class JihyunController {
 	    
 		List<Map<String, String>> receivedMsgList = service.getReceivedMsgList(paraMap); // 페이징처리를 한 메신저 가져오기 검색 잇 없 모두 포함
 		
-		if(!"".equals(searchType) && !"".equals(searchWord)) {
-			mav.addObject("paraMap", paraMap);
+		if(!"".equals(searchWord)) {
+			mav.addObject("searchWord", searchWord);
 		}
 		
 		// === #121. 페이지바 만들기 === //
@@ -421,8 +410,8 @@ public class JihyunController {
 		
 		// === [처음][이전] 만들기 === //
 		if(pageNo!=1) {
-			pageBar += "<a class='last' style='margin-left:auto;' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo=1'><li><<</li></a>";
-			pageBar += "<a class='box' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><li>Previous</li></a>";
+			pageBar += "<a class='last' style='margin-left:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo=1'><li><<</li></a>";
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo-1)+"'><li>Previous</li></a>";
 		}
 		
 		
@@ -430,10 +419,10 @@ public class JihyunController {
 			
 			// 현재 보고있는 페이지와 같은 페이지 번호라면 앵커태그를 줄 필요가 업잔슴
 			if(pageNo == currentShowPageNo) { 
-				pageBar += "<a class='is-active' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+				pageBar += "<a class='is-active' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
 				
 			} else {
-				pageBar += "<a href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
+				pageBar += "<a href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+pageNo+"'><li>"+pageNo+"</li></a>";
 			}
 			
 			loop++;
@@ -443,8 +432,8 @@ public class JihyunController {
 		
 		// === [다음][마지막] 만들기 === //
 		if(pageNo<=totalPage) {
-			pageBar += "<a class='box' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+(pageNo)+"'><li>Next</li></a>";
-			pageBar += "<a class='last' style='margin-right:auto;' href='"+url+"?searchType="+searchType+"&searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><li>>></li></a>";
+			pageBar += "<a class='box' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+(pageNo)+"'><li>Next</li></a>";
+			pageBar += "<a class='last' style='margin-right:auto;' href='"+url+"?searchWord="+searchWord+"&currentShowPageNo="+totalPage+"'><li>>></li></a>";
 		}
 		
 		pageBar += "</ul>";
@@ -888,6 +877,17 @@ public class JihyunController {
 		msgvo.setFk_senderno(loginuser.getEmpno());
 		
 		service.deleverMessenger(deliverMsgvo, msgvo); // 메신저 전달하기
+		
+	}
+	
+	
+	// 메신저 발송을 위해서 이름 알아오기
+	@ResponseBody
+	@RequestMapping(value = "/messenger/getEmpName.yolo", produces="text/plain;charset=UTF-8")
+	public String getEmpName(HttpServletRequest request) {
+		
+		String empno = request.getParameter("empno");
+		return service.getEmpName(empno); // 메세지 발송을 위해 사람이름 알아오기
 		
 	}
 	

@@ -112,6 +112,9 @@
 				
 				) 
 				on FK_RECIPIENTNO = empno
+				<if test='searchWord != ""'>
+					where lower(name) like '%' || lower(#{searchWord}) || '%' OR lower(subject) like '%' || lower(#{searchWord}) ||'%' OR lower(content) like '%' || lower(#{searchWord}) || '%'
+				</if>
 		)
 		where rno between #{startRno} and #{endRno}
 	</select>
@@ -140,6 +143,9 @@
 				
 				) 
 				on FK_SENDERNO = empno
+				<if test='searchWord != ""'>
+					where  lower(name) like '%' || lower(#{searchWord}) || '%' OR lower(subject) like '%' || lower(#{searchWord}) ||'%' OR lower(content) like '%' || lower(#{searchWord}) || '%'
+				</if>
 		)
 		where rno between #{startRno} and #{endRno}
 	</select>
@@ -233,16 +239,60 @@
 	</select>
 	
 	
-	<!-- 총 메신저 건 수 알아오기 (페이지네이션 용) -->
+	<!-- 총 메신저 건 수 알아오기 (페이지네이션 용) 보낸 메신저용-->
 	<select id="getTotalCount"  parameterType="HashMap" resultType="int">
 		select count(PK_MSGNO)
-	    from tbl_messenger
-	    where ${empnoType} = #{empno}
-		<if test='searchWord != ""'>
-			and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+        from
+        (
+            select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE, having_attach
+            from tbl_messenger
+            where FK_SENDERNO =#{empno}
+            order by WRITEDATE desc
+        )
+        join 
+        ( 
+            select empno, NAME, DEPTNAME, POSITION, PROFILE_COLOR
+            from TBL_EMPLOYEES M join  TBL_DEPT D
+            on M.fk_deptno = D.deptno
+        
+        ) 
+        on FK_RECIPIENTNO = empno
+        <if test='searchWord != ""'>
+			where lower(name) like '%' || lower(#{searchWord}) || '%' OR lower(subject) like '%' || lower(#{searchWord}) ||'%' OR lower(content) like '%' || lower(#{searchWord}) || '%'
 		</if>
 	</select>
 	
+	
+	<!-- 총 메신저 건 수 알아오기 (페이지네이션 용) 받은 메신저용-->
+	<select id="getTotalCount2"  parameterType="HashMap" resultType="int">
+		select count(PK_MSGNO)
+        from
+        (
+            select PK_MSGNO , FK_RECIPIENTNO, ORIGIN_MSGNO, SUBJECT, CONTENT, VIEW_STATUS, WRITEDATE, having_attach, FK_SENDERNO 
+            from tbl_messenger
+            where FK_RECIPIENTNO =#{empno}
+            order by WRITEDATE desc
+        )
+        join 
+        ( 
+            select empno, NAME, DEPTNAME, POSITION, PROFILE_COLOR
+            from TBL_EMPLOYEES M join  TBL_DEPT D
+            on M.fk_deptno = D.deptno
+        
+        ) 
+        on FK_SENDERNO  = empno
+        <if test='searchWord != ""'>
+			where lower(name) like '%' || lower(#{searchWord}) || '%' OR lower(subject) like '%' || lower(#{searchWord}) ||'%' OR lower(content) like '%' || lower(#{searchWord}) || '%'
+		</if>
+	</select>
+	
+	
+	<!-- 메세지 발송을 위해 사람이름 알아오기 -->
+	<select id="getEmpName" parameterType="String" resultType="String">
+		select name
+		from TBL_EMPLOYEES
+		where empno = #{empno}
+	</select>
 	
 	
 	
