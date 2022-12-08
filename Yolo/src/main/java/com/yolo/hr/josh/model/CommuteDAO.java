@@ -63,5 +63,26 @@ public class CommuteDAO implements InterCommuteDAO {
 		int totalPage = sqlsession.selectOne("josh.commuteTotalPage", paraMap);
 		return totalPage;
 	}
+
+	// 급여정산 후에 리스트 불러오기
+	@Override
+	public List<HashMap<String, String>> getPaymentList(Map<String, Object> paraMap) {
+		List<HashMap<String, String>> getPaymentList = sqlsession.selectList("josh.getPaymentList",paraMap);
+		return getPaymentList;
+	}
+
+	// 급여정산 totalPage
+	@Override
+	public int paymentListTotalPage(Map<String, Object> paraMap) {
+		int totalPage = sqlsession.selectOne("josh.paymentListTotalPage", paraMap);
+		return totalPage;
+	}
+
+	// 급여정보 보내서 insert 하기
+	@Override
+	public int checkedPayment(List<Map<String, Object>> paraList) {
+		int n = sqlsession.insert("josh.checkedPayment", paraList);
+		return n;
+	}
 	
 }

@@ -1,7 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>  
+
 <% String ctxPath = request.getContextPath(); %>
+
+<link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
+<script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
 
 <style>
 
@@ -40,16 +45,15 @@
 
     $(document).ready(function() {
 
-    	$("#year-select").val() /* 페이지진입할때 백단에서 이번달 값꽂아주기 */
-    	
-        $("#year-select").monthpicker({
-            monthNames: ['1월(JAN)', '2월(FEB)', '3월(MAR)', '4월(APR)', '5월(MAY)', '6월(JUN)',
-                '7월(JUL)', '8월(AUG)', '9월(SEP)', '10월(OCT)', '11월(NOV)', '12월(DEC)'],
-            monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-            changeYear: false,
-            yearRange: 'c-2:c+2',
-            dateFormat: 'yy-mm'
-        });
+    	 var calYearKo = new tui.DatePicker('#datepicker-year-ko', {
+             date: new Date(),
+             language: 'ko',
+             type: 'year',
+             input: {
+                 element: '#datepicker-input-ko',
+                 format: 'yyyy'
+             }
+         });
 
     });
 
@@ -61,9 +65,15 @@
     <div id="pay-stub-content">
         <div id="category" class="d-flex">
             <a href="#" class="text-muted font-weight-bold mr-2 detail-category border-bottom border-dark"><span>급여명세서 목록</span></a> <!-- border-bottom border-dark 을 사용하여 url에 따라 밑줄 생성 -->
+            <c:if test="${sessionScope.loginuser.empno == 9999}">
             <a href="<%= ctxPath%>/admin/payment.yolo" class="text-muted font-weight-bold mr-2 detail-category"><span>급여정산 및 지급</span></a>
+            </c:if>
             <div style="margin-left: auto" class="pt-3">
-                <input type="text" id="year-select" class="form-control text-center" style="width: 100px" readonly/>
+                   <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+                        <input type="text" id="datepicker-input-ko" aria-label="Date-Time">
+                        <span class="tui-ico-date"></span>
+                    </div>
+                    <div class="datepicker-cell" id="datepicker-year-ko"></div>
             </div>
         </div>
         <div>
