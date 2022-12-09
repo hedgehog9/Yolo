@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -62,6 +63,34 @@ public class CommuteDAO implements InterCommuteDAO {
 	public int commuteTotalPage(Map<String, Object> paraMap) {
 		int totalPage = sqlsession.selectOne("josh.commuteTotalPage", paraMap);
 		return totalPage;
+	}
+
+	// 급여정산 후에 리스트 불러오기
+	@Override
+	public List<HashMap<String, String>> getPaymentList(Map<String, Object> paraMap) {
+		List<HashMap<String, String>> getPaymentList = sqlsession.selectList("josh.getPaymentList",paraMap);
+		return getPaymentList;
+	}
+
+	// 급여정산 totalPage
+	@Override
+	public int paymentListTotalPage(Map<String, Object> paraMap) {
+		int totalPage = sqlsession.selectOne("josh.paymentListTotalPage", paraMap);
+		return totalPage;
+	}
+
+	// 급여정보 보내서 insert 하기
+	@Override
+	public int checkedPayment(List<Map<String, Object>> paraList) {
+		int n = sqlsession.insert("josh.checkedPayment", paraList);
+		return n;
+	}
+
+	// 급여 명세서를 가져오는 메소드
+	@Override
+	public List<Map<String, String>> getPayStubList(Map<String, Object> paraMap) {
+		List<Map<String, String>> payStubList = sqlsession.selectList("josh.getPayStubList", paraMap);
+		return payStubList;
 	}
 	
 }

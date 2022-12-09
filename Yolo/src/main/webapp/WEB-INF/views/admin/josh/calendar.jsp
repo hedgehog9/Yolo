@@ -303,7 +303,7 @@
           				if(json.joinuser != undefined) {
           					const joinuser = json.joinuser.split(",")
           					for(var i=0; i<joinuser.length; i++) {
-          						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle'></i></div>");
+          						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
           						
           					}
           				}
@@ -315,6 +315,7 @@
           				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
           					$("button#schedule_modify").hide();
           					$("button#schedule_delete").hide();
+          					$("i#x-button").hide();
           					
           					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
           					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
@@ -324,6 +325,7 @@
           				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
           					$("button#schedule_modify").show();
           					$("button#schedule_delete").show();
+          					$("i#x-button").show();
           					
           					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
           					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
@@ -641,7 +643,7 @@
 		}
 		
 		else {
-			$("div.displayUserList").append("<div class='plusUser'>"+value+"&nbsp;<i class='fas fa-times-circle'></i></div>");
+			$("div.displayUserList").append("<div class='plusUser'>"+value+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
 			
 		}
 		

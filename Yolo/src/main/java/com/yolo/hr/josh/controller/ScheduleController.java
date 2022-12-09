@@ -115,6 +115,8 @@ public class ScheduleController {
 		
 		int n = service.updateSchedule(scvo);
 		
+	    System.out.println(scvo.getJoinuser());
+		
 		JSONObject jsonObj = new JSONObject();
 		
 		jsonObj.put("n", n);
@@ -163,6 +165,7 @@ public class ScheduleController {
 				jsonObj.put("category", scvo.getCategory());
 				jsonObj.put("fk_deptno", scvo.getFk_deptno());
 				jsonObj.put("joinuser", scvo.getJoinuser());
+				jsonObj.put("place", scvo.getPlace());
 				
 				jsonArr.put(jsonObj);
 			}

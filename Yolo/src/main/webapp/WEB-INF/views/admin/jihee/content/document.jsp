@@ -2,6 +2,12 @@
     pageEncoding="UTF-8"%>
 <% String ctxPath = request.getContextPath(); %>    
 
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
+
 <style type="text/css">
 
 
@@ -95,10 +101,12 @@
 	height: 25px; 
 	background-color: #c1f0c1;
 	border-radius: 0.5rem;
-	color: black;
+	color: #4d4d4d;;
 	text-align: center;
 	/* border: 1px solid #ccced0; */
 	margin: auto;
+
+
 	}
 	
 	div#contents:hover {
@@ -131,28 +139,28 @@
 	}
 	
 	div#modalStatus{
-	width: 400px; 
-	height: 40px; 
+	width: 450px; 
+	height: 50px; 
 	background-color: #eafaea;
 	border-radius: 15px; 
 	border : 1px solid #c1f0c1;
 	color: black;
 	text-align: center;
 	/* border: 1px solid #ccced0; */
-	margin: 10px auto;
-	padding-top: 5px;
+	margin: 10px 8px 20px 8px;
+	padding-top: 11.5px;
 	}
 	
 	
 	div#modalContents{
 	margin-top: 40px; 
-	width : 300px;
-	height : 300px;
+	width : 500px;
+	height : 100%;
 	}
 	
 	div#modalNumber{
-	width : 30px;
-	height : 30px;
+	width : 35px;
+	height : 35px;
 	border-radius: 50%; 
 	border : 1px solid #ccced0;
 	color: black;
@@ -161,8 +169,8 @@
 	}
 	
 	span#modalSubContents{
-	width : 300px;
-	height : 300px;
+	width : 500px;
+	height : 400%;
 	border-radius: 15px; 
 	border : 1px solid gray;
 	color: black;
@@ -173,7 +181,7 @@
 	padding: 20px 10px;
 	}
 
-    span#modalprof{
+/*     span#modalprof{
 		width: 40px; 
 		height: 40px; 
 		border-radius: 40%; 
@@ -183,7 +191,20 @@
 		font-size: 10pt;
 		text-align: center;
 		padding: 9px 7px;
+	} */
+	
+	 span#modalprof{
+		width: 45px; 
+		height: 45px; 
+		border-radius: 40%; 
+		 background-color: #239afe; 
+		color: white;
+		border: 0px solid #ccced0;
+		font-size: 12pt;
+		text-align: center;
+		padding: 9px 7px;
 	}
+	
 	
 	
   table{
@@ -192,25 +213,47 @@
     border-radius: 10px;
     border-style: hidden;
     box-shadow: 0 0 0 1px #ccced0;
-    width: 350px;
-    height : 70px;
+    width: 380px;
+    height : 80px;
     
   }
   
   td {
-  	padding :10px;
+   
   }
   
   td.td-2 {
-  	width: 60%;
+  	width: 50%;
   }
   
-  span#status2{
+    td {
+  	/* padding :10px 15px; */ /* 이거만 살리기 */
+  	/* border : 1px solid; */
+  }
+  
+/*   td.td-2 {
+  	width: 50%;
+  }	 */
+  
+/*   span#status2{
 	width: 55px; 
 	height: 25px; 
 	background-color: #c1f0c1;
 	border-radius: 20%; 
 	color: black;
+	text-align: center;
+	 border: 1px solid #ccced0; 
+	margin: auto;
+  } */
+  
+  span#status2{
+	width: 60px; 
+	height: 30px; 
+	background-color: #c1f0c1;
+	border-radius: 0.5rem;
+	font-weight : bold;
+	font-size : 14pt;
+	color: #4d4d4d;;
 	text-align: center;
 	/* border: 1px solid #ccced0; */
 	margin: auto;
@@ -229,8 +272,9 @@
 	}
   
   div#modal-body{
-  
- 	height: 500px;
+  	
+ 	height: 100%;
+ 	margin-bottom: 30px;
   }
 	
   div#startContents{
@@ -373,6 +417,7 @@
  	background-color: #efefef;
   } 
 	
+
 </style>
 
 <script type="text/javascript">
@@ -380,9 +425,15 @@
 	 $(document).ready(function(){
 		
 	 	// 문서 띄우기 에이젝스 함수
-	  	goReadDocument(); 
-	  	myDocument();
-		 
+	 	myDocument();
+	 	
+	 	const doc_no = ${requestScope.doc_no};
+	 	const emp_no = ${requestScope.empno};
+	 	//alert(doc_no);
+		
+	 	goReadDocument(doc_no,emp_no);
+		
+	  	
 	 	//체크박스 체크되면 전체 체크박스 선택
 	    $(".allCheckBox").click(function(){
 			var bool = $(this).is(":checked");
@@ -432,6 +483,7 @@
 		
 	}); 
 	 
+	 
 	//수정하기 창으로 이동
 	function goModify() {
 		
@@ -441,108 +493,114 @@
 
 	
 	//문서 자세히 에이젝스 
-	function goReadDocument() {
-	  
+	function goReadDocument(doc_no,emp_no) {
+		 
+	       // alert("문서번호 " + doc_no +"/ empno:" + emp_no);
+	
 	  $.ajax({
 		  url:"<%= request.getContextPath()%>/workflow/documentDetail.yolo",
-		  data:{},
+		  data:{"doc_no":doc_no,
+			  	"emp_no":emp_no},
 		  dataType:"JSON",
 		  success:function(json){
-
 			  let html = "";
-
-				  html += 
-					"<div style='padding : 15px 10px' id='contents' data-bs-toggle='modal' data-bs-target='#exampleModal' onclick='#'>"+
-				    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;1/2&nbsp; </span>"+
-				    	"<span style='font-size: 12pt;'> &nbsp;&nbsp;1단계 승인대기 중입니다.</span>" +
-				    	"&nbsp;&nbsp;&nbsp;&nbsp;"+
-				    	"<span style='float:right; color:#cccccc; font-weight: bold; padding-left: 20px; font-size:12pt;'>></span>"+
-				    	"<span id='profile' style='float:right; margin-bottom: 5px;'>이름</span>"+
-				    	"<span id='profile' style='float:right; margin-bottom: 5px;'>이름</span>"+ 
+			if(json.doc_no !=null) {
+				//console.log(json.doc_subject);
+	 				  html += 
+						"<div style='padding : 15px 10px' id='contents' data-bs-toggle='modal' data-bs-target='#exampleModal' onclick='approvalModal("+json.doc_no+"," +json.fk_writer_empno+")'>"+
+					    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;1/2&nbsp; </span>"+
+					    	"<span style='font-size: 12pt;'> &nbsp;&nbsp;1단계 승인대기 중입니다.</span>" +
+					    	"&nbsp;&nbsp;&nbsp;&nbsp;"+
+					    	"<span style='float:right; color:#cccccc; font-weight: bold; padding-left: 20px; font-size:12pt;'>></span>"+
+					    	"<span id='profile' style='float:right; margin-bottom: 5px;'>이름</span>"+
+					    	"<span id='profile' style='float:right; margin-bottom: 5px;'>이름</span>"+ 
+				    	"</div>"+
+		   	  			"<div id='parent'>"+
+					    	"<div id='child' style='margin:17px 0px 10px 10px; font-size: 25pt; font-weight: bold;'>"+
+					    	""+json.doc_subject+"</div>"+
+					    	"<div id='icon' style='margin-top:22px; float: right;'>"+
+				    			"<div id='iconhover' onclick='goModify();'>"+
+										"<i class='bi bi-pencil-fill' style='font-size: 13pt;'></i>"+
+										"&nbsp;<span style='font-size: 13pt;'>수정</span>"+
+									"</div>"+
+						    	"</div>"+
+					    	"</div>"+				    	
+				    	"</div>"+
+				    	"<div style='padding : 10px; padding-bottom: 20px;' class='border-bottom'>"+
+			    		"<span id='profile' style='margin-right: 10px;'>"+json.name.substring(1,3)+"</span> "+
+			    		"<span id='sizebold'>"+json.name+" ·</span> <span style='font-size: 13pt;'>"+json.position+"</span>"+
+			    		"<span style='font-size: 12pt; float:right; color:gray;'>"+
+			    		"<i class='bi bi-table'></i> &nbsp;&nbsp;"+
+			    		""+json.writeday+"</span>"+
 			    	"</div>"+
-	   	  			"<div id='parent'>"+
-				    	"<div id='child' style='margin:17px 0px 10px 10px; font-size: 25pt; font-weight: bold;'>"+
-				    	"디자인 요청(제목)</div>"+
-				    	"<div id='icon' style='margin-top:22px; float: right;'>"+
-			    			"<div id='iconhover' onclick='goModify();'>"+
-									"<i class='bi bi-pencil-fill' style='font-size: 13pt;'></i>"+
-									"&nbsp;<span style='font-size: 13pt;'>수정</span>"+
-								"</div>"+
-					    	"</div>"+
-				    	"</div>"+				    	
+			    	
+			    	"<div style='padding : 10px; padding-bottom: 40px; margin-top: 20px;'  class='border-bottom'>"+
+			    		"<span><i class='bi bi-chat-left-text'></i></span>"+
+			    		"<span class='font'>&nbsp;&nbsp;요청 내용 </span>"+
+			    		"<div style='font-size: 12pt; margin-top: 5px;'>"+
+			    			""+json.doc_contents+
+			    		"</div>"+
+			    		
+			    		"<div style='margin-top: 20px;'>"+
+				    		"<span><i class='bi bi-calendar4-event'></i></span>"+
+				    		"<span class='font' style='margin-right: 10px;'>&nbsp;&nbsp;희망기한 </span>"+
+				    		"<span style='font-size:11pt; color:#262626;'>"+json.d_day.substring(0,10)+" </span>"+
+						"</div>"+
+						
+						"<button type='button' id='denial' class='bhover'>반려</button>"+
+						"&nbsp;<button type='button' id='accept' class='bhover'>✓ 승인</button>"+
+			    		
 			    	"</div>"+
-			    	"<div style='padding : 10px; padding-bottom: 20px;' class='border-bottom'>"+
-		    		"<span id='profile' style='margin-right: 10px;'>이름</span> "+
-		    		"<span id='sizebold'>이름 ·</span> <span style='font-size: 13pt;'>직책</span>"+
-		    		"<span style='font-size: 12pt; float:right; color:gray;'>"+
-		    		"<i class='bi bi-table'></i> &nbsp;&nbsp;"+
-		    		"2022.11.28(화) 14:25(날짜 코딩)</span>"+
-		    	"</div>"+
-		    	
-		    	"<div style='padding : 10px; padding-bottom: 40px; margin-top: 20px;'  class='border-bottom'>"+
-		    		"<span><i class='bi bi-chat-left-text'></i></span>"+
-		    		"<span class='font'>&nbsp;&nbsp;요청 내용 </span>"+
-		    		"<div style='font-size: 11.5pt; margin-top: 5px;'>"+
-		    			"요청내용은 이러합니다. "+
-		    			" 이렇게 들어주셨으면 좋겠습니다. <br>"+
-		    			"이러이러한 사유로<br>"+
-		    			"그렇게 됐다."+
-		    		"</div>"+
-		    		
-		    		"<div style='margin-top: 20px;'>"+
-			    		"<span><i class='bi bi-calendar4-event'></i></span>"+
-			    		"<span class='font' style='margin-right: 10px;'>&nbsp;&nbsp;희망기한 </span>"+
-			    		"<span style='font-size:11pt; color:#262626;'>2022.11.28(화) 14:25(날짜 코딩) </span>"+
+			    	
+			    	// 첨부파일 토글버튼 
+			    	"<div style='padding : 10px;  padding-bottom: 40px; margin-top: 20px;'  class='border-bottom'>"+
+				    	"<p class='p'  data-bs-toggle='collapse' href='#collapseExample' role='button' aria-expanded='false' aria-controls='collapseExample'>"+
+				    	  "<span><i class='bi bi-paperclip'></i></span>&nbsp;"+
+						  "<span class='font'>"+
+						    "첨부파일"+
+						  "</span>"+
+						  "<span class='font' style='float: right;'> > </span>"+
+						"</p>"+
+						"<div class='collapse' id='collapseExample'>"+
+						  "<div class='' style='margin-left: 10px;'>"+  
+						    "첨부파일 이지롱<br>"+
+						     "그렇게<br>"+
+						     "됐다"+		    
+						  "</div>"+
+						"</div>"+
 					"</div>"+
 					
-					"<button type='button' id='denial' class='bhover'>반려</button>"+
-					"&nbsp;<button type='button' id='accept' class='bhover'>✓ 승인</button>"+
-		    		
-		    	"</div>"+
-		    	
-		    	// 첨부파일 토글버튼 
-		    	"<div style='padding : 10px;  padding-bottom: 40px; margin-top: 20px;'  class='border-bottom'>"+
-			    	"<p class='p'  data-bs-toggle='collapse' href='#collapseExample' role='button' aria-expanded='false' aria-controls='collapseExample'>"+
-			    	  "<span><i class='bi bi-paperclip'></i></span>&nbsp;"+
-					  "<span class='font'>"+
-					    "첨부파일"+
-					  "</span>"+
-					  "<span class='font' style='float: right;'> > </span>"+
-					"</p>"+
-					"<div class='collapse' id='collapseExample'>"+
-					  "<div class='' style='margin-left: 10px;'>"+  
-					    "첨부파일 이지롱<br>"+
-					     "그렇게<br>"+
-					     "됐다"+		    
-					  "</div>"+
-					"</div>"+
-				"</div>"+
-				
-				//히스토리 토글버튼 
-		    	"<div style='padding : 10px; padding-bottom: 40px; margin-top: 20px;'>"+
-				   	"<p class='p'  data-bs-toggle='collapse' href='#collapseExample2' role='button' aria-expanded='false' aria-controls='collapseExample2'>"+
-				   	  "<span><i class='bi bi-clock'></i></span>&nbsp;"+
-					  "<span class='font'>"+
-					   "히스토리"+
-					  "</span>"+
-					  "<span class='font' style='float: right;'> > </span>"+
-					"</p>"+
-					"<div class='collapse' id='collapseExample2'>"+
-					  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
-					  "<span><i class='bi bi-pencil-square'></i></span>"+
-					  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-					  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 작성했습니다.</span>"+
-					  "</div>"+
-					  
-					  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
-					  "<span><i class='bi bi-pencil-square'></i></span>"+
-					  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-					  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 수정했습니다.</span>"+
-					  "</div>"+
-					"</div>"+
-				"</div>";
-		    	
-				
+					//히스토리 토글버튼 
+			    	"<div style='padding : 10px; padding-bottom: 40px; margin-top: 20px;'>"+
+					   	"<p class='p'  data-bs-toggle='collapse' href='#collapseExample2' role='button' aria-expanded='false' aria-controls='collapseExample2'>"+
+					   	  "<span><i class='bi bi-clock'></i></span>&nbsp;"+
+						  "<span class='font'>"+
+						   "히스토리"+
+						  "</span>"+
+						  "<span class='font' style='float: right;'> > </span>"+
+						"</p>"+
+						"<div class='collapse' id='collapseExample2'>"+
+						  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
+						  "<span><i class='bi bi-pencil-square'></i></span>"+
+						  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
+						  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 작성했습니다.</span>"+
+						  "</div>"+
+						  
+						  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
+						  "<span><i class='bi bi-pencil-square'></i></span>"+
+						  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
+						  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 수정했습니다.</span>"+
+						  "</div>"+
+						"</div>"+
+					"</div>";	
+	 				 approvalModal(doc_no,emp_no);
+				}
+				else {
+					html +="<div>"+
+					"안나옴"+
+					"</div>";
+			    	
+				}
 			  $("div#rightFirst").html(html);
 		  },
 		  error: function(request, status, error){
@@ -550,9 +608,64 @@
 		  }
 	  });
 	  
+	  
   }// end of function goReadDocument()--------------------------- 
 	
-
+	// 결제라인 알아오는 모달
+	function approvalModal(doc_no, emp_no) {
+		  
+		  $.ajax({
+			  url:"<%= request.getContextPath()%>/workflow/modalApproval.yolo",
+			  data:{"doc_no":doc_no,
+				  	"emp_no":emp_no},
+			  dataType:"JSON",
+			  success:function(json){
+				  let html = ""
+				if(json.length > 0) {
+					$.each(json, function(index, item){	
+						console.log(item.name);
+						 html +=  "<div id='modalNumber' style=' float:left; margin: 35px 15px 15px 10px; font-size: 11pt; font-weight: bold; padding-top: 6px; color: #333333'>"+
+						 			"&nbsp;&nbsp;"+item.levelno+"&nbsp;&nbsp;"+
+						   		  "</div>"+
+									"<div style='float:left; margin-top: 25px; margin-bottom :10px;'>"+   
+								    	"<table>"+
+								    		"<tbody>"+
+									    		"<tr>"+
+									    			"<td rowspan='2' style='padding-left: 13px;'><span id='modalprof' style='background-color: "+item.profile_color+";'>"+item.name.substring(1,3)+"</span></td>"+
+									    		    "<td class='td-2' style='vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;'>"+item.name+"</td>"+
+									    			"<td rowspan='2' style='padding-right: 10px;''><span id='status2' style='font-size: 12pt; padding: 3px 5px; float: right;'>"+
+									    			"승인</span>	</td>"+	
+									    		"</tr>"+
+									    		"<tr>"+	
+									    			"<td style='vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;'>"+item.position+"· "+item.deptname+" </td>"+
+									    		"</tr>"+	
+									    	"</tbody>"+
+									    "</table>"+
+									    "<div style='margin-top: 12px;'>"+
+										   "<span style='font-size: 12pt;'><i class='bi bi-check-lg'></i> "+item.name+
+										   "님 승인진행중</span>"+
+										    "<span style='font-size: 12pt; float:right;'>완료시 날짜</span>"+
+									    "</div>"+ 
+					     		 	"</div>";
+		     		
+					});
+					
+					}
+					else {
+						html +="<div>"+
+						"왜이래!!!"+
+						"</div>";
+				    	
+					}
+				  $("div#approvalModal").html(html);
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  }); 
+		  
+	  }
+  
 
   //에이젝스 테스트용 ///////////////////////////////////
   	function goReadDocument2() {
@@ -666,6 +779,7 @@
   }// end of function goReadDocument()--------------------------- 
   
   
+  
   function myDocument() {
 	  
 	  $.ajax({
@@ -673,108 +787,49 @@
 		  data:{},
 		  dataType:"JSON",
 		  success:function(json){
-
+				
 			  let html = "";
-
+			  if(json.length > 0) {
+				  $.each(json, function(index, item){
+					 // console.log(item.name);
+					  
+					  html += 
+							"<div style='padding-top: 15px;' id='contents'>"+
+					    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
+						    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
+							  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
+							  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
+								  		"<label for='label-a' id='sub' >"+item.name+"</label>";
+								  		if(item.approval == 0){
+								  		html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>";
+								  		}
+								  		html+= "<br>"+
+										"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
+										"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
+										"<br>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>요청내용 : "+item.doc_contents.substring(0,6)+"</span>"+
+										"<br>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename+"</span>"+
+										"<br>"+
+										"<span>&nbsp;</span>"+
+									"</span>"+
+								"</div>"+
+				    		"</div>";
+					  
+					  
+				  });
+				  
+			  }
+			  
+			  else {
+				  
 				  html += 
-						"<div style='padding-top: 15px;' id='contents' >"+
-				    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-					    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-						  		"<span onclick='goReadDocument();'>"+
-							  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-							  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-									"<br>"+
-									"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-									"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-									"<br>"+
-									"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-									"<br>"+
-									"<span>&nbsp;</span>"+
-								"</span>"+
-							"</div>"+
-			    		"</div>"+
-			    		
-			    		
-			    		"<div style='padding-top: 15px;' id='contents' >"+
-			    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-				    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-					  		"<span onclick='goReadDocument2();'>"+
-						  		"<label for='label-a' id='sub' >에이젝트 테스트</label>"+
-						  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-								"<br>"+
-								"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-								"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-								"<br>"+
-								"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-								"<br>"+
-								"<span>&nbsp;</span>"+
-							"</span>"+
-						"</div>"+
-		    		"</div>"+
-		    		"<div style='padding-top: 15px;' id='contents' >"+
-		    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-			    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-				  		"<span onclick='goReadDocument();'>"+
-					  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-					  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-							"<br>"+
-							"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-							"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-							"<br>"+
-							"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-							"<br>"+
-							"<span>&nbsp;</span>"+
-						"</span>"+
-					"</div>"+
-	    		"</div>"+
-	    		"<div style='padding-top: 15px;' id='contents' >"+
-	    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-		    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-			  		"<span onclick='goReadDocument();'>"+
-				  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-				  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-						"<br>"+
-						"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-						"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-						"<br>"+
-						"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-						"<br>"+
-						"<span>&nbsp;</span>"+
-					"</span>"+
-				"</div>"+
-    		"</div>"+
-    		"<div style='padding-top: 15px;' id='contents' >"+
-    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-	    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-		  		"<span onclick='goReadDocument();'>"+
-			  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-			  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-					"<br>"+
-					"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-					"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-					"<br>"+
-					"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-					"<br>"+
-					"<span>&nbsp;</span>"+
-				"</span>"+
-			"</div>"+
-		"</div>"+
-		"<div style='padding-top: 15px;' id='contents' >"+
-		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-	  		"<span onclick='goReadDocument();'>"+
-		  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-		  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-				"<br>"+
-				"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-				"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-				"<br>"+
-				"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-				"<br>"+
-				"<span>&nbsp;</span>"+
-			"</span>"+
-		"</div>"+
-	"</div>";
+						"<div style='padding-top: 15px; text-align: center; font-size: 15pt; margin-top:50%;' >"+
+									
+									"내가 쓴 문서가 없습니다."+
+			    		"</div>";
+				  
+			  }	
 				
 			  $("div#startContents").html(html);
 		  },
@@ -783,7 +838,9 @@
 		  }
 	  });
 	  
-  }
+	  
+	  
+  }// end of function
   
   function waitingDm() {
 	  
@@ -1004,88 +1061,28 @@
       </div>
       <div class="modal-body" id="modal-body">
 			<div id="modalStatus">    
-	       		<span id="status" style="font-size: 10pt; "> &nbsp;1/2&nbsp; </span> 
-		    	<span style="font-size: 10pt;"> &nbsp;&nbsp;1단계 승인대기 중입니다.</span> 
+	       		<span id="status" style="font-size: 13pt; "> &nbsp;1/2&nbsp; </span> 
+		    	<span style="font-size: 13pt;"> &nbsp;&nbsp;1단계 승인대기 중입니다.</span> 
 		    </div>  
 		    
 		    <!-- <div id="modalContents">
 		    	<span id="modalNumber" style="	margin-top: 10px; margin-left : 30px; ">&nbsp;&nbsp;1&nbsp;&nbsp;</span>
 		    	<span id="modalSubContents">
 		    		<span id="modalprof">지현</span>
-					<span id="status" style="font-size: 9pt; padding: 5px;"> 진행중</span>		
+					<span id="statusstatus" style="font-size: 9pt; padding: 5px;"> 진행중</span>		
 		    	</span>
 		    	
 		    </div> -->
-		    
 		    <!-- 내용 시작 -->
-		    <div id="modalNumber" style=" float:left; margin-top: 35px; margin-left : 30px; margin-right: 15px; font-size: 10pt; font-weight: bold; padding-top: 5px; color: #333333">
-		    &nbsp;&nbsp;1&nbsp;&nbsp;
-		    </div>
-			<div style="float:left; margin-top: 20px;">   
-			    <table>
-			    	<tbody>
-			    		<tr> 
-			    			<td rowspan="2"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 11pt;">이름</td>
-			    			<td rowspan="2"><span id="status2" style="font-size: 10pt; padding: 3px 5px; float: right;"> 
-			    			진행중</span>	</td>
-			    		</tr>
-			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 10pt;">직책</td>
-			    		</tr>	
-			    	</tbody>
-			    </table>
-			    <div style="margin-top: 10px;">
-			    <span style="font-size: 10pt;"><i class="bi bi-check-lg"></i> 이름님 승인진행중</span>
-			    <span style="font-size: 10pt; float:right;">완료시 날짜</span>
-			    </div>
-     		 </div>
-     		  <!-- 내용 끝-->
-     		<div id="modalNumber" style=" float:left; margin-top: 35px; margin-left : 30px; margin-right: 15px; font-size: 10pt; font-weight: bold; padding-top: 5px; color: #333333">
-		    &nbsp;&nbsp;2&nbsp;&nbsp;
-		    </div>
-			<div style="float:left; margin-top: 20px;">   
-			    <table>
-			    	<tbody>
-			    		<tr> 
-			    			<td rowspan="2"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 11pt;">이름</td>
-			    			<td rowspan="2"><span id="status2" style="font-size: 10pt; padding: 3px 5px; float: right;"> 
-			    			진행중</span>	</td>
-			    		</tr>
-			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 10pt;">직책</td>
-			    		</tr>	
-			    	</tbody>
-			    </table>
-			    <div style="margin-top: 10px;">
-			    <span style="font-size: 10pt;"><i class="bi bi-check-lg"></i> 이름님 승인진행중</span>
-			    <span style="font-size: 10pt; float:right;">완료시 날짜</span>
-			    </div>
-     		 </div> 
-     		 <div id="modalNumber" style=" float:left; margin-top: 35px; margin-left : 30px; margin-right: 15px; font-size: 10pt; font-weight: bold; padding-top: 5px; color: #333333">
-		    &nbsp;&nbsp;3&nbsp;&nbsp;
-		    </div>
-			<div style="float:left; margin-top: 20px;">   
-			    <table>
-			    	<tbody>
-			    		<tr> 
-			    			<td rowspan="2"><span id="modalprof">지현</span></td>
-			    		    <td class="td-2" style="vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 11pt;">이름</td>
-			    			<td rowspan="2"><span id="status2" style="font-size: 10pt; padding: 3px 5px; float: right;"> 
-			    			진행중</span>	</td>
-			    		</tr>
-			    		<tr> 	
-			    			<td style="vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 10pt;">직책</td>
-			    		</tr>	
-			    	</tbody>
-			    </table>
-			    <div style="margin-top: 10px;">
-			    <span style="font-size: 10pt;">✓ 이름님 승인진행중</span>
-			    <span style="font-size: 10pt; float:right;">완료시 날짜</span>
-			    </div>
-     		 </div>
-      
+		    <div id="approvalModal">
+				    
+     		  
+     		 
+
+	    		   		
+	    		
+     		
+      	</div>
     </div>
   </div>
 </div>

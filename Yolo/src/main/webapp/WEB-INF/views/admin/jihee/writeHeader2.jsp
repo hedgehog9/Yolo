@@ -31,7 +31,7 @@ a:active {text-decoration: none; color: #cccccc;}
 			
 		  const frm = document.wirteFrm;
           frm.method = "POST";
-          frm.action = "<%= ctxPath%>/workflow.yolo";
+          frm.action = "<%= ctxPath%>/workflow/writeEnd.yolo";
           frm.submit();
 		
 	}

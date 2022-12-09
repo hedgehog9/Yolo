@@ -217,29 +217,29 @@
     <%-- Modal content --%>
     <div class="modalHeader">
     	<span style="font-size:20px;">&#128226;</span><span class="myListModalTitle ml-3" style="font-size: 20px; font-weight: bold;"> 내가 쓴 공지 </span>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+     	<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
     </div>
    	<div class="modalBody">
   	 	<div class="modal-listContent"> 
-  			<div>
-    		<span class="mt-2 mb-2" style="font-size: 13pt;"><span id="prof" class="py-2">브래드</span><span> 작성자  ▶ 인사부</span></span>
-    		<div style="float: right;">
-     		<span class="badge badge-dark py-1" style="font-size: 10pt;">작성일</span>
-     		<span class="badge badge-dark py-1" style="font-size: 10pt;">2022-12-25</span>
-    		</div>
-    	</div>
-     	<div style="margin: 5px auto; clear: right;">
-      	<span class="badge badge-light mt-3" style="margin-top: 10px; font-size: 13pt;">공지제목 쓰는 곳 &nbsp;</span>
-     	</div>
-     	<div class="filedownload">
-           <span style="font-size:10pt;"><a href="#" class="filedown">[<span style='font-size:20px;'>&#128194;</span>]
-		<span>file name.pdf</span></a>	              
-           </span>
-          </div>
-     	<div>
-     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
-     		<span style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
-     	</div>
+			<div>
+	 			<span class="mt-2 mb-2" style="font-size: 13pt;"><span id="prof" class="py-2">브래드</span><span id="name"> 작성자  ▶ 인사부</span></span>
+	 			<div style="float: right;">
+	  			<span class="badge badge-pill badge-dark py-1" style="font-size: 10pt;">작성일</span>
+	  			<span id="writedate" class="badge badge-pill badge-dark py-1" style="font-size: 10pt;">2022-12-25</span>
+	 			</div>
+	   		</div>
+	     	<div style="margin: 5px auto; clear: right;">
+	      	<span  id="subject" class="badge badge-light mt-3" style="margin-top: 10px; font-size: 13pt;">공지제목 쓰는 곳 &nbsp;</span>
+	     	</div>
+	     	<div class="filedownload">
+	           <span style="font-size:10pt;"><a href="#" class="filedown">[<span style='font-size:20px;'>&#128194;</span>]
+				<span>file name.pdf</span></a>	              
+	           </span>
+	        </div>
+	     	<div>
+	     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
+	     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
+	     	</div>
      	
      	<div style="margin: 30px 0;"> <%-- 댓글 입력란 시작 --%>
       	<span style="font-size: 16px;">&#128313; 댓글</span>
@@ -259,7 +259,7 @@
 		</div> <%-- 댓글 입력란 끝 --%>   
 
       	<%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
-      	<div class="mt-3 mb-2">
+      	<div class="mt-3 mb-2 commentRow">
       	<div class="commentrow  px-2 py-2">
        	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
        	<div style="display:inline;	float: right;">
@@ -301,7 +301,7 @@
        <hr>	
        <%-- 댓글 test 끝--%>
        
-	   </div>
+	   </div> <%-- 댓글 내용 끝 --%>
 	 </div>
    </div> 
 </div>

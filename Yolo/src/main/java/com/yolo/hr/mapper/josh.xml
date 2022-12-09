@@ -129,8 +129,8 @@
 		select name, empno, row_number() over(order by empno desc) as rno, total_worktime, total_overtime, fk_deptno, deptname, upper_deptname, profile_color
 		from 
 		(
-		select E.name, E.empno, sum(C.worktime) AS total_worktime, 
-		       sum(C.overtime) AS total_overtime, E.fk_deptno, E.profile_color
+		select E.name, E.empno, sum(nvl(C.worktime,0)) AS total_worktime, 
+		       sum(nvl(C.overtime,0)) AS total_overtime, E.fk_deptno, E.profile_color
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
 		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
@@ -158,7 +158,7 @@
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
 		where start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
-		<if test=' arrDept != null '>
+		<if test="arrDept!=null and !arrDept.equals('')">
 	      	and fk_deptno in
 	      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
 				'${arrDept[i]}'
@@ -166,17 +166,159 @@
 	      </if>
 	</select>
 	
+	<resultMap type="HashMap" id="getPaymentListMap">
+		<result property="name" 				column="name" 				javaType="String"/>
+		<result property="empno" 			column="empno" 				javaType="String"/>
+		<result property="worktime_salary" 	column="worktime_salary" 	javaType="String"/>
+		<result property="overtime_salary" 	column="overtime_salary" 	javaType="String"/>
+		<result property="fk_deptno" 		column="fk_deptno" 			javaType="String"/>
+		<result property="deptname" 			column="deptname" 			javaType="String"/>
+		<result property="upper_deptname" 	column="upper_deptname" 		javaType="String"/>
+		<result property="sum_salary" 		column="sum_salary" 			javaType="String"/>
+	</resultMap>
+	
+	
+	<select id="getPaymentList" parameterType="HashMap" resultMap="getPaymentListMap">
+		select name, empno, worktime_salary, overtime_salary, fk_deptno, deptname, upper_deptname, profile_color, worktime_salary+overtime_salary AS sum_salary
+		from
+		(
+		select name, empno, worktime_salary, overtime_salary, fk_deptno, deptname, upper_deptname, profile_color, worktime_salary+overtime_salary AS sum_salary,
+		       month_payment, row_number() over(order by empno desc) as rno
+		from
+		(
+		select name, empno, row_number() over(order by empno desc) as rno, worktime_salary, overtime_salary, fk_deptno, deptname, upper_deptname,profile_color
+		from 
+		(
+		select E.name, E.empno, E.time_salary*sum(nvl(C.worktime,0))/60 AS worktime_salary, 
+		       E.time_salary*sum(nvl(C.overtime,0))/60 AS overtime_salary, E.fk_deptno, E.profile_color
+		from tbl_employees E join tbl_commute C
+		on E.empno = C.fk_empno
+		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
+		      <if test="arrDept!=null and !arrDept.equals('')">
+		      	and fk_deptno in
+		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
+					'${arrDept[i]}'
+				</foreach>
+		      </if>
+		group by E.name, E.empno, E.fk_deptno, E.profile_color, E.time_salary
+		)A join 
+		(
+		select D.deptno, D.deptname, Z.deptname AS upper_deptname
+		from tbl_dept D
+		join tbl_dept Z
+		on D.upper_deptno = Z.deptno
+		)B
+		on A.fk_deptno = B.deptno
+		) C left join
+		(
+		select fk_empno, to_char(month_payment, 'yyyy-mm') AS month_payment, salary, over_salary, payment_date
+		from tbl_salary_payment
+		where to_char(month_payment, 'yyyy-mm') = #{month_payment}
+		) D
+		on C.empno = D.fk_empno
+		where month_payment is null
+		)
+		where rno between #{startRno} and #{endRno}
+	</select>
+	
+	
+	<select id="paymentListTotalPage" resultType="int">
+		select ceil(count(distinct(empno))/10) AS totalpage
+		from
+		(
+		select name, empno, worktime_salary, overtime_salary, fk_deptno, deptname, upper_deptname, profile_color, worktime_salary+overtime_salary AS sum_salary,
+		       month_payment, row_number() over(order by empno desc) as rno
+		from
+		(
+		select name, empno, row_number() over(order by empno desc) as rno, worktime_salary, overtime_salary, fk_deptno, deptname, upper_deptname,profile_color
+		from 
+		(
+		select E.name, E.empno, E.time_salary*sum(nvl(C.worktime,0))/60 AS worktime_salary, 
+		       E.time_salary*sum(nvl(C.overtime,0))/60 AS overtime_salary, E.fk_deptno, E.profile_color
+		from tbl_employees E join tbl_commute C
+		on E.empno = C.fk_empno
+		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
+		      <if test="arrDept!=null and !arrDept.equals('')">
+		      	and fk_deptno in
+		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
+					'${arrDept[i]}'
+				</foreach>
+		      </if>
+		group by E.name, E.empno, E.fk_deptno, E.profile_color, E.time_salary
+		)A join 
+		(
+		select D.deptno, D.deptname, Z.deptname AS upper_deptname
+		from tbl_dept D
+		join tbl_dept Z
+		on D.upper_deptno = Z.deptno
+		)B
+		on A.fk_deptno = B.deptno
+		) C left join
+		(
+		select fk_empno, to_char(month_payment, 'yyyy-mm') AS month_payment, salary, over_salary, payment_date
+		from tbl_salary_payment
+		where to_char(month_payment, 'yyyy-mm') = #{month_payment}
+		) D
+		on C.empno = D.fk_empno
+		where month_payment is null
+		)
+	</select>
+	
+	
+	<!-- <insert id="checkedPayment" parameterType="Map">
+        insert into tbl_salary_payment(fk_empno, month_payment, salary, over_salary)
+        values
+        <foreach item="item" index="index" collection="paraList" separator=",">
+            ('#{item.empno}', '#{item.month_payment}', '#{item.salary}', '#{item.over_salary}')
+        </foreach>
+ 	</insert> -->
+ 	
+ 	<insert id="checkedPayment" parameterType="List">
+	<foreach collection="list" item="item" index="index"
+         	open="INSERT ALL " close="SELECT * FROM DUAL"
+  										       separator=" " >
+	  into tbl_salary_payment(fk_empno, month_payment, salary, over_salary)
+      values (
+ 		${item.empno}, to_date('${item.month_payment}','yyyy-mm'), ${item.salary}, ${item.over_salary}
+      )        
+	  </foreach>   
+	</insert>
 	
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
+	<resultMap type="HashMap" id="getPayStubListMap">
+		<result property="fk_empno" 			column="fk_empno" 			javaType="String"/>
+		<result property="name" 				column="name" 				javaType="String"/>
+		<result property="deptno" 			column="deptno" 				javaType="String"/>
+		<result property="deptname" 			column="deptname" 			javaType="String"/>
+		<result property="upper_deptname" 	column="upper_deptname" 		javaType="String"/>
+		<result property="payment_date" 		column="payment_date" 		javaType="String"/>
+		<result property="salary" 			column="salary" 				javaType="String"/>
+		<result property="over_salary" 		column="over_salary" 		javaType="String"/>
+		<result property="month_payment" 	column="month_payment" 		javaType="String"/>
+	</resultMap>
+ 	
+ 	
+ 	<select id="getPayStubList" parameterType="Map" resultMap="getPayStubListMap">
+ 		select fk_empno, name, deptno, deptname, upper_deptname, payment_date, salary, over_salary, month_payment
+		from 
+		(
+		select fk_empno, month_payment, salary, over_salary, payment_date, fk_deptno, name 
+		from tbl_salary_payment P join tbl_employees E
+		on P.fk_empno = E.empno
+		where fk_empno = #{empno}
+		and to_char(payment_date, 'yyyy') = #{select_year}
+		)A join
+		(
+		select D.deptno, D.deptname, Z.deptname AS upper_deptname
+		from tbl_dept D
+		join tbl_dept Z
+		on D.upper_deptno = Z.deptno
+		)B
+		on A.fk_deptno = B.deptno
+		order by payment_date desc
+ 	</select>
 	
 	
 </mapper>

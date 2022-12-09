@@ -428,7 +428,80 @@
 		and start_work_time between #{start_date} and #{end_date}
 	</select>
 	
+	<!-- 부서번호를 전달받아 해당 부서에 부서장/팀장이 존재하는지 구해오기 -->
+	<select id="getManagerEmpno" parameterType="HashMap" resultType="int">
 	
+		select count(fk_empno)
+		from tbl_dept_mapping
+		<!--  
+		<choose>
+
+	    	<when test="deptno==null and deptno.equals('') and teamno== null and teamno.equals('')">
+	    	   where fk_deptno = #{before_deptno}
+	    	</when>
+
+	    	<when test="deptno!=null and !deptno.equals('') and teamno == null or teamno.equals('') ">
+	    	   where fk_deptno = #{deptno}
+	    	</when>
+
+	    	<when test="deptno!=null and !deptno.equals('') and teamno!=null and !teamno.equals('')">
+	    	   where fk_deptno = #{teamno}
+	    	</when>
+	    	
+	    </choose>
+	    -->
+	    <choose>
+
+	    	<when test="(deptno == null or deptno.equals('')) and (teamno== null or teamno.equals(''))">
+	    	   where fk_deptno = #{before_deptno}
+	    	</when>
+
+	    	<when test="(deptno!= null or !deptno.equals('')) and( teamno == null or teamno.equals('') )">
+	    	   where fk_deptno = #{deptno}
+	    	</when>
+
+	    	<when test="(deptno!= null or !deptno.equals('')) and ( teamno!= null or !teamno.equals('') )">
+	    	   where fk_deptno = #{teamno}
+	    	</when>
+	    	
+	    </choose>
+	</select>
+	
+	<!--  인사발령 기록 테이블에 insert -->
+	<insert id="insertPsa" parameterType="HashMap">
+		insert into tbl_personnel_appointment(  pk_psano 
+		                                      , fk_empno 
+		                                      , fk_before_deptno 
+		                                      , before_position 
+		                                      , fk_after_deptno 
+		                                      , after_position 
+		                                      , memo 
+		                                      , psa_date
+		                                      , psa_label )
+		                                values( seq_psano.nextval
+		                                      , #{empno}
+                                      		  , #{before_deptno}
+		                                      , #{before_position}
+		                                      <choose>
+		                                      	<when test="(deptno != null or !deptno.equals('')) and (teamno== null or teamno.equals(''))">
+		                                      		 , #{deptno}
+		                                      	</when>
+		                                      	
+		                                      	<when test="(deptno != null or !deptno.equals('')) and (teamno!= null or !teamno.equals(''))">
+		                                      		 , #{teamno}
+		                                      	</when>
+		                                      </choose>
+		                                      , #{position}
+		                                      , #{memo}
+		                                      , #{psa_date}
+		                                      , #{changeType})
+	
+	</insert>
+	
+	<!-- 인사발령 기록 테이블에 insert 후 사원 테이블에 업데이트 -->
+	<update id="updatePsa" parameterType="HashMap">
+		${updateQuery}
+	</update>
 	
 	<!-- ====================== 조직도 =================== -->
 	<!-- 모든 부서 정보 조회하기 -->
