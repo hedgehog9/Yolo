@@ -1,5 +1,10 @@
 package com.yolo.hr.josh.controller;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -28,6 +33,10 @@ public class CommuteController {
 	@ResponseBody
 	@RequestMapping(value="/commute/commuteStart.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.POST})
 	public String commuteStart(HttpServletRequest request) {
+
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+		String name = loginuser.getName();
 		
 		String fk_empno = request.getParameter("fk_empno");
 		
@@ -35,6 +44,15 @@ public class CommuteController {
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("n", n);
+		
+		if(n > 0) {
+			System.out.println("들어옴");
+			try {
+				sendSlack(name+"님이 출근 하셨습니다.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		return jsonObj.toString();
 	}
@@ -75,6 +93,10 @@ public class CommuteController {
 	@RequestMapping(value="/commute/commuteEnd.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.POST})
 	public String commuteEnd(HttpServletRequest request) {
 		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+		String name = loginuser.getName();
+		
 		String fk_empno = request.getParameter("fk_empno");
 		String worktime = request.getParameter("worktime");
 		String overtime = request.getParameter("overtime");
@@ -89,6 +111,15 @@ public class CommuteController {
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("n", n);
+		
+		if(n > 0) {
+			System.out.println("들어옴");
+			try {
+				sendSlack(name+"님이 퇴근 하셨습니다.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		return jsonObj.toString();
 	}
@@ -221,5 +252,48 @@ public class CommuteController {
 		return workingTime;
 		
 	}
+	
+	public void sendSlack(String message) throws Exception {
+        //create a connection to a given URL using POST method
+        URL url = new URL("https://slack.com/api/chat.postMessage");
+        HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+        
+        //Setting Headers
+        httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+        httpURLConnection.setRequestProperty("Authorization", "Bearer xoxb-4491231996579-4488409004293-x8CGivfoxVJlvawP12OmGIp4");
+        httpURLConnection.setRequestMethod("POST");
+
+        //Adding Request Params
+        Map<String, String> params = new HashMap<>();
+        params.put("channel", "C04EF7EHM6F");
+        params.put("text", message);
+        params.put("pretty", "1");
+        httpURLConnection.setDoOutput(true);
+        DataOutputStream out = new DataOutputStream(httpURLConnection.getOutputStream());
+        out.writeBytes(ParameterStringBuilder.getParamsString(params));
+        out.flush();
+        out.close();
+
+        //Configuring TimeOut
+        httpURLConnection.setConnectTimeout(5000);
+        httpURLConnection.setReadTimeout(5000);
+
+        //Reading the Response
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(httpURLConnection.getInputStream())
+        );
+        String inputLine;
+        StringBuffer content = new StringBuffer();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+
+        //Disconnect
+        httpURLConnection.disconnect();
+
+        //Print the content
+        System.out.println("content = " + content);
+    }
 		
 }

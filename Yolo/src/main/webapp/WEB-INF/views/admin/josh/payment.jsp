@@ -73,7 +73,7 @@
 	$(document).ready(function() {
 		
 		
-		let arrDept = new Array();
+		let arrDept;
 		
 		$("input#year-select").val(getDate());
 		
@@ -120,11 +120,22 @@
     				
     		
     	    $("#checkedPayment").click(function(){
-    	    		checkedPayment(arrDept);
+    	    	
+    	    		if(check_length() > 0) {
+    	    			checkedPayment(arrDept);
+    	    		}
+    	    		else {
+    	    			toastr.error('지급할 직원에 체크를 해주세요');
+    	    			return;
+    	    		}
     	    });
     				
 		
 	});// end of $(document).ready
+	
+	function check_length() {
+		return $("input[name='chk']:checked").length;
+	}
     		
     function chkAllNot(bool) {
     		$("input[name='chk']").prop("checked",bool);
@@ -279,7 +290,7 @@
 						
 						array.push(object)
 						
-					});// end of $("input[name='chk']:checked").each
+					});// end of $("input[name='chk']:checked").each ----
 					
 					const jsonData = JSON.stringify(array);
 					jQuery.ajaxSettings.traditional = true;
@@ -293,8 +304,7 @@
 							
 							if(json.n > 0) {
 								Swal.fire('급여지급 완료','지급완료','success');
-								console.log("확인용 => " +typeof(arrDept));
-								getPaymentList(1,arrDept)
+								setTimeout("location.reload()",1000);
 							}
 							
 						},
