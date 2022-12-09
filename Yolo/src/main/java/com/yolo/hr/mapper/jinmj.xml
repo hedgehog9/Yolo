@@ -20,13 +20,14 @@
 	<!-- 선택한 부서, 직원 목록 가져오기 -->
 	<resultMap type="HashMap" id="chooseDeptMap">
 		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
 		<result property="position" column="position" javaType="String"/>
 		<result property="deptname" column="deptname" javaType="String"/>
 		<result property="profile_color" column="profile_color" javaType="String"/>
 		<result property="empno" column="empno" javaType="String"/>
 	</resultMap>
 	<select id="selectChooseDept" parameterType="String" resultMap="chooseDeptMap">
-		select name, position, deptname, profile_color, empno
+		select name, substr(name, -2, 2) as nickname, position, deptname, profile_color, empno
 		from
 		(
 		    select name, position, fk_deptno, PROFILE_COLOR, empno
@@ -54,6 +55,7 @@
 		<result property="profile_color" column="profile_color" javaType="String"/>
 		<result property="subject" column="subject" javaType="String"/>
 		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
 		<result property="deptname" column="deptname" javaType="String"/>
 		<result property="position" column="position" javaType="String"/>
 		<result property="readCount" column="readCount" javaType="String"/>
@@ -63,15 +65,16 @@
 		<result property="cmtCount" column="cmtCount" javaType="String"/>
 	</resultMap>
 	<select id="allNoticeList" parameterType="String" resultMap="NoticeMap">
-		
-	 select notino, profile_color, subject, name, deptname, position, readCount, content 
+	
+	<!--  전체 공지 리스트 -->	
+	 select notino, profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content 
       	  , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
       	  , notiLevel, cmtCount
 	 from
 	 (  
 	 	   select notino, fk_deptno, fk_senderno, subject, content, writedate, notiLevel, readCount, cmtCount
 	 	   from tbl_notice
-	 	   where status = 1 and fk_deptno = func_get_notice_deptno(#{fk_deptno})
+	 	   where status = 1
     
 	 )
 	 join 
@@ -91,7 +94,7 @@
 	<!-- 전체 공지사항 공지글 1개 조회하기 -->
  	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
 	<select id="showNoticeContent" parameterType="String" resultMap="NoticeMap">
-		select subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, position, profile_color
+		select subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, subject, name, substr(name, -2, 2) as nickname, position, profile_color
 		from 
 		( 
 		  select subject, content, writedate, fk_senderno
@@ -106,30 +109,55 @@
 		)
 		on fk_senderno = empno
 	</select>
+
+	<!-- 공지 알림 보내기 -->
+	<!-- 공지 작성시 해당 공지 받는 사원 번호 알아오기-->
+	<select id="empnoList" parameterType="String" resultType="String">
+	 	select empno 
+	  	from TBL_EMPLOYEES   
+	  	join TBL_DEPT
+	  	on deptno = fk_deptno
+	  	where deptno = #{fk_deptno} OR UPPER_DEPTNO = #{fk_deptno}
+	</select>
 	
-
-
+	<!-- 시퀀스 제일 마지막 (최신)인 공지 번호 알아오기 -->
+	<select id="seqNotino"  parameterType="String" resultType="String">
+	   
+	   select notino  
+	   from
+	   (
+	      select rownum as rno, notino, writedate
+	      from 
+	      (
+	        select notino, writedate
+	        from tbl_notice 
+	        where fk_senderno = #{empno}
+	        order by writedate desc
+	      )
+	   )
+	   where rno = 1
+   
+	</select>
+	
 	<!-- 내가 쓴 글 공지리스트 -->
-	<select id="MyNoticeList" parameterType="String" resultMap="NoticeMap">
-		select profile_color, subject, name, deptname, position, readCount, content
-      		 , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
-      		 , notiLevel, cmtCount
+	<select id="myNoticeList" parameterType="String" resultMap="NoticeMap">
+		select profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content 
+      , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
+      , notiLevel, cmtCount
 		from
 		(  
 		    select notino, fk_deptno, fk_senderno, subject, content, writedate, notiLevel, readCount, cmtCount
 		    from tbl_notice
-		    where status = 1 and fk_deptno = func_get_notice_deptno(#{fk_deptno})
+		    where status = 1 and fk_senderno = ${empno}
 		)
 		join 
 		( 
 		    select name, deptname, position, profile_color, empno
 		    from TBL_EMPLOYEES M join TBL_DEPT D
 		    on M.fk_deptno = D.deptno
-		
 		) 
 		on fk_senderno = empno
-  		where fk_senderno = #{empno}
 		order by WRITEDATE desc
 	</select>
-
+	
 </mapper>

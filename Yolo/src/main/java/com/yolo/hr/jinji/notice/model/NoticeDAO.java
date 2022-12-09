@@ -42,10 +42,11 @@ public class NoticeDAO implements InterNoticeDAO {
 	
 	// 전체 공지 리스트 전체 보여주기 (select)
 	@Override
-	public List<Map<String, String>> getAllNoticeList(String fk_deptno) {
-		List<Map<String, String>> allNoticeList = sqlsession.selectList("jinmj.allNoticeList", fk_deptno);
+	public List<Map<String, String>> getAllNoticeList(String empno) {
+		List<Map<String, String>> allNoticeList = sqlsession.selectList("jinmj.allNoticeList", empno);
 		return allNoticeList;
 	}
+	//	List<Map<String, String>> allNoticeList = sqlsession.selectList("jinmj.allNoticeList", fk_deptno);
 
 	
 	// 전체 공지사항 공지글 1개 보여주기(ajax)
@@ -55,22 +56,28 @@ public class NoticeDAO implements InterNoticeDAO {
 		return noticeContent;
 	}
 
-	
-	
+	// 공지 작성시 해당 공지 받는 사원 번호 알아오기
+	@Override
+	public List<String> getEmpnoList(String fk_deptno) {
+		List<String> empnoList = sqlsession.selectList("jinmj.empnoList", fk_deptno);
+		return empnoList;
+
+
+	}
+
+	// seq 최신 공지번호 알아오기
+	@Override
+	public String getSeqNotino(String empno) {
+		String seqNotino =  sqlsession.selectOne("jinmj.seqNotino", empno);
+		return seqNotino;
+	}
 
 	// 내가 쓴 공지리스트 가져오기
 	@Override
-	public List<Map<String, String>> getMyNoticeList(String fk_deptno) {
-		List<Map<String, String>> myNotice =  sqlsession.selectList("jinmj.MyNoticeList", fk_deptno);
-		return myNotice;
+	public List<Map<String, String>> getMyNoticeList(String empno) {
+		List<Map<String, String>> myNoticeList =  sqlsession.selectList("jinmj.myNoticeList", empno);
+		return myNoticeList;
 	}
-
-
-
-	
-
-
-
 
 	
 }
