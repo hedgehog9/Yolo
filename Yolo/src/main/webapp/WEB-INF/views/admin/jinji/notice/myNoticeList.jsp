@@ -141,8 +141,32 @@
 	}); // end of $(document).ready(function() ------
 
 	
-	// 모달 열기
-	function openmyListModal(){
+	// 모달 열기 (notino 로 해당 공지 내용 Ajax로 가져오기 ( 내가 쓴 공지글 1개 조회에 대한 상세 모달) )
+	function openmyListModal(notino){
+		
+		// alert("notino:" + request.alert);
+		
+		$.ajax({
+	    	url : "<%=ctxPath%>/notice/getMyOnwNoticeContent.yolo",
+	    	type: 'POST',
+	    	data : {"notino" : notino},
+	    	dataType: "JSON",
+			success: function(json){
+			//	console.log(json);
+				$("#myListModal span#prof").text(json.nickname);
+				$("#myListModal span#prof").css("background-color", json.profile_color);
+				$("#myListModal span#name").text(json.name + " · " + json.position + " ▶ " + json.deptname );
+				$("#myListModal span#writedate").text(json.writedate);
+				$("#myListModal span#subject").text(json.subject);
+				// 추후에 + 파일 첨부 넣기
+				$("#myListModal span#content").text(json.content);
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of 첨부파일 ajax
+		
+		
 		$('#myListModal').addClass('active');
 	    $('#myListModal_outside').fadeIn();
 		
@@ -163,7 +187,7 @@
 		<c:forEach var="myNoti" items="${requestScope.myNoticeList}">
 			<div class="listRow">
 				<div class="listRowInside" style="width: 100%;">
-					<div id="prof" class="mt-3 style= "background-color: ${myNoti.profile_color};"> ${myNoti.name}</div>
+					<div id="prof" class="mt-3 style= "background-color: ${myNoti.profile_color};"> ${myNoti.nickname}</div>
 					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal(${myNoti.notino})">
 						<span style="font-weight: bold;" id="subject"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 						${myNoti.subject}</span>&nbsp;
@@ -172,11 +196,24 @@
 						</c:if>
 						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 						<span id="writedate" style="margin-left: 20px; font-size: 10pt;">${myNoti.writedate}</span>
-						<span id="name" style="display:block; font-size: 10pt;">${myNoti.name} · ${myNoti.position } ▶ <span id="deptname" style="font-size: 10pt;">{myNoti.deptname }</span></span>  
+						<span id="name" style="display:block; font-size: 10pt;">${myNoti.name} · ${myNoti.position } ▶ <span id="deptname" style="font-size: 10pt;"> ${myNoti.deptname }</span></span>  
 						
-						<span id="content" class="spanBlock mt-2" style="color: gray">${myNoti.content}</span>
+						<c:choose>
+							<c:when test="${fn:length(myNoti.content) gt 20}">
+								<span id="content" class="spanBlock mt-2" style="color: gray">
+									<c:out value="${fn:substring(myNoti.content,0,19)}">
+									</c:out> ........
+								</span>
+							</c:when>
+							<c:otherwise>
+								<span id="content" class="spanBlock mt-2" style="color: gray">
+									<c:out value="${myNoti.content}">
+									</c:out>
+								</span>	
+							</c:otherwise>
+						</c:choose>
 						&nbsp;&nbsp;
-						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2">댓공지</span><span style="color: green;">[6]</span>	</span>
+						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2"  style= "background-color: ${myNoti.profile_color};">댓글</span><span style="color: green;">[6]</span>	</span>
 					</div>
 					<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
 					<button class="listBnt">삭제하기</button>
@@ -186,59 +223,14 @@
 	</c:if>
 	
 	<c:if test="${empty requestScope.myNoticeList }">
-		<div style="width: 100%; margin: 0 auto;" >
-			<span style="margin: 0 10%;">작성된 공지사항이 없습니다.</span>
+		<div class="listRow">
+			<div class="listRowInside" style="width: 100%;">
+				<div class="px-3">작성된 공지글이 없습니다.</div>
+			</div>
 		</div>
 	</c:if>
 </div>
 
-	
-	<%-- test row --%>
-	
-	<div class="listRow" data-toggle="modal" data-target="#myListModal">
-		<div class="listRowInside">
-			<div id="prof" class="mt-3">김공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;">
-				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-				<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 인사부</span>
-				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
-			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
-			<button class="listBnt">삭제하기</button>
-		</div>
-	</div>
-	
-	<div class="listRow" data-toggle="modal" data-target="#myListModal">
-		<div class="listRowInside">
-			<div id="prof" class="mt-3">김공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;">
-				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-				<span></span> <%-- 파일 첨부 파일 없는 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 개발부</span>
-				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
-			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
-			<button class="listBnt">삭제하기</button>
-		</div>
-	</div>
-	
-	<div class="listRow" data-toggle="modal" data-target="#myListModal">
-		<div class="listRowInside">
-			<div id="prof" class="mt-3">김공지</div>
-			<div class="listcontent1 ml-4" style="width: 500px;">
-				<span style="font-weight: bold;">공지사항입니다.</span>&nbsp;
-				<span></span> <%-- 파일 첨부 파일 없는 경우 --%>
-				<span style="margin-left: 20px; font-size: 10pt;">2022-12-25</span>
-				<span class="spanBlock" style="font-size: 10pt;">김공지 ▶ 개발부</span>
-				<span class="spanBlock mt-1" style="color: gray">공지 내용 보여주는 곳입니다</span>
-			</div>
-			<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;">수정하기</button>
-			<button class="listBnt">삭제하기</button>
-		</div>
-	</div>
 	
 <%-- 공지 리스트(boardlist) 끝 --%>
 

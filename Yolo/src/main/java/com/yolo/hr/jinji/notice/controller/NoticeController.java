@@ -1,5 +1,6 @@
 package com.yolo.hr.jinji.notice.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,10 +33,11 @@ public class NoticeController {
     @Autowired // Type에 따라 알아서 bean을 주입시켜준다. 
     private FileManager fileManager; // 빈으로 올라가게 하고 그것을 사용하다. @Autowired 넣어준다.
     
+    // 1050 이메일 ptucker@yolo.com
 	
     // 부서만 조회해오기
  	@ResponseBody
- 	@RequestMapping(value = "/jinji/getDept.yolo", produces="text/plain;charset=UTF-8")
+ 	@RequestMapping(value = "/notice/getDept.yolo", produces="text/plain;charset=UTF-8")
  	public String getDept( HttpServletRequest request) {
  		
  		// 부서만 조회해오기
@@ -54,7 +57,7 @@ public class NoticeController {
  	}
  	
  	
- 	// 체크된 유저 목록 가져오기
+ 	// 체크된 부서 유저 목록 가져오기
  	@ResponseBody
  	@RequestMapping(value = "/notice/chooseUser.yolo", produces="text/plain;charset=UTF-8")
  	public String chooseUser( HttpServletRequest request) {
@@ -69,8 +72,8 @@ public class NoticeController {
  		for(Map<String, String> emp: empList) {
  			JSONObject jsonObj = new JSONObject();
  			
- 			
  			jsonObj.put("name", emp.get("name") );
+ 			jsonObj.put("nickname", emp.get("nickname") );
  			jsonObj.put("position", emp.get("position") );
  			jsonObj.put("deptname", emp.get("deptname") );
  			jsonObj.put("profile_color", emp.get("profile_color") );
@@ -82,27 +85,47 @@ public class NoticeController {
  	}
  	
  	
- 	// 공지글 작성
+ 	// 공지글 작성 (공지 작성시 aop 알림 설정)
  	@ResponseBody
  	@RequestMapping(value = "/notice/sendNotice.yolo", produces="text/plain;charset=UTF-8")
- 	public void sendNotice(Map<String, String> paraMap, HttpServletRequest request, HttpServletResponse response, NoticeVO noticevo) {
+ 	public void addAlarm_sendNotice(Map<String, String> paraMap, HttpServletRequest request, HttpServletResponse response, NoticeVO noticevo) {
  		
  		HttpSession session = request.getSession();
  		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
- 		noticevo.setFk_senderno(loginuser.getEmpno());
- 		
- 		noticevo.setContent(MyUtil.secureCode(noticevo.getContent()));
+ 		noticevo.setFk_senderno(loginuser.getEmpno()); // 작성 -> vo 인서트
  		
  		service.sendNotice(noticevo);
  		
- 		/*
+ 		List<String> empnoList = new ArrayList<String>();
+ 		 
+ 		if("1".equals( noticevo.getFk_deptno())) {
+ 			
+ 		}
+ 		else {
+ 			
+ 			empnoList = service.getEmpnoList(noticevo.getFk_deptno());
+ 		}
+ 		
+ 		// 해당 사원 번호 알아오기
+ 		String ste_empnoList = String.join(",", empnoList );
+ 		
+ 		// System.out.println(noticevo.getSubject());	
+ 		// System.out.println(noticevo.getFk_deptno());	
+ 		// System.out.println(noticevo.getContent());	
+ 		
+ 		// seq최신 공지번호 알아오기 (noticevo는 입력한 것을 가져오는)
+ 		String notino = service.getSeqNotino(loginuser.getEmpno());
+//		System.out.println(notino);
+ 		
+// 		System.out.println(empnoList);
+ 		
  		// === AOP After Advice를 사용하기 === //
- 		paraMap.put("fk_recipientno", "1050,1050"); // 받는사람 (여러명일때는 ,,으로 구분된 str)
- 		paraMap.put("url", "/messenger/receivedMessage.yolo?pk_msgno=" );
- 		paraMap.put("url2", "202212021601569430" ); // 연결되는 pknum등...  (여러개일때는 ,,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
- 		paraMap.put("alarm_content", "연습" );
+ 		paraMap.put("fk_recipientno", ste_empnoList); // 받는사람 (여러명일때는 ,,으로 구분된 str)
+ 		paraMap.put("url", "/notice/noticeList.yolo?alarm_noticeno=" );
+ 		paraMap.put("url2", notino ); // 연결되는 pknum등...  (여러개일때는 ,,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+ 		paraMap.put("alarm_content", loginuser.getName() + "님이 공지를 작성하셨습니다. 확인해 주세요." );
  		paraMap.put("alarm_type", "5" );
- 		*/
+ 		
  	}
  
  	
@@ -110,21 +133,65 @@ public class NoticeController {
 	@RequestMapping(value = "/notice/noticeList.yolo")
 	public ModelAndView noticeList(HttpServletRequest request, ModelAndView mav) {
 		
+		// 가라 세션
+		/*
+	    EmployeeVO loginuser = new EmployeeVO();
+	    loginuser.setEmpno("1050");
+	      
+	      
+	    loginuser.setFk_deptno("106"); // 사원번호
+	      
+	    HttpSession session = request.getSession();
+	    session.setAttribute("loginuser", loginuser);
+	    */
+	    // 가라세션 끝
 		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		session.setAttribute("loginuser", loginuser);
+		
+		// 공지 알림으로 뜬 공지 사항 누르면 해당 공지 내용 띄우기
+		String alarm_noticeno = request.getParameter("alarm_noticeno");
+		mav.addObject("alarm_noticeno", alarm_noticeno);
+		
+		List<Map<String, String>> showAllNoticeList = service.showAllNoticeList(loginuser.getFk_deptno());
+		
+		
+		mav.addObject("showAllNoticeList", showAllNoticeList);
+//		System.out.println(showAllNoticeList);
 		
 		mav.setViewName("jinji/notice/noticeList.admin"); 
 		
 		return mav;
-	//	request.setAttribute("noticeList", noticeList);
-
-		 
-	//	return "jinji/notice/noticeList.admin";
 		
 	}
 	
+	// 전체 공지리스트 공지 1개 내용 조회하기(ajax)
+	@ResponseBody
+	@RequestMapping(value="/notice/getNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+    public String noticeContent( HttpServletRequest request) {
+    
+		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
+		String notino = request.getParameter("notino");
+		// System.out.println(notino);
+
+		
+		// map 으로 넣기( 해당 글의 공지번호를 통해 글 하나만 가져오기)
+	    Map<String, String> notice = service.showNoticeContent(notino);
+
+	    // ajax
+        JSONObject jsonObj = new JSONObject(); 
+        jsonObj.put("subject", notice.get("subject"));
+        jsonObj.put("content", notice.get("content"));
+        jsonObj.put("writedate", notice.get("writedate"));
+        jsonObj.put("profile_color", notice.get("profile_color"));
+        jsonObj.put("deptname", notice.get("deptname"));
+        jsonObj.put("name", notice.get("name"));
+        jsonObj.put("nickname", notice.get("nickname"));
+        jsonObj.put("position", notice.get("position"));
+        
+        return jsonObj.toString(); // string 타입으로 변한다.  '[{}, {}, {} ]' 또는 "[ ]"  => select 된 것이 없을 때
+    }
+    
 
 	// 부서 공지 리스트 
 	@RequestMapping(value = "/notice/depNoticeList.yolo")
@@ -137,21 +204,51 @@ public class NoticeController {
 	
 	// 내가 쓴 공지 리스트 
 	@RequestMapping(value = "/notice/myNoticeList.yolo")
-	public ModelAndView myNoticeList(HttpServletRequest request, ModelAndView mav) {
+	public ModelAndView myNoticeList(HttpServletRequest request, ModelAndView mav, NoticeVO noticevo) {
 		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		session.setAttribute("loginuser", loginuser);
 		
-		List<Map<String, String>> sentNoticeList = service.getMyNoticeList(loginuser.getFk_deptno());
+	 // noticevo.setFk_senderno(loginuser.getEmpno());
+		loginuser.getEmpno().equals(noticevo.getFk_senderno());
+			
+		List<Map<String, String>> myNoticeList = service.getMyNoticeList(loginuser.getEmpno());
 		
-		mav.addObject("sentNoticeList", sentNoticeList);
+		mav.addObject("myNoticeList", myNoticeList);
 		mav.setViewName("jinji/notice/myNoticeList.admin"); 
 		
 		return mav;
-	// return "jinji/notice/myNoticeList.admin";
 		
 	}
 
+	/*
+	// 전체 공지리스트 공지 1개 내용 조회하기(ajax)
+	@ResponseBody
+	@RequestMapping(value="/notice/getNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+    public String noticeContent( HttpServletRequest request) {
+    
+		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
+		String notino = request.getParameter("notino");
+		// System.out.println(notino);
+
+		
+		// map 으로 넣기( 해당 글의 공지번호를 통해 글 하나만 가져오기)
+	    Map<String, String> notice = service.showNoticeContent(notino);
+
+	    // ajax
+        JSONObject jsonObj = new JSONObject(); 
+        jsonObj.put("subject", notice.get("subject"));
+        jsonObj.put("content", notice.get("content"));
+        jsonObj.put("writedate", notice.get("writedate"));
+        jsonObj.put("profile_color", notice.get("profile_color"));
+        jsonObj.put("deptname", notice.get("deptname"));
+        jsonObj.put("name", notice.get("name"));
+        jsonObj.put("nickname", notice.get("nickname"));
+        jsonObj.put("position", notice.get("position"));
+        
+        return jsonObj.toString(); // string 타입으로 변한다.  '[{}, {}, {} ]' 또는 "[ ]"  => select 된 것이 없을 때
+    }
+	
+	*/
 	
 }

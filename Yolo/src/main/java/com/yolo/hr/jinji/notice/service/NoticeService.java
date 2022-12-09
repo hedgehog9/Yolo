@@ -42,10 +42,12 @@ public class NoticeService implements InterNoticeService {
 	
 	// 전체 공지 리스트 보여주기
 	@Override
-	public List<Map<String, String>> getAllNoticeList(String fk_deptno) {
-		List<Map<String, String>> allNoticeList = dao.getAllNoticeList(fk_deptno);
+	public List<Map<String, String>> showAllNoticeList(String empno) {
+		List<Map<String, String>> allNoticeList = dao.getAllNoticeList(empno);
 		return allNoticeList;
 	}
+	// List<Map<String, String>> allNoticeList = dao.getAllNoticeList(fk_deptno);
+	
 
 	// 전체 공지사항 공지글 1개 보여주기(ajax)
 	@Override
@@ -53,23 +55,31 @@ public class NoticeService implements InterNoticeService {
 		 Map<String, String>  noticeContent = dao.showNoticeContent(notino);
 		return noticeContent;
 	}
-
 	
-	// 내가 쓴 공지리스트 가져오기
+	// 공지 작성시 해당 공지 받는 사원 번호 알아오기
 	@Override
-	public List<Map<String, String>> getMyNoticeList(String fk_deptno) {
-		List<Map<String, String>> myNotice = dao.getMyNoticeList(fk_deptno);
-		return myNotice;
+	public List<String> getEmpnoList(String fk_deptno) {
+		List<String> empnoList = dao.getEmpnoList(fk_deptno);
+		return empnoList;
 	}
 
+	
+	// seq 최신 공지번호 알아오기
+	@Override
+	public String getSeqNotino(String empno) {
+		String seqNotino = dao.getSeqNotino(empno);
+		return seqNotino;
+	}
+
+	// 내가 쓴 공지리스트 가져오기
+	@Override
+	public List<Map<String, String>> getMyNoticeList(String empno) {
+		List<Map<String, String>> myNoticeList = dao.getMyNoticeList(empno);
+		return myNoticeList;
+	}
+
+	
 
 
-	
-
-	
-	
-
-	
-	
 
 }
