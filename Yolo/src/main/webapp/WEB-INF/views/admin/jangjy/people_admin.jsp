@@ -582,7 +582,7 @@ arr_status = [];
 			
 		});
 		
-		// 검색태그에 있는 닫기 버튼 클릭시(필터 삭제시 )
+		// 검색태그에 있는 닫기 버튼 클릭시(필터 삭제시)
 		$(document).on("click","button.closeTag",function(e){
 			let searchWord = $(this).parent().text();
 			searchWord = searchWord.substr(0,searchWord.indexOf("|"));
@@ -1354,7 +1354,7 @@ arr_status = [];
 			<button id="filter_clear" type="button" class="btn filter_clear" >필터초기화</button>
 		</div>		
 	</div>
-	<%-- 검색필터 추가 시작  --%>
+	<%-- 검색필터 추가 끝  --%>
 
 
 

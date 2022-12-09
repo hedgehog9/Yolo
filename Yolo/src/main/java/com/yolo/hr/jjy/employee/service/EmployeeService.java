@@ -82,7 +82,7 @@ public class EmployeeService implements InterEmployeeService {
 	
 	// 재직 -> 휴직, 휴직 -> 재직 스케줄러로 처리 (매일 오전 06시)
 	@Override
-	@Scheduled(cron="0 0 6 * * *")
+//	@Scheduled(cron="0 0 6 * * *")
 	public void updateLeaveStatus() {
 		
 		// 재직 처리해야 할 사원들의 목록을 조회하는 메소드  
@@ -227,6 +227,18 @@ public class EmployeeService implements InterEmployeeService {
 		
 		int registResult = dao.registEployee(paraMap);
 		return registResult;
+	}
+
+	@Override
+	public int personnelAppointment(Map<String, Object> paraMap) {
+		
+		int insert_psa = 0 ,
+			update_emp = 0 ;  
+		
+//		int result = dao.
+//		return result;
+				return 0;
+	
 	}
 
 
