@@ -251,19 +251,54 @@ public class EmployeeService implements InterEmployeeService {
 		int insert_psa = 0 ,
 			update_emp = 0 ;  
 		
+		// 1. 인사발령 테이블에 insert
+		insert_psa = dao.insertPsa(paraMap);
 		
-		// 2. 인사발령 테이블에 insert
+		// 2. 사원 테이블 update 
 		
-		// 3. 사원 테이블 update 
+		// 2-1 사원 테이블 update 쿼리 만들기 
+		String updateQuery = "";
 		
-		// 4. 새로운 소식에 insert 
+		// 1. 부서번호만 들어온 경우 (position == null)
+		if( (paraMap.get("deptno")!= null && !"".equals(paraMap.get("deptno"))) 
+			&& paraMap.get("position") == null && paraMap.get("teamno") == null) {
+			updateQuery = "update tbl_employees set fk_deptno =  "+paraMap.get("deptno") +" where empno = " +paraMap.get("empno");
+		}
 		
-		// 5. 공지 작성 
+		// 2. 부서번호,팀번호 들어온 경우 (position == null)
+		if( (paraMap.get("teamno")!= null && !"".equals(paraMap.get("teamno")) ) 
+			&& paraMap.get("position") == null) {
+			updateQuery = "update tbl_employees set fk_deptno =  "+paraMap.get("teamno") +" where empno = " +paraMap.get("empno");
+		}
+		
+		// 3. 부서번호, 직위 들어온 경우 
+		if( (paraMap.get("deptno")!= null && !"".equals(paraMap.get("deptno")) && (paraMap.get("teamno") == null || "".equals(paraMap.get("teamno")) ) ) 
+			&& paraMap.get("position") != null) {
+			updateQuery = "update tbl_employees set fk_deptno = "+paraMap.get("deptno")+" ,position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
+		}
+		
+		// 4. 직위만  들어온 경우 (deptno == null && teamno == null) (O)
+		if( (paraMap.get("teamno") == null || "".equals(paraMap.get("teamno")) ) 
+			&& (paraMap.get("position") != null && !"".equals(paraMap.get("position")))) {
+			updateQuery = "update tbl_employees set position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
+		}
+		
+		// 5. 부서번호, 팀번호, 직위 모두 들어온 경우 (O)
+		if( (paraMap.get("teamno") != null && !"".equals(paraMap.get("teamno")) ) 
+			&& (paraMap.get("position") != null && !"".equals(paraMap.get("position")))) {
+			updateQuery = "update tbl_employees set fk_deptno = "+paraMap.get("teamno")+" ,position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
+		}
+		
+		paraMap.put("updateQuery", updateQuery);
+		update_emp = dao.updatePsa(paraMap);
+		// 3. 새로운 소식에 insert 
+		
+		// 4. 공지 작성 
 		
 		
 //		int result = dao.
 //		return result;
-		return 0;
+		return update_emp;
 	
 	}
 

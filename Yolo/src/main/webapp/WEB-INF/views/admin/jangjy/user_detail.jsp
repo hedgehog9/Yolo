@@ -1022,10 +1022,7 @@
 		// 인사발령 모달에서 저장하기 버튼 클릭시 
 		$(document).on("click","#edit_info > div > form > div:nth-child(10) > button:nth-child(2)",function(){
 			
-			const frm = document.frm_ps_appointment;
-			frm.action="<%= ctxPath%>/personnelAppointment.yolo";
-			frm.method="POST";
-			frm.submit();
+			func_psa();
 			
 		});
 		
@@ -1057,9 +1054,12 @@
 							   reverseButtons: true, // 버튼 순서 거꾸로
 							   
 							}).then(result => {
-							   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-							   
-							      Swal.fire('success');
+							   if (result.isConfirmed) { // 부서장/ 팀장을 바꾸는 경우 
+								   
+							   }
+							   else{ // 부서장/팀장을 안바꾸는 경우 
+								   $("input#position").val("");
+							   	   $("div#div_retirement_type").text("직위");
 							   }
 							});
 						  
@@ -1075,6 +1075,13 @@
 		
 		
 	});// end of $(document).ready-----------------------------
+	
+	function func_psa(){
+		const frm = document.frm_ps_appointment;
+		frm.action="<%= ctxPath%>/personnelAppointment.yolo";
+		frm.method="POST";
+		frm.submit();
+	}
 	
 	//null값 체크 
 	function isEmpty(value){
@@ -1218,7 +1225,7 @@
 							+'<div>발령 라벨</div><input id="changeType" name="changeType" type="text" />'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-									+'<div class="retirement_type">발령 라벨</div>'
+									+'<div id="retirement_type" class="retirement_type">발령 라벨</div>'
 									+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 								+'</div>'
 							+'</button>'
@@ -1265,7 +1272,7 @@
 								+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"'
 									+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 									+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-										+'<div class="retirement_type">직위</div>'
+										+'<div id="div_retirement_type" class="retirement_type">직위</div>'
 										+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 									+'</div>'
 								+'</button>'

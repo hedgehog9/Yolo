@@ -61,4 +61,10 @@ public interface InterEmployeeDAO {
 	/** 부서 번호를 전달받아 해당 부서에 부서장/팀장이 존재하는지 구해오기 */
 	int getManagerEmpno(Map<String, Object> paraMap);
 
+	/** 인사발령 기록 테이블에 insert */
+	int insertPsa(Map<String, Object> paraMap);
+
+	/** 인사발령 기록 테이블 insert 후 사원 테이블 update */
+	int updatePsa(Map<String, Object> paraMap);
+
 }

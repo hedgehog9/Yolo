@@ -377,8 +377,6 @@ public class EmployeeController {
 		
 		int manager_yn = service.checkManager(paraMap);
 		
-//		System.out.println("paraMap"+paraMap);
-		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("manager_yn", manager_yn);
 		
@@ -392,7 +390,12 @@ public class EmployeeController {
 		
 		System.out.println("paraMap"+paraMap);
 		
+//		paraMap{empno=1111, before_deptno=100, before_position=관리자, psa_date=2022-12-09, changeType=직무 변경, deptno=25, teamno=108, position=, memo=}
+
+		
+		
 		int result = service.personnelAppointment(paraMap);
+		System.out.println("확인용 insert 결과 확인 : "+ result);
 		
 		
 		return "redirect:userDetail.yolo?empno="+paraMap.get("empno");

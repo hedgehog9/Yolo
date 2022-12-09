@@ -150,6 +150,18 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return manager_yn;
 	}
 
+	@Override
+	public int insertPsa(Map<String, Object> paraMap) {
+		int result = sqlsession.insert("jangjy.insertPsa", paraMap);
+		return result;
+	}
+
+	@Override
+	public int updatePsa(Map<String, Object> paraMap) {
+		int result = sqlsession.update("jangjy.updatePsa", paraMap);
+		return result;
+	}
+
 	
 	
 	
