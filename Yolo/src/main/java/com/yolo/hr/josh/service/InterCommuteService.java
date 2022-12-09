@@ -29,4 +29,7 @@ public interface InterCommuteService {
 	// 급여정보 보내서 insert 하기
 	int checkedPayment(List<Map<String, Object>> paraList);
 
+	// 급여명세서 불러오는 메소드
+	List<Map<String, String>> getPayStubList(Map<String, Object> paraMap);
+
 }

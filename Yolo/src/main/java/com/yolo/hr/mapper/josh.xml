@@ -158,7 +158,7 @@
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
 		where start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
-		<if test=' arrDept != null '>
+		<if test="arrDept!=null and !arrDept.equals('')">
 	      	and fk_deptno in
 	      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
 				'${arrDept[i]}'
@@ -194,7 +194,7 @@
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
 		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
-		      <if test=' arrDept != null '>
+		      <if test="arrDept!=null and !arrDept.equals('')">
 		      	and fk_deptno in
 		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
 					'${arrDept[i]}'
@@ -238,7 +238,7 @@
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
 		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')
-		      <if test=' arrDept != null '>
+		      <if test="arrDept!=null and !arrDept.equals('')">
 		      	and fk_deptno in
 		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
 					'${arrDept[i]}'
@@ -283,7 +283,42 @@
       )        
 	  </foreach>   
 	</insert>
+	
+	
+	
+	
+	<resultMap type="HashMap" id="getPayStubListMap">
+		<result property="fk_empno" 			column="fk_empno" 			javaType="String"/>
+		<result property="name" 				column="name" 				javaType="String"/>
+		<result property="deptno" 			column="deptno" 				javaType="String"/>
+		<result property="deptname" 			column="deptname" 			javaType="String"/>
+		<result property="upper_deptname" 	column="upper_deptname" 		javaType="String"/>
+		<result property="payment_date" 		column="payment_date" 		javaType="String"/>
+		<result property="salary" 			column="salary" 				javaType="String"/>
+		<result property="over_salary" 		column="over_salary" 		javaType="String"/>
+		<result property="month_payment" 	column="month_payment" 		javaType="String"/>
+	</resultMap>
  	
+ 	
+ 	<select id="getPayStubList" parameterType="Map" resultMap="getPayStubListMap">
+ 		select fk_empno, name, deptno, deptname, upper_deptname, payment_date, salary, over_salary, month_payment
+		from 
+		(
+		select fk_empno, month_payment, salary, over_salary, payment_date, fk_deptno, name 
+		from tbl_salary_payment P join tbl_employees E
+		on P.fk_empno = E.empno
+		where fk_empno = #{empno}
+		and to_char(payment_date, 'yyyy') = #{select_year}
+		)A join
+		(
+		select D.deptno, D.deptname, Z.deptname AS upper_deptname
+		from tbl_dept D
+		join tbl_dept Z
+		on D.upper_deptno = Z.deptno
+		)B
+		on A.fk_deptno = B.deptno
+		order by payment_date desc
+ 	</select>
 	
 	
 </mapper>

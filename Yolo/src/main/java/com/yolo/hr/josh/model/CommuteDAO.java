@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -83,6 +84,13 @@ public class CommuteDAO implements InterCommuteDAO {
 	public int checkedPayment(List<Map<String, Object>> paraList) {
 		int n = sqlsession.insert("josh.checkedPayment", paraList);
 		return n;
+	}
+
+	// 급여 명세서를 가져오는 메소드
+	@Override
+	public List<Map<String, String>> getPayStubList(Map<String, Object> paraMap) {
+		List<Map<String, String>> payStubList = sqlsession.selectList("josh.getPayStubList", paraMap);
+		return payStubList;
 	}
 	
 }

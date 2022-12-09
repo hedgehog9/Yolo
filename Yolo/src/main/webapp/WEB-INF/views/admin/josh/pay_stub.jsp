@@ -3,6 +3,10 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>  
 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <% String ctxPath = request.getContextPath(); %>
 
 <link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css" />
@@ -53,7 +57,14 @@
                  element: '#datepicker-input-ko',
                  format: 'yyyy'
              }
-         });
+         });	
+    	 
+    	 // 달력 년도가 바뀌면 발생하는 이벤트
+    	 calYearKo.on('change', () => {
+    		    
+    		 
+    		 
+ 		});
 
     });
 
@@ -87,12 +98,14 @@
                     </tr>
                 </thead>
                 <tbody id="data-body">
-                    <tr>
-                        <td>2022. 11. 8</td>
-                        <td>4,000,000</td>
-                        <td>500,000</td>
-                        <td>4,500,000</td>
+                <c:forEach var="item" items="${requestScope.payStubList}">
+                		<tr>
+                        <td>${fn:substring(item.month_payment,0,7)}</td>
+                        <td><fmt:formatNumber value="${item.salary}" pattern="#,###"/><span> 원</span></td>
+                        <td><fmt:formatNumber value="${item.over_salary}" pattern="#,###"/><span> 원</span></td>
+                        <td><fmt:formatNumber value="${item.salary + item.over_salary}" pattern="#,###"/><span> 원</span></td>
                     </tr> 
+                </c:forEach>
                 </tbody>    
             </table>
         </div>

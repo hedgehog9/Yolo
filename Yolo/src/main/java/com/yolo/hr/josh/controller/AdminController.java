@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,8 @@ public class AdminController {
 			}
 		}
 		else { // 관리자 아이디로 접근했을 경우
+			
+			
 			
 			String startdate = request.getParameter("startdate");
 			String enddate = request.getParameter("enddate");
@@ -154,8 +157,44 @@ public class AdminController {
 	
 	
 	@RequestMapping(value="/admin/payStub.yolo")
-	public String payStub() {
+	public String payStub(HttpServletRequest request) {
 		
+		HttpSession session = request.getSession();
+		EmployeeVO empvo = (EmployeeVO) session.getAttribute("loginuser");
+		String empno = empvo.getEmpno();
+		
+		String select_year = request.getParameter("select-year");
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		
+		
+		if(empno.equals("9999")) { // 관리자 아이디로 들어왔을때
+			if(select_year == null) {
+				
+				Calendar now = Calendar.getInstance();
+				 
+				select_year = String.valueOf(now.get(Calendar.YEAR));
+			}
+			
+			
+		}
+		else { // 일반사원이 들어왔을 때
+			
+			if(select_year == null) {
+				
+				Calendar now = Calendar.getInstance();
+				 
+				select_year = String.valueOf(now.get(Calendar.YEAR));
+			}
+			
+		}
+		
+		paraMap.put("empno",empno);
+		paraMap.put("select_year",select_year);
+		
+		List<Map<String, String>> payStubList = service.getPayStubList(paraMap);
+		
+		request.setAttribute("payStubList", payStubList);
 		
 		
 		return "josh/pay_stub.admin";
@@ -302,11 +341,15 @@ public class AdminController {
 	
 	@ResponseBody
 	@RequestMapping(value="/admin/checkedPayment.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.POST})
-	public String checkedPayment(HttpServletRequest request, @RequestParam String jsonData) {
+	public String addAlarm_checkedPayment(Map<String, String> paraMap, HttpServletRequest request, @RequestParam String jsonData) {
+		
+		String month_payment = "";
 		
 		JSONObject jsonObj = new JSONObject();
 		
 		JSONArray array = new JSONArray(jsonData);
+		
+		String empnoList = "";
 	    
 		List<Map<String, Object>> paraList = new ArrayList<Map<String, Object>>();
 		
@@ -317,21 +360,33 @@ public class AdminController {
 			//System.out.println("확인용 jsonObj => " + jsonObj);
 			 
 			String empno = (String) jsonObj.get("empno");
-			String month_payment = (String) jsonObj.get("month_payment");
+			month_payment = (String) jsonObj.get("month_payment");
 			String salary = (String) jsonObj.get("salary");
 			String over_salary = (String) jsonObj.get("over_salary");
 			
-			Map<String, Object> paraMap = new HashMap<>();
-			paraMap.put("empno", empno);
-			paraMap.put("month_payment", month_payment);
-			paraMap.put("salary", salary);
-			paraMap.put("over_salary", over_salary);
+			Map<String, Object> paymentMap = new HashMap<>();
+			paymentMap.put("empno", empno);
+			paymentMap.put("month_payment", month_payment);
+			paymentMap.put("salary", salary);
+			paymentMap.put("over_salary", over_salary);
 			
-			paraList.add(paraMap);
+			paraList.add(paymentMap);
+			
+			empnoList += empno+",";
 			 
 		 }// end of for ------------------------------------------
 		
 		int n = service.checkedPayment(paraList);
+		
+		empnoList = empnoList.substring(0, empnoList.length()-1);
+		
+		if(n > 0) {
+			paraMap.put("fk_recipientno", empnoList ); // 받는사람 (여러명일때는 ,으로 구분된 str)
+		    paraMap.put("url", "/admin/payStub.yolo?empno=" );
+		    paraMap.put("url2", empnoList ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+		    paraMap.put("alarm_content", month_payment+"월 급여가 지급되었습니다." );
+		    paraMap.put("alarm_type", "6" );
+		}
 		
 		jsonObj.put("n", n);
 		

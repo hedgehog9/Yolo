@@ -62,9 +62,15 @@ public class CommuteService implements InterCommuteService {
 	// 급여정보 보내서 insert 하기
 	@Override
 	public int checkedPayment(List<Map<String, Object>> paraList) {
-
 		int n = dao.checkedPayment(paraList);
 		return n;
+	}
+
+	// 급여명세서 불러오는 메소드
+	@Override
+	public List<Map<String, String>> getPayStubList(Map<String, Object> paraMap) {
+		List<Map<String, String>> payStubList = dao.getPayStubList(paraMap);
+		return payStubList;
 	}
 	
 }
