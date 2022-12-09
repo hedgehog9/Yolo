@@ -386,19 +386,25 @@ public class EmployeeController {
 	
 	// 인사발령 (트랜잭션)
 	@RequestMapping(value = "/personnelAppointment.yolo", produces="text/plain;charset=UTF-8")
-	public String personnelAppointment(HttpServletRequest request , @RequestParam Map<String,Object>paraMap) {
+	public String addAlarm_personnelAppointment(Map<String, String> paraMap, HttpServletRequest request , @RequestParam Map<String,Object> psaMap) {
 		
-		System.out.println("paraMap"+paraMap);
-		
-//		paraMap{empno=1111, before_deptno=100, before_position=관리자, psa_date=2022-12-09, changeType=직무 변경, deptno=25, teamno=108, position=, memo=}
+//		System.out.println("psaMap"+psaMap);
 
 		
-		
-		int result = service.personnelAppointment(paraMap);
+		int result = service.personnelAppointment(psaMap);
 		System.out.println("확인용 insert 결과 확인 : "+ result);
 		
+		if(result == 1) {
+			// 나중에 인사발령 내역 조회 페이지로 이동시키기
+			paraMap.put("fk_recipientno", (String)psaMap.get("empno") ); // 받는사람 (여러명일때는 ,으로 구분된 str)
+			paraMap.put("url", "/people.yolo?empno=" );
+			paraMap.put("url2", (String)psaMap.get("empno") ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+			paraMap.put("alarm_content", "인사발령" );
+			paraMap.put("alarm_type", "5" );
+			
+		}
 		
-		return "redirect:userDetail.yolo?empno="+paraMap.get("empno");
+		return "redirect:userDetail.yolo?empno="+psaMap.get("empno");
 	}
 	
 	
