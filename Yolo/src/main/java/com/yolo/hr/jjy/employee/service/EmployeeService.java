@@ -230,16 +230,43 @@ public class EmployeeService implements InterEmployeeService {
 	}
 
 	@Override
+	public int checkManager(Map<String, Object> paraMap) {
+		
+		int manager_yn = 0;// 팀장 부서장 여부  1:있음  0:없음
+		
+		String position = (String) paraMap.get("position");
+		
+		// 1. 직위가 부서장/팀장으로 들어온 경우 해당 부서의  부서장/팀장 존재 여부 알아오기 
+		if( (position != null || "".equals(position)) && ( "부서장".equals(position) || "팀장".equals(position) ) ) {
+			manager_yn = dao.getManagerEmpno(paraMap);
+		}
+		
+		return manager_yn;
+	}
+	
+	
+	@Override
 	public int personnelAppointment(Map<String, Object> paraMap) {
 		
 		int insert_psa = 0 ,
 			update_emp = 0 ;  
 		
+		
+		// 2. 인사발령 테이블에 insert
+		
+		// 3. 사원 테이블 update 
+		
+		// 4. 새로운 소식에 insert 
+		
+		// 5. 공지 작성 
+		
+		
 //		int result = dao.
 //		return result;
-				return 0;
+		return 0;
 	
 	}
+
 
 
 }

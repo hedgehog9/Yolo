@@ -428,6 +428,45 @@
 		and start_work_time between #{start_date} and #{end_date}
 	</select>
 	
+	<!-- 부서번호를 전달받아 해당 부서에 부서장/팀장이 존재하는지 구해오기 -->
+	<select id="getManagerEmpno" parameterType="HashMap" resultType="int">
+	
+		select count(fk_empno)
+		from tbl_dept_mapping
+		<!--  
+		<choose>
+
+	    	<when test="deptno==null and deptno.equals('') and teamno== null and teamno.equals('')">
+	    	   where fk_deptno = #{before_deptno}
+	    	</when>
+
+	    	<when test="deptno!=null and !deptno.equals('') and teamno == null or teamno.equals('') ">
+	    	   where fk_deptno = #{deptno}
+	    	</when>
+
+	    	<when test="deptno!=null and !deptno.equals('') and teamno!=null and !teamno.equals('')">
+	    	   where fk_deptno = #{teamno}
+	    	</when>
+	    	
+	    </choose>
+	    -->
+	    <choose>
+
+	    	<when test="(deptno == null or deptno.equals('')) and (teamno== null or teamno.equals(''))">
+	    	   where fk_deptno = #{before_deptno}
+	    	</when>
+
+	    	<when test="(deptno!= null or !deptno.equals('')) and( teamno == null or teamno.equals('') )">
+	    	   where fk_deptno = #{deptno}
+	    	</when>
+
+	    	<when test="(deptno!= null or !deptno.equals('')) and ( teamno!= null or !teamno.equals('') )">
+	    	   where fk_deptno = #{teamno}
+	    	</when>
+	    	
+	    </choose>
+	</select>
+	
 	
 	
 	<!-- ====================== 조직도 =================== -->

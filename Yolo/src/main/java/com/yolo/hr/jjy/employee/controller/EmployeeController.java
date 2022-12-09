@@ -370,9 +370,23 @@ public class EmployeeController {
 		return jsonObj.toString() ;
 	}
 	
+	// 부서에 부서장 또는 팀장이 있는지 조회 
+	@ResponseBody
+	@RequestMapping(value = "/checkManager.yolo", produces="text/plain;charset=UTF-8")
+	public String checkManager( @RequestParam Map<String,Object>paraMap) {
+		
+		int manager_yn = service.checkManager(paraMap);
+		
+//		System.out.println("paraMap"+paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("manager_yn", manager_yn);
+		
+		return jsonObj.toString() ;
+	}
 	
 	
-	
+	// 인사발령 (트랜잭션)
 	@RequestMapping(value = "/personnelAppointment.yolo", produces="text/plain;charset=UTF-8")
 	public String personnelAppointment(HttpServletRequest request , @RequestParam Map<String,Object>paraMap) {
 		

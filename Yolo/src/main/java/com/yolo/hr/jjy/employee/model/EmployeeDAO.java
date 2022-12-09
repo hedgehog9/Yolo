@@ -144,6 +144,12 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return time;
 	}
 
+	@Override
+	public int getManagerEmpno(Map<String, Object> paraMap) {
+		int manager_yn = sqlsession.selectOne("jangjy.getManagerEmpno",paraMap);
+		return manager_yn;
+	}
+
 	
 	
 	

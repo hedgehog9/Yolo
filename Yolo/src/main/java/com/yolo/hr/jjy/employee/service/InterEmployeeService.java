@@ -41,4 +41,7 @@ public interface InterEmployeeService {
 	/** 인사발령처리 (트랜잭션) */
 	int personnelAppointment(Map<String, Object> paraMap);
 
+	/** 부서에 부서장 또는 팀장이 있는지 확인하기 */
+	int checkManager(Map<String, Object> paraMap);
+
 }
