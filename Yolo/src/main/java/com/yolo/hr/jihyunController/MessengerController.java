@@ -47,13 +47,8 @@ public class MessengerController {
 	@RequestMapping(value = "/messenger/sentMessage.yolo")
 	public ModelAndView sentMessage( HttpServletRequest request, ModelAndView mav) {
 		
-		// 가라 세션
-		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1050");
-		// loginuser.setEmpno("1001");
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
-		// 가라세션 끝
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
 		
 		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 시작 === //
 		/*
@@ -248,13 +243,8 @@ public class MessengerController {
 	@RequestMapping(value = "/messenger/receivedMessage.yolo")
 	public ModelAndView receivedMessage( HttpServletRequest request, ModelAndView mav) {
 		
-		// 가라 세션
-		EmployeeVO loginuser = new EmployeeVO();
-		// loginuser.setEmpno("1001");
-		loginuser.setEmpno("1050");
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
-		// 가라세션 끝
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
 		
 		// empno 넘어오면 request 영역에 담아줘야 한다
 		String empno = request.getParameter("empno"); 
@@ -783,7 +773,7 @@ public class MessengerController {
 					// WAS의 webapp 절대경로를 알아와야한다. 
 					String root = session.getServletContext().getRealPath("/"); // 이만큼이 webapp 
 					
-					System.out.println("root 확인 :" + root);
+					// System.out.println("root 확인 :" + root);
 					// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 					
 					String path = root + "resources"+File.separator+"files"+File.separator+"massenger";
