@@ -79,5 +79,12 @@ public class NoticeDAO implements InterNoticeDAO {
 		return myNoticeList;
 	}
 
+	// 내가 쓴 공지사항 공지글 1개 보여주기(ajax)
+	@Override
+	public Map<String, String> showMyNoticeContent(String notino) {
+		Map<String, String> myNoticeContent = sqlsession.selectOne("jinmj.showMyNoticeContent", notino);
+		return myNoticeContent;
+	}
+
 	
 }

@@ -144,7 +144,7 @@
 	// 모달 열기 (notino 로 해당 공지 내용 Ajax로 가져오기 ( 내가 쓴 공지글 1개 조회에 대한 상세 모달) )
 	function openmyListModal(notino){
 		
-		// alert("notino:" + request.alert);
+		console.log("확인용 공지번호 "+notino);
 		
 		$.ajax({
 	    	url : "<%=ctxPath%>/notice/getMyOnwNoticeContent.yolo",
@@ -164,8 +164,7 @@
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
             }
-		}); // end of 첨부파일 ajax
-		
+		}); // end of jax
 		
 		$('#myListModal').addClass('active');
 	    $('#myListModal_outside').fadeIn();
@@ -234,8 +233,9 @@
 	
 <%-- 공지 리스트(boardlist) 끝 --%>
 
+<%-- 공지 상세 모달 --%>
+<%@ include file="detail/myNoticeDetail.jsp" %>
+
 <%-- 공지 수정 모달 --%>
 <%@ include file="edit/noticeEdit.jsp" %>
 
-<%-- 공지 상세 모달 --%>
-<%@ include file="detail/myNoticeDetail.jsp" %>

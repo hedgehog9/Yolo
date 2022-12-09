@@ -220,7 +220,7 @@
     <%-- Modal content --%>
     <div class="modalHeader">
     	<span style="font-size:20px;">&#128226;</span><span class="myListModalTitle ml-3" style="font-size: 20px; font-weight: bold;"> 전체 공지 </span>
-      <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+     	<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
     </div>
    	<div class="modalBody">
   	 	<div class="modal-listContent"> 

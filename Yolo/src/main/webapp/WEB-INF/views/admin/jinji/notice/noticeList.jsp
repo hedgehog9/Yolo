@@ -103,7 +103,7 @@
 	// 모달 열기
 	function openmyListModal(notino){
 		
-		// alert("notino:" + request.alert);
+		// alert("notino:" + request.notino);
 		
 		// notino 로 해당 공지 내용 Ajax로 가져오기 (전체공지글 1개 조회에 대한 상세 모달은 noticeDetail.jsp 참조)
 		$.ajax({

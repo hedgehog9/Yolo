@@ -94,7 +94,7 @@
 	<!-- 전체 공지사항 공지글 1개 조회하기 -->
  	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
 	<select id="showNoticeContent" parameterType="String" resultMap="NoticeMap">
-		select subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, subject, name, substr(name, -2, 2) as nickname, position, profile_color
+		select subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, substr(name, -2, 2) as nickname, position, profile_color
 		from 
 		( 
 		  select subject, content, writedate, fk_senderno
@@ -159,5 +159,25 @@
 		on fk_senderno = empno
 		order by WRITEDATE desc
 	</select>
+	
+	<!-- 내가 쓴 공지사항 공지글 1개 보여주기(ajax) -->
+	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
+	<select id="showMyNoticeContent" parameterType="String" resultMap="NoticeMap">
+		select subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, substr(name, -2, 2) as nickname, position, profile_color
+		from 
+		( 
+		  select subject, content, writedate, fk_senderno
+		  from tbl_notice
+		  where notino = #{notino}
+		)
+		join 
+		(
+		  select name, deptname, position, profile_color, empno, deptno
+		  from TBL_EMPLOYEES M join TBL_DEPT D
+		  on M.fk_deptno = D.deptno
+		)
+		on fk_senderno = empno
+	</select>
+	
 	
 </mapper>

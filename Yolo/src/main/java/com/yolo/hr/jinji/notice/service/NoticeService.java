@@ -78,8 +78,12 @@ public class NoticeService implements InterNoticeService {
 		return myNoticeList;
 	}
 
-	
-
+	// 내가 쓴 공지사항 공지글 1개 보여주기(ajax)
+	@Override
+	public Map<String, String> showMyNoticeContent(String notino) {
+		 Map<String, String> myNoticeContent = dao.showMyNoticeContent(notino);
+		return myNoticeContent;
+	}
 
 
 }

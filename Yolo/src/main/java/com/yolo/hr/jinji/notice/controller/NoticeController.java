@@ -214,6 +214,8 @@ public class NoticeController {
 			
 		List<Map<String, String>> myNoticeList = service.getMyNoticeList(loginuser.getEmpno());
 		
+		System.out.println("확인용 공지 목록 : "+myNoticeList);
+		
 		mav.addObject("myNoticeList", myNoticeList);
 		mav.setViewName("jinji/notice/myNoticeList.admin"); 
 		
@@ -221,34 +223,34 @@ public class NoticeController {
 		
 	}
 
-	/*
-	// 전체 공지리스트 공지 1개 내용 조회하기(ajax)
+	
+	// 내가 쓴 공지리스트 공지 1개 내용 조회하기(ajax)
 	@ResponseBody
-	@RequestMapping(value="/notice/getNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
-    public String noticeContent( HttpServletRequest request) {
+	@RequestMapping(value="/notice/getMyOnwNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+    public String MyOnwNoticeContent(HttpServletRequest request) {
     
 		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
 		String notino = request.getParameter("notino");
-		// System.out.println(notino);
+		System.out.println(notino);
 
-		
+			
 		// map 으로 넣기( 해당 글의 공지번호를 통해 글 하나만 가져오기)
-	    Map<String, String> notice = service.showNoticeContent(notino);
+	    Map<String, String> myNotice = service.showMyNoticeContent(notino);
 
 	    // ajax
         JSONObject jsonObj = new JSONObject(); 
-        jsonObj.put("subject", notice.get("subject"));
-        jsonObj.put("content", notice.get("content"));
-        jsonObj.put("writedate", notice.get("writedate"));
-        jsonObj.put("profile_color", notice.get("profile_color"));
-        jsonObj.put("deptname", notice.get("deptname"));
-        jsonObj.put("name", notice.get("name"));
-        jsonObj.put("nickname", notice.get("nickname"));
-        jsonObj.put("position", notice.get("position"));
+        jsonObj.put("subject", myNotice.get("subject"));
+        jsonObj.put("content", myNotice.get("content"));
+        jsonObj.put("writedate", myNotice.get("writedate"));
+        jsonObj.put("profile_color", myNotice.get("profile_color"));
+        jsonObj.put("deptname", myNotice.get("deptname"));
+        jsonObj.put("name", myNotice.get("name"));
+        jsonObj.put("nickname", myNotice.get("nickname"));
+        jsonObj.put("position", myNotice.get("position"));
         
         return jsonObj.toString(); // string 타입으로 변한다.  '[{}, {}, {} ]' 또는 "[ ]"  => select 된 것이 없을 때
     }
 	
-	*/
+	
 	
 }

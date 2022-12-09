@@ -31,8 +31,8 @@ public interface InterNoticeService {
 	// 내가 쓴 공지 리스트 가져오기
 	List<Map<String, String>> getMyNoticeList(String empno);
 
+	// 내가 쓴 공지사항 공지글 1개 보여주기(ajax)
+	Map<String, String> showMyNoticeContent(String notino);
 
-
-	
 	
 }
