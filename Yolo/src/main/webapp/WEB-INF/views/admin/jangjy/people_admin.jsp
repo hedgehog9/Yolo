@@ -128,7 +128,7 @@ div#div_search {
 	border-radius: 10px;
 	height: 30px;
 	padding-left: 3px;
-	margin-top: 20px;
+	margin-top: 8px;
 	position: relative;
 	left: 38px;
 	display: none;
@@ -333,7 +333,11 @@ button.closeTag{
 }
 
 
+<%-- 페이지바 css 시작 --%>
 ul.ul_pagebar{
+	list-style:none; 
+	margin:0 auto;
+	width:700px;
 	display: flex;
 	align-items: baseline;
 	padding: 0;
@@ -370,7 +374,6 @@ li.li_currentpage{
     padding-top: 9px;
 }
 
-
 .dropdown-toggle::after {
     display: none;
     margin-left: 0.255em;
@@ -380,6 +383,41 @@ li.li_currentpage{
     border-right: 0.3em solid transparent;
     border-bottom: 0;
     border-left: 0.3em solid transparent;
+}
+
+li.li_moveOne{
+	display: inline-block;
+    width: 100px;
+    font-size: 12pt;
+    text-align: center;
+    padding: 6px;
+    border-radius: 100px;
+    color: white;
+    border: solid 3px #2ecc71;
+    margin: 0 10px;
+}
+
+li.li_moveOne > a{
+	color:#2ecc71;
+	text-decoration: none;
+}
+
+li.li_moveAll{
+	background-color: #2ecc71;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    padding-top: 9px;
+}
+
+li.li_moveAll > a{
+	color: white;
+	text-decoration: none;
+	display: inline-block;
 }
 
 
@@ -559,7 +597,7 @@ arr_status = [];
 			})
 			
 			if(flag){
-				$("button#add_searchTag").parent().find("span#span_searchTag").prepend("<span class='span_tag'>"+searchWord+"|<span style='color:#3C4651;'>"+searchType+"</span><button class='closeTag'><i style='color:#9e9e9e; font-size:14px;' class='fas fa-times'></i></button></span>");
+				$("button#add_searchTag").parent().find("span#span_searchTag").append("<span class='span_tag'>"+searchWord+"|<span style='color:#3C4651;'>"+searchType+"</span><button class='closeTag'><i style='color:#9e9e9e; font-size:14px;' class='fas fa-times'></i></button></span>");
 
 				switch (searchType)
 				  {
@@ -582,7 +620,7 @@ arr_status = [];
 			
 		});
 		
-		// 검색태그에 있는 닫기 버튼 클릭시(필터 삭제시 )
+		// 검색태그에 있는 닫기 버튼 클릭시(필터 삭제시)
 		$(document).on("click","button.closeTag",function(e){
 			let searchWord = $(this).parent().text();
 			searchWord = searchWord.substr(0,searchWord.indexOf("|"));
@@ -728,12 +766,12 @@ arr_status = [];
 					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
 					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
 					
-					let pageBarHTML = "<ul class='ul_pagebar' style='width:500px; list-style:none; margin:0 auto;'>";
+					let pageBarHTML = "<ul class='ul_pagebar'>";
 					
 					// ==== [맨처음] [이전] 만들기 === // 
 					if(pageNo != 1 ) {
-						pageBarHTML +="<li class='li_pagebar' style='display:inline-block;'><a href='javascript:viewEmpList(\"1\")' >[맨처음]</a></li>";
-						pageBarHTML +="<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:viewEmpList(\""+(pageNo-1)+"\")' >[이전]</a></li>";
+						pageBarHTML +="<li class='li_moveAll li_pagebar' style='display:inline-block;'><a href='javascript:viewEmpList(\"1\")' > << </a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:viewEmpList(\""+(pageNo-1)+"\")' >Previous</a></li>";
 					}
 					while( !(loop > blockSize || pageNo > totalPage ) ) {
 						
@@ -750,8 +788,8 @@ arr_status = [];
 					
 					// ==== [다음] [마지막] 만들기 === //
 					if(pageNo <= totalPage) {
-						pageBarHTML +="<li style='display:inline-block; width:50px; font-size:12pt;'><a href='javascript:viewEmpList(\""+pageNo+"\")' >[다음]</a></li>";
-						pageBarHTML +="<li style='display:inline-block; width:70px; font-size:12pt;'><a href='javascript:viewEmpList(\""+totalPage+"\")' >[마지막]</a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:viewEmpList(\""+pageNo+"\")' >Next</a></li>";
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:viewEmpList(\""+totalPage+"\")' > >> </a></li>";
 					}
 					
 					pageBarHTML +="</ul>";
@@ -1354,7 +1392,7 @@ arr_status = [];
 			<button id="filter_clear" type="button" class="btn filter_clear" >필터초기화</button>
 		</div>		
 	</div>
-	<%-- 검색필터 추가 시작  --%>
+	<%-- 검색필터 추가 끝  --%>
 
 
 
