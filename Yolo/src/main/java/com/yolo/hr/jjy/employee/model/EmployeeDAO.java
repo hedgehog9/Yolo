@@ -162,6 +162,12 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return result;
 	}
 
+	@Override
+	public int updateManagerEmpno(Map<String, Object> paraMap) {
+		int result = sqlsession.update("jangjy.updateManagerEmpno");
+		return result;
+	}
+
 	
 	
 	

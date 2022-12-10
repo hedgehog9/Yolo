@@ -67,4 +67,7 @@ public interface InterEmployeeDAO {
 	/** 인사발령 기록 테이블 insert 후 사원 테이블 update */
 	int updatePsa(Map<String, Object> paraMap);
 
+	/** 인사발령  (부서장/ 팀장으로 바뀌는 경우 update)*/
+	int updateManagerEmpno(Map<String, Object> paraMap);
+
 }
