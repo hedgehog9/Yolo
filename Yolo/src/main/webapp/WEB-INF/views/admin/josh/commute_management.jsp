@@ -84,6 +84,93 @@
 		border: none;
 	}
 	
+	<%-- 페이지바 css 시작 --%>
+	ul.ul_pagebar{
+		list-style:none; 
+		margin:0 auto;
+		width:700px;
+		display: flex;
+		align-items: baseline;
+		padding: 0;
+		justify-content: center;
+	}
+	
+	
+	li.li_pagebar{
+		display: inline-block;
+	    padding-top: 9px;
+	    width: 40px;
+	    height: 40px;
+	    text-align: center;
+	    font-weight: 700;
+	}
+	
+	li.li_pagebar > a{
+		text-decoration: none;
+		font-size: 14px;
+		color:#2ecc71;
+	}
+	
+	li.li_currentpage{
+		background-color: #2ecc71;
+	    color: white;
+	    font-weight: 700;
+	
+	    display: inline-block;
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 50%;
+	    text-align: center;
+	    vertical-align: middle;
+	    padding-top: 9px;
+	}
+	
+	.dropdown-toggle::after {
+	    display: none;
+	    margin-left: 0.255em;
+	    vertical-align: 0.255em;
+	    content: "";
+	    border-top: 0.3em solid;
+	    border-right: 0.3em solid transparent;
+	    border-bottom: 0;
+	    border-left: 0.3em solid transparent;
+	}
+	
+	li.li_moveOne{
+		display: inline-block;
+	    width: 100px;
+	    font-size: 12pt;
+	    text-align: center;
+	    padding: 6px;
+	    border-radius: 100px;
+	    color: white;
+	    border: solid 3px #2ecc71;
+	    margin: 0 10px;
+	}
+	
+	li.li_moveOne > a{
+		color:#2ecc71;
+		text-decoration: none;
+	}
+	
+	li.li_moveAll{
+		background-color: #2ecc71;
+	    font-weight: 700;
+	    border-radius: 50%;
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 50%;
+	    text-align: center;
+	    vertical-align: middle;
+	    padding-top: 9px;
+	}
+	
+	li.li_moveAll > a{
+		color: white;
+		text-decoration: none;
+		display: inline-block;
+	}
+	
 	
 </style>
 
@@ -347,50 +434,45 @@
 					
 					const blockSize = 10;
 					
-					let loop = 1; // 증가해야 하기 때문에 const 가 아닌 let 으로 선언
-					
-					if(typeof currentShowPageNo == "string") {
-						// currentShowPageNo 는 웹에서 받아오면 String 타입이기 때문에 Number 타입으로 변환해준다.
-						currentShowPageNo = Number(currentShowPageNo);
-					}
-					
+					let loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize)] 까지만 증가하는 용도이다.
+			        
+			        if( typeof currentShowPageNo == "string"){ // 마우스를 클릭해서 들어오는경우는 보고있는 페이지 번호가 string 타입으로 들어오므로 정수형으로 바꿔줘야 한다.
+			        	currentShowPageNo = Number(currentShowPageNo);
+			        }
+			        
 					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
-					let pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
+					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
 					
+					let pageBarHTML = "<ul class='ul_pagebar'>";
 					
-					let pageBarHTML = "<ul class='pagination'>";
-					
-					if(pageNo != 1) {
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList(\"1\")'>[맨처음]</a></li>";
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo-1+","+arrDept+")'>[이전]</a></li>";
+					// ==== [맨처음] [이전] 만들기 === // 
+					if(pageNo != 1 ) {
+						pageBarHTML +="<li class='li_moveAll li_pagebar' style='display:inline-block;'><a href='javascript:viewEmpList(\"1\")' > << </a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:viewEmpList(\""+(pageNo-1)+"\")' >Previous</a></li>";
 					}
-					
-					while( !(loop > blockSize || pageNo > totalPage) ) {
+					while( !(loop > blockSize || pageNo > totalPage ) ) {
 						
-						if(pageNo == currentShowPageNo) {
-							pageBarHTML += "<li class='page-item active'><a class='page-link' href='#'>"+pageNo+"</a></li>";
+						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
+							pageBarHTML +="<li class='li_currentpage'>"+pageNo+"</li>";
 						}
 						else {
-							pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo+","+arrDept+")'>"+pageNo+"</a></li>";
+							pageBarHTML +="<li class='li_pagebar'><a href='javascript:viewEmpList(\""+pageNo+"\")' >"+pageNo+"</a></li>";
 						}
-						
 						loop++;
 						pageNo++;
-					}// end of while -----------------------------------
+					}// end of while()------------------------
 					
-					// === [다음] [마지막] 만들기 === //
 					
+					// ==== [다음] [마지막] 만들기 === //
 					if(pageNo <= totalPage) {
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo+","+arrDept+")'>[다음]</a></li>";
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+totalPage+","+arrDept+")'>[마지막]</a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:viewEmpList(\""+pageNo+"\")' >Next</a></li>";
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:viewEmpList(\""+totalPage+"\")' > >> </a></li>";
 					}
 					
-					pageBarHTML += "</ul>";
-					
+					pageBarHTML +="</ul>";
+				
 					$("div#pageBar").html(pageBarHTML);
-					
-					
-				}// end of if(json.totalPage > 0) ------------------
+				}// end of if(json.totalPage > 0){}----------------------------------
 				else {
 					$("#data-body").empty();
 					$("div#pageBar").empty();
