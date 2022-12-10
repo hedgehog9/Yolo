@@ -70,4 +70,10 @@ public interface InterEmployeeDAO {
 	/** 인사발령  (부서장/ 팀장으로 바뀌는 경우 update)*/
 	int updateManagerEmpno(Map<String, Object> paraMap);
 
+	/** 사원번호를 전달받아 해당 사원의 인사발령 기록 조회  */
+	List<Map<String, String>> getPsaHistory(Map<String, Object> paraMap);
+
+	/** 사원번호를 전달받아 해당 사원의 휴직이력  조회  */
+	List<Map<String, String>> getLeaveAbsence(Map<String, Object> paraMap);
+
 }

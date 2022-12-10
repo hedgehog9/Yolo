@@ -164,8 +164,20 @@ public class EmployeeDAO implements InterEmployeeDAO {
 
 	@Override
 	public int updateManagerEmpno(Map<String, Object> paraMap) {
-		int result = sqlsession.update("jangjy.updateManagerEmpno");
+		int result = sqlsession.update("jangjy.updateManagerEmpno",paraMap);
 		return result;
+	}
+
+	@Override
+	public List<Map<String, String>> getPsaHistory(Map<String, Object> paraMap) {
+		List<Map<String, String>> psaHistoryList = sqlsession.selectList("jangjy.getPsaHistory",paraMap);
+		return psaHistoryList;
+	}
+
+	@Override
+	public List<Map<String, String>> getLeaveAbsence(Map<String, Object> paraMap) {
+		List<Map<String, String>> leaveAbsenceList = sqlsession.selectList("jangjy.getLeaveAbsence",paraMap);
+		return leaveAbsenceList;
 	}
 
 	

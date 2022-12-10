@@ -795,51 +795,57 @@
 			$("button.btn_record").removeClass("btn_record_clicked");
 			$("button#btn_search_hrInfo").addClass("btn_record_clicked");
 			
-			$("div#div_result").html(""); 
-			let html ="";
+			let empno = $("input#empno").val();
 			
-			html += "<table class='table table-hover'>"
-						+"<thead>"
-							+"<tr>"
-								+"<th>발령일</th>"
-								+"<th>발령라벨</th>"
-								+"<th>부서</th>"
-								+"<th>직무</th>"
-								+"<th>직위</th>"
-								+"<th>메모</th>"
-							+"</tr>"
-						+"</thead>"
+			$.ajax({
+				 // 부서 이름 구해오기 
+				  url : "<%= ctxPath%>/getPsaHistory.yolo",
+				  data: {"empno":empno},
+				  dataType : "JSON",
+				  success : function(json){
+					  
+				  		$("div#div_result").html(""); 
+						let html ="";
+						
+						html += "<table class='table table-hover'>"
+									+"<thead>"
+										+"<tr>"
+											+"<th>발령일</th>"
+											+"<th>발령라벨</th>"
+											+"<th>부서</th>"
+											+"<th>직위</th>"
+											+"<th>메모</th>"
+										+"</tr>"
+									+"</thead>"
+									+"<tbody>";
+							  $.each(json,function(index,history){
+								  html += "<tr>"
+											+"<td>"+history.psa_date+"</td>"
+											+"<td>"+history.psa_label+"</td>"
+											+"<td>"+isEmptyPsa(history.fk_after_deptno)+"</td>"
+											+"<td>"+isEmptyPsa(history.after_position)+"</td>"
+											+"<td>"+isEmptyPsa(history.memo)+"</td>"
+										 +"</tr>";
+									  
+						      });// end of $.each(json,function(index,emp){}----------------------------
+									
+							html += "</tbody></table>";
+								
+								
+						$("div#div_result").html(html);
+					
+				  },// end of success
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
 			
-						+"<tbody>"
-							+"<tr>"
-								+"<td>2022.11.17</td>"
-								+"<td>발령라벨</td>"
-								+"<td>인사</td>"
-								+"<td>직무</td>"
-								+"<td>대리</td>"
-								+"<td>메모1</td>"
-							+"</tr>"
-							+"<tr>"
-								+"<td>2022.11.17</td>"
-								+"<td>발령라벨</td>"
-								+"<td>인사</td>"
-								+"<td>직무</td>"
-								+"<td>대리</td>"
-								+"<td>메몽2</td>"
-							+"</tr>"
-							+"<tr>"
-								+"<td>2022.11.17</td>"
-								+"<td>발령라벨</td>"
-								+"<td>인사</td>"
-								+"<td>직무</td>"
-								+"<td>대리</td>"
-								+"<td>메몽3</td>"
-							+"</tr>"
-						+"</tbody>"
-					+"</table>";
+			}); // end of ajax()----------------------------------------------------------------------
+			
+			
+			
+			
+			
 
-			
-			$("div#div_result").html(html);
 			
 		});
 		
@@ -849,61 +855,48 @@
 			$("button.btn_record").removeClass("btn_record_clicked");
 			$("button#btn_search_leaveInfo").addClass("btn_record_clicked");
 			
-			$("div#div_result").html(""); 
-			let html ="";
+			let empno = $("input#empno").val();
 			
-			html += "<table class='table table-hover'>"
-						+"<thead>"
-							+"<tr>"
-								+"<th style='width:150px;'>수정,삭제</th>"
-								+"<th>휴직기간</th>"
-								+"<th>휴직종류</th>"
-								+"<th>메모</th>"
-								+"<th>기타</th>"
-							+"</tr>"
-						+"</thead>"
 			
-						+"<tbody>"
+			$.ajax({
+				 // 부서 이름 구해오기 
+				  url : "<%= ctxPath%>/getLeaveAbsence.yolo",
+				  data: {"empno":empno},
+				  dataType : "JSON",
+				  success : function(json){
+				  		$("div#div_result").html(""); 
+						let html ="";
 						
-							+"<tr>"
-								+"<td>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
-								+"</td>"
-								+"<td>2022.11.17 ~ 2022.11.18</td>"
-								+"<td>일반휴직</td>"
-								+"<td>직무</td>"
-								+"<td>메모1</td>"
-							+"</tr>"
+						html += "<table class='table table-hover'>"
+								+"<thead>"
+									+"<tr>"
+										+"<th style='width:150px;'>수정,삭제</th>"
+										+"<th>휴직기간</th>"
+										+"<th>휴직종류</th>"
+										+"<th>메모</th>"
+										+"<th>기타</th>"
+									+"</tr>"
+								+"</thead>"
+								+"<tbody>";
+							  $.each(json,function(index,leaveMap){
+								  html += +"<tr>"
+											  +"<td>"
+												  +"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
+												  +"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
+											  +"</td>"
+											  +"<td>"+leaveMap.startdate+" ~ "+leaveMap.enddate+"</td>"
+											  +"<td>"+isEmptyPsa(leaveMap.leavetype)+"</td>"
+											  +"<td>"+isEmptyPsa(leaveMap.memo)+"</td>"
+											  +"<td></td>"
+											+"</tr>";
+						      });// end of $.each(json,function(index,emp){}----------------------------			
 							
-							+"<tr>"
-								+"<td>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
-								+"</td>"
-								+"<td>2022.11.17 ~ 2022.11.18</td>"
-								+"<td>일반휴직</td>"
-								+"<td>직무</td>"
-								+"<td>메모1</td>"
-							+"</tr>"
-						
-						+"<tr>"
-							+"<td>"
-								+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
-								+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
-							+"</td>"
-							+"<td>2022.11.17 ~ 2022.11.18</td>"
-							+"<td>일반휴직</td>"
-							+"<td>직무</td>"
-							+"<td>메모1</td>"
-						+"</tr>"
-							
-						+"</tbody>"
-					+"</table>";
-
+						html +="</tbody></table>";
 			
 			$("div#div_result").html(html);
-			
+				
+				}
+			});
 		});
 		
 		<%-- ===== 정보 변경 내역 클릭시 인사정보 버튼 클릭되도록 tirgger 설정 ===== --%>
@@ -1089,6 +1082,14 @@
 	           return "";
 	     } else{
 	            return "정보 미입력";
+	     }
+	}	
+	
+	function isEmptyPsa(value){
+	    if(value == null || value.length === 0 || value == undefined) {
+	    	return "정보 없음";
+	     } else{
+	    	 return value;
 	     }
 	}	
 	

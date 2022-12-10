@@ -396,7 +396,6 @@ public class EmployeeController {
 //		paraMap{empno=1111, before_deptno=100, before_position=관리자, psa_date=2022-12-09, changeType=직무 변경, deptno=25, teamno=108, position=, memo=}
 
 		int result = service.personnelAppointment(psaMap);
-		System.out.println("확인용 컨트롤러 결과 확인 : "+ result);
 		
 		if(result == 1) {
 			paraMap.put("fk_recipientno",(String)psaMap.get("empno")); // 받는사람 (여러명일때는 ,으로 구분된 str)
@@ -407,9 +406,58 @@ public class EmployeeController {
 			paraMap.put("alarm_type", "5");
 		}
 		
-		
-		
 		return "redirect:userDetail.yolo?empno="+psaMap.get("empno");
+	}
+	
+	// 사원번호를 전달받아 인사발령 기록 조회 해오기 
+	@ResponseBody
+	@RequestMapping(value = "/getPsaHistory.yolo", produces="text/plain;charset=UTF-8")
+	public String getPsaHistory( @RequestParam Map<String,Object>paraMap ) {
+		
+		
+		List<Map<String,String>> psaHistoryList = dao.getPsaHistory(paraMap);
+		
+		
+		JSONArray jsonArr = new JSONArray();
+		for(Map<String,String> historyMap : psaHistoryList) {
+			JSONObject jsonObj = new JSONObject();
+			
+			jsonObj.put("fk_empno",historyMap.get("fk_empno") );
+			jsonObj.put("fk_before_deptno", historyMap.get("fk_before_deptno"));
+			jsonObj.put("fk_after_deptno", historyMap.get("fk_after_deptno"));
+			jsonObj.put("before_position", historyMap.get("before_position"));
+			jsonObj.put("after_position", historyMap.get("after_position"));
+			jsonObj.put("memo", historyMap.get("memo"));
+			jsonObj.put("psa_date", historyMap.get("psa_date"));
+			jsonObj.put("psa_label", historyMap.get("psa_label"));
+			
+			jsonArr.put(jsonObj);
+		}
+		
+		return jsonArr.toString() ;
+	}
+	
+	// 사원번호를 전달받아 휴직 기록 조회 해오기 
+	@ResponseBody
+	@RequestMapping(value = "/getLeaveAbsence.yolo", produces="text/plain;charset=UTF-8")
+	public String getLeaveAbsence( @RequestParam Map<String,Object>paraMap ) {
+		
+		List<Map<String,String>> leaveAbsenceList = dao.getLeaveAbsence(paraMap);
+		
+		JSONArray jsonArr = new JSONArray();
+		for(Map<String,String> leaveAbsenceMap : leaveAbsenceList) {
+			JSONObject jsonObj = new JSONObject();
+			
+			jsonObj.put("fk_empno",leaveAbsenceMap.get("fk_empno") );
+			jsonObj.put("leavetype", leaveAbsenceMap.get("leavetype"));
+			jsonObj.put("startdate", leaveAbsenceMap.get("startdate"));
+			jsonObj.put("enddate", leaveAbsenceMap.get("enddate"));
+			jsonObj.put("memo", leaveAbsenceMap.get("memo"));
+			
+			jsonArr.put(jsonObj);
+		}
+		
+		return jsonArr.toString() ;
 	}
 	
 	

@@ -255,59 +255,54 @@ public class EmployeeService implements InterEmployeeService {
 		// 1. 인사발령 테이블에 insert
 		insert_psa = dao.insertPsa(paraMap);
 		
+		String position = (String) paraMap.get("position");
+		String deptno = (String) paraMap.get("deptno");
+		String teamno = (String) paraMap.get("teamno");
+		
 		// 2. 사원 테이블 update 
 		String updateQuery = ""; 
 		if(insert_psa == 1) {
+			
 			// 1. 부서번호만 들어온 경우 (position == null)
-			if( (paraMap.get("deptno")!= null && !"".equals(paraMap.get("deptno"))) 
-				&& paraMap.get("position") == null && paraMap.get("teamno") == null) {
+			if(deptno != "" && teamno == "" && position == "") {
 				updateQuery = "update tbl_employees set fk_deptno =  "+paraMap.get("deptno") +" where empno = " +paraMap.get("empno");
 			}
-			
 			// 2. 부서번호,팀번호 들어온 경우 (position == null)
-			if( (paraMap.get("teamno")!= null && !"".equals(paraMap.get("teamno")) ) 
-				&& paraMap.get("position") == null) {
+			else if(deptno != "" && teamno != "" && position == "") {
 				updateQuery = "update tbl_employees set fk_deptno =  "+paraMap.get("teamno") +" where empno = " +paraMap.get("empno");
 			}
-			
 			// 3. 부서번호, 직위 들어온 경우 
-			if( (paraMap.get("deptno")!= null && !"".equals(paraMap.get("deptno")) && (paraMap.get("teamno") == null || "".equals(paraMap.get("teamno")) ) ) 
-				&& paraMap.get("position") != null) {
+			else if(deptno != "" && teamno == "" && position != "") {
 				updateQuery = "update tbl_employees set fk_deptno = "+paraMap.get("deptno")+" ,position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
 			}
-			
 			// 4. 직위만  들어온 경우 (deptno == null && teamno == null) (O)
-			if( (paraMap.get("teamno") == null || "".equals(paraMap.get("teamno")) ) 
-				&& (paraMap.get("position") != null && !"".equals(paraMap.get("position")))) {
+			else if(deptno == "" && teamno == "" && position != "") {
 				updateQuery = "update tbl_employees set position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
 			}
-			
 			// 5. 부서번호, 팀번호, 직위 모두 들어온 경우 (O)
-			if( (paraMap.get("teamno") != null && !"".equals(paraMap.get("teamno")) ) 
-				&& (paraMap.get("position") != null && !"".equals(paraMap.get("position")))) {
+			else if(deptno != "" && teamno != "" && position != "") {
 				updateQuery = "update tbl_employees set fk_deptno = "+paraMap.get("teamno")+" ,position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
 			}
+
+				
+				
 			paraMap.put("updateQuery", updateQuery);
 			update_emp = dao.updatePsa(paraMap);
 		}
 		
 		if(update_emp == 1) {
 			// 3. 부서 매핑 테이블 update (팀장 또는 부서장인 경우)
-			String position = (String) paraMap.get("position");
 			if( (position != null || "".equals(position)) && ( "부서장".equals(position) || "팀장".equals(position) ) ) {
 				update_dept_mapping = dao.updateManagerEmpno(paraMap);
-				System.out.println("확인용 update_dept_mapping : "+update_dept_mapping);
 				return update_dept_mapping;
 			}
 		}
-		System.out.println("확인용 update_emp : "+update_emp);
 		
 		// 4. 공지 작성 
 		
 		return update_emp;
 	
 	}
-
 
 
 }
