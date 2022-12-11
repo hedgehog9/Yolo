@@ -335,4 +335,22 @@
 	
 	
 	
+	
+	
+	<!-- 휴가 종류와 남은 일수 얻어오기 (홈화면용)-->
+	<resultMap type="HashMap" id="homeLeaveTypeMap">
+		<result property="pk_leave_type" column="pk_leave_type" javaType="String"/>
+		<result property="leave_name" column="leave_name" javaType="String"/>
+		<result property="limit_info" column="limit_info" javaType="String"/>
+		<result property="add_file" column="add_file" javaType="String"/>
+		<result property="emoji" column="emoji" javaType="String"/>
+		<result property="limit_days" column="limit_days" javaType="String"/>
+		<result property="remaining_leave" column="remaining_leave" javaType="String"/>
+	</resultMap>
+	<select id="selectLeaveType" parameterType="HashMap" resultMap="homeLeaveTypeMap">
+		select pk_leave_type, leave_name, limit_info, add_file, emoji, limit_days
+		        ,case when LIMIT_DAYS>0 then LIMIT_DAYS - (select func_get_used_leave( PK_LEAVE_TYPE , ${empno}, ${year}) from dual) end as remaining_leave
+		from tbl_leave
+	</select>
+	
 </mapper>

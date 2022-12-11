@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <% String ctxPath=request.getContextPath(); %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <jsp:include page="leaveCategory.jsp" />
 
 <style type="text/css">
@@ -249,7 +249,25 @@
 	<div class="dashBoard">
 		<h4 class="my-4">휴가등록</h4>
 		<div class="row">
-		  <div class="col-lg-3 mb-4">
+			<c:forEach var="leveType" items="${ requestScope.leaveTypeList}">
+				<div class="col-lg-3 mb-4">
+				  <div class="card" onclick="openLeaveModal()">
+				    <div class="card-body text-left ml-2">
+					 	<span style="font-size:30px;">${leveType.emoji }</span>
+				     	<h6 class="card-title mt-4">${leveType.leave_name }
+				     		<c:if test="${leveType.add_file eq 1}"><span class="badge badge-light rounded-pill ml-2">자료 첨부 필수</span></c:if>
+				     	</h6>
+				     	<c:if test="${leveType.limit_days eq 0 }">
+				     		<p class="card-text">${leveType.limit_info }</p>
+				     	</c:if>
+				     	<c:if test="${leveType.limit_days ne 0 }">
+				     		<p class="card-text">${leveType.remaining_leave }일 </p>
+				     	</c:if>
+				    </div>
+				  </div>
+			   </div>
+			</c:forEach>
+		  <!-- <div class="col-lg-3 mb-4">
 			  <div class="card" onclick="openLeaveModal()">
 			    <div class="card-body text-left ml-2">
 				 	<span style="font-size:30px;">&#9978;</span>
@@ -320,7 +338,7 @@
 			      	<p class="card-text">신청시 지급</p>
 			    </div>
 			   </div>
-		   </div>
+		   </div> -->
 		</div>
 	</div>
 
