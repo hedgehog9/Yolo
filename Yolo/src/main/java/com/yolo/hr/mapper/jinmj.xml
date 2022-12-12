@@ -232,8 +232,8 @@
 	</select>
 	
 	<!-- 작성한 공지글 수정하기 위해 원글 가져오기 -->
-	<select id="getEditNotice" parameterType="String" resultMap="com.yolo.hr.jinji.notice.model.NoticeVO">
-		select notino, subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate
+	<select id="getEditNotice" parameterType="String" resultType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		select notino, subject, content
 		from tbl_notice
 		where notino = #{notino}
 	</select>

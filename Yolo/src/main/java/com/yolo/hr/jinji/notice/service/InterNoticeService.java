@@ -41,7 +41,10 @@ public interface InterNoticeService {
 	Map<String, String> showDeptNoticeContent(String notino);
 
 	// 공지글 수정을 위한 원래 공지글 조회하기
-	NoticeVO getEditNotice(String notino);
+	// NoticeVO getEditNotice(String notino);
+
+	// 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
+	Map<String, String> showEditNoticeContent(String notino);
 
 	
 }

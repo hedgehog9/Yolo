@@ -102,9 +102,9 @@ public class NoticeService implements InterNoticeService {
 
 	// 공지글 수정을 위한 원래 공지글 조회하기
 	@Override
-	public NoticeVO getEditNotice(String notino) {
-		NoticeVO noticevo = dao.getEditNotice(notino);
-		return noticevo;
+	public Map<String, String> showEditNoticeContent(String notino) {
+		Map<String, String> showEditNoticeContent = dao.showEditNoticeContent(notino);
+		return showEditNoticeContent;
 	}
 
 

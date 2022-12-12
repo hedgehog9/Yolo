@@ -99,11 +99,12 @@
 		
 		
 		// 공지 수정하기 버튼 클릭 이벤트
-		$("button#EditBnt").click(function(){
+		$("button.EditBnt").click(function(){
 		
 			let notino = $(this).parent().find($("input#notino")).val();
+			console.log(notino);
 			//	alert('수정 버튼 클릭!');
-				openNoticeEditModal(notino);
+			openNoticeEditModal(notino);
 			
 		}); // end of 공지 수정하기 버튼 클릭 이벤트
 		
@@ -150,44 +151,33 @@
 	    $('#myListModal_outside').fadeOut();
 	}
 	
-	/*
-	$("#EditModal").click(function() {
+	
+	// 공지 리스트 수정
+	function openNoticeEditModal(notino) {
+		
+			$.ajax({
+		    	url : "<%= request.getContextPath() %>/notice/getNoticeContent.yolo",
+		    	type: 'POST',
+		    	data : {"notino" : notino},
+		    	dataType: "JSON",
+				success: function(json){
+				//	console.log(json);
+					
+					$("input#editsubject").text(json.subject);
+					// 추후에 + 파일 첨부 넣기
+					$("textarea#editContent").text(json.content);
+					$("input#hidden_notino").val(json.notino);
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+			}); // end of 첨부파일 ajax
 
-	  var subject = $("input#editsubject").val()
-	  var content = $("input#editContent").val();
-	
-	  if(subject == '' || content == '' ){
-	    alert("제목 및 내용은 필수로 입력해야 합니다.");
-	    return;
-	  }
-	
-	  $.ajax({
-	    type : "post",
-	    url : "../reply/update",
-	    contentType : "application/json; charset=UTF-8",
-	    data : JSON.stringify({"rno": rno, "reply": reply, "replyPw": replyPw}),
-	    success : function(data) {
-	
-	    if(data == 1){ // 업데이트 성공
-	      $("#modalReply").val(""); // 내용비우기
-	      $("#modalPw").val("");
-	      $("#modalRno").val("");
-	
-	      $("#replyModal").modal("hide"); // 모달창 내리기
-	      getList(); // 조회메서드 호출							
-	     } else {
-	      alert("비밀번호를 확인하세요");
-	      $("#modalPw").val("");
-	     }
-	
-	    },
-	    error : function(status, error) {
-	    	alert("수정에 실패했습니다. 관리자에게 문의하세요");
-	    }
-	  });
-
+		
 	});
-	*/	
+	
+	
+	
 	
 </script>
 
@@ -229,8 +219,8 @@
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2" style= "background-color: ${noticevo.profile_color};">댓공지</span><span style="color: green;">[6]</span>	</span>
 					</div>
-					<button class="listBnt" id="EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button> <%-- --%>
-					<button class="listBnt" id="DeleteBnt">삭제하기</button>
+					<button class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal" >수정하기</button> 
+					<button class="listBnt DeleteBnt">삭제하기</button>
 				</div>
  			</div>
 		</c:forEach>

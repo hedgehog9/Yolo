@@ -149,7 +149,8 @@
 	                  toastr.error('', '글내용을 입력하세요');
 				return;
 			}
-			
+	
+			<%--
 			const queryString = $("form[name='editFrm']").serialize();
 			
 			console.log(queryString);
@@ -161,6 +162,14 @@
 		    	type: 'POST',
 				success: function(json){
 					
+					$("input#editsubject").text(json.subject);
+					// 추후에 + 파일 첨부 넣기
+					$("textarea#editContent").text(json.content);
+					$("input#hidden_notino").val(json.notino);
+					
+					console.log(json);
+					
+					/////
 					const modal_frmArr = document.querySelectorAll("form#editFrm");
 			  	  	for(let i=0; i<modal_frmArr.length; i++) {
 			  			modal_frmArr[i].reset();
@@ -174,7 +183,8 @@
 	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 	            }
 			}); // end of ajax
-
+		--%>
+			
 		}); // end of $("button.editNoticeBtn").click
 		
 	}); // end of ready

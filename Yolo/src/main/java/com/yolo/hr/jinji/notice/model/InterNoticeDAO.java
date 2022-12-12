@@ -39,7 +39,7 @@ public interface InterNoticeDAO {
 	Map<String, String> showDeptNoticeContent(String notino);
 
 	// 공지글 수정을 위한 원래 공지글 조회하기
-	NoticeVO getEditNotice(String notino);
+	Map<String, String> showEditNoticeContent(String notino);
 
 
 		

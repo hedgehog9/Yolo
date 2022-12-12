@@ -301,18 +301,31 @@ public class NoticeController {
 	// 공지글 수정하기 (fk_serderno 만 가능하도록 하기)
 	@ResponseBody
 	@RequestMapping(value = "/notice/getEditNotice.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
-	public void editNotice(NoticeVO noticevo, HttpServletRequest request) {
+	public String editNotice(NoticeVO noticevo, HttpServletRequest request) {
 		
 		String notino = noticevo.getNotino();
-		NoticeVO editNoticevo = service.getEditNotice(notino);
+//		NoticeVO editNoticevo = service.getEditNotice(notino);
 		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		noticevo.setFk_senderno(loginuser.getEmpno());
 		
+		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
+	    Map<String, String> editNotice = service.showEditNoticeContent(notino);
+		
 //		service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
 		
+		
+		// ajax
+        JSONObject jsonObj = new JSONObject();
+//      jsonObj.put("editNoticevo", editNoticevo);
+        jsonObj.put("notino", editNotice.get("notino"));
+        jsonObj.put("subject", editNotice.get("subject"));
+        jsonObj.put("content", editNotice.get("content"));
+        
+        
+        return jsonObj.toString(); 
 	}
 	
 	
