@@ -329,4 +329,21 @@ public class NoticeController {
 	}
 	
 	
+	// 공지글 수정 완료 폼 요청
+	@RequestMapping(value = "/notice/editNoticeFrm.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public ModelAndView editNotice(ModelAndView mav, NoticeVO noticevo, HttpServletRequest request) {
+		
+		int result = service.editNotice(noticevo);
+		
+		if(result==0) {
+        mav.addObject("message", "공지 수정이 완료되지 못했습니다.");
+        mav.addObject("loc", "javascript:history.back()");
+	    }
+	    else { // n == 1 이라면 성공된 경우다 
+	        mav.addObject("message", "공지 수정이 완료 되었습니다.");
+	        mav.addObject("loc", request.getContextPath()+"/notice/noticeList.admin");
+	    }
+		
+		return mav;
+	}
 }

@@ -41,6 +41,9 @@ public interface InterNoticeDAO {
 	// 공지글 수정을 위한 원래 공지글 조회하기
 	Map<String, String> showEditNoticeContent(String notino);
 
+	// 공지글 수정 완료 폼 요청
+	int editNotice(NoticeVO noticevo);
+
 
 		
 }

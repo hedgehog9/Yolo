@@ -46,5 +46,8 @@ public interface InterNoticeService {
 	// 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
 	Map<String, String> showEditNoticeContent(String notino);
 
+	// 공지글 수정 완료 폼 요청
+	int editNotice(NoticeVO noticevo);
+
 	
 }

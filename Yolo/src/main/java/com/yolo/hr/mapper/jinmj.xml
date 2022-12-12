@@ -238,4 +238,11 @@
 		where notino = #{notino}
 	</select>
 	
+	<!--  공지글 수정 완료 폼 보내기 -->
+	<update id="editNotice" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		update tbl_notice set subject = #{subject}
+                    		 ,content = #{content}
+		where notino=#{notino}
+	</update>
+	
 </mapper>

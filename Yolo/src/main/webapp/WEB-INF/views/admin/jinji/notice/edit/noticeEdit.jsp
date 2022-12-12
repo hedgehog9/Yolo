@@ -119,7 +119,7 @@
 
 	$(document).ready(function() {
 		
-		// 공지리스트에서 수정하기 버튼 클릭시
+		// 공지리스트에서 수정하기 (완료) 버튼 클릭시
 		$("button.editNoticeBtn").click(function(){
 			
 			// 글제목 유효성 검사
@@ -148,42 +148,14 @@
 	                  };
 	                  toastr.error('', '글내용을 입력하세요');
 				return;
+
 			}
-	
-			<%--
-			const queryString = $("form[name='editFrm']").serialize();
-			
-			console.log(queryString);
-			
-			$.ajax({
-		    	url : "<%= request.getContextPath() %>/notice/getEditNotice.yolo",
-		    	data : queryString,
-		    	dataType : "JSON",
-		    	type: 'POST',
-				success: function(json){
-					
-					$("input#editsubject").text(json.subject);
-					// 추후에 + 파일 첨부 넣기
-					$("textarea#editContent").text(json.content);
-					$("input#hidden_notino").val(json.notino);
-					
-					console.log(json);
-					
-					/////
-					const modal_frmArr = document.querySelectorAll("form#editFrm");
-			  	  	for(let i=0; i<modal_frmArr.length; i++) {
-			  			modal_frmArr[i].reset();
-			  	  	}
-					$(".noticeEditModal").modal('hide');
-					window.location.reload();
-					toastr.success('공지 수정이 완료되었습니다.');
-					
-				},
-				error: function(request, status, error){
-	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	            }
-			}); // end of ajax
-		--%>
+
+			// 공지 작성하기 (완료버튼) 폼 태그 전송
+			const frm = document.editNoticeFrm;
+			frm.method = "POST";
+			frm.action = "<%= ctxPath%>/notice/editNoticeFrm.yolo";
+			frm.submit();	
 			
 		}); // end of $("button.editNoticeBtn").click
 		
@@ -199,8 +171,9 @@
       <!-- Modal body -->
       <div class="modal-body">
       <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
-      <form id='editFrm' name="editFrm">
-      	<input type="text" id="editsubject" name="subject" placeholder="메신저 제목을 입력하세요"/>
+     
+      <form id='editNoticeFrm' name="editNoticeFrm">
+      	<input type="text" id="editsubject" name="subject" />
       	<!--  <span style="width: 80%; margin: 0 10%;">받는 사람</span>-->
         
         <textarea rows="" cols="" id="editContent" name="content"></textarea>
@@ -215,11 +188,11 @@
 			</div>
         </div>
         <input id="hidden_notino" type="text">
-      </form>
-        
         <button type="button" class="editNoticeBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 수정하기
 		</button>
+      </form>
+        
       </div>
     </div>
   </div>

@@ -163,9 +163,9 @@
 				success: function(json){
 				//	console.log(json);
 					
-					$("input#editsubject").text(json.subject);
+					$("input#editsubject").val(json.subject);
 					// 추후에 + 파일 첨부 넣기
-					$("textarea#editContent").text(json.content);
+					$("textarea#editContent").text(json.content);               
 					$("input#hidden_notino").val(json.notino);
 				},
 				error: function(request, status, error){
@@ -173,8 +173,7 @@
 	            }
 			}); // end of 첨부파일 ajax
 
-		
-	});
+	}
 	
 	
 	

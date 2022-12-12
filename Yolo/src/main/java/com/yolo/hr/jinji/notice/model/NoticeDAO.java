@@ -108,6 +108,13 @@ public class NoticeDAO implements InterNoticeDAO {
 		return showEditNoticeContent;
 	}
 
+	// 공지글 수정 완료 폼 요청
+	@Override
+	public int editNotice(NoticeVO noticevo) {
+		int result = sqlsession.update("jinmj.editNotice", noticevo);
+		return result;
+	}
+
 	
 	
 }
