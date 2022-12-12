@@ -1,10 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
+<% String ctxPath=request.getContextPath(); %>
     
 <style type="text/css">
 
 	/* Model 시작 */
-	div.noticeEdit{
+	div.noticeEditModal{
 		min-height: 700px;
 		max-height: 850px;
 	}
@@ -117,11 +119,12 @@
 
 	$(document).ready(function() {
 		
+		// 공지리스트에서 수정하기 버튼 클릭시
 		$("button.editNoticeBtn").click(function(){
 			
 			// 글제목 유효성 검사
-			const subject = $("input#editsubject").val().trim();
-			if(subject == "") {
+			const editsubject = $("input#editsubject").val().trim();
+			if(editsubject == "") {
 				toastr.options = {
 	                      closeButton: true,
 	                      progressBar: true,
@@ -134,8 +137,8 @@
 			}
 
 			// 글내용 유효성 검사
-			const content = $("textarea#editContent").val().trim();
-			if(content == "") {
+			const editContent = $("textarea#editContent").val().trim();
+			if(editContent == "") {
 				toastr.options = {
 	                      closeButton: true,
 	                      progressBar: true,
@@ -146,25 +149,54 @@
 	                  toastr.error('', '글내용을 입력하세요');
 				return;
 			}
-	
-		});	
+			
+			const queryString = $("form[name='editFrm']").serialize();
+			
+			console.log(queryString);
+			
+			$.ajax({
+		    	url : "<%= request.getContextPath() %>/notice/getEditNotice.yolo",
+		    	data : queryString,
+		    	dataType : "JSON",
+		    	type: 'POST',
+				success: function(json){
+					
+					const modal_frmArr = document.querySelectorAll("form#editFrm");
+			  	  	for(let i=0; i<modal_frmArr.length; i++) {
+			  			modal_frmArr[i].reset();
+			  	  	}
+					$(".noticeEditModal").modal('hide');
+					window.location.reload();
+					toastr.success('공지 수정이 완료되었습니다.');
+					
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+			}); // end of ajax
+
+		}); // end of $("button.editNoticeBtn").click
 		
-	});
+	}); // end of ready
 
 </script> 
  
 <!-- Modal --> 
-<div class="modal fade noticeEdit"  id="staticBackdrop" data-backdrop="static">
+<div class="modal fade noticeEditModal"  id="staticBackdrop" data-backdrop="static">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
     <div class="modal-content">
 
       <!-- Modal body -->
       <div class="modal-body">
       <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
-      <form id='my_editform'>
-      	<input id="editsubject" name="editsubject" placeholder="원래 공지제목 들어가는 곳" value=""/>
-      	<span style="width: 80%; margin: 0 10%;">받는 사람</span>
-        <textarea rows="" cols="" id="editContent" name="editContent">원래 공지 내용</textarea>
+      <form id='editFrm' name="editFrm">
+      	<input type="text" id="editsubject" name="subject" placeholder="메신저 제목을 입력하세요"/>
+      	<!--  <span style="width: 80%; margin: 0 10%;">받는 사람</span>-->
+        
+        <textarea rows="" cols="" id="editContent" name="content"></textarea>
+		<input type="hidden" name="notino" />
+        <input type="hidden" name="fk_deptno" />
+        
         <div id="attachFile">
         	<div class="fileEditbox">
 			    <input class="uploadName" value="첨부파일" placeholder="첨부파일">
@@ -172,6 +204,7 @@
 			    <input type="file" id="editfile" value="">
 			</div>
         </div>
+        <input id="hidden_notino" type="text">
       </form>
         
         <button type="button" class="editNoticeBtn" style="width: 80%; margin: 10px 10% 50px 10%;">

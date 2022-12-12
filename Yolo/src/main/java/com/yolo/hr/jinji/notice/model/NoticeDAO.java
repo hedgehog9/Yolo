@@ -86,5 +86,26 @@ public class NoticeDAO implements InterNoticeDAO {
 		return myNoticeContent;
 	}
 
+	// 로그인 유저가 속해 있는 부서의 해당 공지 리스트 보여주기
+	@Override
+	public List<Map<String, String>> depNoticeList(String fk_deptno) {
+		List<Map<String, String>> deptNoticeList = sqlsession.selectList("jinmj.deptNoticeList", fk_deptno);
+		return deptNoticeList;
+	}
+
+	// 부서 공지리스트 공지 1개 내용 조회하기(ajax)
+	@Override
+	public Map<String, String> showDeptNoticeContent(String notino) {
+		Map<String, String> deptNoticeContent = sqlsession.selectOne("jinmj.deptNoticeContent" ,notino);
+		return deptNoticeContent;
+	}
+
+	// 공지글 수정을 위한 원래 공지글 조회하기
+	@Override
+	public NoticeVO getEditNotice(String notino) {
+		NoticeVO noticevo = sqlsession.selectOne("jinmj.getEditNotice", notino);
+		return noticevo;
+	}
+
 	
 }

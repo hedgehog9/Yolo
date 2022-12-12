@@ -144,10 +144,10 @@
 	// 모달 열기 (notino 로 해당 공지 내용 Ajax로 가져오기 ( 내가 쓴 공지글 1개 조회에 대한 상세 모달) )
 	function openmyListModal(notino){
 		
-		console.log("확인용 공지번호 "+notino);
+	//	console.log("확인용 공지번호 "+notino);
 		
 		$.ajax({
-	    	url : "<%=ctxPath%>/notice/getMyOnwNoticeContent.yolo",
+	    	url : "<%=ctxPath%>/notice/getMyOneNoticeContent.yolo",
 	    	type: 'POST',
 	    	data : {"notino" : notino},
 	    	dataType: "JSON",
@@ -155,11 +155,12 @@
 			//	console.log(json);
 				$("#myListModal span#prof").text(json.nickname);
 				$("#myListModal span#prof").css("background-color", json.profile_color);
-				$("#myListModal span#name").text(json.name + " · " + json.position + " ▶ " + json.deptname );
+				$("#myListModal span#name").text(json.name + " · " + json.position + " · " +  json.deptname + " ▶ " + json.showDept);
 				$("#myListModal span#writedate").text(json.writedate);
 				$("#myListModal span#subject").text(json.subject);
 				// 추후에 + 파일 첨부 넣기
 				$("#myListModal span#content").text(json.content);
+				$("#myListModal input#hidden_notino").val(json.notino);
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -186,8 +187,9 @@
 		<c:forEach var="myNoti" items="${requestScope.myNoticeList}">
 			<div class="listRow">
 				<div class="listRowInside" style="width: 100%;">
-					<div id="prof" class="mt-3 style= "background-color: ${myNoti.profile_color};"> ${myNoti.nickname}</div>
+					<div id="prof" class="mt-3" style= "background-color: ${myNoti.profile_color};"> ${myNoti.nickname}</div>
 					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal(${myNoti.notino})">
+						<input type="hidden" id="notino" value="${myNoti.notino}">
 						<span style="font-weight: bold;" id="subject"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 						${myNoti.subject}</span>&nbsp;
 						<c:if test="${myNoti.readCount ne 0 }">	
@@ -195,7 +197,7 @@
 						</c:if>
 						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 						<span id="writedate" style="margin-left: 20px; font-size: 10pt;">${myNoti.writedate}</span>
-						<span id="name" style="display:block; font-size: 10pt;">${myNoti.name} · ${myNoti.position } ▶ <span id="deptname" style="font-size: 10pt;"> ${myNoti.deptname }</span></span>  
+						<span id="name" style="display:block; font-size: 10pt;">${myNoti.name} · ${myNoti.position } · ${myNoti.deptname} ▶ ${myNoti.showDept } </span>  
 						
 						<c:choose>
 							<c:when test="${fn:length(myNoti.content) gt 20}">
@@ -214,8 +216,8 @@
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2"  style= "background-color: ${myNoti.profile_color};">댓글</span><span style="color: green;">[6]</span>	</span>
 					</div>
-					<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-					<button class="listBnt">삭제하기</button>
+					<button class="listBnt EditModal" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
+					<button class="listBnt DeleteModal">삭제하기</button>
 				</div>
 			</div>
 		</c:forEach>
@@ -237,5 +239,5 @@
 <%@ include file="detail/myNoticeDetail.jsp" %>
 
 <%-- 공지 수정 모달 --%>
-<%@ include file="edit/noticeEdit.jsp" %>
+
 

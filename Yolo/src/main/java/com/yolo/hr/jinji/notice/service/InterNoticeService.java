@@ -34,5 +34,14 @@ public interface InterNoticeService {
 	// 내가 쓴 공지사항 공지글 1개 보여주기(ajax)
 	Map<String, String> showMyNoticeContent(String notino);
 
+	// 로그인 유저가 속해 있는 부서의 해당 공지 리스트 보여주기
+	List<Map<String, String>> depNoticeList(String fk_deptno);
+
+	// 부서 공지리스트 공지 1개 내용 조회하기(ajax)
+	Map<String, String> showDeptNoticeContent(String notino);
+
+	// 공지글 수정을 위한 원래 공지글 조회하기
+	NoticeVO getEditNotice(String notino);
+
 	
 }

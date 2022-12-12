@@ -243,7 +243,8 @@
 		     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
 		     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
 		     	</div>
-     	
+     			<input id="hidden_notino" type="hidden">
+     			
 			 <%-- 댓글 입력란 시작 --%>     	
 	     	<div style="margin: 30px 0;">
 	      	<span style="font-size: 16px;">&#128313; 댓글</span>

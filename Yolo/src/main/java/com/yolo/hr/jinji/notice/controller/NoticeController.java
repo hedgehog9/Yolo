@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.yolo.hr.common.FileManager;
 import com.yolo.hr.common.MyUtil;
+import com.yolo.hr.jihyunModel.MessengerVO;
 import com.yolo.hr.jinji.notice.model.NoticeVO;
 import com.yolo.hr.jinji.notice.service.InterNoticeService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
@@ -171,7 +172,7 @@ public class NoticeController {
     public String noticeContent( HttpServletRequest request) {
     
 		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
-		String notino = request.getParameter("notino");
+		String notino = request.getParameter("notino");		
 		// System.out.println(notino);
 
 		
@@ -180,6 +181,7 @@ public class NoticeController {
 
 	    // ajax
         JSONObject jsonObj = new JSONObject(); 
+        jsonObj.put("notino", notice.get("notino"));
         jsonObj.put("subject", notice.get("subject"));
         jsonObj.put("content", notice.get("content"));
         jsonObj.put("writedate", notice.get("writedate"));
@@ -188,6 +190,7 @@ public class NoticeController {
         jsonObj.put("name", notice.get("name"));
         jsonObj.put("nickname", notice.get("nickname"));
         jsonObj.put("position", notice.get("position"));
+        jsonObj.put("showDept", notice.get("showDept"));
         
         return jsonObj.toString(); // string 타입으로 변한다.  '[{}, {}, {} ]' 또는 "[ ]"  => select 된 것이 없을 때
     }
@@ -195,11 +198,52 @@ public class NoticeController {
 
 	// 부서 공지 리스트 
 	@RequestMapping(value = "/notice/depNoticeList.yolo")
-	public String depNoticeList() {
+	public ModelAndView depNoticeList(HttpServletRequest request, ModelAndView mav, NoticeVO noticevo) {
 		
-		return "jinji/notice/depNoticeList.admin";
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
+		loginuser.getFk_deptno().equals(noticevo.getFk_deptno());
+		
+		List<Map<String, String>> depNoticeList = service.depNoticeList(loginuser.getFk_deptno());
+		
+		
+		mav.addObject("depNoticeList", depNoticeList);
+//		System.out.println(showAllNoticeList);
+		mav.setViewName("jinji/notice/depNoticeList.admin");
+		
+		return mav;
 	}
+	
+	
+	// 부서 공지리스트 공지 1개 내용 조회하기(ajax)
+	@ResponseBody
+	@RequestMapping(value="/notice/deptOneNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+    public String deptOneNoticeContent(HttpServletRequest request) {
+    
+		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
+		String notino = request.getParameter("notino");
+//		System.out.println(notino);
+
+			
+		// map 으로 넣기( 해당 글의 공지번호를 통해 글 하나만 가져오기)
+	    Map<String, String> deptNotice = service.showDeptNoticeContent(notino);
+	    
+	    // ajax
+        JSONObject jsonObj = new JSONObject(); 
+        jsonObj.put("notino", deptNotice.get("notino"));
+        jsonObj.put("subject", deptNotice.get("subject"));
+        jsonObj.put("content", deptNotice.get("content"));
+        jsonObj.put("writedate", deptNotice.get("writedate"));
+        jsonObj.put("profile_color", deptNotice.get("profile_color"));
+        jsonObj.put("deptname", deptNotice.get("deptname"));
+        jsonObj.put("name", deptNotice.get("name"));
+        jsonObj.put("nickname", deptNotice.get("nickname"));
+        jsonObj.put("position", deptNotice.get("position"));
+        jsonObj.put("showDept", deptNotice.get("showDept"));
+        
+        return jsonObj.toString(); // string 타입으로 변한다.  '[{}, {}, {} ]' 또는 "[ ]"  => select 된 것이 없을 때
+    }
 	
 	
 	// 내가 쓴 공지 리스트 
@@ -214,7 +258,7 @@ public class NoticeController {
 			
 		List<Map<String, String>> myNoticeList = service.getMyNoticeList(loginuser.getEmpno());
 		
-		System.out.println("확인용 공지 목록 : "+myNoticeList);
+//		System.out.println("확인용 공지 목록 : "+myNoticeList);
 		
 		mav.addObject("myNoticeList", myNoticeList);
 		mav.setViewName("jinji/notice/myNoticeList.admin"); 
@@ -226,8 +270,8 @@ public class NoticeController {
 	
 	// 내가 쓴 공지리스트 공지 1개 내용 조회하기(ajax)
 	@ResponseBody
-	@RequestMapping(value="/notice/getMyOnwNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
-    public String MyOnwNoticeContent(HttpServletRequest request) {
+	@RequestMapping(value="/notice/getMyOneNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+    public String MyOneNoticeContent(HttpServletRequest request) {
     
 		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
 		String notino = request.getParameter("notino");
@@ -238,7 +282,8 @@ public class NoticeController {
 	    Map<String, String> myNotice = service.showMyNoticeContent(notino);
 
 	    // ajax
-        JSONObject jsonObj = new JSONObject(); 
+        JSONObject jsonObj = new JSONObject();
+        jsonObj.put("notino", myNotice.get("notino"));
         jsonObj.put("subject", myNotice.get("subject"));
         jsonObj.put("content", myNotice.get("content"));
         jsonObj.put("writedate", myNotice.get("writedate"));
@@ -247,10 +292,28 @@ public class NoticeController {
         jsonObj.put("name", myNotice.get("name"));
         jsonObj.put("nickname", myNotice.get("nickname"));
         jsonObj.put("position", myNotice.get("position"));
+        jsonObj.put("showDept", myNotice.get("showDept"));
         
         return jsonObj.toString(); // string 타입으로 변한다.  '[{}, {}, {} ]' 또는 "[ ]"  => select 된 것이 없을 때
     }
 	
+	
+	// 공지글 수정하기 (fk_serderno 만 가능하도록 하기)
+	@ResponseBody
+	@RequestMapping(value = "/notice/getEditNotice.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public void editNotice(NoticeVO noticevo, HttpServletRequest request) {
+		
+		String notino = noticevo.getNotino();
+		NoticeVO editNoticevo = service.getEditNotice(notino);
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		noticevo.setFk_senderno(loginuser.getEmpno());
+		
+//		service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
+		
+	}
 	
 	
 }

@@ -564,7 +564,7 @@
 			const queryString = $("form[name='messengerdeliverFrm']").serialize();
 			
 			$.ajax({
-		    	url : "<%=ctxPath%>/messenger/deleverMessenger.yolo",
+		    	url : "<%=ctxPath%>/messenger/.yolo",
 		    	data : queryString,
 		    	type: 'POST',
 				success: function(){

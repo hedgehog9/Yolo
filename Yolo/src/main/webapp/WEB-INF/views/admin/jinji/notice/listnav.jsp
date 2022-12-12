@@ -494,7 +494,7 @@
 
 <div id="noticeNav">
 	<div id="category">
-		<span style="font-size: 20pt; font-weight: bold;" onclick="">공지사항</span>
+		<span style="font-size: 20pt; font-weight: bold;">공지사항</span>
 		<button type="button" class="headerBtn" data-toggle="modal" data-target=".sendNotice">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 작성하기
 		</button>
@@ -511,7 +511,7 @@
 <hr width = "100%;">
 
 
-<!-- Modal --> 
+<!-- sendNotice Modal --> 
 <div class="modal fade sendNotice"  id="staticBackdrop" data-backdrop="static">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
     <div class="modal-content">

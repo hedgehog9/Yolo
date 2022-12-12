@@ -4,7 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %> 
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
-<% String ctxPath=request.getContextPath(); %>
+
 
 <jsp:include page="listnav.jsp" />
 
@@ -97,17 +97,28 @@
 			closemyListModal();
 		});
 		
+		
+		// 공지 수정하기 버튼 클릭 이벤트
+		$("button#EditBnt").click(function(){
+		
+			let notino = $(this).parent().find($("input#notino")).val();
+			//	alert('수정 버튼 클릭!');
+				openNoticeEditModal(notino);
+			
+		}); // end of 공지 수정하기 버튼 클릭 이벤트
+		
 	}); // end of $(document).ready(function() ------
 			
 	
-	// 모달 열기
+			
+	// 전체 공지 리스트 상세 모달
 	function openmyListModal(notino){
 		
 		// alert("notino:" + request.notino);
 		
 		// notino 로 해당 공지 내용 Ajax로 가져오기 (전체공지글 1개 조회에 대한 상세 모달은 noticeDetail.jsp 참조)
 		$.ajax({
-	    	url : "<%=ctxPath%>/notice/getNoticeContent.yolo",
+	    	url : "<%= request.getContextPath() %>/notice/getNoticeContent.yolo",
 	    	type: 'POST',
 	    	data : {"notino" : notino},
 	    	dataType: "JSON",
@@ -115,11 +126,12 @@
 			//	console.log(json);
 				$("#myListModal span#prof").text(json.nickname);
 				$("#myListModal span#prof").css("background-color", json.profile_color);
-				$("#myListModal span#name").text(json.name + " · " + json.position + " ▶ " + json.deptname );
+				$("#myListModal span#name").text(json.name + " · " + json.position + " · " +  json.deptname + " ▶ " + json.showDept);
 				$("#myListModal span#writedate").text(json.writedate);
 				$("#myListModal span#subject").text(json.subject);
 				// 추후에 + 파일 첨부 넣기
 				$("#myListModal span#content").text(json.content);
+				$("#myListModal input#hidden_notino").val(json.notino);
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -137,7 +149,46 @@
 		$('#myListModal').removeClass('active');
 	    $('#myListModal_outside').fadeOut();
 	}
-			
+	
+	/*
+	$("#EditModal").click(function() {
+
+	  var subject = $("input#editsubject").val()
+	  var content = $("input#editContent").val();
+	
+	  if(subject == '' || content == '' ){
+	    alert("제목 및 내용은 필수로 입력해야 합니다.");
+	    return;
+	  }
+	
+	  $.ajax({
+	    type : "post",
+	    url : "../reply/update",
+	    contentType : "application/json; charset=UTF-8",
+	    data : JSON.stringify({"rno": rno, "reply": reply, "replyPw": replyPw}),
+	    success : function(data) {
+	
+	    if(data == 1){ // 업데이트 성공
+	      $("#modalReply").val(""); // 내용비우기
+	      $("#modalPw").val("");
+	      $("#modalRno").val("");
+	
+	      $("#replyModal").modal("hide"); // 모달창 내리기
+	      getList(); // 조회메서드 호출							
+	     } else {
+	      alert("비밀번호를 확인하세요");
+	      $("#modalPw").val("");
+	     }
+	
+	    },
+	    error : function(status, error) {
+	    	alert("수정에 실패했습니다. 관리자에게 문의하세요");
+	    }
+	  });
+
+	});
+	*/	
+	
 </script>
 
     
@@ -147,16 +198,19 @@
 		<c:forEach var="noticevo" items="${requestScope.showAllNoticeList}">
 			<div class="listRow">
 				<div class="listRowInside" style="width: 100%;">
-					<div id="prof" class="mt-3 style="background-color: ${noticevo.profile_color};"> ${noticevo.nickname}</div>
+					<div id="prof" class="mt-3" style="background-color: ${noticevo.profile_color};"> ${noticevo.nickname}</div>
 					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal(${noticevo.notino})">
+						<input type="text" id="notino" value="${noticevo.notino}">
+						<input type="text" id="fk_senrderno" value="${noticevo.fk_senderno}">
 						<span style="font-weight: bold;" id="subject"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 						${noticevo.subject}</span>&nbsp;
 						<c:if test="${noticevo.readCount ne 0 }">	
 							<span id="readCount"  style="color: green;">[${noticevo.readCount}]</span>	
 						</c:if>
+						
 						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 						<span id="writedate" style="margin-left: 20px; font-size: 10pt;">${noticevo.writedate}</span>
-						<span id="name" style="display:block; font-size: 10pt;">${noticevo.name} · ${noticevo.position } ▶ <span id="deptname" style="font-size: 10pt;">${noticevo.deptname }</span></span>  
+						<span id="name" style="display:block; font-size: 10pt;">${noticevo.name} · ${noticevo.position } · ${noticevo.deptname} ▶ ${noticevo.showDept }</span>  
 						
 						<c:choose>
 							<c:when test="${fn:length(noticevo.content) gt 20}">
@@ -175,8 +229,8 @@
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2" style= "background-color: ${noticevo.profile_color};">댓공지</span><span style="color: green;">[6]</span>	</span>
 					</div>
-					<button class="listBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-					<button class="listBnt">삭제하기</button>
+					<button class="listBnt" id="EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button> <%-- --%>
+					<button class="listBnt" id="DeleteBnt">삭제하기</button>
 				</div>
  			</div>
 		</c:forEach>
