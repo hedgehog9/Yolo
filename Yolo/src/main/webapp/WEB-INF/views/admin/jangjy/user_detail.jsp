@@ -264,6 +264,7 @@
 		color: black;
 		transition: all 0.5s;
 		padding: 10px;
+		overflow: auto;
 	}
 	
 	div#record.active {
@@ -1040,8 +1041,53 @@
 		// 해당 사원 주 총 근무시간 구하기 
 		getWorkTime($("th#th_empno").text());
 		
+
+		
+		
+		
 		
 	});// end of $(document).ready-----------------------------
+	
+	function spinner(){
+		// 추가 이미지 파일에 스피너 달아주기 // 최소값 최대값
+		$("input#spinnerImgQty").spinner({
+			spin:function(event,ui){
+	            if(ui.value > 10) {
+	               $(this).spinner("value", 10);
+	               return false;
+	            }
+	            else if(ui.value < 0) {
+	               $(this).spinner("value", 0);
+	               return false;
+	            }
+	         }
+		});
+		
+		
+		// ### 스피너의 이벤트는 클릭이 아니고 change도 아니고 "spinstop" 이다 ### //
+		// 첨부파일 개수만큼 늘고 줄어들게 만들기
+		$("input#spinnerImgQty").bind("spinstop", function(){
+
+			let html = '';
+			const cnt = $(this).val();
+			
+			//console.log(cnt);
+			
+			for(let i=0; i<Number(cnt); i++){
+				html+= '<div class="filebox">'+
+						    '<input class="upload-name" name="attachName'+i+'" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">'+
+						    '<label for="attach'+i+'">파일찾기</label>'+
+						    '<input type="file" class="file" id="attach'+i+'" name="attach'+i+'">'+
+						'</div>';
+			}
+			
+			$("div#divfileattach").html(html);
+			
+			$("input#attachCount").val(cnt);
+			
+		}); // end of 첨부파일 개수만큼 늘고 줄어들게 만들기
+		
+	}
 	
 	// 개인정보 수정 메소드 
 	function changePsInfo(){
@@ -1292,6 +1338,7 @@
 					+'</form>'
 				+'</div>'
 			$("div#edit_info").html(html);
+			
 			daterange();
 				$("input[name='before_deptno']").val( $("input#before_deptno").val());
 				$("input[name='before_position']").val( $("input#before_position").val());
@@ -1428,6 +1475,14 @@
 							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" /><br/>'
 							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" />&nbsp;'
 						+'</div>'
+						
+						+'<div id="attachArea">'
+							+'<span>파일 첨부하기</span>'
+							+'<label for="spinnerImgQty">파일갯수 : </label>'
+							+'<input id="spinnerImgQty" value="0" style="width: 30px; height: 20px;">'
+							+'<div id="divfileattach"></div>'
+							+'<input type="hidden" name="attachCount" id="attachCount" />'
+						+'</div>'
 							
 						+'<div style="display:flex; justify-content: flex-end;">'
 							+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>'
@@ -1439,6 +1494,7 @@
 	    
 	    
 	    $("div#edit_info").html(html);
+		spinner();
 		daterange();
 	}
 	
