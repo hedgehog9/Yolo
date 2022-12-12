@@ -1438,7 +1438,7 @@
 						+'</button>'
 					+'</div>'
 					
-					+'<form name="frm_psInfo">'
+					+'<form name="frm_psInfo" enctype="multipart/form-data">'
 						+'<div style="margin: 20px 0;">'
 							+'<div>이름</div>'
 							+'<input name ="name" class="input_edit_info" type="text"/>'

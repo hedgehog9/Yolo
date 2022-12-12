@@ -684,6 +684,12 @@
 		where rno between #{startRno} and #{endRno}	
 	</select>
 	
+	<!-- 사원 첨부파일 등록  -->
+	<insert id="addFile" parameterType="HashMap">
+		insert into tbl_emp_file (fileno, fk_empno, org_filename, fileSize, filename)
+		values (seq_fileno.nextval, #{fk_empno}, #{org_filename}, #{fileSize}, #{filename})
+	</insert>
+	
 	
 	<!-- ====================== 조직도 =================== -->
 	<!-- 모든 부서 정보 조회하기 -->

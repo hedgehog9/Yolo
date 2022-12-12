@@ -198,6 +198,12 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return psaListPaging;
 	}
 
+	@Override
+	public void addFile(Map<String, Object> fileMap) {
+		sqlsession.insert("jangjy.addFile", fileMap);
+		
+	}
+
 	
 	
 	

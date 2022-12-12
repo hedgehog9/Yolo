@@ -318,7 +318,7 @@ public class EmployeeService implements InterEmployeeService {
 		sql.append(" update tbl_employees set ");
 		
 		for(String key : psInfoMap.keySet()){
-            if(!"".equals(psInfoMap.get(key)) && !"detailAddress".equals(key)) {
+            if(!"".equals(psInfoMap.get(key)) && !"detailAddress".equals(key) && !key.contains("attach")) {
     			sql.append(key + " = '" +psInfoMap.get(key)+"',");
     		}
         }

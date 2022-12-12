@@ -85,4 +85,7 @@ public interface InterEmployeeDAO {
 	/** 인사발령 페이징처리 (글 목록 가져오기) */
 	List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap);
 
+	/** 사원 첨부파일 저장 */
+	void addFile(Map<String, Object> fileMap);
+
 }

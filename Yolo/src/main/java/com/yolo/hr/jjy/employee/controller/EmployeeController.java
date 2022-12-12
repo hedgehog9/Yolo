@@ -1,5 +1,7 @@
 package com.yolo.hr.jjy.employee.controller;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,9 +11,14 @@ import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.yolo.hr.common.FileManager;
+import com.yolo.hr.jihyunModel.FileVO;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
 import com.yolo.hr.jjy.employee.model.InterEmployeeDAO;
 import com.yolo.hr.jjy.employee.service.InterEmployeeService;
@@ -24,6 +31,10 @@ public class EmployeeController {
 	
 	@Autowired 
 	private InterEmployeeDAO dao;
+	
+	// === #155. 파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) ===
+	@Autowired
+	private FileManager fileManager; // bean으로 올라간 애를 쓰겠다
 
 	// 구성원 메인 페이지
 	@RequestMapping(value = "/people.yolo")
@@ -436,11 +447,112 @@ public class EmployeeController {
 		return jsonArr.toString() ;
 	}
 	
-	@RequestMapping(value = "/changePsInfo.yolo", produces="text/plain;charset=UTF-8")
-	public String changePsInfo( @RequestParam Map<String,Object>psInfoMap ) {
+	@RequestMapping(value = "/changePsInfo.yolo", produces="text/plain;charset=UTF-8" , method= {RequestMethod.POST} )
+	public String changePsInfo( MultipartHttpServletRequest mrequest, @RequestParam Map<String,Object>psInfoMap ) {
 		
+		
+		
+		System.out.println("확인용 psInfoMap : "+ psInfoMap);
 		int result = service.changePsInfo(psInfoMap);
 		
+		
+		Calendar currentDate = Calendar.getInstance();
+		SimpleDateFormat dateft = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+		
+		String time = dateft.format(currentDate.getTime());
+		
+		// 첨부파일 여부
+		HttpSession session = mrequest.getSession();
+		String str_attachCount = mrequest.getParameter("attachCount");
+		
+		if("".equals(str_attachCount)) {
+			str_attachCount="0";
+		}
+		int attachCount = Integer.valueOf(str_attachCount);
+		int cntRealAttach = 0;
+		
+		if(attachCount>0) {
+			
+			for(int i=0; i<attachCount; i++) {
+				
+				MultipartFile attach = mrequest.getFile("attach"+i);
+				
+				// attach(첨부파일)가 비어있지 않다면 (즉 첨부파일이 있는 경우라면 )
+				if( !attach.isEmpty()) {
+					/*
+			            1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다. 
+			           >>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
+			                                 우리는 WAS의 webapp/resources/files 라는 폴더로 지정해준다.
+			                                 조심할 것은  Package Explorer 에서  files 라는 폴더를 만드는 것이 아니다.       
+			       */
+					// WAS의 webapp 절대경로를 알아와야한다. 
+					String root = session.getServletContext().getRealPath("/"); // 이만큼이 webapp 
+					
+					// System.out.println("root 확인 :" + root);
+					// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+					
+					String path = root + "resources"+File.separator+"files";
+//					System.out.println("확인용 path : "+ path);
+					// C:\NCS\workspace(final)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Yolo\resources\files
+					/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+				            운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+				            운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+				    */
+					
+					// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+					// System.out.println("확인용 path : "+ path); 
+					// 확인용 path : C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
+					
+					/*
+					 	2. 파일첨부를 위한 변수의 설정 및 값을 초기화 한 후 파일 올리기
+					*/
+					String newFileName = "";
+					// WAS(톰캣)의 디스크에 저장되어질 파일네임 날짜 + 나노시간 + 파일확장자 식으로 저장되어짐
+					
+					byte[] bytes = null; // 첨부파일의 내용물을 담는 것
+					long fileSize = 0; // 첨부파일의 크기 
+					
+					try {
+						bytes = attach.getBytes(); // 첨부파일의 내용물을 읽어오는 것
+						
+						String org_filename = attach.getOriginalFilename(); // 첨부파일명의 파일명 (예: 강아지.png)
+						// System.out.println("확인 originalFilename : "+ originalFilename);
+						// 확인 originalFilename : 즐.png
+						
+						// 파일을 업로드 시켜주는 클래스를 만들거임
+						newFileName = fileManager.doFileUpload(bytes, org_filename, path); // 첨부되어진 파일을 업로드 하도록 하는 것이당 ㅎㅎ
+						
+						// System.out.println("확인용 newFileName : "+ newFileName); 
+						// 확인용 newFileName : 20221028235426101969758220700.png
+						
+						/*
+							3. BoardVo boardvo 에 fileName, orgFilename, fileSize 를 담아줘야함
+						 */
+//						FileVO filevo = new FileVO();
+						Map<String,Object> fileMap = new HashMap<>();
+						
+						fileMap.put("fk_empno", psInfoMap.get("empno"));
+						fileMap.put("filename", newFileName); // WAS에 저장된 파일명 // 20221028235426101969758220700.png
+						fileMap.put("org_filename", org_filename); // WAS에 저장된 파일명 // 20221028235426101969758220700.png
+						// 게시판 페이지에서 첨부된 파일(강아지.png)을 보여줄 때 사용.
+			            // 또한 사용자가 파일을 다운로드 할때 사용되어지는 파일명으로 사용.
+						fileSize = attach.getSize();
+						fileMap.put("fileSize", fileSize);
+//						filevo.setFileSize(String.valueOf(fileSize) ); // 첨부파일의 크기
+						
+//						filevo.setFk_msgno(time); // 허수를 담아준 담에 메일을 발송한 후 update 해줄거임
+						
+						dao.addFile(fileMap);
+						
+						cntRealAttach++;
+						
+					} catch (Exception e) { // 꺠진 파일을 읽어올 수 도 있으므로 exception 처리 //fileManager에서 pathname 가 잘못되면 오류가 발생하는 오류도 잡아줌
+						e.printStackTrace();
+					} 
+				}
+			}
+			
+		} 
 		return "redirect:userDetail.yolo?empno="+psInfoMap.get("empno");
 	}
 	

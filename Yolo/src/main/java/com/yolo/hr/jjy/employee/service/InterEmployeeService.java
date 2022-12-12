@@ -52,6 +52,6 @@ public interface InterEmployeeService {
 
 	/** 인사발령 내역 페이징 처리를 위한 인사발령 목록 구해오기  */
 	List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap);
-	
+
 
 }
