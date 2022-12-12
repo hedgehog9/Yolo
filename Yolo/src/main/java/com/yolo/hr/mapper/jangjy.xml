@@ -691,6 +691,22 @@
 	</insert>
 	
 	
+	
+	<!-- 첨부파일 조회  -->
+	<resultMap type="HashMap" id="FileMap">
+		<result property="fileno"     			column="fileno"    				 javaType="String"/>
+		<result property="fk_empno"          	column="fk_empno"         			 javaType="String"/>
+		<result property="org_filename" 		column="org_filename"   			 javaType="String"/>
+		<result property="fileSize"           	column="fileSize"             	 javaType="String"/>
+		<result property="filename" 		   column="filename"              	 javaType="String"/>
+	</resultMap>
+	
+	<select id="getFile" parameterType="HashMap" resultMap="FileMap">
+		select *
+		from tbl_emp_file
+		where fk_empno = #{empno}
+	</select>
+	
 	<!-- ====================== 조직도 =================== -->
 	<!-- 모든 부서 정보 조회하기 -->
 	<resultMap type="HashMap" id="deptNameList_Map">

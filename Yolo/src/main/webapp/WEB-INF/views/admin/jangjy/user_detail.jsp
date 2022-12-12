@@ -444,6 +444,30 @@
 	}
 	
 	
+	span#mailContent {
+		width: 80%;
+		margin: 20px 10% 15px 10%;
+		display: block;
+		min-height: 300px;
+		max-height: 400px;
+	}
+	
+	div#mailAttachArea{
+		width: 80%;
+		margin: 10px 10% 25px auto;
+	}
+	
+	span.mailFiles {
+		text-decoration: underline;
+		color: gray;
+	}
+	
+	span.mailFiles:hover {
+		font-weight: bold;
+		color: black;
+		cursor: pointer;
+	}
+	
 	
 </style>
 <%-- 말풍선 --%>
@@ -679,11 +703,15 @@
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>급여계좌</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.account}`+"</th>"			
-							+"</tr>"			
+							+"</tr>"
+							+"<tr class='file' style='height:40px;'>"
+							+"</tr>"
+							
 						+"</thead>"
 					+"</table>";
 	  		
 	  		$("div#div_info").html(html);
+	  		getFile("${requestScope.employeeMap.empno}");
 	  		
 	  	});
 	  	<%-- =========== 개인정보 클릭 끝  =========== --%>
@@ -1599,6 +1627,30 @@
 			  }
 		}); // end of ajax()----------------------------------------------------------------------
 	}// end of function getTeam(deptno){}--------------------------------------
+	
+	function getFile(empno){
+		$.ajax({
+			  url : "<%= request.getContextPath()%>/getFile.yolo",
+			  data : {"empno":empno},
+			  type : "POST",
+			  dataType : "JSON",
+			  success : function(json){
+				  if(json.length>0){
+						let html = '<span style="display: block; margin-bottom:5px; font-weight: bold">첨부파일</span>';
+						$.each(json, function(index, item){
+							html+='<span style="font-size: 10pt; color: gray;"><i class="fas fa-solid fa-paperclip ml-3 mr-1"></i></span>'+
+					        	'<span class="mailFiles" onclick="javascript:location.href=\'<%=ctxPath%>/downloadFile.yolo?filename='+item.filename+'&org_filename='+item.org_filename+'\'" >'+item.org_filename+'</span><br>';
+						});
+						
+						$("tr.file").html(html);
+					}
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+	}
 	
 	
 	

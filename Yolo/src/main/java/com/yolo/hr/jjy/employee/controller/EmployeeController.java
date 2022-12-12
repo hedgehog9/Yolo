@@ -1,10 +1,13 @@
 package com.yolo.hr.jjy.employee.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.json.*;
@@ -648,9 +651,94 @@ public class EmployeeController {
 		}
 		return jsonArr.toString();
 	}
+	
+	
+	
+	// 사원번호 전달받아 첨부파일 가져오기 
+	@ResponseBody
+	@RequestMapping(value = "/getFile.yolo", produces="text/plain;charset=UTF-8")
+	public String getFile( @RequestParam Map<String,Object>paraMap ) {
+		
+		System.out.println(paraMap);
+		
+		List<Map<String,String>> fileList = dao.getFile(paraMap);
+		
+		System.out.println("확인용 list : "+ fileList);
+		
+		JSONArray jsonArr = new JSONArray();
+		for(Map<String,String> fileMap : fileList) {
+			JSONObject jsonObj = new JSONObject();
+			
+			jsonObj.put("fileno",fileMap.get("fileno") );
+			jsonObj.put("fk_empno", fileMap.get("fk_empno"));
+			jsonObj.put("org_filename", fileMap.get("org_filename"));
+			jsonObj.put("fileSize", fileMap.get("fileSize"));
+			jsonObj.put("filename", fileMap.get("filename"));
+			
+			jsonArr.put(jsonObj);
+		}
+		
+		return jsonArr.toString() ;
+	}
 
 	
-	
+	// 사원 개인 첨부파일 다운 
+	@ResponseBody
+	@RequestMapping(value = "/downloadFile.yolo", produces="text/plain;charset=UTF-8" )
+	public void downloadMailFile(HttpServletRequest request, HttpServletResponse response) {
+		String filename = request.getParameter("filename");
+		String org_filename = request.getParameter("org_filename");
+		
+		System.out.println("filename : "+ filename);
+		System.out.println("org_filename : "+ org_filename);
+		
+		// view단 페이지가 없기 때문에 이 자체 내에서 다 해주어야한다 
+		response.setContentType("text/html; charset=UTF-8");
+		PrintWriter out = null; // out은 웹브라우저에 기술하는 대상체 라고 생각하자
+		
+		try {
+			
+			if(filename!=null && !"".equals(filename)) {
+				HttpSession session = request.getSession();
+				String root = session.getServletContext().getRealPath("/"); // 이만큼이 webapp 
+				
+				// System.out.println("root 확인 :" + root);
+				// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+				
+				String path = root + "resources"+File.separator+"files";
+				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+			            운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+			            운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+			    */
+				
+				// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+				// System.out.println("확인용 path : "+ path); 
+				// 확인용 path : C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
+				
+				// **** file 다운로드 하기 **** // 
+				boolean flag = false ;// file 다운로드 성공/ 실패를 알려주는 용도
+				
+				flag = fileManager.doFileDownload(filename, org_filename, path, response);
+				
+				if(!flag) {
+					out = response.getWriter(); // 그냥 getWrite 해버리면 한글이 다 깨지니까 위에서 setContent 해중거 
+					out.println("<script type='text/javascript'>alert('파일 다운로드가 실패되었습니다.'); history.back()</script>");
+					return ; // 종료
+				}
+			}
+			
+		} catch (IOException e) {
+			try {
+				// view단 페이지가 없기 때문에 이 자체 내에서 다 해주어야한다 
+				out = response.getWriter(); // 그냥 getWrite 해버리면 한글이 다 깨지니까 위에서 setContent 해중거 
+				out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back()</script>");
+				
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			} 
+		}
+	}
+
 	
 	
 	

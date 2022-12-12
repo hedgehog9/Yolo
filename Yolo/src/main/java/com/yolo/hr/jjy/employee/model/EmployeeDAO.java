@@ -204,6 +204,12 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		
 	}
 
+	@Override
+	public List<Map<String, String>> getFile(Map<String, Object> paraMap) {
+		List<Map<String, String>> FileList = sqlsession.selectList("jangjy.getFile", paraMap);
+		return FileList;
+	}
+
 	
 	
 	

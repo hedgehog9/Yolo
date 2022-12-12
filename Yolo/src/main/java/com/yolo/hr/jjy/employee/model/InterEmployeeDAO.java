@@ -88,4 +88,7 @@ public interface InterEmployeeDAO {
 	/** 사원 첨부파일 저장 */
 	void addFile(Map<String, Object> fileMap);
 
+	/** 사원번호를 전달받아 첨부파일을 가져오는 메소드  */
+	List<Map<String, String>> getFile(Map<String, Object> paraMap);
+
 }
