@@ -926,7 +926,7 @@ li.li_moveAll > a{
 				dataType:"JSON",
 				success:function(json){
 					
-					//$("div#search_result").empty();
+					$("div#search_result").empty();
 					  let html ='<table id="tbl_history" class="table table-bordered table-hover" style="margin-top: 20px;">'
 									+'<thead>'
 									+'<tr>'
@@ -940,20 +940,20 @@ li.li_moveAll > a{
 									+'</tr>'
 								+'</thead>'
 							+'<tbody>';
-					  $.each(json,function(index,emp){
-						  $("span#result_cnt").text(emp.totalCount+" 명");
+					  $.each(json,function(index,psa){
+						  $("span#result_cnt").text(psa.totalCount+" 명");
 						  html += '<tr>'
 									  +'<td>'
 										  +'<div class="div_name">'
-										  +'<div class="div_label">인사발령 라벨</div>'							
-										  +'<div class="div_name">홍길동 ,<span class="span_time">2022.11.17(목) 오후 5:33</span></div>'						
+										  +'<div class="div_label">'+psa.psa_label+'</div>'							
+										  +'<div class="div_name">'+psa.name+' ,<span class="span_time">'+psa.psa_date+'(목) 오후 5:33</span></div>'						
 										  +'</div>'
 									  +'</td>'
-									  +'<td>인사</td>'
-									  +'<td>마케팅</td>'
-									  +'<td>대리</td>'
-									  +'<td>과장</td>'
-									  +'<td>메모 n 글자 이상인 경우 ... 으로 출력</td>'
+									  +'<td>'+psa.before_deptname+'</td>'
+									  +'<td>'+psa.after_dptname+'</td>'
+									  +'<td>'+psa.before_position+'</td>'
+									  +'<td>'+psa.after_position+'</td>'
+									  +'<td>'+psa.memo+'</td>'
 									  +'<td>'
 										  +'<span data-toggle="tooltip" data-placement="left" title="메모 수정">'
 										  +'<button type="button" class="btn edit_memo" data-toggle="modal" data-target="#modal_change_memo" >'
@@ -968,7 +968,7 @@ li.li_moveAll > a{
 						
 					    html +='</tbody>'   	
 							 +'</table>';
-						// $("div#search_result").html(html);
+						 $("div#search_result").html(html);
 					
 					// 페이지바 함수 호출
 					makeCommentPageBar(currentShowPageNo);

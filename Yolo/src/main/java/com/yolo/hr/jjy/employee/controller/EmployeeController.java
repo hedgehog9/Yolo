@@ -466,7 +466,7 @@ public class EmployeeController {
 		
 		int totalPage = service.getTotalPsaPage(pageMap);
 		
-		 System.out.println("############## 확인용 ############"+totalPage);
+		System.out.println("############## 확인용 ############"+totalPage);
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("totalPage",totalPage); 
@@ -509,31 +509,26 @@ public class EmployeeController {
 	    pageMap.put("endRno", String.valueOf(endRno));
 	    
 		// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
-	    List<Map<String,String>> empListPaging = service.psaListSearchWithPaging(pageMap);
+	    List<Map<String,String>> psaListPaging = service.psaListSearchWithPaging(pageMap);
+	    
+//	    System.out.println("확인용 psaListPaging : "+psaListPaging);
 		
 		JSONArray jsonArr = new JSONArray();
 		
-		if(empListPaging.size() != 0) {
-			for(Map<String,String> empMap: empListPaging) {
+		if(psaListPaging.size() != 0) {
+			for(Map<String,String> psaMap: psaListPaging) {
 				
 				JSONObject jsonObj = new JSONObject();
 				
-				jsonObj.put("empno",empMap.get("empno")); // 사번
-				jsonObj.put("profile_color",empMap.get("profile_color")); // 프로필 아이콘 색상
-				jsonObj.put("profileName", empMap.get("name").substring(1)); // 프로필이름 
-				jsonObj.put("name", empMap.get("name")); // 이름 
-				jsonObj.put("status", empMap.get("status")); // 재직상태
-				jsonObj.put("hireDate", empMap.get("hiredate")); // 입사일
-				jsonObj.put("retireDate", empMap.get("retiredate")); // 퇴사일
-				jsonObj.put("continuousServiceMonth", empMap.get("continuousServiceMonth")); // 근속기간
-				jsonObj.put("workingDays",empMap.get("workingDays")); // 근무일수
-				jsonObj.put("dept", empMap.get("dept")); // 부서
-				jsonObj.put("position", empMap.get("position")); // 직위
-				jsonObj.put("email", empMap.get("email")); // 이메일
-				if(empMap.get("rrn") != null) { jsonObj.put("gender", empMap.get("gender")); }
-				jsonObj.put("mobile", empMap.get("mobile")); // 핸드폰번호
-				jsonObj.put("deptname", empMap.get("deptname")); // 부서명
-				jsonObj.put("totalCount", totalCount); // 총 결과물 수 
+				jsonObj.put("after_deptname",psaMap.get("after_deptname")); // 발령 후 부서명 
+				jsonObj.put("before_deptname",psaMap.get("before_deptname")); // 발령 후 부서명 
+				jsonObj.put("before_position",psaMap.get("before_position")); // 프로필 아이콘 색상
+				jsonObj.put("after_position", psaMap.get("after_position")); // 이름 
+				jsonObj.put("psa_date", psaMap.get("psa_date")); // 재직상태
+				jsonObj.put("psa_label", psaMap.get("psa_label")); // 입사일
+				jsonObj.put("memo", psaMap.get("memo")); // 퇴사일
+				jsonObj.put("name", psaMap.get("name")); // 퇴사일
+				jsonObj.put("totalCount", totalCount);
 				
 				jsonArr.put(jsonObj);
 				
