@@ -180,6 +180,24 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return leaveAbsenceList;
 	}
 
+	@Override
+	public int changePsInfo(Map<String, Object> psInfoMap) {
+		int result = sqlsession.update("jangjy.changePsInfo", psInfoMap);
+		return result;
+	}
+
+	@Override
+	public int getTotalPsaPage(Map<String, Object> pageMap) {
+		int totalCount = sqlsession.selectOne("jangjy.getTotalPsaPage",pageMap);
+		return totalCount;
+	}
+
+	@Override
+	public List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap) {
+		List<Map<String,String>> psaListPaging = sqlsession.selectList("jangjy.psaListSearchWithPaging", pageMap);
+		return psaListPaging;
+	}
+
 	
 	
 	

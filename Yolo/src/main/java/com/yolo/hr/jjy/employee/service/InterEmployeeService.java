@@ -43,6 +43,15 @@ public interface InterEmployeeService {
 
 	/** 부서에 부서장 또는 팀장이 있는지 확인하기 */
 	int checkManager(Map<String, Object> paraMap);
+
+	/** 사원 개인정보 변경 메소드  */
+	int changePsInfo(Map<String, Object> psInfoMap);
+
+	/** 인사발령 내역 페이징 처리를 위한 총 페이지수 구해오기  */
+	int getTotalPsaPage(Map<String, Object> pageMap);
+
+	/** 인사발령 내역 페이징 처리를 위한 인사발령 목록 구해오기  */
+	List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap);
 	
 
 }

@@ -454,29 +454,8 @@ arr_status = [];
                 "toLabel": "To",
                 "customRangeLabel": "Custom",
                 "weekLabel": "W",
-                "daysOfWeek": [
-                    "일",
-                    "월",
-                    "화",
-                    "수",
-                    "목",
-                    "금",
-                    "토"
-                ],
-                "monthNames": [
-                    "1월",
-                    "2월",
-                    "3월",
-                    "4월",
-                    "5월",
-                    "6월",
-                    "7월",
-                    "8월",
-                    "9월",
-                    "10월",
-                    "11월",
-                    "12월"
-                ],
+                "daysOfWeek": ["일","월","화","수","목","금","토"],
+                "monthNames": ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
                 "firstDay": 1
             }
         });
@@ -493,6 +472,7 @@ arr_status = [];
 		$(document).on("click","button#btn_search",function(){
 			$("div#div_search").css("display","block");	
 			$("button#btn_search").addClass("hidden");
+			$("input#searchWord").focus();
 		});
 		// 검색 div 이외 영역 클릭시 값이 비어있는 경우 div 숨기기
 		$('html').click(function(e) {   

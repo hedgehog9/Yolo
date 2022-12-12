@@ -304,5 +304,83 @@ public class EmployeeService implements InterEmployeeService {
 	
 	}
 
+	@Override
+	public int changePsInfo(Map<String, Object> psInfoMap) {
+
+		StringBuilder sql =  new StringBuilder();
+		String address = (String) psInfoMap.get("address");
+		String detailAddress = (String) psInfoMap.get("detailAddress");
+		
+		if(!"".equals(detailAddress)) {
+			address += " "+detailAddress;
+			psInfoMap.put("address", address);
+		}
+		sql.append(" update tbl_employees set ");
+		
+		for(String key : psInfoMap.keySet()){
+            if(!"".equals(psInfoMap.get(key)) && !"detailAddress".equals(key)) {
+    			sql.append(key + " = '" +psInfoMap.get(key)+"',");
+    		}
+        }
+		
+		String str_sql = sql.substring(0, sql.length()-1).toString();
+		sql.setLength(0);
+		sql.append(str_sql);
+		
+		sql.append(" where empno = "+psInfoMap.get("empno"));
+		
+//		System.out.println("확인용 sql : "+ sql.toString());
+		psInfoMap.put("sql", sql);
+		String test = "  ";
+		System.out.println(test.length());
+		
+		int result = dao.changePsInfo(psInfoMap);
+		return result;
+	}
+
+	@Override
+	public int getTotalPsaPage(Map<String, Object> pageMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) pageMap.get("keyword"); 
+		boolean result = false;
+		if(str != null) {
+			result = Pattern.matches(pattern, str);
+		}
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		pageMap.put("searchType", searchType);
+		
+		int totalCount = dao.getTotalPsaPage(pageMap);
+		return totalCount;
+	}
+
+	@Override
+	public List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) pageMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		pageMap.put("searchType", searchType);
+		List<Map<String, String>> psaListPaging = dao.psaListSearchWithPaging(pageMap);
+		return psaListPaging;
+	}
+
 
 }

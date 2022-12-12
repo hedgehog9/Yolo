@@ -42,12 +42,7 @@ public class EmployeeController {
 			keyword="";
 		}
 		empMap.put("keyword", keyword);
-		
-	    // 총 게시물 건수(totalCount)
-//	    int totalCount = service.getTotalCount(empMap);
-//	    System.out.println("~~~~~~ 확인용 totalCount : " + totalCount);
 	    
-		// 전체 사원을 조회해오는 메소드 (검색어가 있는 경우 검색어 입력 )
 		List<Map<String,String>> empList = service.getEmpList(empMap);
 		
 	    
@@ -93,14 +88,6 @@ public class EmployeeController {
 		
 		String sizePerPage = request.getParameter("sizePerPage");
 		String keyword = request.getParameter("keyword");
-		
-//		System.out.println(arr_position);
-//		System.out.println(arr_dept);
-//		System.out.println(arr_status);
-//		
-//		System.out.println("sizePerPage"+sizePerPage);
-//		System.out.println("keyword"+keyword);
-		
 		
 		Map<String,Object> pageMap = new HashMap<>();
 		pageMap.put("sizePerPage", sizePerPage);
@@ -151,17 +138,8 @@ public class EmployeeController {
 	    pageMap.put("startRno", String.valueOf(startRno));
 	    pageMap.put("endRno", String.valueOf(endRno));
 	    
-	    
-//	    System.out.println("currentShowPageNo : "+currentShowPageNo);
-//		System.out.println("String.valueOf(startRno) : "+String.valueOf(startRno));
-//		System.out.println("String.valueOf(endRno) : "+String.valueOf(endRno));
-		
-//		List<Map<String,String>> empList = service.empListWithRno(pageMap);
-		
 		// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
 	    List<Map<String,String>> empListPaging = service.empListSearchWithPaging(pageMap);
-		
-//		System.out.println("확인용 페이징 empList : "+ empListPaging);
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -191,11 +169,7 @@ public class EmployeeController {
 				
 			}
 		}
-		
 		return jsonArr.toString();
-		
-		
-
 	}
 
 	// 인사 발령 내역 조회
@@ -277,7 +251,7 @@ public class EmployeeController {
 			System.out.println("alarm 용 Map");
 			paraMap.put("fk_recipientno", empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
 			paraMap.put("url", "/userDetail.yolo?empno=" );
-			paraMap.put("url2", empno ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+			paraMap.put("url2", " " ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
 			paraMap.put("alarm_content", "휴직 처리되었습니다." );
 			paraMap.put("alarm_type","4" );
 		}
@@ -430,6 +404,8 @@ public class EmployeeController {
 			jsonObj.put("memo", historyMap.get("memo"));
 			jsonObj.put("psa_date", historyMap.get("psa_date"));
 			jsonObj.put("psa_label", historyMap.get("psa_label"));
+			jsonObj.put("after_deptname", historyMap.get("after_deptname"));
+			jsonObj.put("before_deptname", historyMap.get("before_deptname"));
 			
 			jsonArr.put(jsonObj);
 		}
@@ -459,6 +435,116 @@ public class EmployeeController {
 		
 		return jsonArr.toString() ;
 	}
+	
+	@RequestMapping(value = "/changePsInfo.yolo", produces="text/plain;charset=UTF-8")
+	public String changePsInfo( @RequestParam Map<String,Object>psInfoMap ) {
+		
+		int result = service.changePsInfo(psInfoMap);
+		
+		return "redirect:userDetail.yolo?empno="+psInfoMap.get("empno");
+	}
+	
+	
+	// 인사발령 내역 조회 /////////////////////////////////////////////////////////////////////////
+	
+	// 페이징 처리를 위한 페이지수 구해오기 
+	@ResponseBody
+	@RequestMapping(value = "/getTotalPsaPage.yolo", produces = "text/plain;charset=UTF-8")
+	public String getTotalPsaPage(HttpServletRequest request,@RequestParam(name = "arr_position[]", required = false) List<String> arr_position,
+														  @RequestParam(name = "arr_dept[]", required = false) List<String> arr_dept ,
+														  @RequestParam(name = "arr_status[]", required = false) List<String> arr_status) {
+		
+		String sizePerPage = request.getParameter("sizePerPage");
+		String keyword = request.getParameter("keyword");
+		
+		Map<String,Object> pageMap = new HashMap<>();
+		pageMap.put("sizePerPage", sizePerPage);
+		pageMap.put("keyword", keyword); // 검색어를 입력한 경우 
+		pageMap.put("arr_position", arr_position); // 검색어를 입력한 경우 
+		pageMap.put("arr_dept", arr_dept); // 검색어를 입력한 경우 
+		pageMap.put("arr_status", arr_status); // 검색어를 입력한 경우 
+		
+		int totalPage = service.getTotalPsaPage(pageMap);
+		
+		 System.out.println("############## 확인용 ############"+totalPage);
+
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("totalPage",totalPage); 
+		
+		return jsonObj.toString();
+	}
+	
+	
+	
+	// 페이징 처리를 위한 목록 구해오기 
+	@ResponseBody
+	@RequestMapping(value = "/psaListPaging.yolo", produces = "text/plain;charset=UTF-8")
+	public String psaListPaging(HttpServletRequest request, @RequestParam(name = "arr_position[]", required = false) List<String> arr_position,
+															@RequestParam(name = "arr_dept[]", required = false) List<String> arr_dept ,
+															@RequestParam(name = "arr_status[]", required = false) List<String> arr_status) {
+		
+		String currentShowPageNo = request.getParameter("currentShowPageNo");
+		String keyword = request.getParameter("keyword");
+		
+		Map<String,Object> pageMap = new HashMap<>();
+		pageMap.put("currentShowPageNo", currentShowPageNo);
+		pageMap.put("keyword", keyword);
+		pageMap.put("arr_position", arr_position);
+		pageMap.put("arr_dept", arr_dept);
+		pageMap.put("arr_status", arr_status);
+		
+		// 총 페이지수 구해오기 
+		int totalCount = service.getTotalPsaPage(pageMap); 
+		
+		if(currentShowPageNo == null) {
+			currentShowPageNo ="1";
+		}
+		
+		int sizePerPage = 10; // 한 페이지당 보여줄 댓글 건수 
+
+		int startRno = ((Integer.parseInt(currentShowPageNo) - 1) * sizePerPage) + 1;
+	    int endRno = startRno + sizePerPage - 1;
+		
+	    pageMap.put("startRno", String.valueOf(startRno));
+	    pageMap.put("endRno", String.valueOf(endRno));
+	    
+		// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+	    List<Map<String,String>> empListPaging = service.psaListSearchWithPaging(pageMap);
+		
+		JSONArray jsonArr = new JSONArray();
+		
+		if(empListPaging.size() != 0) {
+			for(Map<String,String> empMap: empListPaging) {
+				
+				JSONObject jsonObj = new JSONObject();
+				
+				jsonObj.put("empno",empMap.get("empno")); // 사번
+				jsonObj.put("profile_color",empMap.get("profile_color")); // 프로필 아이콘 색상
+				jsonObj.put("profileName", empMap.get("name").substring(1)); // 프로필이름 
+				jsonObj.put("name", empMap.get("name")); // 이름 
+				jsonObj.put("status", empMap.get("status")); // 재직상태
+				jsonObj.put("hireDate", empMap.get("hiredate")); // 입사일
+				jsonObj.put("retireDate", empMap.get("retiredate")); // 퇴사일
+				jsonObj.put("continuousServiceMonth", empMap.get("continuousServiceMonth")); // 근속기간
+				jsonObj.put("workingDays",empMap.get("workingDays")); // 근무일수
+				jsonObj.put("dept", empMap.get("dept")); // 부서
+				jsonObj.put("position", empMap.get("position")); // 직위
+				jsonObj.put("email", empMap.get("email")); // 이메일
+				if(empMap.get("rrn") != null) { jsonObj.put("gender", empMap.get("gender")); }
+				jsonObj.put("mobile", empMap.get("mobile")); // 핸드폰번호
+				jsonObj.put("deptname", empMap.get("deptname")); // 부서명
+				jsonObj.put("totalCount", totalCount); // 총 결과물 수 
+				
+				jsonArr.put(jsonObj);
+				
+			}
+		}
+		return jsonArr.toString();
+	}
+
+	
+	
+	
 	
 	
 	

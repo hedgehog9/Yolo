@@ -76,4 +76,13 @@ public interface InterEmployeeDAO {
 	/** 사원번호를 전달받아 해당 사원의 휴직이력  조회  */
 	List<Map<String, String>> getLeaveAbsence(Map<String, Object> paraMap);
 
+	/** 사원 개인정보 변경 메소드  */
+	int changePsInfo(Map<String, Object> psInfoMap);
+
+	/** 인사발령내역조회 페이지 총 페이지수 구해오기  */
+	int getTotalPsaPage(Map<String, Object> pageMap);
+
+	/** 인사발령 페이징처리 (글 목록 가져오기) */
+	List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap);
+
 }

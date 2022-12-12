@@ -512,29 +512,8 @@
                 "toLabel": "To",
                 "customRangeLabel": "Custom",
                 "weekLabel": "W",
-                "daysOfWeek": [
-                    "일",
-                    "월",
-                    "화",
-                    "수",
-                    "목",
-                    "금",
-                    "토"
-                ],
-                "monthNames": [
-                    "1월",
-                    "2월",
-                    "3월",
-                    "4월",
-                    "5월",
-                    "6월",
-                    "7월",
-                    "8월",
-                    "9월",
-                    "10월",
-                    "11월",
-                    "12월"
-                ],
+                "daysOfWeek": ["일","월","화","수","목","금","토"],
+                "monthNames": ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
                 "firstDay": 1
             },
             
@@ -638,7 +617,7 @@
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
 						+"<div id='div_hr_title' style='margin-bottom:20px;'>개인 정보</div>"
 						
-						+"<button id='btn_edit_psInfo' type='button' class='btn_edit'>"
+						+"<button id='btn_edit_psInfo' type='button' class='btn_edit' onclick='editInfo();'>"
 							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
 						+"</button>"
 						
@@ -822,7 +801,7 @@
 								  html += "<tr>"
 											+"<td>"+history.psa_date+"</td>"
 											+"<td>"+history.psa_label+"</td>"
-											+"<td>"+isEmptyPsa(history.fk_after_deptno)+"</td>"
+											+"<td>"+isEmptyPsa(history.after_deptname)+"</td>"
 											+"<td>"+isEmptyPsa(history.after_position)+"</td>"
 											+"<td>"+isEmptyPsa(history.memo)+"</td>"
 										 +"</tr>";
@@ -904,11 +883,6 @@
 			$("button#btn_search_hrInfo").trigger("click");
 		});
 		
-		<%-- 기본정보 변경에서 경력 div 클릭시 --%>
-		$(document).on("click","button#btn_edit_psInfo",function(){
-			 editInfo();
-			 
-		});
 		
 		$(document).on("keyup","input#registeration_no",function(){
 			
@@ -1069,6 +1043,14 @@
 		
 	});// end of $(document).ready-----------------------------
 	
+	// 개인정보 수정 메소드 
+	function changePsInfo(){
+		  const frm = document.frm_psInfo;
+		  frm.action="<%= ctxPath%>/changePsInfo.yolo";
+		  frm.method="POST";
+		  frm.submit();
+	}
+	
 	function func_psa(){
 		const frm = document.frm_ps_appointment;
 		frm.action="<%= ctxPath%>/personnelAppointment.yolo";
@@ -1213,9 +1195,9 @@
 						+'</div>'
 						
 					+'<form name="frm_ps_appointment">'
-						+'<input name = "empno" type="text" value="'+empno+'"/>'
-						+'<input name = "before_deptno" type="text" value="'+before_deptno+'"/>'
-						+'<input name = "before_position" type="text" value="'+before_position+'"/>'
+						+'<input name = "empno" type="hidden" value="'+empno+'"/>'
+						+'<input name = "before_deptno" type="hidden" value="'+before_deptno+'"/>'
+						+'<input name = "before_position" type="hidden" value="'+before_position+'"/>'
 						
 						+'<div style="padding-bottom: 10px;">'
 							+'<div>발령일<span style="color: red;">＊</span></div>'
@@ -1223,7 +1205,7 @@
 						+'</div>'
 						
 						+'<div style="margin:5px 0; padding-bottom: 10px;">'		
-							+'<div>발령 라벨</div><input id="changeType" name="changeType" type="text" />'
+							+'<div>발령 라벨</div><input id="changeType" name="changeType" type="hidden" />'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
 									+'<div id="retirement_type" class="retirement_type">발령 라벨</div>'
@@ -1240,7 +1222,8 @@
 						
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
-							+'<div>부서</div> <input id="deptno" name="deptno" type="text"/>'
+							+'<div>부서</div>'
+							+'<input id="deptno" name="deptno" type="hidden"/>'
 							+'<button onclick="getDeptName()" id="btn" class=" btn communication" type="button"'
 								+'data-toggle="dropdown"'
 								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
@@ -1254,7 +1237,8 @@
 						+'</div>'
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
-							+'<div>세부 부서</div><input id="teamno" name="teamno" type="text"/>'
+							+'<div>세부 부서</div>'
+							+'<input id="teamno" name="teamno" type="hidden"/>'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
 									+'<div class="retirement_type">세부 부서</div>'
@@ -1269,7 +1253,8 @@
 						
 						+'<div style="margin:5px 0; padding-bottom: 10px;">'
 							+'<div style="width: 100%;">'
-								+'<div>직위</div><input id="position" name="position" type="text" />'
+								+'<div>직위</div>'
+								+'<input id="position" name="position" type="hidden" />'
 								+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"'
 									+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 									+'<div style="display: flex; justify-content: space-between; width: 100%;">'
@@ -1394,6 +1379,7 @@
 		$("div#edit_info").empty();
 		$('#edit_info').addClass('active');
 	    $('#record_outside').fadeIn();
+	    let empno = $("input#empno").val();
 	    
 	    let html ='';
 	    
@@ -1405,50 +1391,47 @@
 						+'</button>'
 					+'</div>'
 					
-					+'<form name="frm_basicInfo">'
+					+'<form name="frm_psInfo">'
 						+'<div style="margin: 20px 0;">'
 							+'<div>이름</div>'
-							+'<input class="input_edit_info" type="text" value=""/>'
+							+'<input name ="name" class="input_edit_info" type="text"/>'
+							+'<input name ="empno" type="hidden" value="'+empno+'" />'
 						+'</div>'
 						+'<div style="margin: 20px 0;">'
 							+'<div>영문 이름</div>'
 							+'<div style="display: flex;">'
-								+'<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="이름(First Name)" />'
-								+'<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>'
+								+'<input name="firstname" type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="이름(First Name)" />'
+								+'<input name="lastname" type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>'
 							+'</div>'
 						+'</div>'
 						+'<div style="margin: 20px 0;">'
 							+'<div>내 소개</div>'
-							+'<textarea id="introduce" rows="1" cols="" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
+							+'<textarea name="introduce" id="introduce" rows="1" cols="" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
 						+'</div>'
 						+'<div>'
 							+'<div>주민등록번호</div>'
-							+'<input class="input_edit_info" type="text" id="registeration_no" onkeydown=" OnlyNumericInput();" maxlength="14" placeholder="주민등록번호 입력" />'
+							+'<input class="input_edit_info" name="rrn" type="text" id="registeration_no" onkeydown="OnlyNumericInput();" maxlength="14" placeholder="주민등록번호 입력" />'
 						+'</div>'
-					
+					<%--
 						+'<div style="margin: 20px 0;">'
 							+'<div>생년월일</div>'
-							+'<input class="input_edit_info daterange" type="text" />'
+							+'<input  class="input_edit_info daterange" type="text" />'
 						+'</div>'
-						
+					--%>
 						+'<div style="margin: 20px 0;">'
 							+'<div>휴대전화 번호</div>'
-							+'<input class="input_edit_info" type="text" id="mobile" onkeydown=" OnlyNumericInput();" maxlength="13" placeholder="휴대전화번호 입력" />'
+							+'<input class="input_edit_info" type="text" id="mobile" name="mobile" onkeydown=" OnlyNumericInput();" maxlength="13" placeholder="휴대전화번호 입력" />'
 						+'</div>'
 						
 						+'<div style="margin: 20px 0;">'
 							+'<div>집 주소</div>'
-							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" value="" /><br/>'
-							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" value="" />&nbsp;'
-							<%-- 나중에 아래 코드와 같이 수정
-							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" value="${sessionScope.loginuser.address}" /><br/>'
-							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" value="${sessionScope.loginuser.detailaddress}" />&nbsp;'
-							--%>
+							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" /><br/>'
+							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" />&nbsp;'
 						+'</div>'
 							
 						+'<div style="display:flex; justify-content: flex-end;">'
 							+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>'
-							+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
+							+'<button type="button" class="btn btn_save_cancel"  onclick="changePsInfo();" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
 						+'</div>'
 					+'</form>'
 				+'</div>'
