@@ -210,6 +210,12 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return FileList;
 	}
 
+	@Override
+	public List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap) {
+		List<Map<String,String>> empListPaging = sqlsession.selectList("jangjy.empListDownloadExcel", searchMap);
+		return empListPaging;
+	}
+
 	
 	
 	

@@ -91,4 +91,7 @@ public interface InterEmployeeDAO {
 	/** 사원번호를 전달받아 첨부파일을 가져오는 메소드  */
 	List<Map<String, String>> getFile(Map<String, Object> paraMap);
 
+	/** 엑셀로 저장을 위해 사원 목록 조회하기 */
+	List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap);
+
 }

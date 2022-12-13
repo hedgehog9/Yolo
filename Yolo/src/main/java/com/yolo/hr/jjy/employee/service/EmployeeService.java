@@ -382,5 +382,26 @@ public class EmployeeService implements InterEmployeeService {
 		return psaListPaging;
 	}
 
+	@Override
+	public List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) searchMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		searchMap.put("searchType", searchType);
+		List<Map<String, String>> empListPaging = dao.empListDownloadExcel(searchMap);
+		return empListPaging;
+	}
+
 
 }

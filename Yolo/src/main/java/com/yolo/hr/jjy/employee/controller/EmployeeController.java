@@ -765,36 +765,246 @@ public class EmployeeController {
 	@RequestMapping(value="/downloadExcelFile.yolo", method = {RequestMethod.POST}) // 파일 다운로드이기때문에 POST방식
 	public String downloadExcelFile( HttpServletRequest request, Model model ,@RequestParam Map<String,Object>searchMap ) {
 		
-		List<String> list_position = new ArrayList<>();
-		List<String> list_dept = new ArrayList<>();
-		List<String> list_status = new ArrayList<>();
+//		List<String> list_position = new ArrayList<>();
+//		List<String> list_dept = new ArrayList<>();
+//		List<String> list_status = new ArrayList<>();
 		
 		String str_arr_position = (String) searchMap.get("arr_position");
 		String str_arr_dept = (String) searchMap.get("arr_dept");
 		String str_arr_status = (String) searchMap.get("arr_status");
 		
+		String arr_position [] = null;
+		String arr_dept []= null;
+		String arr_status []= null;
 		
 		if( str_arr_position != null && !"".equals(str_arr_position) ) {
-			String arr_position[] = str_arr_position.split("\\,");
+			arr_position = str_arr_position.split("\\,");
 			System.out.println(arr_position);
 		}
 
 		if( str_arr_dept != null && !"".equals(str_arr_dept) ) {
-			String arr_dept[] = str_arr_dept.split("\\,");
+			arr_dept = str_arr_dept.split("\\,");
 			System.out.println(arr_dept);
 		}
 		
 		if( str_arr_status != null && !"".equals(str_arr_status) ) {
-			String arr_status[] = str_arr_status.split("\\,");
+			arr_status = str_arr_status.split("\\,");
 			System.out.println(arr_status);
 		}
+		searchMap.put("arr_position", arr_position);
+		searchMap.put("arr_dept", arr_dept);
+		searchMap.put("arr_status", arr_status);
 		
+		List<Map<String, String>> empList = service.empListDownloadExcel(searchMap);
 		
 		System.out.println("searchMap : "+ searchMap);
-		return "";
+//		System.out.println("empList" + empList);
+		
+		SXSSFWorkbook workbook = new SXSSFWorkbook();
+		SXSSFSheet sheet = workbook.createSheet("사원정보");
+		
+		// 시트 열 너비 설정
+		sheet.setColumnWidth(0, 2000);
+		sheet.setColumnWidth(1, 4000);
+		sheet.setColumnWidth(2, 2000);
+		sheet.setColumnWidth(3, 4000);
+		sheet.setColumnWidth(4, 3000);
+		sheet.setColumnWidth(5, 2000);
+		sheet.setColumnWidth(6, 1500);
+		sheet.setColumnWidth(7, 1500);
+		
+		// 행의 위치를 나타내는 변수 (반복문을 사용해서 값을 넣는다.)
+		int rowLocation = 0;
+		
+		// CellStyle 정렬하기(Alignment)
+		// CellStyle 객체를 생성하여 Alignment 세팅하는 메소드를 호출해서 인자값을 넣어준다.
+		// 아래는 HorizontalAlignment(가로)와 VerticalAlignment(세로)를 모두 가운데 정렬 시켰다.
+		
+		// 우리회사 정보 문구 셀 병합, 가운데 정렬 
+		CellStyle mergeRowStyle = workbook.createCellStyle();         // 셀 병합
+		mergeRowStyle.setAlignment(HorizontalAlignment.CENTER);       // 수평 가운데 정렬 
+		mergeRowStyle.setVerticalAlignment(VerticalAlignment.CENTER); // 수직 가운데 정렬
+		// import org.apache.poi.ss.usermodel.VerticalAlignment 으로 해야함.
+		
+//		 컬럼 제목에 해당하는 셀 가운데 정렬 
+		CellStyle headerStyle = workbook.createCellStyle();
+		headerStyle.setAlignment(HorizontalAlignment.CENTER);
+		headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		
+//		 CellStyle 배경색(ForegroundColor)만들기
+      // setFillForegroundColor 메소드에 IndexedColors Enum인자를 사용한다.
+      // setFillPattern은 해당 색을 어떤 패턴으로 입힐지를 정한다.
+	    mergeRowStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());  // IndexedColors.DARK_BLUE.getIndex() 는 색상(남색)의 인덱스값을 리턴시켜준다. 
+	    mergeRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 테두리 실선 
+	    
+	    headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex()); // IndexedColors.LIGHT_YELLOW.getIndex() 는 연한노랑의 인덱스값을 리턴시켜준다. 
+	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); // 테두리 실선 
+		
+	    // CellStyle 천단위 쉼표, 금액
+      CellStyle moneyStyle = workbook.createCellStyle();
+      moneyStyle.setDataFormat(HSSFDataFormat.getBuiltinFormat("#,##0"));
+      
+      // Cell 폰트(Font) 설정하기
+      // 폰트 적용을 위해 POI 라이브러리의 Font 객체를 생성해준다.
+      // 해당 객체의 세터를 사용해 폰트를 설정해준다. 대표적으로 글씨체, 크기, 색상, 굵기만 설정한다.
+      // 이후 CellStyle의 setFont 메소드를 사용해 인자로 폰트를 넣어준다.
+	    Font mergeRowFont = workbook.createFont(); // import org.apache.poi.ss.usermodel.Font; 으로 한다.
+	    mergeRowFont.setFontName("나눔고딕");
+	    mergeRowFont.setFontHeight((short)500);
+	    mergeRowFont.setColor(IndexedColors.WHITE.getIndex()); // 글자색상 
+	    mergeRowFont.setBold(true);
+      
+	    mergeRowStyle.setFont(mergeRowFont);
+	    
+		// CellStyle 테두리 Border
+		// 테두리는 각 셀마다 상하좌우 모두 설정해준다.
+		// setBorderTop, Bottom, Left, Right 메소드와 인자로 POI라이브러리의 BorderStyle 인자를 넣어서 적용한다.
+		headerStyle.setBorderTop(BorderStyle.THICK);    // 실선- 두껍게
+		headerStyle.setBorderBottom(BorderStyle.THICK); // 실선- 두껍게
+		headerStyle.setBorderLeft(BorderStyle.THIN);    // 실선- 얇게
+		headerStyle.setBorderRight(BorderStyle.THIN);   // 실선- 얇게
+		
+		
+		
+		
+		// Cell Merge 셀 병합시키기
+      /* 셀병합은 시트의 addMergeRegion 메소드에 CellRangeAddress 객체를 인자로 하여 병합시킨다.
+         CellRangeAddress 생성자의 인자로(시작 행, 끝 행, 시작 열, 끝 열) 순서대로 넣어서 병합시킬 범위를 정한다. 배열처럼 시작은 0부터이다.  
+      */
+		// 병합할 행 만들기
+		Row mergeRow = sheet.createRow(rowLocation); // 엑셀에서 행의 시작은 0 부터 시작한다.
+		
+		// 병합할 행에 "우리회사 사원정보" 로 셀을 만들어 셀에 스타일을 주기
+		// 0 번째 행에 총 8번의 셀을 만든다. 
+      for(int i=0; i<8; i++) {
+         Cell cell = mergeRow.createCell(i);
+         cell.setCellStyle(mergeRowStyle);
+         cell.setCellValue("우리회사 사원정보");
+      }// end of for-------------------------
+      
+  /*
+   	---------------------------------------------------------------------------------------------------------------------
+  	|우리회사 사원정보 | 우리회사 사원정보 | 우리회사 사원정보 | 우리회사 사원정보 | 우리회사 사원정보 | 우리회사 사원정보 | 우리회사 사원정보 | 우리회사 사원정보|
+  	--------------------------------------------------------------------------------------------------------------------- 
+  */
+      
+      
+      // 셀 병합하기
+      sheet.addMergedRegion(new CellRangeAddress(rowLocation, rowLocation, 0, 7)); // 시작 행, 끝 행, 시작 열, 끝 열 
+      ////////////////////////////////////////////////////////////////////////////////////////////////
+	    
+  /*
+   	---------------------------------------------------------------------------------------------------------------------
+  	|                                                  우리회사 사원정보    												    |
+  	--------------------------------------------------------------------------------------------------------------------- 
+  */
+      
+      
+      // 헤더 행 생성 (컬럼별 제목 )
+      Row headerRow = sheet.createRow(++rowLocation); // 엑셀에서 행의 시작은 0 부터 시작한다.
+                                                      // ++rowLocation는 전위연산자임. 
+      
+      
+      // 해당 행의 첫번째 열 셀 생성
+      Cell headerCell = headerRow.createCell(0); // 엑셀에서 열의 시작은 0 부터 시작한다.
+      headerCell.setCellValue("부서번호");
+      headerCell.setCellStyle(headerStyle);
+      
+      // 해당 행의 두번째 열 셀 생성
+      headerCell = headerRow.createCell(1);
+      headerCell.setCellValue("부서명");
+      headerCell.setCellStyle(headerStyle);
+      
+      // 해당 행의 세번째 열 셀 생성
+      headerCell = headerRow.createCell(2);
+      headerCell.setCellValue("사원번호");
+      headerCell.setCellStyle(headerStyle);
+      
+      // 해당 행의 네번째 열 셀 생성
+      headerCell = headerRow.createCell(3);
+      headerCell.setCellValue("사원명");
+      headerCell.setCellStyle(headerStyle);
+      
+      // 해당 행의 다섯번째 열 셀 생성
+      headerCell = headerRow.createCell(4);
+      headerCell.setCellValue("입사일자");
+      headerCell.setCellStyle(headerStyle);
+      
+      // 해당 행의 여섯번째 열 셀 생성
+      headerCell = headerRow.createCell(5);
+      headerCell.setCellValue("월급");
+      headerCell.setCellStyle(headerStyle);
+      
+      // 해당 행의 일곱번째 열 셀 생성
+      headerCell = headerRow.createCell(6);
+      headerCell.setCellValue("성별");
+      headerCell.setCellStyle(headerStyle);
+      
+      // 해당 행의 여덟번째 열 셀 생성
+      headerCell = headerRow.createCell(7);
+      headerCell.setCellValue("나이");
+      headerCell.setCellStyle(headerStyle);
+      
+      
+		// ==== HR사원정보 내용에 해당하는 행 및 셀 생성하기 ==== //
+		Row bodyRow = null;
+		Cell bodyCell = null;
+
+		for (int i = 0; i < empList.size(); i++) { // 행의 개수 , List 의 크기만큼 반복해서 만든다 
+
+			Map<String, String> empMap = empList.get(i);
+
+			// 행생성
+			bodyRow = sheet.createRow(i + (rowLocation + 1));
+			
+			// 데이터 부서번호 표시
+			bodyCell = bodyRow.createCell(0);
+			bodyCell.setCellValue(empMap.get("department_id"));
+
+			// 데이터 부서명 표시
+			bodyCell = bodyRow.createCell(1);
+			bodyCell.setCellValue(empMap.get("department_name"));
+
+			// 데이터 사원번호 표시
+			bodyCell = bodyRow.createCell(2);
+			bodyCell.setCellValue(empMap.get("employee_id"));
+
+			// 데이터 사원명 표시
+			bodyCell = bodyRow.createCell(3);
+			bodyCell.setCellValue(empMap.get("fullname"));
+
+			// 데이터 입사일자 표시
+			bodyCell = bodyRow.createCell(4);
+			bodyCell.setCellValue(empMap.get("hire_date"));
+
+			// 데이터 월급 표시
+			bodyCell = bodyRow.createCell(5);
+			bodyCell.setCellValue(Integer.parseInt(empMap.get("monthsal")));
+			bodyCell.setCellStyle(moneyStyle); // 천단위 쉼표, 금액
+
+			// 데이터 성별 표시
+			bodyCell = bodyRow.createCell(6);
+			bodyCell.setCellValue(empMap.get("gender"));
+
+			// 데이터 나이 표시
+			bodyCell = bodyRow.createCell(7);
+			bodyCell.setCellValue(Integer.parseInt(empMap.get("age"))); // 나중에 엑셀에서 나이로 평균을 구하거나 합을 구하는 경우를 위해 int 타입으로 변환
+
+		} // end of for------------------------------
+		
+		// request 대신 model 이 필요하다.
+		model.addAttribute("locale", Locale.KOREA);
+        model.addAttribute("workbook", workbook);
+        model.addAttribute("workbookName", "사원정보"); // 파일명
+		
+		return "excelDownloadView";
+		//  "excelDownloadView" 은 
+	    //  /webapp/WEB-INF/spring/appServlet/servlet-context.xml 파일에서
+	    //  기술된 bean 의 id 값이다. 
+		
 	}
 	
-//	// === #176. Excel 파일로 다운받기 예제 === //
+	// === #176. Excel 파일로 다운받기 예제 === //
 //	@RequestMapping(value="/downloadExcelFile.action", method = {RequestMethod.POST}) // 파일 다운로드이기때문에 POST방식
 //	public String downloadExcelFile( HttpServletRequest request, Model model ) {
 //		

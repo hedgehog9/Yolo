@@ -1352,7 +1352,7 @@ arr_status = [];
 				<input type="text" name="arr_dept" />
 				<input type="text" name="arr_status" />
 				
-				<input type="text" name="searchWord"/>
+				<input type="text" name="keyword"/>
 			</form>
 						
 			<span id="span_searchTag"></span>

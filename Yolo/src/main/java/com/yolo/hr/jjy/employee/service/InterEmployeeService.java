@@ -53,5 +53,8 @@ public interface InterEmployeeService {
 	/** 인사발령 내역 페이징 처리를 위한 인사발령 목록 구해오기  */
 	List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap);
 
+	/** 엑셀로 저장을 위해 사원 목록 조회하기 */
+	List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap);
+
 
 }
