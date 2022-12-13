@@ -1667,17 +1667,6 @@
 			<div id="user_name">${requestScope.employeeMap.profileName}</div>
 			<input id="before_deptno" type="hidden" value="${requestScope.employeeMap.fk_deptno}" />
 			<input id="before_position" type="hidden" value="${requestScope.employeeMap.position}" />
-			
-			
-			<%-- 
-			<button id="btn_profileImg" type="button" data-toggle="dropdown" style="background-color: white; border: solid 1px gray; border-radius: 50%; position:relative; top:40px; left:20px;">
-				<i class="fas fa-camera"></i>
-			</button>
-			<div class="dropdown-menu">
-				<a class="dropdown-item" href="#"><i class="fas fa-upload"></i>&nbsp;&nbsp;사진 업로드하기</a> 
-				<a id = "delete_profileImg" class="dropdown-item" href="#"><span style="color:#e62e00"><i class="fas fa-trash"></i>&nbsp;&nbsp;삭제하기</span></a> 
-			</div>
-			--%>
 		</div>
 		<%-- ======================== 프로필 시작 ========================= --%>
 		<table>

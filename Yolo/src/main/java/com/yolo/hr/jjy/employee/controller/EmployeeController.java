@@ -16,6 +16,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.yolo.hr.common.FileManager;
 import com.yolo.hr.jihyunModel.FileVO;
@@ -474,11 +477,8 @@ public class EmployeeController {
 	@RequestMapping(value = "/changePsInfo.yolo", produces="text/plain;charset=UTF-8" , method= {RequestMethod.POST} )
 	public String changePsInfo( MultipartHttpServletRequest mrequest, @RequestParam Map<String,Object>psInfoMap ) {
 		
-		
-		
 		System.out.println("확인용 psInfoMap : "+ psInfoMap);
 		int result = service.changePsInfo(psInfoMap);
-		
 		
 		Calendar currentDate = Calendar.getInstance();
 		SimpleDateFormat dateft = new SimpleDateFormat("yyyyMMddHHmmssSSS");
@@ -1034,6 +1034,70 @@ public class EmployeeController {
 	    //  기술된 bean 의 id 값이다. 
 		
 	}
+	
+	
+	//excel File DB 적재
+	public String createApplicant_action(
+	        @ModelAttribute("EmployeeVO") EmployeeVO empVO, RedirectAttributes redirectAttributes, HttpServletRequest request,
+	        final MultipartHttpServletRequest multiRequest, ModelMap model) throws Exception {
+	 
+	Map<String, Object> resMap = new HashMap<String, Object>();
+	 
+	try{
+	    
+	    ExcelRequestManager em = new ExcelRequestManager();
+	    final Map<String, MultipartFile> files = multiRequest.getFileMap();
+	    List<HashMap<String,String>> apply =null;
+	    
+	    apply = em.parseExcelSpringMultiPart(files,"applicant", 0, "", "reserve");
+	      
+	    for(int i = 0; i < apply.size(); i++){
+	     
+	    	empVO.setName((apply.get(i).get("cell_0")));
+	    	empVO.setEmail(apply.get(i).get("cell_1"));
+	    	empVO.setResv_biz_name(apply.get(i).get("cell_2"));
+	    	empVO.setResv_biz_owner(apply.get(i).get("cell_3"));
+	    	empVO.setResv_postno(apply.get(i).get("cell_4").replaceAll(",", ""));
+	    	empVO.setResv_adrs1(apply.get(i).get("cell_5").replaceAll(",", ""));
+	    	empVO.setResv_adrs2(apply.get(i).get("cell_6").replaceAll(",", ""));
+	    	empVO.setResv_biz_tel(apply.get(i).get("cell_7"));
+	    	empVO.setResv_name(apply.get(i).get("cell_8"));
+	    	empVO.setResv_birth(apply.get(i).get("cell_9"));
+	    	empVO.setResv_gender(apply.get(i).get("cell_10"));
+	    	empVO.setResv_tel(apply.get(i).get("cell_11"));
+	    	empVO.setResv_email(apply.get(i).get("cell_12"));
+	    	empVO.setResv_depositor(apply.get(i).get("cell_13"));
+	    	empVO.setResv_refund(apply.get(i).get("cell_14"));
+	    	empVO.setResv_state(stateType.getMain_code());
+	        
+	    	empVO.setSite_code(loginService.getSiteCode());
+	    	empVO.setCret_id(loginVO.getId());
+	    	empVO.setCret_ip(request.getRemoteAddr());
+	    	empVO.setResv_gubun("L");
+	                                     
+	        reserveService.insertReserveVO(empVO);
+	        
+	    }
+	    
+	    resMap.put("res", "ok");
+	    resMap.put("msg", "txt.success");
+	    
+	 
+	}catch(Exception e){
+	    System.out.println(e.toString());
+	    resMap.put("res", "error");
+	    resMap.put("msg", "txt.fail");
+	    }
+	 
+	 
+	redirectAttributes.addFlashAttribute("resMap", resMap);
+	return "redirect:/adms/reserve/applicant/list.do";
+	}
+
+
+	
+	
+	
 	
 
 	

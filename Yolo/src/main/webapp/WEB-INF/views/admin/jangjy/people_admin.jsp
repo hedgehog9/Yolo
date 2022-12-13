@@ -420,6 +420,46 @@ li.li_moveAll > a{
 	display: inline-block;
 }
 
+div.filebox {
+	display: flex;
+	align-items: center;
+}
+
+.filebox .upload-name {
+    display: inline-block;
+    height: 35px;
+    padding: 0 10px;
+    vertical-align: middle;
+    border: 1px solid #dddddd;
+    width: 70%;
+    border-radius: 0.4rem;
+    color: #999999;
+}
+
+.filebox label {
+    display: inline-block;
+    padding: 7px 20px;
+    color: #fff;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #88eb1e;
+    cursor: pointer;
+    width : 25%;
+    height: 35px;
+    margin-left: 10px;
+    margin-top: 6px;
+    border-radius: 0.4rem;
+}
+
+.filebox input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+}
+
 
 
 </style>
@@ -461,6 +501,11 @@ arr_status = [];
         });
 		<%-- ===== 달력 하나만 출력 끝 =====  --%>
 		
+		// 파일 선택하면 선택창 바뀌도록 
+		$(document).on("change", ".file", function(){
+			  var fileName = $(this).val();
+			  $(this).parent().find($(".upload-name")).val(fileName.slice(fileName.lastIndexOf("\\")+1));
+		});
 		
 		// 테이블 형식 또는 리스트 형식 출력 버튼 클릭시 버튼 css 변경 
 		$(document).on("click","button.btn_view_style",function(){
@@ -665,6 +710,35 @@ arr_status = [];
 			 frm.submit();
 		});
 				
+		
+		//fileData DB 넣기
+	    $("button#fileUpload").click(function(){
+	        
+	        //jsp에서 FORM을 생성하여 넘기지 않았을때 스크립트에서 formData로 file을 가져올 수 있다.
+	        var formData = new FormData(); 
+	        formData.append("file", $('#fileExcel')[0].files[0]); //배열로 되어있음 / formData는 Map과 같은 형태
+	        
+	        var fileName = formData.get('file').name;
+	        
+	        console.log(fileName);
+	        
+	        $.ajax({
+	            type : "POST",
+	            url : "<%= ctxPath%>/fileDBUpload.yolo",
+	            data : {"fileName" : fileName}, //ajax로 데이터를 보낼땐 JSON 형태(Map 형태)로 보낸다.
+	            success : function(data){
+	                
+	                if(data.RESULT == "SUCCESS"){
+	                    
+	                    alert("업로드 성공");
+	                    
+	                }else{
+	                    
+	                    alert(data.RESULT);
+	                }
+	            }
+	        })
+	    });
 				
 				
 	});// end of $(document).ready(function(){}------------------------------------------------
@@ -790,7 +864,9 @@ arr_status = [];
 				
 					$("div#pageBar").html(pageBarHTML);
 				}// end of if(json.totalPage > 0){}----------------------------------
-				
+				else{
+					$("div#pageBar").empty();
+				}
 			},
 			error: function(request, status, error){
 	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -1162,11 +1238,20 @@ arr_status = [];
 			<a class="a_title" href="<%=ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
 		</div>
 		<div id="button_title">
-			<button id="registMember" type="button" class="btn"
-				data-toggle="modal" data-target="#modal_registMember">
-				<span> <i class="fas fa-plus"
-					style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
+			<button id="registMember" data-toggle="dropdown" type="button" class="btn" >
+				<span> 
+					<i class="fas fa-plus" style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
 				</span>
+			</button>
+			<div class="dropdown-menu">
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_registMember">
+					<i class="fas fa-upload"></i>&nbsp;&nbsp;한명 추가하기 
+				</a> 
+				<a id = "delete_profileImg" class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_excelUpload">
+					<span style="color:#e62e00"><i class="fas fa-trash"></i>&nbsp;&nbsp;여러명 추가하기</span>
+				</a> 
+			</div>
+				
 			</button>
 		</div>
 	</div>
@@ -1276,6 +1361,7 @@ arr_status = [];
 							
 							
 							<%-- =========== 직속상관 선택 =========== --%>
+							<%-- 
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">직속 상관(삭제예정)</div>
 								<input type="hidden" name="managerid" id="managerid" />
@@ -1296,6 +1382,7 @@ arr_status = [];
 									<button class="btn_label dropdown-item" type="button">직속상관5</button>
 								</div>
 							</div>
+							--%>
 							<%-- =========== 직속상관 선택 =========== --%>
 							
 						</div>
@@ -1313,6 +1400,42 @@ arr_status = [];
 		</div>
 	</div>
 	<!-- ========================== 구성원 추가 모달 끝 ========================== -->
+	
+	<!-- ========================== 엑셀 파일 업로드 모달 시작 ========================== -->
+	<div class="modal fade" id="modal_excelUpload">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content" style="padding: 5px;">
+				<!-- Modal header -->
+				<div class="modal-header">
+					<h2>구성원 일괄 등록</h2>
+					<button id="btn_close_registModal" type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form id="regist_frm" name="regist_frm">
+					
+						<div class="filebox">
+						    <input class="upload-name" name="fileExcel" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">
+						    <label for="fileExcel">파일찾기</label>
+						    <input type="file" class="fileExcel" id="fileExcel" name="fileExcel">
+						</div>
+					
+					
+					</form>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer"
+					style="display: flex; justify-content: space-between;">
+					<%-- form 전송 --%>
+					<button type="button" class="btn" id="fileUpload">
+						<i class="fas fa-check"></i>입력완료
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ========================== 엑셀 파일 업로드 모달 끝 ========================== -->
+	
 	
 	<div id="search_buttons">
 		<%-- 검색어 입력 input 태그 --%>
