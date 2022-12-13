@@ -486,6 +486,7 @@ arr_status = [];
 		$(document).on("keyup","input#searchWord",function(){
 			viewEmpList(currentShowPageNo);
 			$("input[name='searchWord']").val($(this).val());
+			$("input[name='keyword']").val($(this).val());
 			
 			
 		})// end of $(document).on("keyup","input#searchWord",function(){}------
@@ -658,7 +659,6 @@ arr_status = [];
 		
 		// 구성원 정보 엑셀 파일로 다운로드 
 		$(document).on("click","button#btn_download",function(){
-			alert("버튼 클릭됨.");
 			 const frm = document.searchFrm;
 			 frm.method = "POST"; // select 이기때문에 보안성과는 상관 없으므로 get 방식
 			 frm.action = "<%= ctxPath%>/downloadExcelFile.yolo"; 
@@ -1348,11 +1348,10 @@ arr_status = [];
 		<div id="serchTag_content">
 			<div class="dropdown">
 			<form name="searchFrm">
-				<input type="text" name="arr_position" />
-				<input type="text" name="arr_dept" />
-				<input type="text" name="arr_status" />
-				
-				<input type="text" name="keyword"/>
+				<input type="hidden" name="arr_position" />
+				<input type="hidden" name="arr_dept" />
+				<input type="hidden" name="arr_status" />
+				<input type="hidden" name="keyword"/>
 			</form>
 						
 			<span id="span_searchTag"></span>
