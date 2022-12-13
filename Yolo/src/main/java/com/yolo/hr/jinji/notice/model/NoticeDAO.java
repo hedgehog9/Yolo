@@ -9,6 +9,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 
+
 @Repository
 public class NoticeDAO implements InterNoticeDAO {
 
@@ -111,9 +112,18 @@ public class NoticeDAO implements InterNoticeDAO {
 	// 공지글 수정 완료 폼 요청
 	@Override
 	public int editNotice(NoticeVO noticevo) {
-		int result = sqlsession.update("jinmj.editNotice", noticevo);
+		int result = sqlsession.update("jinmj.editNotice", noticevo);	
 		return result;
 	}
+
+	// 공지 삭제 요청하기 (글 1개 조회)
+	@Override
+	public int delEnd(Map<String, String> paraMap) {
+		int result = sqlsession.delete("jinmj.delEnd", paraMap);
+		return result;
+	}
+
+
 
 	
 	

@@ -152,7 +152,7 @@
 		margin: auto 5px;
 	}
 	
-	textarea.commentForm:focus {
+	textarea.commentContent:focus {
 		outline : 2px solid #66cc66;
 		border-radius: 0.5rem;
 		
@@ -178,7 +178,7 @@
 	
 
 		// 댓글 글자수 제한
-		$('.commentForm').on('keyup', function() {
+		$('.commentContent').on('keyup', function() {
 			
 			let content = $(this).val();
 			
@@ -249,8 +249,8 @@
 	     	<div style="margin: 30px 0;">
 	      	<span style="font-size: 16px;">&#128313; 댓글</span>
 	   		<div class="commentBox">
-		    	<form id="insertFrm" name="insertFrm">
-		       	<textarea class="commentForm" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; max-height: 10px;"></textarea>
+		    	<form id="commentFrm" name="commentFrm">
+		       	<textarea class="commentContent" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; max-height: 10px;"></textarea>
 		       	<div class="mt-2">
 		       		<button type="button" class="commentBnt">댓글쓰기</button>
 					<button type="button" class="commentCancleBnt">취소</button>

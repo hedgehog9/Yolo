@@ -245,4 +245,12 @@
 		where notino=#{notino}
 	</update>
 	
+	
+	<!--  공지글 1개 삭제 -->
+	<delete id="delEnd" parameterType="HashMap" >
+		delete from tbl_notice
+ 		where notino = #{notino}
+	</delete>	
+	
+	
 </mapper>

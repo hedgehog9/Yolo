@@ -107,14 +107,22 @@ public class NoticeService implements InterNoticeService {
 		return showEditNoticeContent;
 	}
 
-	// 공지글 수정 완료 폼 요청
+	// 공지글 수정 완료 폼 요청하기
 	@Override
 	public int editNotice(NoticeVO noticevo) {
 		int result = dao.editNotice(noticevo);
 		return result;
 	}
 
+	
+	// 공지글 삭제 요청하기( 1개 조회)
+	@Override
+	public int delEnd(Map<String, String> paraMap) {
+		int result = dao.delEnd(paraMap);
+		return result;
+	}
 
+	
 	
 	
 }

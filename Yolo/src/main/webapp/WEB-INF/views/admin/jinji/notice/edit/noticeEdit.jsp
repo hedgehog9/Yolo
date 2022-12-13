@@ -177,7 +177,7 @@
       	<!--  <span style="width: 80%; margin: 0 10%;">받는 사람</span>-->
         
         <textarea rows="" cols="" id="editContent" name="content"></textarea>
-		<input type="hidden" name="notino" />
+		<input type="hidden" name="notino" id="hidden_notino" />
         <input type="hidden" name="fk_deptno" />
         
         <div id="attachFile">
@@ -187,7 +187,6 @@
 			    <input type="file" id="editfile" value="">
 			</div>
         </div>
-        <input id="hidden_notino" type="text">
         <button type="button" class="editNoticeBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 수정하기
 		</button>

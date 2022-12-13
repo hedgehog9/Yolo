@@ -108,8 +108,50 @@
 			
 		}); // end of 공지 수정하기 버튼 클릭 이벤트
 		
+		
+		
+		// 공지글 삭제 완료 버튼
+
+		
+		
 	}); // end of $(document).ready(function() ------
 			
+	function goDelete() {
+		const delfrm = document.delFrm;
+		delfrm.method = "POST";
+		delfrm.action = "<%= request.getContextPath() %>/notice/deleteNoticeEnd.action";
+		//frm.submit();
+		delfrm.submit();
+		 
+		// 폼태그에서 입력해준 글암호와 삭제하려는 글의 글암호 값이 일치하는지 여부 알아오기
+		alert(notino);
+		
+		<%-- ajax({
+			 url:"<%= request.getContextPath() %>/notice/deleteNoticeEnd.action",
+			 type : "POST",
+			 data : {"notino" : notino},
+			 dataType: "JSON",
+				success: function(json){
+					
+					alert("성공");
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+				
+			}); --%>
+		if( ${requestScope.empno} != fk_senderno ) {
+			 // " " : 문자열이라서 쌍따옴표 해준 것(패스워드가 avs1234@#$ 이면 숫자라고 할 수 없다.)
+			// alert(${requestScope.empno});
+			alert("해당하는 글작성자가 아니여서 삭제할 수 없습니다.");
+		
+		}
+		else { // 글암호 일치시 폼 태그로 간다
+			
+			
+		
+		}
+	}
 	
 			
 	// 전체 공지 리스트 상세 모달
@@ -175,7 +217,7 @@
 
 	}
 	
-	
+
 	
 	
 </script>
@@ -219,7 +261,12 @@
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2" style= "background-color: ${noticevo.profile_color};">댓공지</span><span style="color: green;">[6]</span>	</span>
 					</div>
 					<button class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal" >수정하기</button> 
-					<button class="listBnt DeleteBnt">삭제하기</button>
+					
+					
+					<button type="button" class="listBnt DeleteBnt" onclick="goDelete();">삭제하기</button>
+					<form name="delFrm" id="delFrm"> <%-- 값이 있을 때 폼태그.. --%>
+					<input type="text" id="notino" value="${noticevo.notino}" name="notino">
+					</form>
 				</div>
  			</div>
 		</c:forEach>

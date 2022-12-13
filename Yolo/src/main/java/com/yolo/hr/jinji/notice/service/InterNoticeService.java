@@ -49,5 +49,12 @@ public interface InterNoticeService {
 	// 공지글 수정 완료 폼 요청
 	int editNotice(NoticeVO noticevo);
 
+	// 공지글 삭제 요청하기 (1개 조회)
+	int delEnd(Map<String, String> paraMap);
+
+
+
+
+
 	
 }

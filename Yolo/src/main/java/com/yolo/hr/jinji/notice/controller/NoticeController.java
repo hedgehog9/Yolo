@@ -1,6 +1,7 @@
 package com.yolo.hr.jinji.notice.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,18 +9,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+
 import com.yolo.hr.common.FileManager;
-import com.yolo.hr.common.MyUtil;
-import com.yolo.hr.jihyunModel.MessengerVO;
 import com.yolo.hr.jinji.notice.model.NoticeVO;
 import com.yolo.hr.jinji.notice.service.InterNoticeService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
@@ -149,6 +146,9 @@ public class NoticeController {
 		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String empno = loginuser.getEmpno();
+		request.setAttribute("empno", empno);
 		
 		// 공지 알림으로 뜬 공지 사항 누르면 해당 공지 내용 띄우기
 		String alarm_noticeno = request.getParameter("alarm_noticeno");
@@ -329,21 +329,77 @@ public class NoticeController {
 	}
 	
 	
+	
+	
+	
 	// 공지글 수정 완료 폼 요청
 	@RequestMapping(value = "/notice/editNoticeFrm.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
-	public ModelAndView editNotice(ModelAndView mav, NoticeVO noticevo, HttpServletRequest request) {
+	public ModelAndView editNoticeEnd(ModelAndView mav, NoticeVO noticevo, HttpServletRequest request) {
 		
 		int result = service.editNotice(noticevo);
 		
-		if(result==0) {
-        mav.addObject("message", "공지 수정이 완료되지 못했습니다.");
-        mav.addObject("loc", "javascript:history.back()");
-	    }
-	    else { // n == 1 이라면 성공된 경우다 
-	        mav.addObject("message", "공지 수정이 완료 되었습니다.");
-	        mav.addObject("loc", request.getContextPath()+"/notice/noticeList.admin");
-	    }
-		
-		return mav;
+		/*
+		 * System.out.println(result); System.out.println(noticevo.getSubject());
+		 * System.out.println(noticevo.getContent());
+		 * System.out.println(noticevo.getNotino());
+		 */
+		 
+	   if(result==0) {
+           mav.addObject("message", "공지 수정이 완료되지 못했습니다.");
+           mav.setViewName("jinji/notice/noticeList.admin"); 
+       }
+       else { // n == 1 이라면 성공된 경우다 
+           mav.addObject("message", "공지 수정이 완료 되었습니다.");
+           mav.setViewName("redirect:/notice/noticeList.yolo"); // 페이지만 변경시 redirect(데이터 보내는 곳과 띄우는 곳 다를 때)
+       }
+      
+      return mav;
 	}
+
+	
+
+	// 공지글 삭제 완료 폼 요청
+	@RequestMapping(value = "/notice/deleteNoticeEnd.action", method = {RequestMethod.POST })
+	public ModelAndView deleteNoticeEnd(ModelAndView mav, NoticeVO noticevo, HttpServletRequest request) {
+
+		// 삭제하고자 하는 글의 번호 가져오기
+		String notino = request.getParameter("notino"); // notino (jsp에 name or ajax로 데이터 넘겨줘야)
+
+		System.out.println("글삭제번호 :" + notino);
+
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("notino", notino);
+
+		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
+		// NoticeVO noticevo = service.getOnedeleteNotice(paraMap);
+		// 1개글 조회
+
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+
+		noticevo.setFk_senderno(loginuser.getEmpno());
+		
+		int result = service.delEnd(paraMap);
+
+	//	System.out.println("글삭제 int result :" + result);
+
+		if (result == 0) {
+			// 글 쓴 유저아이디와 로그인된 사워나이디 동일하지 않다면 삭제 못 함
+			mav.addObject("message", "글 삭제가 불가합니다.");
+			mav.setViewName("jinji/notice/noticeList.admin");
+
+			// 보여줄 뷰단 페이지는 메세지 뷰단
+		} else {
+			// 자신의 글 삭제할 경우,
+			// 글 작성시 입력해준 암호와 글삭제 암호 일치하는지 여부 알아오도록 암호 입력받아주는 del.jsp페이지 (폼태그) 띄운다.
+			mav.addObject("message", "삭제 완료됐습니다"); // 키값은 메세지jsp의 값, 오른쪽 벨류값은 위 String message의 메세지
+			mav.setViewName("redirect:/notice/noticeList.yolo");
+		}
+
+		return mav;
+
+	}
+	
+	
+	
 }
