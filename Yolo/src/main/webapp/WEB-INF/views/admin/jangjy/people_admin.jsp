@@ -485,6 +485,8 @@ arr_status = [];
 		// 검색버튼에서 검색어 입력시 
 		$(document).on("keyup","input#searchWord",function(){
 			viewEmpList(currentShowPageNo);
+			$("input[name='searchWord']").val($(this).val());
+			
 			
 		})// end of $(document).on("keyup","input#searchWord",function(){}------
 		
@@ -583,14 +585,17 @@ arr_status = [];
 				  {
 				    case "직위" :    
 				    	arr_position.push(searchWord);
+				    	$("input[name='arr_position']").val(arr_position);
 				      break;     
 
 				    case "부서" :    
 				    	arr_dept.push(searchWord);
+				    	$("input[name='arr_dept']").val(arr_dept);
 				      break;  
 				      
 				    case "상태" :    
 				    	arr_status.push(searchWord);
+				    	$("input[name='arr_status']").val(arr_status);
 				      break;   
 				  }
 			  	
@@ -637,11 +642,9 @@ arr_status = [];
 			arr_dept.length = 0;
 			arr_status.length = 0;
 			
-			<%-- 
-			console.log(arr_position);
-			console.log(arr_dept);
-			console.log(arr_status);
-			--%>
+			$("input[name='arr_position']").val("");
+			$("input[name='arr_dept']").val("");
+			$("input[name='arr_status']").val("");
 			
 			viewEmpList(currentShowPageNo);
 			
@@ -653,6 +656,17 @@ arr_status = [];
 		})// end of $(document).on("click","button#registMember",function(){}-----------
 		
 		
+		// 구성원 정보 엑셀 파일로 다운로드 
+		$(document).on("click","button#btn_download",function(){
+			alert("버튼 클릭됨.");
+			 const frm = document.searchFrm;
+			 frm.method = "POST"; // select 이기때문에 보안성과는 상관 없으므로 get 방식
+			 frm.action = "<%= ctxPath%>/downloadExcelFile.yolo"; 
+			 frm.submit();
+		});
+				
+				
+				
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
 			
@@ -1333,7 +1347,14 @@ arr_status = [];
 	<div id="div_searchTag">
 		<div id="serchTag_content">
 			<div class="dropdown">
-			
+			<form name="searchFrm">
+				<input type="text" name="arr_position" />
+				<input type="text" name="arr_dept" />
+				<input type="text" name="arr_status" />
+				
+				<input type="text" name="searchWord"/>
+			</form>
+						
 			<span id="span_searchTag"></span>
 				
 				<button id="add_searchTag" data-toggle="dropdown" type="button"
