@@ -516,7 +516,8 @@ public class EmployeeController {
 					// System.out.println("root 확인 :" + root);
 					// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 					
-					String path = root + "resources"+File.separator+"files";
+//					String path = root + "resources"+File.separator+"files";
+					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\image"+"resources"+File.separator+"files";
 //					System.out.println("확인용 path : "+ path);
 					// C:\NCS\workspace(final)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Yolo\resources\files
 					/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
@@ -727,7 +728,10 @@ public class EmployeeController {
 				// System.out.println("root 확인 :" + root);
 				// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 				
-				String path = root + "resources"+File.separator+"files";
+//				String path = root + "resources"+File.separator+"files";
+				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile";
+//				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files";
+				
 				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
 			            운영체제가 Windows 이라면 File.separator 는  "\" 이고,
 			            운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
@@ -1050,7 +1054,8 @@ public class EmployeeController {
         
         HttpSession session = request.getSession();
         String root = session.getServletContext().getRealPath("/"); // 이만큼이 webapp 
-        String path = root + "resources"+File.separator+"files"+File.separator+"excel";
+//        String path = root + "resources"+File.separator+"files"+File.separator+"excel";
+        String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile\\";
         
         File destFile = new File(path+excelFile.getOriginalFilename());
 //        File destFile = new File("C:\\upload\\"+excelFile.getOriginalFilename());
@@ -1065,6 +1070,8 @@ public class EmployeeController {
         service.excelUpload(destFile);
         
         destFile.delete();
+//      System.out.println("확인용 destFile "+destFile);
+//      확인용 destFile C:\Users\sist\git\Yolo\Yolo\src\main\webapp\files\empFile\DBinsert 양식.xlsx
         
         ModelAndView view = new ModelAndView();
         view.setViewName("redirect:/people.yolo");
