@@ -154,7 +154,7 @@
 	</select>
 	
 	<select id="commuteTotalPage" parameterType="HashMap" resultType="int">
-		select ceil(count(distinct(fk_empno))/10) AS totalpage
+		select ceil(count(distinct(fk_empno))/2) AS totalpage
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
 		where start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')

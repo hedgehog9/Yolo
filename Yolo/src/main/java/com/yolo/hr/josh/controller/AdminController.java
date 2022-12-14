@@ -89,7 +89,7 @@ public class AdminController {
 			}
 			
 			
-			int sizePerPage = 10;
+			int sizePerPage = 2;
 			
 			int startRno = (( Integer.parseInt(currentShowPageNo) - 1) * sizePerPage) + 1;
 	        int endRno = startRno + sizePerPage - 1;
@@ -105,6 +105,8 @@ public class AdminController {
 			List<HashMap<String, String>> totalCommuteList = new ArrayList<>();
 	        
 	        totalCommuteList = service.totalCommuteList(paraMap);
+	        
+	        System.out.println("확인용"+totalCommuteList.size());
 	        
 	        if(totalCommuteList != null) {
 	        	
