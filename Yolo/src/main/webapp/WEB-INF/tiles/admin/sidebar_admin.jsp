@@ -495,9 +495,11 @@
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/payStub.yolo'">
 					<i class="fas fa-solid fa-dollar-sign sideIcon"></i><span>급여</span>
 				</div>
-				<div class="sideTr" onclick="#">
-					<i class="fas fa-solid fa-comments-dollar sideIcon"></i><span>급여정산</span>
-				</div>
+				<c:if test="${sessionScope.loginuser.empno == '9999'}">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/admin/severance_pay.yolo'">
+	               <i class="fas fa-solid fa-comments-dollar sideIcon"></i><span>퇴직금</span>
+	            </div>
+	            </c:if>
 				<div class="sideTr" onclick="#">
 					<i class="fas fa-solid fa-chart-pie sideIcon"></i><span>인사이트</span>
 				</div>

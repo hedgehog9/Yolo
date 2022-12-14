@@ -92,5 +92,26 @@ public class CommuteDAO implements InterCommuteDAO {
 		List<Map<String, String>> payStubList = sqlsession.selectList("josh.getPayStubList", paraMap);
 		return payStubList;
 	}
+
+	// 퇴직금을 받을 수 있는 회원명단을 가져오는 메소드
+	@Override
+	public List<Map<String, String>> getSeverancePayList(Map<String, Object> pageMap) {
+		List<Map<String, String>> getSeverancePayList = sqlsession.selectList("josh.getSeverancePayList", pageMap);
+		return getSeverancePayList;
+	}
+
+	// 퇴직금 총 페이지수 가져오는 메소드
+	@Override
+	public int getTotalPage(Map<String, Object> pageMap) {
+		int totalPage = sqlsession.selectOne("josh.getSeverancePayListTotalPage",pageMap);
+		return totalPage;
+	}
+
+	// 퇴직금 테이블에 insert
+	@Override
+	public int severancePayment(List<Map<String, Object>> paraList) {
+		int n = sqlsession.insert("josh.severancePayment", paraList);
+		return n;
+	}
 	
 }

@@ -1,6 +1,7 @@
 package com.yolo.hr.josh.model;
 
 import java.util.List;
+import java.util.Map;
 
 public interface InterScheduleDAO {
 
@@ -21,5 +22,11 @@ public interface InterScheduleDAO {
 
 	// 캘린더를 삭제하는 메소드
 	int deleteSchedule(String schedule_no);
+
+	// 시퀀스 넘버를 가져오는 메소드
+	String getSequenceNo();
+
+	// 휴가신청후 스케줄테이블에 등록하는 메소드
+	void insertVactionSchedule(Map<String, String> paraMap);
 
 }
