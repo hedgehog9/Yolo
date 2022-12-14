@@ -524,7 +524,12 @@
 	//수정하기 창으로 이동
 	function goModify() {
 		
-		location.href="<%= request.getContextPath()%>/workflow/modify.yolo";
+		 const frm = document.modifyFrm;
+         frm.method = "POST";
+         frm.action = "<%= request.getContextPath()%>/workflow/modify.yolo";
+         frm.submit();
+		
+		
 	} 
 	
 	function goApproval(approval,doc_no,levelno) {
@@ -614,6 +619,10 @@
 					    	""+json.doc_subject+"</div>"+
 					    	"<div id='icon' style='margin-top:22px; float: right;'>"+
 				    			"<div id='iconhover' onclick='goModify();'>"+
+						    			"<form name='modifyFrm'>"+
+				    					"<input type='hidden' name='fk_writer_empno' value='"+json.fk_writer_empno+"' readonly />"+
+				    					"<input type='hidden' name='doc_no' value='"+json.doc_no+"' readonly />"+
+				    					"</form>"+
 										"<i class='bi bi-pencil-fill' style='font-size: 13pt;'></i>"+
 										"&nbsp;<span style='font-size: 13pt;'>수정</span>"+
 									"</div>"+

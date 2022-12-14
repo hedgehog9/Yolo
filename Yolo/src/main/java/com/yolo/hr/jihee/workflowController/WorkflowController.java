@@ -89,6 +89,50 @@ public class WorkflowController {
 		return "jihee/content/document.workadmin";
 	}
 	
+	@RequestMapping(value = "/cpworkflow.yolo")
+	public String viewCpWorkflow(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		//페이지 로드 첫번째 문서번호 알아오기(최신순)
+		String empno = loginuser.getEmpno();	
+		String doc_no = service.getdoc_no(empno);
+		String no = "10";
+		
+		HashMap<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("emp_no", empno);
+		
+		request.setAttribute("empno", empno);
+		if(!(doc_no == null)) {
+			request.setAttribute("doc_no", doc_no);
+		}
+		
+		else {
+			request.setAttribute("doc_no", no);		
+		}
+		
+		// empno 넘어오면 request 영역에 담아줘야 한다
+				String alarmDocno = request.getParameter("doc_no"); 
+	//			System.out.println("alarmDocno:" + alarmDocno);
+				request.setAttribute("alarmDocno", alarmDocno);
+				
+		//진행중 게시물 총수
+		int docTotalCnt = service.getdocTotalCnt(paraMap);		
+		request.setAttribute("waitingTotalCnt", docTotalCnt);
+		
+		//완료 게시물 총수
+		int comTotalCnt = service.getcomTotalCnt(paraMap);		
+		request.setAttribute("completeTotalCnt", comTotalCnt );
+		
+		//내 문서한 게물 총수
+		int myTotalCnt = service.getmyTotalCnt(paraMap);		
+		request.setAttribute("myTotalCnt", myTotalCnt );
+						
+				
+		return "jihee/content/cpDocument.workadmin";
+	}
+	
 	//문서 자세히 보기 ajax
 	@ResponseBody
 	@RequestMapping(value = "/workflow/documentDetail.yolo")
@@ -269,6 +313,7 @@ public class WorkflowController {
 					jsonObj.put("approval", approvalModal.get("approval"));
 					if(approvalModal.get("approval_day")==null) {
 						jsonObj.put("approval_day", "12345678910123445");
+					    
 					}
 					else {
 					jsonObj.put("approval_day", approvalModal.get("approval_day"));
@@ -562,20 +607,79 @@ public class WorkflowController {
 		return mav;
 	}
 	
-	
+	// 수정하기
 	@RequestMapping(value = "/workflow/modify.yolo")
 	public String modifyWorkflow(HttpServletRequest request) {
+
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		String deptno = loginuser.getFk_deptno();
+		String empno = loginuser.getEmpno();
 		
-		String subject = request.getParameter("subject");
-		String icon = request.getParameter("icon");
-		String information = request.getParameter("information");
+		String writer_empno = request.getParameter("fk_writer_empno");
+		String doc_no = request.getParameter("doc_no");
 		
-		request.setAttribute("subject", subject);
-		request.setAttribute("icon", icon);
-		request.setAttribute("information", information);
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("empno",empno);
+		paraMap.put("doc_no", doc_no);
+		paraMap.put("deptno", deptno);
+
+		//참조 대상자들 알아오기
+		List<Map<String,String>> appList = service.appList(paraMap);
 		
+		boolean flag = true;
+		for(int i=0; i<appList.size(); i++) {
+			
+			 String approval = appList.get(i).get("approval"); 
+			 if(approval.equals("1")) {
+				 flag = false;
+			 }			 
+			 System.out.println("approval : " +approval);
+			 System.out.println("flag : "  +flag);
+		}
 		
-		return "jihee/content/modify.admin";
+		if(empno.equals(writer_empno) && flag ){
+			System.out.println("if empno :" +empno +"writer_empno :" +writer_empno );
+			paraMap.put("writer","do");
+		
+			//문서 알아오기
+			Map<String,String> docDetailMap = service.getDocDetail(paraMap);
+			String subject = docDetailMap.get("doc_subject");
+			String contents = docDetailMap.get("doc_contents");
+			String icon = docDetailMap.get("icon");
+			String orgfilename = docDetailMap.get("orgfilename");
+			String d_day = docDetailMap.get("d_day");
+			
+			request.setAttribute("appList", appList);
+			request.setAttribute("subject", subject);
+			request.setAttribute("icon", icon);
+			request.setAttribute("orgfilename", orgfilename);
+			request.setAttribute("d_day", d_day);
+			request.setAttribute("contents", contents);
+			
+			return "jihee/content/modify.admin";
+		}
+		
+		else if(!(empno.equals(writer_empno))) {
+			
+			String message = "본인이 쓴 글이 아니면 수정이 불가합니다 ";
+			String loc = request.getContextPath() + "/workflow.yolo";
+			request.setAttribute("message", message);
+			request.setAttribute("loc", loc);
+			
+			return "/msg";
+		}
+		
+		else {
+			String message = "이미 결재가 시작되어 수정이 불가합니다.";
+			String loc = request.getContextPath() + "/workflow.yolo";
+			request.setAttribute("message", message);
+			request.setAttribute("loc", loc);
+			return "/msg";
+			
+		}
+
+
 	}
 	
 	//내문서함 글 목록 보여주기 (ajax)
@@ -1170,8 +1274,7 @@ public class WorkflowController {
 		
 		}// end of requiredLogin_download
 		
-		
-	
+
 		
 		
 }
