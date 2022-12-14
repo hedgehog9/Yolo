@@ -260,11 +260,13 @@ public class EmployeeController {
 		String memo = request.getParameter("memo");
 		String empno = request.getParameter("empno");
 		
-		paraMap.put("fk_recipientno ", empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
-		paraMap.put("url", "userDetail.yolo?empno=" );
+		System.out.println("확인용 휴직처리할 사원번호 "+empno);
+		
+		paraMap.put("fk_recipientno", empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
+		paraMap.put("url", "/userDetail.yolo?empno=" );
 		paraMap.put("url2", empno ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
 		paraMap.put("alarm_content", "휴직 처리되었습니다." );
-		paraMap.put("alarm_type", "4" );
+		paraMap.put("alarm_type","4" );
 		
 		Map<String,String> leaveMap = new HashMap<>();
 		
@@ -368,29 +370,41 @@ public class EmployeeController {
 		return jsonObj.toString() ;
 	}
 	
+	// 부서에 부서장 또는 팀장이 있는지 조회 
+	@ResponseBody
+	@RequestMapping(value = "/checkManager.yolo", produces="text/plain;charset=UTF-8")
+	public String checkManager( @RequestParam Map<String,Object>paraMap) {
+		
+		int manager_yn = service.checkManager(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("manager_yn", manager_yn);
+		
+		return jsonObj.toString() ;
+	}
 	
 	
-	
+	// 인사발령 (트랜잭션)
 	@RequestMapping(value = "/personnelAppointment.yolo", produces="text/plain;charset=UTF-8")
-	public String personnelAppointment(HttpServletRequest request , @RequestParam Map<String,Object>paraMap) {
+	public String addAlarm_personnelAppointment(Map<String, String> paraMap, HttpServletRequest request , @RequestParam Map<String,Object> psaMap) {
 		
-//		String psa_date = request.getParameter("psa_date");
-//		String changeType = request.getParameter("changeType");
-//		String position = request.getParameter("position");
-//		String memo = request.getParameter("memo");
-//		String deptno = request.getParameter("deptno");
-//		String teamno = request.getParameter("teamno");
+//		System.out.println("psaMap"+psaMap);
+
 		
-//		System.out.println("확인용 :"+psa_date);
-//		System.out.println("확인용 :"+changeType);
-//		System.out.println("확인용 :"+position);
-//		System.out.println("확인용 :"+memo);
-//		System.out.println("확인용 :"+deptno);
-//		System.out.println("확인용 :"+teamno);
+		int result = service.personnelAppointment(psaMap);
+		System.out.println("확인용 insert 결과 확인 : "+ result);
 		
-		System.out.println("paraMap"+paraMap);
+		if(result == 1) {
+			// 나중에 인사발령 내역 조회 페이지로 이동시키기
+			paraMap.put("fk_recipientno", (String)psaMap.get("empno") ); // 받는사람 (여러명일때는 ,으로 구분된 str)
+			paraMap.put("url", "/people.yolo?empno=" );
+			paraMap.put("url2", (String)psaMap.get("empno") ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+			paraMap.put("alarm_content", "인사발령" );
+			paraMap.put("alarm_type", "5" );
+			
+		}
 		
-		return "jangjy/user_detail.admin";
+		return "redirect:userDetail.yolo?empno="+psaMap.get("empno");
 	}
 	
 	

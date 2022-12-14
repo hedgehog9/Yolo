@@ -79,14 +79,118 @@
         height: 8px;
     }
     
-    .table td, .table th {
-    padding: 0.75rem;
-    vertical-align: middle;
-    border-top: 1px solid #dee2e6;
-	}
 	
 	.select2-container--bootstrap4 .select2-selection--multiple .select2-selection__choice__remove {
 		border: none;
+	}
+	
+	input:focus{
+      outline-color: #07B419;
+    }	
+    
+    .form-control:focus {
+	   box-shadow:none;
+	   border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4.select2-container--focus .select2-selection {
+		box-shadow: none;
+		border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
+		width: 80% !important;
+	}
+	
+	<%-- 페이지바 css 시작 --%>
+	ul.ul_pagebar{
+		list-style:none; 
+		margin:0 auto;
+		width:700px;
+		display: flex;
+		align-items: baseline;
+		padding: 0;
+		justify-content: center;
+	}
+	
+	
+	li.li_pagebar{
+		display: inline-block;
+	    padding-top: 9px;
+	    width: 40px;
+	    height: 40px;
+	    text-align: center;
+	    font-weight: 700;
+	}
+	
+	li.li_pagebar > a{
+		text-decoration: none;
+		font-size: 14px;
+		color:#2ecc71;
+	}
+	
+	li.li_currentpage{
+		background-color: #2ecc71;
+	    color: white;
+	    font-weight: 700;
+	
+	    display: inline-block;
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 50%;
+	    text-align: center;
+	    vertical-align: middle;
+	    padding-top: 9px;
+	}
+	
+	.dropdown-toggle::after {
+	    display: none;
+	    margin-left: 0.255em;
+	    vertical-align: 0.255em;
+	    content: "";
+	    border-top: 0.3em solid;
+	    border-right: 0.3em solid transparent;
+	    border-bottom: 0;
+	    border-left: 0.3em solid transparent;
+	}
+	
+	li.li_moveOne{
+		display: inline-block;
+	    width: 100px;
+	    font-size: 12pt;
+	    text-align: center;
+	    padding: 6px;
+	    border-radius: 100px;
+	    color: white;
+	    border: solid 3px #2ecc71;
+	    margin: 0 10px;
+	}
+	
+	li.li_moveOne > a{
+		color:#2ecc71;
+		text-decoration: none;
+	}
+	
+	li.li_moveAll{
+		background-color: #2ecc71;
+	    font-weight: 700;
+	    border-radius: 50%;
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 50%;
+	    text-align: center;
+	    vertical-align: middle;
+	    padding-top: 9px;
+	}
+	
+	li.li_moveAll > a{
+		color: white;
+		text-decoration: none;
+		display: inline-block;
+	}
+	
+	.green_bottom {
+		border-bottom: 2px solid #07B419 !important;
 	}
 	
 	
@@ -94,12 +198,12 @@
 
 <script>
 
+let arrDept = [];
+
     $(document).ready(function() {
 
         let today = new Date();
         
-        let arrDept = new Array();
-
         getCurrentWeek();
         
         $("#dept-select").select2({
@@ -111,9 +215,7 @@
         	    //data : data , // 실제 Select Option에 들어갈 데이터 
         });
         
-        const a = $('#management-categoty-div > div > span > span.selection > span').val()
-        
-        totalCommuteList(1, null);
+        totalCommuteList(1);
         
         /*
         var bar = new ProgressBar.Line(gagebar, { // 게이지바 생성
@@ -192,11 +294,11 @@
 
                 $('select#dept-select').each(function(){
 				    arrDept = $(this).val();
-				    console.log(arrDept)
+				    //console.log(arrDept)
             		});
                 
                 // 여기서 ajax 시작
-                totalCommuteList(1, arrDept);
+                totalCommuteList(1);
             });
             // end of $("input#daterange").daterangepicker
 
@@ -208,11 +310,11 @@
                 
                 $('select#dept-select').each(function(){
 				    arrDept = $(this).val();
-				    console.log(arrDept)
+				    //console.log(arrDept)
             		});
 
                 // 여기서 ajax 시작
-                totalCommuteList(1, arrDept);
+                totalCommuteList(1);
 
             });// end of $("span#today-btn").click -------------
 
@@ -225,10 +327,10 @@
             	
             		$('select#dept-select').each(function(){
 				    arrDept = $(this).val();
-				    console.log(arrDept)
+				    //console.log(arrDept)
             		});
             		
-            		 totalCommuteList(1, arrDept);
+            		 totalCommuteList(1);
             	
             });// end of $("select#dept-select").change ------------ 
 
@@ -262,11 +364,14 @@
 
     }
     
-    function totalCommuteList(currentShowPageNo, arrDept) {
+    function totalCommuteList(currentShowPageNo) {
     		
     	    const startdate = $("span#startdate").text();
     	    const enddate = $("span#enddate").text().substring(2);
-    	
+    	    
+    	    //console.log("펑션안에"+arrDept)
+    	    //console.log(arrDept)
+    	    
     		$.ajax({
     			url:"<%= ctxPath %>/admin/selectCommuteList.yolo",
     			data:{"startdate": startdate,
@@ -274,7 +379,6 @@
     				  "currentShowPageNo":currentShowPageNo,
     				  "arrDept":arrDept},
     			dataType:"JSON",
-    			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
     			success:function(json) {
     				
     				let html = "";
@@ -286,19 +390,19 @@
     						arr_worktime.push(Math.floor(item.total_worktime/60))
     						
     						html += "<tr>"+
-	                            "<td class='d-flex'>"+
-	                            "<div class='profile' style='background-color:"+item.profile_color+"'>"+item.name.substring(1)+"</div>"+
-								"<div>"+
-								"<span style='display: block; padding-top: 3px;'>"+item.name+"</span>"+
-								"<span style='font-weight: normal; color: gray; font-size: 10pt;'>"+item.upper_deptname+" · "+item.deptname+"</span>"+
-								"</div>"+
-	                            "</td>"+
-	                            "<td>"+item.empno+"</td>"+
-	                            "<td><div id ='gagebar"+index+"' style='width: 400px; height: 8px;'></div></td>"+
-	                            "<td>"+Math.floor(item.total_worktime/60)+"시간</td>"+
-	                            "<td>"+Math.floor(item.total_overtime/60)+"시간</td>"+
-	                            "<td>"+Math.floor((Number(item.total_worktime)+Number(item.total_overtime))/60)+"시간</td>"+
-	                        "</tr>"
+		                            "<td class='d-flex'>"+
+			                            "<div class='profile' style='background-color:"+item.profile_color+"'>"+item.name.substring(1)+"</div>"+
+										"<div>"+
+										"<span style='display: block; padding-top: 3px;'>"+item.name+"</span>"+
+										"<span style='font-weight: normal; color: gray; font-size: 10pt;'>"+item.upper_deptname+" · "+item.deptname+"</span>"+
+										"</div>"+
+		                            "</td>"+
+		                            "<td><span class='badge badge-dark rounded-pill'>"+item.empno+"</span></td>"+
+		                            "<td><div id ='gagebar"+index+"' style='width: 400px; height: 8px;'></div></td>"+
+		                            "<td><span class='badge badge-light rounded-pill'>"+Math.floor(item.total_worktime/60)+"시간</span></td>"+
+		                            "<td><span class='badge badge-light rounded-pill'>"+Math.floor(item.total_overtime/60)+"시간</span></td>"+
+		                            "<td><span class='badge badge-warning rounded-pill'>"+Math.floor((Number(item.total_worktime)+Number(item.total_overtime))/60)+"시간</span></td>"+
+	                        		"</tr>"
     						
     					})// $.each ----------------------------
     					
@@ -309,7 +413,7 @@
     		                    strokeWidth: 4,
     		                    easing: 'easeInOut',
     		                    duration: 1400,
-    		                    color: 'yellow',
+    		                    color: '#66cc66',
     		                    trailColor: '#eee',
     		                    trailWidth: 1,
     		                    svgStyle: {width: '100%', height: '100%'}
@@ -344,7 +448,6 @@
   				  "enddate":enddate,
   				  "arrDept":arrDept},
   			dataType:"JSON",
-  			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
   			success:function(json) {
   				
   				if(json.totalPage > 0) {
@@ -354,50 +457,45 @@
 					
 					const blockSize = 10;
 					
-					let loop = 1; // 증가해야 하기 때문에 const 가 아닌 let 으로 선언
-					
-					if(typeof currentShowPageNo == "string") {
-						// currentShowPageNo 는 웹에서 받아오면 String 타입이기 때문에 Number 타입으로 변환해준다.
-						currentShowPageNo = Number(currentShowPageNo);
-					}
-					
+					let loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize)] 까지만 증가하는 용도이다.
+			        
+			        if( typeof currentShowPageNo == "string"){ // 마우스를 클릭해서 들어오는경우는 보고있는 페이지 번호가 string 타입으로 들어오므로 정수형으로 바꿔줘야 한다.
+			        	currentShowPageNo = Number(currentShowPageNo);
+			        }
+			        
 					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
-					let pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
+					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
 					
+					let pageBarHTML = "<ul class='ul_pagebar'>";
 					
-					let pageBarHTML = "<ul class='pagination'>";
-					
-					if(pageNo != 1) {
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList(\"1\")'>[맨처음]</a></li>";
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo-1+","+arrDept+")'>[이전]</a></li>";
+					// ==== [맨처음] [이전] 만들기 === // 
+					if(pageNo != 1 ) {
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:totalCommuteList(1)' > << </a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:totalCommuteList("+(pageNo-1)+")' >Previous</a></li>";
 					}
-					
-					while( !(loop > blockSize || pageNo > totalPage) ) {
+					while( !(loop > blockSize || pageNo > totalPage ) ) {
 						
-						if(pageNo == currentShowPageNo) {
-							pageBarHTML += "<li class='page-item active'><a class='page-link' href='#'>"+pageNo+"</a></li>";
+						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
+							pageBarHTML +="<li class='li_currentpage'>"+pageNo+"</li>";
 						}
 						else {
-							pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo+","+arrDept+")'>"+pageNo+"</a></li>";
+							pageBarHTML +="<li class='li_pagebar'><a href='javascript:totalCommuteList("+pageNo+")' >"+pageNo+"</a></li>";
 						}
-						
 						loop++;
 						pageNo++;
-					}// end of while -----------------------------------
+					}// end of while()------------------------
 					
-					// === [다음] [마지막] 만들기 === //
 					
+					// ==== [다음] [마지막] 만들기 === //
 					if(pageNo <= totalPage) {
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+pageNo+","+arrDept+")'>[다음]</a></li>";
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:totalCommuteList("+totalPage+","+arrDept+")'>[마지막]</a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:totalCommuteList("+pageNo+")' >Next</a></li>";
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:totalCommuteList("+totalPage+")' > >> </a></li>";
 					}
 					
-					pageBarHTML += "</ul>";
-					
+					pageBarHTML +="</ul>";
+				
 					$("div#pageBar").html(pageBarHTML);
-					
-					
-				}// end of if(json.totalPage > 0) ------------------
+				}// end of if(json.totalPage > 0){}----------------------------------
 				else {
 					$("#data-body").empty();
 					$("div#pageBar").empty();
@@ -419,8 +517,7 @@
     </nav>
     <div id="schedule-management-content">
         <div id="management-categoty-div" class="d-flex border-bottom">
-            <a href="#" class="text-muted font-weight-bold mr-2 detail-category border-bottom border-dark"><span>주기별 근무</span></a> <!-- border-bottom border-dark 을 사용하여 url에 따라 밑줄 생성 -->
-            <a href="#" class="text-muted font-weight-bold mr-2 detail-category"><span>보상휴가</span></a>
+            <a href="#" class="text-muted font-weight-bold mr-2 detail-category green_bottom"><span>주기별 근무</span></a> <!-- border-bottom border-dark 을 사용하여 url에 따라 밑줄 생성 -->
             <div style="margin-left: auto">
                 <select id="dept-select" class="form-control" multiple="multiple" style="width: 300px">	
 			        <c:forEach var="map" items="${requestScope.deptList}">
@@ -445,21 +542,20 @@
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th width="15%">이름</th>
-                        <th width="5%">사번</th>
-                        <th width="35%">시간 차트</th>
-                        <th width="10%">근무 시간</th>
-                        <th width="10%">초과 시간</th>
-                        <th width="10%">합계</th>
+                        <th width="15%"><span style='font-size:20px;'>&#129333;</span>이름</th>
+                        <th width="7%"><span style='font-size:20px;'>&#127380;</span>사번</th>
+                        <th width="35%"><span style='font-size:20px;'>&#128202;</span>시간 차트</th>
+                        <th width="10%"><span style='font-size:20px;'>&#9203;</span>근무 시간</th>
+                        <th width="10%"><span style='font-size:20px;'>&#9200;</span>초과 시간</th>
+                        <th width="10%"><span style='font-size:20px;'>&#9202;</span>합계</th>
                     </tr>
                 </thead>
                 <tbody id="data-body">
                 </tbody>    
             </table>
         </div>
-        <%-- === #136. 댓글페이지바 ==== --%>
-      <div style="display: flex; margin-bottom: 50px;">
+        
+        <%-- === 페이지바 ==== --%>
       	<div id="pageBar" style="margin: auto; text-align: center;"></div>
-      </div>
     </div>
 </div>

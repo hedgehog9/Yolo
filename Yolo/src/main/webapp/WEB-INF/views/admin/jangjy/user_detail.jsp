@@ -442,6 +442,8 @@
 		padding: 10px 0 0 10px;
 	}
 	
+	
+	
 </style>
 <%-- 말풍선 --%>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -452,7 +454,11 @@
 	let leaveFlag = false; // 휴직 신청 가능 여부 저장
 	let html = "";
 	
+	
+	
 	$(document).ready(function(){
+		
+		let today = new Date();
 		
 		// 모달에서 x 버튼 클릭스 안의 form 초기화
 	    $('.modal').on('hidden.bs.modal', function (e) {
@@ -463,7 +469,8 @@
 	 // 휴직처리에서 날짜 선택 클릭시 이미 신청되어있는 휴직이 있는지 조회, 경고창 출력
 	 
 		$(document).on("change","input#between_date",function(){
-		  let empno = $("input#empno").val();
+		  
+	      let empno = $("input#empno").val();
 		  let startdate = $("input#start_date").val();
 	  	  let enddate = $("input#end_date").val();
 			
@@ -529,13 +536,14 @@
                     "12월"
                 ],
                 "firstDay": 1
-            }
+            },
+            
         });
 		<%-- ===== 달력 하나만 출력 끝 =====  --%>
 		
 		
 		<%-- ===== 달력 두개짜리 출력 시작 =====  --%>
-		$('input#between_date').daterangepicker({
+		$('input#between_date').daterangepicker({ 
             locale: {
               "format": 'YYYY-MM-DD',
               "separator": ' → ',
@@ -547,7 +555,8 @@
               "weekLabel": "W",
               "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
               "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-            },
+            },"minDate": today // 휴직 처리시 과거날짜 선택 못하도록 지정 
+           
           },function(start, end, label) {
               $("input[name='start_date']").val(start.format('YYYY-MM-DD'))
               $("input[name='end_date']").val(end.format('YYYY-MM-DD'))
@@ -728,7 +737,6 @@
 					  else{
 						  toastr.warning('휴직 처리가 취소되었습니다.');
 					  }
-					  
 				  },
 				  error: function(request, status, error){
 					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -1005,26 +1013,75 @@
 			let parent = $(this).parent();
 			let deptno = $(this).val(); // 부서번호
 			 // $(this).text() 부서명 
-			
-			$(this).parent().find("input").val(deptno);
+			 
+			$(this).parent().parent().find("input").val(deptno);
 			parent.parent().find("div.retirement_type").text($(this).text());
 			
 		})// end of $(document).on("click","button.dropdown-item",function(){}-------------------
 		
 		// 인사발령 모달에서 저장하기 버튼 클릭시 
-		$(document).on("click","#edit_info > div > form > div:nth-child(8) > button:nth-child(2)",function(){
+		$(document).on("click","#edit_info > div > form > div:nth-child(10) > button:nth-child(2)",function(){
 			
-			const frm = document.frm_ps_appointment;
-			frm.action="<%= ctxPath%>/personnelAppointment.yolo";
-			frm.method="POST";
-			frm.submit();
+			func_psa();
 			
 		});
+		
+		// 직위 클릭시 
+		
+		$(document).on("click","button.manager",function(){
+			
+			let formValues = $("form[name=frm_ps_appointment]").serialize() ;
+			
+			$.ajax({
+				  url : "<%= ctxPath%>/checkManager.yolo",
+				  data : formValues,    
+				  type : "POST",
+				  dataType : "JSON",
+				  success : function(json){
+					
+					  if(json.manager_yn == 1){
+						  Swal.fire({
+							   title: '해당 부서에 부서장/팀장이 이미 존재합니다.',
+							   text: '변경하시겠습니까?',
+							   icon: 'warning',
+							   
+							   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+							   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+							   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+							   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+							   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+							   
+							   reverseButtons: true, // 버튼 순서 거꾸로
+							   
+							}).then(result => {
+							   if (result.isConfirmed) { // 부서장/ 팀장을 바꾸는 경우 
+								   
+							   }
+							   else{ // 부서장/팀장을 안바꾸는 경우 
+								   $("input#position").val("");
+							   	   $("div#div_retirement_type").text("직위");
+							   }
+							});
+						  
+					  }// end of if(josn.manager_yn == 1)
+					  
+				  }
+			});
+		}); // end of $(document).on("click","",function(){}-----------------------------
+		
 		
 		// 해당 사원 주 총 근무시간 구하기 
 		getWorkTime($("th#th_empno").text());
 		
+		
 	});// end of $(document).ready-----------------------------
+	
+	function func_psa(){
+		const frm = document.frm_ps_appointment;
+		frm.action="<%= ctxPath%>/personnelAppointment.yolo";
+		frm.method="POST";
+		frm.submit();
+	}
 	
 	//null값 체크 
 	function isEmpty(value){
@@ -1077,8 +1134,8 @@
         start = result[1];
         end = result[5];
         
-        console.log(start);
-        console.log(end);
+       /*  console.log(start);
+        console.log(end); */
         
         let arr_workTime = [];
         
@@ -1155,7 +1212,9 @@
 						+'</div>'
 						
 					+'<form name="frm_ps_appointment">'
-						+'<input name = "empno" type="hidden" value="'+empno+'"/>'
+						+'<input name = "empno" type="text" value="'+empno+'"/>'
+						+'<input name = "before_deptno" type="text" value="'+before_deptno+'"/>'
+						+'<input name = "before_position" type="text" value="'+before_position+'"/>'
 						
 						+'<div style="padding-bottom: 10px;">'
 							+'<div>발령일<span style="color: red;">＊</span></div>'
@@ -1163,10 +1222,10 @@
 						+'</div>'
 						
 						+'<div style="margin:5px 0; padding-bottom: 10px;">'		
-							+'<div>발령 라벨</div>'
+							+'<div>발령 라벨</div><input id="changeType" name="changeType" type="text" />'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-									+'<div class="retirement_type">발령 라벨</div>'
+									+'<div id="retirement_type" class="retirement_type">발령 라벨</div>'
 									+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 								+'</div>'
 							+'</button>'
@@ -1175,13 +1234,12 @@
 								+'<button class="btn_retirement dropdown-item" type="button" value="직무 변경" style="width: 100%;">직무 변경</button>'
 								+'<button class="btn_retirement dropdown-item" type="button" value="부서 변경" style="width: 100%;">부서 변경</button>'
 								+'<button class="btn_retirement dropdown-item" type="button" value="인사 변경" style="width: 100%;">인사 발령</button>'
-								+'<input id="changeType" name="changeType" type="hidden" />'
 							+'</div>'
 						+'</div>'
 						
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
-							+'<div>부서</div>'
+							+'<div>부서</div> <input id="deptno" name="deptno" type="text"/>'
 							+'<button onclick="getDeptName()" id="btn" class=" btn communication" type="button"'
 								+'data-toggle="dropdown"'
 								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
@@ -1195,7 +1253,7 @@
 						+'</div>'
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
-							+'<div>세부 부서</div>'
+							+'<div>세부 부서</div><input id="teamno" name="teamno" type="text"/>'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
 									+'<div class="retirement_type">세부 부서</div>'
@@ -1210,24 +1268,25 @@
 						
 						+'<div style="margin:5px 0; padding-bottom: 10px;">'
 							+'<div style="width: 100%;">'
-								+'<div>직위</div>'
+								+'<div>직위</div><input id="position" name="position" type="text" />'
 								+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"'
 									+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 									+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-										+'<div class="retirement_type">직위</div>'
+										+'<div id="div_retirement_type" class="retirement_type">직위</div>'
 										+'<i class="fas fa-bars" style="padding: 5px;"></i>'
 									+'</div>'
 								+'</button>'
+								
+								<%-- 만약에 오류날 경우 value 직위로 수정  --%>
 					
 								+'<div class="dropdown-menu">'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">사장</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">부서장</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">차장</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">팀장</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">대리</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">사원</button>'
-									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="직위">관리자</button>'
-									+'<input id="position" name="position" type="hidden" />'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="사장">사장</button>'
+									+'<button class="manager btn_retirement dropdown-item" type="button" style="width: 100%;" value="부서장">부서장</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="차장">차장</button>'
+									+'<button class="manager btn_retirement dropdown-item" type="button" style="width: 100%;" value="팀장">팀장</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="대리">대리</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="사원">사원</button>'
+									+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="관리자">관리자</button>'
 								+'</div>'
 							+'</div>'
 						+'</div>'
@@ -1246,9 +1305,10 @@
 						+'</div>'
 					+'</form>'
 				+'</div>'
-			
 			$("div#edit_info").html(html);
 			daterange();
+				$("input[name='before_deptno']").val( $("input#before_deptno").val());
+				$("input[name='before_position']").val( $("input#before_position").val());
 	} //인사정보 페이지에서 인사 정보 변경 버튼 클릭 끝 ------------------------------------------------------------------------------------------------------------------------
 	
 	//인사정보 페이지에서 기본 정보 변경 버튼 클릭시
@@ -1465,7 +1525,7 @@
 				  $.each(json,function(index,dept){
 					  html += "<button onclick='getTeam("+dept.deptno+")' class='btn_retirement dropdown-item' type='button' style='width: 100%;' value='"+dept.deptno+"'>"+dept.deptname+"</button>";
 			      });// end of $.each(json,function(index,emp){}----------------------------
-			      html +='<input id="deptno" name="deptno" type="hidden"/>';
+			      // html +='<input id="deptno" name="deptno" type="hidden"/>';
 				  $("div.div_dept").html(html);
 				
 			  },// end of success
@@ -1490,7 +1550,7 @@
 				  $.each(json,function(index,team){
 				  		html +='<button class="btn_retirement dropdown-item" type="button" style="width: 100%;" value="'+team.deptno+'">'+team.deptname+'</button>';
 			      });// end of $.each(json,function(index,emp){}----------------------------
-			      html +='<input id="teamno" name="teamno" type="hidden"/>';
+			      // html +='<input id="teamno" name="teamno" type="hidden"/>';
 			      $("div.div_team").html(html);
 			      
 			  },// end of success
@@ -1513,6 +1573,8 @@
 	
 		<div id="profile_img" style="background-color:${requestScope.employeeMap.profile_color}">
 			<div id="user_name">${requestScope.employeeMap.profileName}</div>
+			<input id="before_deptno" type="hidden" value="${requestScope.employeeMap.fk_deptno}" />
+			<input id="before_position" type="hidden" value="${requestScope.employeeMap.position}" />
 			
 			
 			<%-- 
@@ -1533,7 +1595,7 @@
 				</tr>
 				<tr>
 					<th class="dept_position">부서</th>				
-					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;${requestScope.employeeMap.teamname}</th>				
+					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;${requestScope.employeeMap.teamname}</th>	
 				</tr>
 				<tr>
 					<th class="dept_position">직책</th>				
