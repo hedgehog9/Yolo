@@ -3,6 +3,7 @@ package com.yolo.hr.jinji.notice.service;
 import java.util.List;
 import java.util.Map;
 
+import com.yolo.hr.jinji.notice.model.CommentVO;
 import com.yolo.hr.jinji.notice.model.NoticeVO;
 
 public interface InterNoticeService {
@@ -50,11 +51,18 @@ public interface InterNoticeService {
 	int editNotice(NoticeVO noticevo);
 
 	// 공지글 삭제 요청하기 (1개 조회)
-	int delEnd(Map<String, String> paraMap);
+	int delNoticeEnd(Map<String, String> paraMap);
 
+	// 댓글 쓰기
+	int addComment(CommentVO commentvo);
 
+	// 원공지글에 해당하는 댓글 조회하기
+	List<CommentVO> getCommentList(String fk_notino);
 
+	// 부서 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
+	NoticeVO showEditDepNoticeContent(String notino);
 
 
 	
+
 }

@@ -1,13 +1,7 @@
 package com.yolo.hr.jinji.notice.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import java.util.*;
+import javax.servlet.http.*;
 
 import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-
 import com.yolo.hr.common.FileManager;
+import com.yolo.hr.jinji.notice.model.CommentVO;
 import com.yolo.hr.jinji.notice.model.NoticeVO;
 import com.yolo.hr.jinji.notice.service.InterNoticeService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
@@ -126,7 +120,7 @@ public class NoticeController {
  		
  	}
  
- 	
+ 	/////////////////////////////////////////////////// 전체 공지 끝 /////////////////////////////////
 	// 전체 공지 리스트
 	@RequestMapping(value = "/notice/noticeList.yolo")
 	public ModelAndView noticeList(HttpServletRequest request, ModelAndView mav) {
@@ -156,6 +150,12 @@ public class NoticeController {
 		
 		List<Map<String, String>> showAllNoticeList = service.showAllNoticeList(loginuser.getFk_deptno());
 		
+		/*
+		for(Map<String, String> map:showAllNoticeList) {
+			map.get("notino");
+			System.out.println(map.get("notino"));
+		}
+		*/
 		
 		mav.addObject("showAllNoticeList", showAllNoticeList);
 //		System.out.println(showAllNoticeList);
@@ -171,7 +171,7 @@ public class NoticeController {
 	@RequestMapping(value="/notice/getNoticeContent.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
     public String noticeContent( HttpServletRequest request) {
     
-		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
+		// 해당 공지글을 읽기 위해 필요한 공지번호를 가져오기
 		String notino = request.getParameter("notino");		
 		// System.out.println(notino);
 
@@ -195,7 +195,180 @@ public class NoticeController {
         return jsonObj.toString(); // string 타입으로 변한다.  '[{}, {}, {} ]' 또는 "[ ]"  => select 된 것이 없을 때
     }
     
+	
+	// 전체 공지글 수정하기 (fk_serderno 만 가능하도록 하기)
+	@ResponseBody
+	@RequestMapping(value = "/notice/getEditNotice.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public String editNotice(NoticeVO noticevo, HttpServletRequest request) {
+		
+		String notino = noticevo.getNotino();
+//		NoticeVO editNoticevo = service.getEditNotice(notino);
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		noticevo.setFk_senderno(loginuser.getEmpno());
+		
+		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
+	    Map<String, String> editNotice = service.showEditNoticeContent(notino);
+		
+//		service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
+		
+		
+		// ajax
+        JSONObject jsonObj = new JSONObject();
+//	   jsonObj.put("editNoticevo", editNoticevo);
+        jsonObj.put("notino", editNotice.get("notino"));
+        jsonObj.put("subject", editNotice.get("subject"));
+        jsonObj.put("content", editNotice.get("content"));
+        
+        
+        return jsonObj.toString(); 
+	}
+	
+	
+	// 공지글 수정 완료 폼 요청
+	@RequestMapping(value = "/notice/editNoticeFrm.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public ModelAndView editNoticeEnd(ModelAndView mav, NoticeVO noticevo, HttpServletRequest request) {
+		
+		int result = service.editNotice(noticevo);
+		
+		/*
+		 * System.out.println(result); System.out.println(noticevo.getSubject());
+		 * System.out.println(noticevo.getContent());
+		 * System.out.println(noticevo.getNotino());
+		 */
+		 
+	   if(result==0) {
+           mav.addObject("message", "공지 수정이 완료되지 못했습니다.");
+           mav.setViewName("jinji/notice/noticeList.admin"); 
+       }
+       else { // n == 1 이라면 성공된 경우다 
+           mav.addObject("message", "공지 수정이 완료 되었습니다.");
+           mav.setViewName("redirect:/notice/noticeList.yolo"); // 페이지만 변경시 redirect(데이터 보내는 곳과 띄우는 곳 다를 때)
+       }
+      
+      return mav;
+	}
 
+	
+
+	// 공지글 삭제  요청
+   @ResponseBody
+   @RequestMapping(value = "/notice/deleteNoticeEnd.yolo",produces="text/plain;charset=UTF-8", method = {RequestMethod.POST })
+   public String deleteNoticeEnd(HttpServletRequest request, HttpServletResponse response) {
+      
+      // 삭제하고자 하는 글의 번호 가져오기
+      String notino = request.getParameter("notino"); // notino (jsp에 name or ajax로 데이터 넘겨줘야)
+      String fk_senderno = request.getParameter("fk_senderno");
+      
+      // System.out.println("글삭제번호 :" + notino);
+      
+      Map<String, String> paraMap = new HashMap<>();
+      paraMap.put("notino", notino);
+      paraMap.put("fk_senderno", fk_senderno);
+      
+      HttpSession session = request.getSession();
+	  EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	  
+	  String empno = loginuser.getEmpno();
+	  request.setAttribute("empno", empno);
+	  
+	  paraMap.put("empno", empno);
+	  
+	  System.out.println(paraMap);
+	  
+	  String message = "";
+
+	  int result = 0;
+	  
+	  JSONObject jsonObj = new JSONObject();
+//		  System.out.println("fk_send : " +fk_senderno);
+//		  System.out.println("empno : " +empno);
+	  
+	  if( !(empno.equals(fk_senderno) )) {
+		  message = "글작성자만 삭제 가능합니다.";
+	  }
+	  else {
+		  result = service.delNoticeEnd(paraMap);	
+		  message = "글이 삭제되었습니다.";
+	  }
+
+	  jsonObj.put("result", result); 
+	  jsonObj.put("message", message); 
+
+	  return jsonObj.toString();
+
+	  
+   }
+
+   
+   // 공지 댓글 작성하기
+   @ResponseBody
+   @RequestMapping(value="/notice/addComment.yolo", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+   public String addComment(CommentVO commentvo) {
+   // ajax는 결과물 그대로 찍어줘야 하니까 String이 리턴타입이다//modelandview가 아니다.
+      
+       int n  = 0;
+       
+       n = service.addComment(commentvo);
+       // 댓글쓰기(insert) 및 원게시물(tbl_board 테이블)에 댓글의 개수 증가(update 1씩 증가)하기 
+       // 이어서 회원의 포인트를 50점을 증가하도록 한다. (tbl_member 테이블에 point 컬럼의 값을 50 증가하도록 update 한다.)
+     
+       JSONObject jsonObj = new JSONObject();
+       jsonObj.put("n", n); // 위의 n 때문에 쓸 수 없으니 전역변수로 
+       jsonObj.put("fk_notino", commentvo.getFk_notino());
+       jsonObj.put("fk_empno", commentvo.getFk_empno());
+       jsonObj.put("content", commentvo.getContent());
+       
+       System.out.println("json 확인용 :" + jsonObj);
+
+       return jsonObj.toString();
+   }
+
+   
+   // 원공지글에 해당하는 댓글 조회하기
+   @ResponseBody
+   @RequestMapping(value="/notice/readComment.yolo", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
+   public String readComment(HttpServletRequest request) {
+       
+       String fk_notino = request.getParameter("fk_notino");
+       
+       System.out.println("fk_notino :"+fk_notino);
+       
+       List<CommentVO> commentList = service.getCommentList(fk_notino); 
+       
+       JSONArray jsonArr = new JSONArray();
+       
+       // 어떤 글은 댓글 아예 없을 수도 있다.
+       if(commentList != null) { 
+           for(CommentVO cmtvo : commentList) {
+               JSONObject jsonObj = new JSONObject();
+               // DB에서 읽어온 것 네임,컨텐트, 작성일자를 put 해준다.
+               jsonObj.put("commentno", cmtvo.getCommentno());
+               jsonObj.put("fk_notino", cmtvo.getFk_notino());
+               jsonObj.put("fk_empno", cmtvo.getFk_empno());
+               jsonObj.put("content", cmtvo.getContent());
+               jsonObj.put("writedate", cmtvo.getWritedate());
+               
+               jsonArr.put(jsonObj);
+               //여기 담긴 것 웹페이지에 보여줘야 한다.
+               
+               System.out.println("jsonObj :" + jsonObj);
+               
+               
+           } // end of for
+       }
+       return jsonArr.toString(); // 담긴 것 웹페이지에 보여줘야 한다.  // "[]" => 빈배열(내용없을때  // 또는 "[{}, {}. {}]"
+       // http://localhost:9090/board/readComment.action?parentSeq=4 검색해서 빈배열인지 or 댓글 내용 담겼을 때 제대로 스트링 나오는지 결과값 확인해본다.
+   }
+   
+	   
+   /////////////////////////////////////////////////// 전체 공지 끝 /////////////////////////////////
+   
+   
+   /////////////////////////////////////////////////// 	부서 공지 시작 /////////////////////////////////
+   
 	// 부서 공지 리스트 
 	@RequestMapping(value = "/notice/depNoticeList.yolo")
 	public ModelAndView depNoticeList(HttpServletRequest request, ModelAndView mav, NoticeVO noticevo) {
@@ -246,6 +419,51 @@ public class NoticeController {
     }
 	
 	
+	// 부서 공지글 수정하기 (fk_serderno 만 가능하도록 하기)
+	@ResponseBody
+	@RequestMapping(value = "/notice/getDepNoticeContent.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public String editDepNotice(NoticeVO noticevo, HttpServletRequest request ) {
+		
+		String notino = noticevo.getNotino();
+//		NoticeVO editNoticevo = service.getEditNotice(notino);
+		
+//		System.out.println("부서수정번호 : "+ notino);
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		noticevo.setFk_senderno(loginuser.getEmpno());
+		
+		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기) (맵에 담으면 맵으로 받음/VO는 NoticeVO로)
+		
+				
+		noticevo =  service.showEditDepNoticeContent(notino);
+//		service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
+		
+		// ajax
+        JSONObject jsonObj = new JSONObject();
+		
+        jsonObj.put("notino", noticevo.getNotino());
+        jsonObj.put("notino", noticevo.getNotino());
+        jsonObj.put("subject", noticevo.getSubject());
+        jsonObj.put("content", noticevo.getContent());
+        
+//      System.out.println("부서수정공지 맵 :" +jsonObj);
+        return jsonObj.toString(); 
+	}
+	
+	
+	
+	/////////////////////////////////////////////////// 부서 공지 끝 /////////////////////////////////
+	
+	
+	
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////// 내가 쓴 공지 시작 /////////////////////////////////
 	// 내가 쓴 공지 리스트 
 	@RequestMapping(value = "/notice/myNoticeList.yolo")
 	public ModelAndView myNoticeList(HttpServletRequest request, ModelAndView mav, NoticeVO noticevo) {
@@ -298,108 +516,10 @@ public class NoticeController {
     }
 	
 	
-	// 공지글 수정하기 (fk_serderno 만 가능하도록 하기)
-	@ResponseBody
-	@RequestMapping(value = "/notice/getEditNotice.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
-	public String editNotice(NoticeVO noticevo, HttpServletRequest request) {
-		
-		String notino = noticevo.getNotino();
-//		NoticeVO editNoticevo = service.getEditNotice(notino);
-		
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		noticevo.setFk_senderno(loginuser.getEmpno());
-		
-		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
-	    Map<String, String> editNotice = service.showEditNoticeContent(notino);
-		
-//		service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
-		
-		
-		// ajax
-        JSONObject jsonObj = new JSONObject();
-//      jsonObj.put("editNoticevo", editNoticevo);
-        jsonObj.put("notino", editNotice.get("notino"));
-        jsonObj.put("subject", editNotice.get("subject"));
-        jsonObj.put("content", editNotice.get("content"));
-        
-        
-        return jsonObj.toString(); 
-	}
 	
 	
 	
 	
-	
-	// 공지글 수정 완료 폼 요청
-	@RequestMapping(value = "/notice/editNoticeFrm.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
-	public ModelAndView editNoticeEnd(ModelAndView mav, NoticeVO noticevo, HttpServletRequest request) {
-		
-		int result = service.editNotice(noticevo);
-		
-		/*
-		 * System.out.println(result); System.out.println(noticevo.getSubject());
-		 * System.out.println(noticevo.getContent());
-		 * System.out.println(noticevo.getNotino());
-		 */
-		 
-	   if(result==0) {
-           mav.addObject("message", "공지 수정이 완료되지 못했습니다.");
-           mav.setViewName("jinji/notice/noticeList.admin"); 
-       }
-       else { // n == 1 이라면 성공된 경우다 
-           mav.addObject("message", "공지 수정이 완료 되었습니다.");
-           mav.setViewName("redirect:/notice/noticeList.yolo"); // 페이지만 변경시 redirect(데이터 보내는 곳과 띄우는 곳 다를 때)
-       }
-      
-      return mav;
-	}
-
-	
-
-	// 공지글 삭제 완료 폼 요청
-	@RequestMapping(value = "/notice/deleteNoticeEnd.action", method = {RequestMethod.POST })
-	public ModelAndView deleteNoticeEnd(ModelAndView mav, NoticeVO noticevo, HttpServletRequest request) {
-
-		// 삭제하고자 하는 글의 번호 가져오기
-		String notino = request.getParameter("notino"); // notino (jsp에 name or ajax로 데이터 넘겨줘야)
-
-		System.out.println("글삭제번호 :" + notino);
-
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("notino", notino);
-
-		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
-		// NoticeVO noticevo = service.getOnedeleteNotice(paraMap);
-		// 1개글 조회
-
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-
-		noticevo.setFk_senderno(loginuser.getEmpno());
-		
-		int result = service.delEnd(paraMap);
-
-	//	System.out.println("글삭제 int result :" + result);
-
-		if (result == 0) {
-			// 글 쓴 유저아이디와 로그인된 사워나이디 동일하지 않다면 삭제 못 함
-			mav.addObject("message", "글 삭제가 불가합니다.");
-			mav.setViewName("jinji/notice/noticeList.admin");
-
-			// 보여줄 뷰단 페이지는 메세지 뷰단
-		} else {
-			// 자신의 글 삭제할 경우,
-			// 글 작성시 입력해준 암호와 글삭제 암호 일치하는지 여부 알아오도록 암호 입력받아주는 del.jsp페이지 (폼태그) 띄운다.
-			mav.addObject("message", "삭제 완료됐습니다"); // 키값은 메세지jsp의 값, 오른쪽 벨류값은 위 String message의 메세지
-			mav.setViewName("redirect:/notice/noticeList.yolo");
-		}
-
-		return mav;
-
-	}
-	
-	
-	
+	/////////////////////////////////////////////////// 내가 쓴 공지 끝 /////////////////////////////////
+   
 }

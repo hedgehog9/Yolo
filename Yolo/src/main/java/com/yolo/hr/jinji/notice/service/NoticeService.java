@@ -5,7 +5,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.yolo.hr.jinji.notice.model.CommentVO;
 import com.yolo.hr.jinji.notice.model.InterNoticeDAO;
 import com.yolo.hr.jinji.notice.model.NoticeVO;
 
@@ -39,7 +43,7 @@ public class NoticeService implements InterNoticeService {
 	
 	}
 
-	
+	////////////////////////////////////////////////////////////////////////////////////
 	// 전체 공지 리스트 보여주기
 	@Override
 	public List<Map<String, String>> showAllNoticeList(String empno) {
@@ -56,6 +60,7 @@ public class NoticeService implements InterNoticeService {
 		return noticeContent;
 	}
 	
+	///////////// 공지 작성시 알림 ///////////
 	// 공지 작성시 해당 공지 받는 사원 번호 알아오기
 	@Override
 	public List<String> getEmpnoList(String fk_deptno) {
@@ -71,6 +76,96 @@ public class NoticeService implements InterNoticeService {
 		return seqNotino;
 	}
 
+	///////////// 공지 작성시 알림  끝 ///////////
+	
+	/// 전체 공지 수정 시작 ///
+	// 공지글 수정을 위한 원래 공지글 조회하기
+	@Override
+	public Map<String, String> showEditNoticeContent(String notino) {
+		Map<String, String> showEditNoticeContent = dao.showEditNoticeContent(notino);
+		return showEditNoticeContent;
+	}
+
+	// 공지글 수정 완료 폼 요청하기
+	@Override
+	public int editNotice(NoticeVO noticevo) {
+		int result = dao.editNotice(noticevo);
+		return result;
+	}
+	/// 전체 공지 수정 끝 ///
+
+	
+	// 전체 공지글 삭제 요청하기( 1개 조회)
+	@Override
+	public int delNoticeEnd(Map<String, String> paraMap) {
+		int result = dao.delNoticeEnd(paraMap);
+		return result;
+	}
+
+	// 전체 공지 댓글쓰기
+	// tbl_comment 테이블에 insert 된 다음에 
+    // tbl_board 테이블에 commentCount 컬럼이 1증가(update) 하도록 요청한다.
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public int addComment(CommentVO commentvo) {
+		
+		int n = 0, m=0;
+		
+		//댓글쓰기(tbl_comment 테이블에 insert)
+		n = dao.addComment(commentvo); 
+	    // System.out.println("~~~ 댓글 확인용 n:"+ n);
+	    
+	    //원게시물tbl_board의 commentCount 컬럼
+	    if(n==1) {
+		    
+	    	m = dao.updateCommentCount(commentvo.getFk_notino()); 
+	        // System.out.println("~~~ 공지테이블 댓글수 확인용 m:"+ m);
+	        //      확인용 m : 1       
+	    }
+	   
+		return m;
+	}
+
+	// 전체 공지의 원글에 해당하는 댓글 조회하기
+	@Override
+	public List<CommentVO> getCommentList(String fk_notino) {
+		List<CommentVO> getCommentList = dao.getCommentList(fk_notino);
+		return getCommentList;
+	}
+
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////\
+	
+	
+	// 부서  공지 리스트 보여주기
+	@Override
+	public List<Map<String, String>> depNoticeList(String fk_deptno) {
+		List<Map<String, String>> deptNoticeList = dao.depNoticeList(fk_deptno);
+		return deptNoticeList;
+	}
+
+	
+	// 부서 공지리스트 공지 1개 내용 조회하기(ajax)
+	@Override
+	public Map<String, String> showDeptNoticeContent(String notino) {
+		Map<String, String> deptNoticeContent = dao.showDeptNoticeContent(notino);
+		return deptNoticeContent;
+	}
+	
+	// 부서 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
+	@Override
+	public NoticeVO showEditDepNoticeContent(String notino) {
+		NoticeVO showEditDepNoticeContent = dao.showEditDepNoticeContent(notino);
+		return showEditDepNoticeContent;
+	}
+	
+	
+	
+	////////////////////////////////////////////////////////////////////////////////////
+
+	
+
 	// 내가 쓴 공지리스트 가져오기
 	@Override
 	public List<Map<String, String>> getMyNoticeList(String empno) {
@@ -85,44 +180,15 @@ public class NoticeService implements InterNoticeService {
 		return myNoticeContent;
 	}
 
-	// 로그인 유저가 속해 있는 부서의 해당 공지 리스트 보여주기
-	@Override
-	public List<Map<String, String>> depNoticeList(String fk_deptno) {
-		List<Map<String, String>> deptNoticeList = dao.depNoticeList(fk_deptno);
-		return deptNoticeList;
-	}
+
+	////////////////////////////////////////////////////////////////////////////////////
 
 	
-	// 부서 공지리스트 공지 1개 내용 조회하기(ajax)
-	@Override
-	public Map<String, String> showDeptNoticeContent(String notino) {
-		Map<String, String> deptNoticeContent = dao.showDeptNoticeContent(notino);
-		return deptNoticeContent;
-	}
-
-	// 공지글 수정을 위한 원래 공지글 조회하기
-	@Override
-	public Map<String, String> showEditNoticeContent(String notino) {
-		Map<String, String> showEditNoticeContent = dao.showEditNoticeContent(notino);
-		return showEditNoticeContent;
-	}
-
-	// 공지글 수정 완료 폼 요청하기
-	@Override
-	public int editNotice(NoticeVO noticevo) {
-		int result = dao.editNotice(noticevo);
-		return result;
-	}
-
 	
-	// 공지글 삭제 요청하기( 1개 조회)
-	@Override
-	public int delEnd(Map<String, String> paraMap) {
-		int result = dao.delEnd(paraMap);
-		return result;
-	}
-
 	
+
+
+
 	
 	
 }

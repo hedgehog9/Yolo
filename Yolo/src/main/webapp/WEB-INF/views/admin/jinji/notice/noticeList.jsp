@@ -102,57 +102,51 @@
 		$("button.EditBnt").click(function(){
 		
 			let notino = $(this).parent().find($("input#notino")).val();
-			console.log(notino);
+			// console.log(notino);
 			//	alert('수정 버튼 클릭!');
 			openNoticeEditModal(notino);
 			
 		}); // end of 공지 수정하기 버튼 클릭 이벤트
 		
-		
-		
-		// 공지글 삭제 완료 버튼
 
+		// 공지글 삭제하기 버튼 클릭시 
+      	$(document).on("click","button.DeleteBnt",function(){
+	         const notino = $(this).next().find("#notino").val();
+	         const fk_senderno = $(this).next().find("#fk_senderno").val();
+	       	 console.log("삭제할 공지 번호 : "+ notino);
+	     	 console.log("공지 작성자 사원번호 : "+ fk_senderno);
+	         
+          	 $.ajax({
+	             url:"<%= request.getContextPath() %>/notice/deleteNoticeEnd.yolo",
+	             type : "POST",
+	             data : {"notino" : notino,
+	            	 	 "fk_senderno" : fk_senderno},
+	            	
+	             dataType: "JSON",
+	             success: function(json){
+					  
+	            	 // json.result; // 컨트롤러에서 넣은 json값 가져오기
+	            	 // console.log(json.result);
+	            	 if(json.result == 0 ){
+	            		 alert(json.message);
+	            	 }	
+	            	 else{
+	            		 alert(json.message);
+	            	 }
+	            	// console.log(result);
+	               	 location.reload();
+	                
+	               },
+	               error: function(request, status, error){
+	                      alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	               }
+	               
+	           });// end of $.ajax()--------------------------------
+      });//end of $(document).on("click","button.DeleteBnt",function(){}-------------------------
 		
 		
 	}); // end of $(document).ready(function() ------
 			
-	function goDelete() {
-		const delfrm = document.delFrm;
-		delfrm.method = "POST";
-		delfrm.action = "<%= request.getContextPath() %>/notice/deleteNoticeEnd.action";
-		//frm.submit();
-		delfrm.submit();
-		 
-		// 폼태그에서 입력해준 글암호와 삭제하려는 글의 글암호 값이 일치하는지 여부 알아오기
-		alert(notino);
-		
-		<%-- ajax({
-			 url:"<%= request.getContextPath() %>/notice/deleteNoticeEnd.action",
-			 type : "POST",
-			 data : {"notino" : notino},
-			 dataType: "JSON",
-				success: function(json){
-					
-					alert("성공");
-				},
-				error: function(request, status, error){
-	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	            }
-				
-			}); --%>
-		if( ${requestScope.empno} != fk_senderno ) {
-			 // " " : 문자열이라서 쌍따옴표 해준 것(패스워드가 avs1234@#$ 이면 숫자라고 할 수 없다.)
-			// alert(${requestScope.empno});
-			alert("해당하는 글작성자가 아니여서 삭제할 수 없습니다.");
-		
-		}
-		else { // 글암호 일치시 폼 태그로 간다
-			
-			
-		
-		}
-	}
-	
 			
 	// 전체 공지 리스트 상세 모달
 	function openmyListModal(notino){
@@ -174,7 +168,8 @@
 				$("#myListModal span#subject").text(json.subject);
 				// 추후에 + 파일 첨부 넣기
 				$("#myListModal span#content").text(json.content);
-				$("#myListModal input#hidden_notino").val(json.notino);
+				$("#myListModal input#notino").val(json.notino);
+				$("#myListModal input#fk_notino").val(json.notino); // 댓글 fk_notino
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -231,8 +226,8 @@
 				<div class="listRowInside" style="width: 100%;">
 					<div id="prof" class="mt-3" style="background-color: ${noticevo.profile_color};"> ${noticevo.nickname}</div>
 					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal(${noticevo.notino})">
-						<input type="text" id="notino" value="${noticevo.notino}">
-						<input type="text" id="fk_senrderno" value="${noticevo.fk_senderno}">
+						<input type="hidden" id="notino" value="${noticevo.notino}">
+						<input type="hidden" id="fk_senderno" value="${noticevo.fk_senderno}">
 						<span style="font-weight: bold;" id="subject"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 						${noticevo.subject}</span>&nbsp;
 						<c:if test="${noticevo.readCount ne 0 }">	
@@ -262,10 +257,10 @@
 					</div>
 					<button class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal" >수정하기</button> 
 					
-					
-					<button type="button" class="listBnt DeleteBnt" onclick="goDelete();">삭제하기</button>
+					<button type="button" class="listBnt DeleteBnt" >삭제하기</button>
 					<form name="delFrm" id="delFrm"> <%-- 값이 있을 때 폼태그.. --%>
 					<input type="text" id="notino" value="${noticevo.notino}" name="notino">
+					<input type="text" id="fk_senderno" value="${noticevo.fk_senderno}" name="fk_senderno">
 					</form>
 				</div>
  			</div>

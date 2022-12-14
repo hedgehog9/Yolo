@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<% String ctxPath=request.getContextPath(); %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
@@ -147,7 +146,7 @@
 	//	console.log("확인용 공지번호 "+notino);
 		
 		$.ajax({
-	    	url : "<%=ctxPath%>/notice/getMyOneNoticeContent.yolo",
+	    	url : "<%= request.getContextPath() %>/notice/getMyOneNoticeContent.yolo",
 	    	type: 'POST',
 	    	data : {"notino" : notino},
 	    	dataType: "JSON",
@@ -161,6 +160,7 @@
 				// 추후에 + 파일 첨부 넣기
 				$("#myListModal span#content").text(json.content);
 				$("#myListModal input#hidden_notino").val(json.notino);
+				$("#myListModal input#fk_senderno").val(json.notino);
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -216,8 +216,13 @@
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2"  style= "background-color: ${myNoti.profile_color};">댓글</span><span style="color: green;">[6]</span>	</span>
 					</div>
-					<button class="listBnt EditModal" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-					<button class="listBnt DeleteModal">삭제하기</button>
+					<button class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button>
+					
+					<button type="button" class="listBnt DeleteBnt" >삭제하기</button>
+					<form name="delFrm" id="delFrm"> <%-- 값이 있을 때 폼태그.. --%>
+					<input type="text" id="notino" value="${myNoti.notino}" name="notino">
+					<input type="text" id="fk_senderno" value="${myNoti.fk_senderno}" name="fk_senderno">
+					</form>
 				</div>
 			</div>
 		</c:forEach>
@@ -239,5 +244,6 @@
 <%@ include file="detail/myNoticeDetail.jsp" %>
 
 <%-- 공지 수정 모달 --%>
+<%@ include file="edit/myNoticeEdit.jsp" %>
 
 

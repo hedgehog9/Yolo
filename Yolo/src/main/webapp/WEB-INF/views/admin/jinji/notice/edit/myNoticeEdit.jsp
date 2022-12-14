@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<% String ctxPath=request.getContextPath(); %>
     
 <style type="text/css">
 
@@ -153,7 +154,7 @@
 			// 공지 작성하기 (완료버튼) 폼 태그 전송
 			const frm = document.editNoticeFrm;
 			frm.method = "POST";
-			frm.action = "<%= request.getContextPath() %>/notice/editNoticeFrm.yolo";
+			frm.action = "<%= ctxPath%>/notice/editNoticeFrm.yolo";
 			frm.submit();	
 			
 		}); // end of $("button.editNoticeBtn").click

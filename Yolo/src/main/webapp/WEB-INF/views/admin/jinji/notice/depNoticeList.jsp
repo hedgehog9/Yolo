@@ -4,9 +4,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
 
-
-<% String ctxPath=request.getContextPath(); %>
-
 <jsp:include page="listnav.jsp" />
 
 <style type="text/css">
@@ -99,16 +96,28 @@
 			closemyListModal();
 		});
 		
+		
+		// 공지 수정하기 버튼 클릭 이벤트
+		$("button.EditBnt").click(function(){
+		
+			let notino = $(this).parent().find($("input#notino")).val();
+		//	console.log(notino);
+		// 	alert('수정 버튼 클릭!');
+			openNoticeEditModal(notino);
+			
+		}); // end of 공지 수정하기 버튼 클릭 이벤트
+		
+		
 	}); // end of $(document).ready(function() ------
 
 			
-	// 모달 열기 (해당 부서의 공지사항 상세 모달)
+	// 해당 부서의 공지사항 상세 모달
 	function openmyListModal(notino){
 		
 	//	console.log("확인용 공지번호 "+notino);
 		
 		$.ajax({
-	    	url : "<%=ctxPath%>/notice/deptOneNoticeContent.yolo",
+	    	url : "<%= request.getContextPath() %>/notice/deptOneNoticeContent.yolo",
 	    	type: 'POST',
 	    	data : {"notino" : notino},
 	    	dataType: "JSON",
@@ -121,7 +130,8 @@
 				$("#myListModal span#subject").text(json.subject);
 				// 추후에 + 파일 첨부 넣기
 				$("#myListModal span#content").text(json.content);
-				$("#myListModal input#hidden_notino").val(json.notino);
+				$("#myListModal input#notino").val(json.notino);
+				$("#myListModal input#fk_senderno").val(json.notino);
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -141,14 +151,38 @@
 	}
 			
 	
+	
+	 
+	// 공지 리스트 수정
+	function openNoticeEditModal(notino) {
+			
+			$.ajax({
+		    	url : "<%= request.getContextPath() %>/notice/getDepNoticeContent.yolo",
+		    	type: 'POST',
+		    	data : {"notino" : notino},
+		    	dataType: "JSON",
+				success: function(json){
+					console.log(json);
+					
+					$("input#editsubject").val(json.subject);
+					// 추후에 + 파일 첨부 넣기
+					$("textarea#editContent").text(json.content);               
+					$("input#hidden_notino").val(json.notino);
+				},
+				error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            }
+			}); // end of 첨부파일 ajax
+
+	} // end of openDepNoticeEditModal(notino) --------------
+	
+
 			
 </script>
-
 
     
 <%-- 게시판 리스트 시작 --%>
 <div id="boardList">
-
 	<c:if test="${ not empty requestScope.depNoticeList}">
 		<c:forEach var="deptNoti" items="${requestScope.depNoticeList}">
 			<div class="listRow">
@@ -156,11 +190,13 @@
 					<div id="prof" class="mt-3" style= "background-color: ${deptNoti.profile_color};"> ${deptNoti.nickname}</div>
 					<div class="listcontent1 ml-4" style="width: 500px;" onclick="openmyListModal(${deptNoti.notino})">
 						<input type="hidden" id="notino" value="${deptNoti.notino}">
+						<input type="hidden" id="fk_senderno" value="${deptNoti.fk_senderno}">
 						<span style="font-weight: bold;" id="subject"><span style='font-size: 20px;'>&#128226;</span> <%-- 중요 공지사항 이모지 붙이기 --%>
 						${deptNoti.subject}</span>&nbsp;
 						<c:if test="${deptNoti.readCount ne 0 }">	
 							<span id="readCount"  style="color: green;">[${deptNoti.readCount}]</span>	
 						</c:if>
+						
 						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
 						<span id="writedate" style="margin-left: 20px; font-size: 10pt;">${deptNoti.writedate}</span>
 						<span id="name" style="display:block; font-size: 10pt;">${deptNoti.name} · ${deptNoti.position } · ${deptNoti.deptname} ▶ ${deptNoti.showDept }</span>  
@@ -182,8 +218,12 @@
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2"  style= "background-color: ${deptNoti.profile_color};">댓글</span><span style="color: green;">[6]</span>	</span>
 					</div>
-					<button class="listBnt EditModal" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEdit">수정하기</button>
-					<button class="listBnt DeleteModal">삭제하기</button>
+					<button type="button" class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button>
+					<button type="button" class="listBnt DeleteBnt">삭제하기</button>
+					<form id="delFrm" name="delFrm">
+					<input type="text" id="notino" value="${deptNoti.notino}" name="notino">
+					<input type="text" id="fk_senderno" value="${deptNoti.fk_senderno}" name="fk_senderno">
+					</form>				
 				</div>
 			</div>
 		</c:forEach>
@@ -205,3 +245,5 @@
 <%-- 공지 상세 모달 --%>
 <%@ include file="detail/depNoticeDetail.jsp" %>
 
+<%-- 공지 수정 모달 --%>
+<%@ include file="edit/deptNoticeEdit.jsp" %>

@@ -70,6 +70,8 @@
 		<result property="fk_deptno" column="fk_deptno" javaType="String"/>
 	</resultMap>
 	
+	
+	<!--  전체 공지 -->
 	<!--  전체 공지 리스트 -->	
 	<select id="allNoticeList" parameterType="String" resultMap="NoticeMap">
 	 select notino, profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content 
@@ -145,47 +147,84 @@
    
 	</select>
 	
-	<!-- 내가 쓴 글 공지리스트 -->
-	<select id="myNoticeList" parameterType="String" resultMap="NoticeMap">
-		select profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content 
-      , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
-      , notiLevel, cmtCount, notino, showDept
-		from
-		(  
-		    select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount ,D. deptname as showDept
-		    from tbl_notice N join tbl_dept D
-	       	on N.fk_deptno = D.deptno
-		    where status = 1 and fk_senderno = ${empno}
-		)
-		join 
-		( 
-		    select name, deptname, position, profile_color, empno
-		    from TBL_EMPLOYEES M join TBL_DEPT D
-		    on M.fk_deptno = D.deptno
-		) 
-		on fk_senderno = empno
-		order by WRITEDATE desc
+	<!-- 작성한 전체 공지글 1개 수정하기 위해 원글 가져오기 -->
+	<select id="getEditNotice" parameterType="String" resultType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		select notino, subject, content
+		from tbl_notice
+		where notino = #{notino}
 	</select>
 	
-	<!-- 내가 쓴 공지사항 공지글 1개 보여주기(ajax) -->
-	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
-	<select id="showMyNoticeContent" parameterType="String" resultMap="NoticeMap">
-		select notino, subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, substr(name, -2, 2) as nickname, position, profile_color, showDept
+	<!--  전체 공지글의 글 1개 수정 완료 폼 보내기 -->
+	<update id="editNotice" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		update tbl_notice set subject = #{subject}
+                    		 ,content = #{content}
+		where notino=#{notino}
+	</update>
+	
+	
+	<!--  전체 공지글의 글 1개 삭제 -->
+	<!--  status = 0 인 것으로 업데이트 해주기 -->
+	<delete id="delNotice" parameterType="HashMap" >
+		update tbl_notice set status = 0
+ 		where notino = #{notino}
+	</delete>	
+	
+	
+	<!--  전체 공지글 1개에 대한 댓글 작성하기  : tbl_notice 에  insert-->
+	<insert id="addComment" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		insert into tbl_notice_comment(commentno, fk_notino, fk_empno, content, writedate) 
+		values(seq_commentno.nextval, #{fk_notino}, #{fk_empno}, #{content}, default)
+	</insert>
+	
+	
+	<!-- 전체 공지글에서 글 1개에 대한 원게시물의 댓글수 컬럼 1 증가 시키기(update)  -->
+	<update id="updateCommentCount" parameterType="String">
+		update tbl_notice set cmtCount = cmtCount + 1
+		where notino = #{fk_notino}
+	</update>
+	
+	
+	
+	<!--  전체 공지글에서 글 1개에 대한 원게시글에 해당하는 댓글들 조회하기-->
+	<resultMap type="HashMap" id="CommentMap">
+		<result property="commentno" column="commentno" javaType="String"/>
+		<result property="fk_notino" column="fk_notino" javaType="String"/>
+		<result property="fk_empno" column="fk_empno" javaType="String"/>
+		<result property="content" column="content" javaType="String"/>
+		<result property="writedate" column="writedate" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
+		<result property="deptname" column="deptname" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="cmtCount" column="cmtCount" javaType="String"/>
+	</resultMap>
+	
+	<select id="getCommentList" parameterType="String" resultMap="CommentMap">
+		select commentno, fk_notino, fk_empno, content, to_char(writedate, 'yyyy-mm-dd hh24:mi') AS writedate, profile_color, name, substr(name, -2, 2) as nickname, deptname, position
 		from 
-		( 
-		  select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount ,D. deptname as showDept
-		  from tbl_notice N join tbl_dept D
-	      on N.fk_deptno = D.deptno
-		  where notino = #{notino}
+		( select commentno, fk_notino, A.fk_empno, A.content, A.writedate
+		  from tbl_notice_comment A join tbl_notice B 
+		  on fk_notino = notino
+		  where fk_notino = #{fk_notino}
+		  
 		)
-		join 
+		join
 		(
-		  select name, deptname, position, profile_color, empno, deptno
-		  from TBL_EMPLOYEES M join TBL_DEPT D
+		  select name, deptname, position, profile_color, empno
+		  from TBL_EMPLOYEES M join TBL_DEPT D  
 		  on M.fk_deptno = D.deptno
 		)
-		on fk_senderno = empno
+		on fk_empno = empno    
+		order by writedate desc
+
 	</select>
+	
+	
+	
+	
+	
+	<!--  부서공지 -->
 	
 	<!-- 부서 공지 리스트 보여주기 -->
 	<select id="deptNoticeList" parameterType="String" resultMap="NoticeMap">
@@ -231,26 +270,65 @@
 		on fk_senderno = empno
 	</select>
 	
-	<!-- 작성한 공지글 수정하기 위해 원글 가져오기 -->
-	<select id="getEditNotice" parameterType="String" resultType="com.yolo.hr.jinji.notice.model.NoticeVO">
+	<!-- 부서 공지글 1개 수정하기 위해 원글 가져오기 -->
+	<select id="showEditDepNoticeContent" parameterType="String" resultType="com.yolo.hr.jinji.notice.model.NoticeVO">
 		select notino, subject, content
 		from tbl_notice
 		where notino = #{notino}
 	</select>
 	
-	<!--  공지글 수정 완료 폼 보내기 -->
-	<update id="editNotice" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
-		update tbl_notice set subject = #{subject}
-                    		 ,content = #{content}
-		where notino=#{notino}
-	</update>
 	
 	
-	<!--  공지글 1개 삭제 -->
-	<delete id="delEnd" parameterType="HashMap" >
-		delete from tbl_notice
- 		where notino = #{notino}
-	</delete>	
+	
+	
+	<!--  내가 쓴 공지글 -->
+	<!-- 내가 쓴 글 공지리스트 -->
+	<select id="myNoticeList" parameterType="String" resultMap="NoticeMap">
+		select profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content 
+      , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
+      , notiLevel, cmtCount, notino, showDept
+		from
+		(  
+		    select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount ,D. deptname as showDept
+		    from tbl_notice N join tbl_dept D
+	       	on N.fk_deptno = D.deptno
+		    where status = 1 and fk_senderno = ${empno}
+		)
+		join 
+		( 
+		    select name, deptname, position, profile_color, empno
+		    from TBL_EMPLOYEES M join TBL_DEPT D
+		    on M.fk_deptno = D.deptno
+		) 
+		on fk_senderno = empno
+		order by WRITEDATE desc
+	</select>
+	
+	<!-- 내가 쓴 공지사항 공지글 1개 보여주기(ajax) -->
+	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
+	<select id="showMyNoticeContent" parameterType="String" resultMap="NoticeMap">
+		select notino, subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, substr(name, -2, 2) as nickname, position, profile_color, showDept
+		from 
+		( 
+		  select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount ,D. deptname as showDept
+		  from tbl_notice N join tbl_dept D
+	      on N.fk_deptno = D.deptno
+		  where notino = #{notino}
+		)
+		join 
+		(
+		  select name, deptname, position, profile_color, empno, deptno
+		  from TBL_EMPLOYEES M join TBL_DEPT D
+		  on M.fk_deptno = D.deptno
+		)
+		on fk_senderno = empno
+	</select>
+	
+	
+	
+	
+	
+	
 	
 	
 </mapper>
