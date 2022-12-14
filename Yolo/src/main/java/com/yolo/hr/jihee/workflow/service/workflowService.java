@@ -1,9 +1,7 @@
 package com.yolo.hr.jihee.workflow.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -94,11 +92,11 @@ public class workflowService implements InterWorkflowService {
 			}	
 		}// end of if 
 		
-		return result;
+		return doc_no;
 
 	}
 
-	//내문서함 리스트 가져오기
+	//진행중인 내문서함 리스트 가져오기
 	@Override
 	public List<Map<String, String>> getdocumentList(Map<String, String> paraMap) {
 		List<Map<String,String>> documentList = dao.getdocumentList(paraMap);		
@@ -125,6 +123,98 @@ public class workflowService implements InterWorkflowService {
 		Map<String,String> docDetail = dao.getDocDetail(paraMap);
 		return docDetail;
 	}
+	
+	//내 전단계 결제자 결제여부 알아오기
+	@Override
+	public String getPrestepApp(Map<String, String> paraMap) {
+		String presetpApp = dao.getPrestep(paraMap);
+		return presetpApp;
+	}
+
+	//승인,반려 상태 업데이트 시키기
+	@Override
+	public int updateApproval(Map<String, String> paraMap) {
+		//마지막 결제 단계 알아오기
+		String doc_no = paraMap.get("doc_no");
+		
+		int lastLevelno = dao.getLastlevelno(doc_no);
+		int levelno = Integer.parseInt(paraMap.get("levelno"));
+		
+		int n = 0;
+		
+		if(lastLevelno != levelno ) {
+			//마지막 단계 아닐때 
+			n = dao.updateApproval(paraMap);
+		}
+		if(lastLevelno== levelno ) {
+		//마지막 단계 일때
+
+			// 승인,반려 업데이트 시키기	
+			n = dao.updateApproval(paraMap);
+			
+			if( n==1) {
+				
+			n += dao.updateAprroval_last(paraMap);	//승인최종완료컬럼 업데이트(마지막 승인자)
+				
+			}
+			
+		}
+		
+		System.out.println( "appCnt : " + lastLevelno + "  doc_no : " + doc_no);
+		System.out.println( "n :" + n);
+		
+		return n;
+	}
+
+	//결제라인 이름 가져오기
+	@Override
+	public String getAppname(String doc_no) {
+		String appName = dao.getAppname(doc_no);
+		return appName;
+	}
+	
+	//내 문서함 리스트 가져오기
+	@Override
+	public List<Map<String, String>> getMydocumentList(Map<String, String> paraMap) {
+		List<Map<String,String>> mydocumentList = dao.getMydocumentList(paraMap);		
+		return mydocumentList;
+	}
+
+	// 총페이지 수 알아오기
+	@Override
+	public int getTotalPage(Map<String, String> paraMap) {
+		int totalPage = dao.getTotalPage(paraMap);
+		return totalPage;
+	}
+
+	//파일첨부가 되어진 댓글 1개에서 서버에 업로드 되어진 파일명과 오리지널 파일파일명을 조회해 주는것 
+	@Override
+	public documentVO getfilename(Map<String, String> paraMap) {
+		documentVO docvo = dao.getfilename(paraMap);
+		return docvo;
+	}
+	
+	//진행중 게시물 총수
+	@Override
+	public int getdocTotalCnt(Map<String, String> paraMap) {
+		int documentList = dao.getdocTotalCnt(paraMap);
+		return documentList;
+	}
+	
+
+	//완료 게시물 총수
+	@Override
+	public int getcomTotalCnt(Map<String, String> paraMap) {
+		int documentList = dao.getcomTotalCnt(paraMap);
+		return documentList;
+	}
+	
+	//내 게시물 총수
+		@Override
+		public int getmyTotalCnt(Map<String, String> paraMap) {
+			int documentList = dao.getmyTotalCnt(paraMap);
+			return documentList;
+		}
 
 
 	

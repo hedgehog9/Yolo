@@ -79,6 +79,7 @@ div#child2 {
 
 	function goWrite() {
 		
+		
 		  const frm = document.selectFrm;
           frm.method = "POST";
           frm.action = "<%= ctxPath%>/workflow/write.yolo";
@@ -180,6 +181,9 @@ div#child2 {
 				비품 신청
 				<input type="hidden" name="subject" value="비품 신청" readonly />
 				<input type="hidden" name="information" value="일하는 데 필요한 물품을 신청해주세요!" readonly />
+				<textarea style="display: none;" name="guide_form">품명 :		
+상품 정보 :  
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				구매 신청
@@ -262,7 +266,7 @@ div#child2 {
 			<div id="fontSubject">
 				휴직 신청
 				<input type="hidden" name="subject" value="휴직 신청" readonly />
-				<input type="hidden" name="information" value="아래 양식에 맞추어 신청해주세요." readonly />
+				<input type="hidden" name="information" value="아래 양식에 맞추어 신청해주세요." readonly />				
 			</div>
 			<div id="fontpurpose">
 				양식구분 없음
@@ -318,4 +322,6 @@ div#child2 {
 		</div>
 </form>
 </div>
+
+
 
