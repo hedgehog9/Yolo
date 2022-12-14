@@ -94,4 +94,7 @@ public interface InterEmployeeDAO {
 	/** 엑셀로 저장을 위해 사원 목록 조회하기 */
 	List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap);
 
+	/** 엑셀로 insert */
+	void insertExcel(Map<String, Object> paramMap);
+
 }

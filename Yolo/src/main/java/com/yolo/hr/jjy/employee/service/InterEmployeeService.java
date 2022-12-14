@@ -1,6 +1,9 @@
 package com.yolo.hr.jjy.employee.service;
 
+import java.io.File;
 import java.util.*;
+
+import com.yolo.hr.jjy.employee.model.EmployeeVO;
 
 
 public interface InterEmployeeService {
@@ -55,6 +58,11 @@ public interface InterEmployeeService {
 
 	/** 엑셀로 저장을 위해 사원 목록 조회하기 */
 	List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap);
+
+	/** 엑셀로 insert */ 
+	void excelUpload(File destFile);
+
+	
 
 
 }

@@ -790,6 +790,37 @@
 		)V
 	</select>
 	
+	<insert id="registEmpExcel" parameterType="com.yolo.hr.jjy.employee.model.insertVO">
+		<!-- INSERT INTO tbl_employees (
+				empno,
+                pwd, 
+                name, 
+                email, 
+                hiredate,
+                time_salary,
+                fk_deptno,
+                position
+                ) 
+                VALUES 
+            <foreach collection="excelContent" item="item" separator=",">    
+                (	
+                seq_empno.nextval,
+                'qwer1234',
+                "${item.A}",
+                "${item.B}",
+                "${item.C}",
+                "${item.D}",
+                "${item.E}",
+                "${item.F}"
+                )
+            </foreach> -->
+		<foreach collection="excelContent" item="item" index="index" separator=" "
+			open="INSERT ALL" close="SELECT * FROM DUAL">
+			INTO tbl_employees(empno,pwd,name,email,hiredate,time_salary,fk_deptno,position) 
+			VALUES(get_seq_empno(),'qwer1234','${item.A}','${item.B}','${item.C}','${item.D}','${item.E}','${item.F}')
+		</foreach>
+	</insert>
+	
 	
 	
 	<!-- ====================== 조직도 =================== -->

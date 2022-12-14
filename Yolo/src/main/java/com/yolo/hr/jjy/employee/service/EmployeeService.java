@@ -1,5 +1,6 @@
 package com.yolo.hr.jjy.employee.service;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yolo.hr.common.ExcelRead;
+import com.yolo.hr.common.ExcelReadOption;
 import com.yolo.hr.jjy.employee.model.*;
 
 @Service
@@ -403,5 +406,34 @@ public class EmployeeService implements InterEmployeeService {
 		return empListPaging;
 	}
 
+		/*******excel upload*********/
+	    @Override
+	    public void excelUpload(File destFile) {
+	        
+	        ExcelReadOption excelReadOption = new ExcelReadOption();
+	        
+	        //파일경로 추가
+	        excelReadOption.setFilePath(destFile.getAbsolutePath());
+	        
+	        //추출할 컬럼명 추가
+	        excelReadOption.setOutputColumns("A", "B", "C", "D", "E","F");
+	        
+	        //시작행
+	        excelReadOption.setStartRow(2);
+	        
+	        List<Map<String, String>>excelContent  = ExcelRead.read(excelReadOption);
+	        
+	        Map<String, Object> paramMap = new HashMap<String, Object>();
+	        paramMap.put("excelContent", excelContent);
+	        
+	        System.out.println("확인용 : "+excelContent);
+	        
+	        try {
+	            dao.insertExcel(paramMap);
+	        }catch(Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+		
 
 }

@@ -714,35 +714,60 @@ arr_status = [];
 		//fileData DB 넣기
 	    $("button#fileUpload").click(function(){
 	        
-	        //jsp에서 FORM을 생성하여 넘기지 않았을때 스크립트에서 formData로 file을 가져올 수 있다.
-	        var formData = new FormData(); 
-	        formData.append("file", $('#fileExcel')[0].files[0]); //배열로 되어있음 / formData는 Map과 같은 형태
-	        
-	        var fileName = formData.get('file').name;
-	        
-	        console.log(fileName);
-	        
-	        $.ajax({
-	            type : "POST",
-	            url : "<%= ctxPath%>/fileDBUpload.yolo",
-	            data : {"fileName" : fileName}, //ajax로 데이터를 보낼땐 JSON 형태(Map 형태)로 보낸다.
-	            success : function(data){
-	                
-	                if(data.RESULT == "SUCCESS"){
-	                    
-	                    alert("업로드 성공");
-	                    
-	                }else{
-	                    
-	                    alert(data.RESULT);
-	                }
-	            }
-	        })
+	       
+	    });
+		
+	    $("#btnUploadExcel").on("change", function() {
+	    	fnUploadExcelRegChk();
 	    });
 				
 				
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
+			
+	/*************excel upload*************/
+    
+    function checkFileType(filePath) {
+        var fileFormat = filePath.split(".");
+
+        if (fileFormat.indexOf("xls") > -1 || fileFormat.indexOf("xlsx") > -1) {
+          return true;
+          } else {
+          return false;
+        }
+      }
+
+      function check() {
+
+        var file = $("#excelFile").val();
+
+        if (file == "" || file == null) {
+        alert("파일을 선택해주세요.");
+
+        return false;
+        } else if (!checkFileType(file)) {
+        alert("엑셀 파일만 업로드 가능합니다.");
+
+        return false;
+        }
+
+        if (confirm("업로드 하시겠습니까?")) {
+
+          var options = {
+
+            success : function(data) {
+                console.log(data);
+              alert("모든 데이터가 업로드 되었습니다.");
+
+            },
+            type : "POST"
+            };
+          
+          $("#excelUploadForm").ajaxSubmit(options);
+          
+        }
+      }
+
 			
 			
 	// 검색 조건 필터를 위해 상위부서 이름 조회하는 메소드
@@ -1412,12 +1437,13 @@ arr_status = [];
 				</div>
 				<!-- Modal body -->
 				<div class="modal-body">
-					<form id="regist_frm" name="regist_frm">
+					<form id="excelUploadForm" name="excelUploadForm" enctype="multipart/form-data"
+        method="post" action= "excelUploadAjax.yolo">
 					
+						    <input type="file" id="excelFile" name="excelFile" />
 						<div class="filebox">
-						    <input class="upload-name" name="fileExcel" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">
-						    <label for="fileExcel">파일찾기</label>
-						    <input type="file" class="fileExcel" id="fileExcel" name="fileExcel">
+						    <%-- --%><input class="upload-name" name="excelFile" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">
+						    <label for="excelFile">파일찾기</label>
 						</div>
 					
 					
@@ -1427,7 +1453,7 @@ arr_status = [];
 				<div class="modal-footer"
 					style="display: flex; justify-content: space-between;">
 					<%-- form 전송 --%>
-					<button type="button" class="btn" id="fileUpload">
+					<button type="button" class="btn" id="fileUpload" onclick="check();">
 						<i class="fas fa-check"></i>입력완료
 					</button>
 				</div>

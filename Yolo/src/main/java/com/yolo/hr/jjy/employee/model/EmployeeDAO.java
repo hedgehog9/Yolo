@@ -216,6 +216,13 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return empListPaging;
 	}
 
+	@Override
+	public void insertExcel(Map<String, Object> paramMap) {
+		System.out.println("확인용 paramMap : " + paramMap);
+		sqlsession.insert("jangjy.registEmpExcel",paramMap);
+		
+	}
+
 	
 	
 	
