@@ -97,6 +97,25 @@
 	
 	
 	/* ========== full calendar css 끝 ========== */
+	
+    
+    input:focus{
+      outline-color: #07B419;
+    }	
+    
+    .form-control:focus {
+	   box-shadow:none;
+	   border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4.select2-container--focus .select2-selection {
+		box-shadow: none;
+		border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
+		width: 80% !important;
+	}
 
 </style>
     
@@ -303,7 +322,7 @@
           				if(json.joinuser != undefined) {
           					const joinuser = json.joinuser.split(",")
           					for(var i=0; i<joinuser.length; i++) {
-          						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle'></i></div>");
+          						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
           						
           					}
           				}
@@ -315,6 +334,7 @@
           				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
           					$("button#schedule_modify").hide();
           					$("button#schedule_delete").hide();
+          					$("i#x-button").hide();
           					
           					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
           					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
@@ -324,6 +344,7 @@
           				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
           					$("button#schedule_modify").show();
           					$("button#schedule_delete").show();
+          					$("i#x-button").show();
           					
           					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
           					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
@@ -367,9 +388,10 @@
 							
 							$.each(json, function(index,item){
 								var name = item.name;
+								let empno = item.empno;
 								if(name.includes(joinuser)){ // name 이라는 문자열에 joinUserName 라는 문자열이 포함된 경우라면 true , 
 									                             // name 이라는 문자열에 joinUserName 라는 문자열이 포함되지 않은 경우라면 false 
-								   joinUserArr.push(name+"("+item.email+")");
+								   joinUserArr.push(name+"("+empno+")");
 								}
 							});
 							//console.log(joinUserArr);
@@ -447,13 +469,24 @@
     	  		
     	  		let plusUser_elm = document.querySelectorAll("form[name='schedule_register'] div.plusUser");
     			let joinUserArr = [];
+    			let joinUserEmpnoArr = [];
     			
     			plusUser_elm.forEach(function(item,index,array){
+    				
+    				let str = item.innerText.trim();
+    				let str_empno = str.substring(str.indexOf("(")+1,str.length-1);
+    				
     				joinUserArr.push(item.innerText.trim());
+    				joinUserEmpnoArr.push(str_empno);
     			});
     			
+    		    //console.log(joinUserArr)
+    				
     			let joinuser = joinUserArr.join(",");
     			$("form[name='schedule_register'] input[name=joinuser]").val(joinuser);
+    			
+    			let joinuser_empno = joinUserEmpnoArr.join(",");
+    			$("form[name='schedule_register'] input[name=joinuser_empno]").val(joinuser_empno);
     			
     			const place = $("form[name='schedule_register'] input[name='place']").val().trim()
     			if("" == place) {
@@ -525,13 +558,27 @@
 			  		
 			  		let plusUser_elm = document.querySelectorAll("form[name='schedule_modify_delete'] div.plusUser");
 					let joinUserArr = [];
+					let joinUserEmpnoArr = [];
 					
 					plusUser_elm.forEach(function(item,index,array){
-						joinUserArr.push(item.innerText.trim());
-					});
-					
-					let joinuser = joinUserArr.join(",");
-					$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
+	    				
+		    				let str = item.innerText.trim();
+		    				let str_empno = str.substring(str.indexOf("(")+1,str.length-1);
+		    				
+		    				joinUserArr.push(item.innerText.trim());
+		    				joinUserEmpnoArr.push(str_empno);
+		    				
+		    				console.log(joinUserArr)
+		    				console.log(joinUserEmpnoArr)
+	    				});
+	    			
+	    		    //console.log(joinUserArr)
+	    				
+		    			let joinuser = joinUserArr.join(",");
+		    			$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
+		    			
+		    			let joinuser_empno = joinUserEmpnoArr.join(",");
+		    			$("form[name='schedule_modify_delete'] input[name=joinuser_empno]").val(joinuser_empno);
 					
 					const place = $("form[name='schedule_modify_delete'] input[name='place']").val().trim()
 					if("" == place) {
@@ -641,7 +688,7 @@
 		}
 		
 		else {
-			$("div.displayUserList").append("<div class='plusUser'>"+value+"&nbsp;<i class='fas fa-times-circle'></i></div>");
+			$("div.displayUserList").append("<div class='plusUser'>"+value+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
 			
 		}
 		
@@ -706,7 +753,7 @@
 	                   </div>
 	                   <div class="form-group" id="daterange-group">
 	                     <label for="subject">제목<span style="color: red;">＊</span></label><br>
-	                     <input type="text" name="subject" class="form-control">
+	                     <input type="text" name="subject" class="form-control btn-custom">
 	                   </div>
 	                   <div class="form-group">
 	                       <label for="category">분류<span style="color: red;">＊</span></label>
@@ -721,6 +768,7 @@
 	                     <input type="text" class="form-control" id="joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
 	                     <div class="displayUserList mt-1"></div>
 				   		<input type="hidden" name="joinuser"/>
+				   		<input type="hidden" name="joinuser_empno"/>
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">장소<span style="color: red;">＊</span></label>
@@ -771,7 +819,7 @@
 	                   </div>
 	                   <div class="form-group">
 	                       <label for="category">분류<span style="color: red;">＊</span></label>
-	                       <select name="category" id="category" name="category" class="custom-select" id="modify_category">
+	                       <select name="category" name="category" class="custom-select" id="modify_category">
 	                           <option>출장</option>
 	                           <option>회의</option>
 	                           <option>미팅</option>
@@ -779,9 +827,10 @@
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">공유자:</label>
-	                     <input type="text" class="form-control" id="modify_joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
+	                     <input type="text" class="form-control" id="joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
 	                     <div class="displayUserList mt-1"></div>
 				   		<input type="hidden" name="joinuser"/>
+				   		<input type="hidden" name="joinuser_empno"/>
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">장소<span style="color: red;">＊</span></label>

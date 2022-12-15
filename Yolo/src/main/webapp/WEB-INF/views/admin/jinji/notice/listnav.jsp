@@ -144,7 +144,7 @@
 	}
 	
    
-   i.fa-user {
+    i.fa-user {
 		margin: auto;
 	}
 	
@@ -204,6 +204,7 @@
 		width: 50%;
 		max-height: 390px;
 		overflow: auto;
+		
 	}
 	
 	div#rightSide {
@@ -244,17 +245,6 @@
     	border-radius: 10px;
   	}
   	
-  	#rightUp::-webkit-scrollbar {
-    	width: 10px;
-  	}
-  	#rightUp::-webkit-scrollbar-thumb {
-    	background-color: #ababab;
-    	border-radius: 10px;
-  	}
-  	#rightUp::-webkit-scrollbar-track {
-    	background-color: #dedfe0;
-    	border-radius: 10px;
-  	}
   	
   	label.person {
   		font-size: 11pt;
@@ -300,84 +290,19 @@
 
 	$(document).ready(function() {
 		
-		$("#file").on('change',function(){
-			  var fileName = $("#file").val();
-			  $(".upload-name").val(fileName);
+		// 파일
+		$(document).on("change", ".file", function(){
+			  var fileName = $(this).val();
+			  $(this).parent().find($(".upload-name")).val(fileName.slice(fileName.lastIndexOf("\\")+1));
 		});
 		
 		
-		
-		// 공지 작성 시 받는 사람 설정할 경우
-		//$('#choosePerson_outside').on('click', function () {
-	    //     choosePerson_close();
-	    //});
+		// 전체 선택
 		
 		
-		// 체크박스 바뀔때 효과
-		$(document).on("change", "input.names", function(e){
-			ck_empno_list = [];
-			$("input.names:checked").each(function(index, item){
-				ck_empno_list.push($(item).val());
-			});
-			
-			$('div#choosedPsnResult').empty();
-			
-			if(ck_empno_list.length>0){
-				str_empno = ck_empno_list.join(",");
-				
-				$.ajax({
-			    	url : "<%=ctxPath%>/notice/chooseUser.yolo",
-			    	data:{"str_empno":str_empno },
-		    		dataType: "JSON",
-		    		async:false,
-					success: function(json){ 
-						let html = "";
-						if(json.length>0){
-							
-							$.each(json, function(index, item){
-								
-								html += '<div class="choosedPsn" style="width: 100%;" name="'+item.empno+'">'+
-										'<div class="sentPsnProf ml-2" style="background-color: '+item.profile_color+';"></div>'+
-										'<span class="ml-3" style="padding-top: 3px;">'+item.name+'</span>'+
-										'<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">'+item.deptname+' · '+item.position+'</span>'+
-										'</div>';
-									
-							});// end of each
-						}
-						
-						$('div#choosedPsnResult').html(html);
-					},
-					error: function(request, status, error){
-		                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		            }
-					
-			    }); // end of ajax 
-			}
-		});// end of 체크박스 바뀔때 효과
+		// 부서 선택 시 부서 선택되게
 		
 		
-		// 전체선택
-		$("input#allCheck").change(function(){
-			const bool = $("input#allCheck").prop("checked");
-			$("input.names").prop("checked",bool); 
-			$("input.depts").prop("checked",bool); 
-			$("input.names").trigger("change");
-		});
-		
-		
-		// 부서 선택시 부서 선택되게
-		$(document).on('change', "input.depts",  function (e) {
-			const bool = $(e.target).prop("checked");
-			$("input."+$(e.target).val()).prop("checked",bool); 
-			$("input.names").trigger("change");
-		});
-		
-		
-		// 프로필 클릭시 삭제 되도록 
-		$(document).on('click', "div.choosedPsn",  function () {
-			$('input#'+$(this).attr('name')).prop("checked",false); 
-			$(this).remove()
-		});
 		
 		
 		// 받는 사람 닫기
@@ -386,30 +311,32 @@
 		});
 		
 		
-		// 받는사람 선택 버튼 클릭이벤트
+		
+		// 받는 부서 선택 버튼 클릭이벤트
 		$('button#addPersonBtn').click(function(){
-			ck_empno_list = [];
-			ck_name_list = [];
 			
-			$("input.names:checked").each(function(index, item){
-				ck_empno_list.push($(item).val());
-				ck_name_list.push($(item).next().text());
+			ck_deptno_list = []; 	 // 부서 선택
+			ck_deptname_list = []; 	 // 부서 이름 들어가는 곳
+			
+			$("input.depts:checked").each(function(index, item){
+				ck_deptno_list.push($(item).val());
+				ck_deptname_list.push($(item).next().text());
 			});
 			
-			if(ck_empno_list.length>0){
-				str_empno = ck_empno_list.join(",");
-				str_name = ck_name_list.join(", ");
+			if(ck_deptno_list.length>0){
+				str_deptno = ck_deptno_list.join(",");
+				str_deptname = ck_deptname_list.join(", ");
 				
-				if(str_name.length>50){
-					str_name = str_name.substr(0, 50)+" ...";
+				if(str_deptname.length>50){
+					str_deptname = str_deptname.substr(0, 50)+" ...";
 				}
 				
-				$('input[name="fk_recipientno"]').val(str_empno);
-				$('button#dropdownMenuButton').find('span').text(str_name);
+				$('input[name="fk_deptno"]').val(str_deptno);
+				$('button#dropdownMenuButton').find('span').text(str_deptname);
 				choosePerson_close();
 				
 			} else {
-				Swal.fire('받는사람이 선택되지 않았습니다.','받는 사람은 한명이상 선택해주세요.', 'error');
+				Swal.fire('받는사람이 선택되지 않았습니다.','받는 사람은을 선택해주세요.', 'error');
 			}
 		});
 		
@@ -418,7 +345,7 @@
 		// 공지 보내기 버튼 클릭 이벤트
 		$("button#sendNotiBtn").click(function(){
 			
-			// 글제목 유효성 검사
+			// 글제목 유효성 검사(공백일 경우)
 			const subject = $("input#subject").val().trim();
 			if(subject == "") {
 				toastr.options = {
@@ -431,7 +358,20 @@
 	                  toastr.error('', '글제목을 입력하세요');
 				return;
 			}
-	
+
+			// 글제목 유효성 검사(30글자 이상일 경우)
+			const subjectLen = $("input#subject").val();
+			if(subjectLen >= 30) {
+				toastr.options = {
+	                      closeButton: true,
+	                      progressBar: true,
+	                      showMethod: 'slideDown',
+	                      timeOut: 2000,
+	                      positionClass: 'toast-top-center'
+	                  };
+	                  toastr.error('', '글제목을 30글자 내외로 입력하세요');
+				return;
+			}
 			// 글내용 유효성 검사
 			const content = $("textarea#noticecontent").val().trim();
 			if(content == "") {
@@ -447,31 +387,45 @@
 			}
 			
 			// 받는 사람 유효성 검사
-			if($('input[name="fk_recipientno"]').val() == "" ){
-				Swal.fire('받는사람을 선택하세요','', 'error');
+			const fk_deptno = $('input[name="fk_deptno"]').val();
+			if(fk_deptno == "") {
+				toastr.options = {
+	                      closeButton: true,
+	                      progressBar: true,
+	                      showMethod: 'slideDown',
+	                      timeOut: 2000,
+	                      positionClass: 'toast-top-center'
+	                  };
+	                  toastr.error('', '받는 사람을 선택하세요');
 				return;
 			}
-		
-			const queryString = $("form[name='noticeFrm']").serialize();
+			
+			var form = $("form")[0];        
+	        var queryString = new FormData(form);
 			
 			$.ajax({
 		    	url : "<%=ctxPath%>/notice/sendNotice.yolo",
 		    	data : queryString,
+		    	type: 'POST',
+		    	enctype: 'multipart/form-data',
+		    	processData: false,
+		        contentType: false,
 				success: function(){
 					
 					const modal_frmArr = document.querySelectorAll("form#noticeFrm");
 			  	  	for(let i=0; i<modal_frmArr.length; i++) {
 			  			modal_frmArr[i].reset();
-			  			$('button#dropdownMenuButton').find('span').text('받는 사람 선택');
+			  			$('button#dropdownMenuButton').find('span').text('부서 선택');
 			  	  	}
 					$(".sendNotice").modal('hide');
+					window.location.reload();
 					toastr.success('공지작성이 완료되었습니다.');
-					
 				},
 				error: function(request, status, error){
 	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 	            }
 			}); // end of ajax
+			// $('div.modal-content').empty();
 			
 		}); // end of 메세지 보내기 버튼 클릭 이벤트
 		
@@ -489,13 +443,8 @@
       $('button.dropdownBtn').css({'background-color':'#dddddd'});
       $('#choosePerson_outside').fadeIn();
       
-   
-	
 	   openAjax(); // 받는 사람 목록 ajax로 불러오기
 	   
-	   // 부서 토글
-	   $("div.hidDept").hide();
-	   $("div.hidTeam").hide();
 	
    }
    
@@ -509,117 +458,37 @@
 	}
 	
 	
-	// 부서 토글
-	function toggleShow(deptno){
-		$("div[id='"+deptno+"']").toggle();
-	}
-	
-
 	// 받는 사람 목록 ajax로 불러오기
-	function openAjax(){
-		$.ajax({
-	    	url : "<%=ctxPath%>/jinji/getDept.yolo",
-    		dataType: "JSON",
-    		async:false,
-			success: function(json){ 
-				
-				let html = "";
-				
-				if(json.length>0){
-					
-					$.each(json, function(index1, item1){
-						html += '<div style="display: flex; align-items: center;" class="py-1 pt-2">' +
-									'<input type="checkbox" class="ml-3 depts" value="'+item1.deptno+'" /><label class="person ml-2" style="font-weight: bold;" onclick="toggleShow('+item1.deptno+')">'+item1.deptname+'</label>'+
-									'<span class="arrow" onclick="toggleShow('+item1.deptno+')">&#128317;</span>'+
-								'</div>'+
-						        '<div class="hidDept pl-5" id="'+item1.deptno+'">';
-						        
-							// 부서 내 사람 구하기(부서장)
-							$.ajax({
-						    	url : "<%=ctxPath%>/jinji/getDeptPerson.yolo",
-						    	data : {"deptno" : item1.deptno},
-					    		dataType: "JSON",
-					    		async:false,
-								success: function(json2){
-									
-									if(json2.length>0){
-										$.each(json2, function(index2, item2){
-											html +='<div><input type="checkbox" class="names '+item1.deptno+'" value="'+item2.empno+'" id="'+item2.empno+'" /><label class="person ml-2" for="'+item2.empno+'">'+item2.name+'</label></div>';
-										}); // end of for each
-									}
-								},
-								error: function(request, status, error){
-					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-					            }
-							}); // end of ajax (부서구하기)
-						    	
-							
-							// 부서내 팀 구하기
-							$.ajax({
-						    	url : "<%=ctxPath%>/jinji/getTeam.yolo",
-						    	data : {"deptno" : item1.deptno},
-					    		dataType: "JSON",
-					    		async:false,
-								success: function(json3){
-									
-									if(json3.length>0){
-										$.each(json3, function(index3, item3){
-											html += '<div class="py-1 pt-2">'+
-												'<input type="checkbox" class="depts '+item1.deptno+'" value="'+item3.deptno+'" /><label class="person ml-2" style="font-weight: bold;" onclick="toggleShow('+item3.deptno+')">'+item3.deptname+'</label><span class="arrow" onclick="toggleShow('+item3.deptno+')">&#128317;</span>'+
-												'</div>'+
-												'<div class="hidTeam pl-5" id="'+item3.deptno+'">';
-												
-											
-											// 팀 내 사람 구하기(팀원들)
-											$.ajax({
-										    	url : "<%=ctxPath%>/jinji/getTeamPerson.yolo",
-										    	data : {"deptno" : item3.deptno},
-									    		dataType: "JSON",
-									    		async:false,
-												success: function(json4){
-													
-													if(json4.length>0){
-														$.each(json4, function(index4, item4){
-															html +='<div><input type="checkbox" class="names '+item1.deptno+' '+item3.deptno+'" value="'+item4.empno+'" id="'+item4.empno+'" /><label class="person ml-2" for="'+item4.empno+'" >'+item4.name+'</label></div>';
-														}); // end of for each
-														
-														
-													}
-										        
-												},
-												error: function(request, status, error){
-									          alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-									        }
-										}); // end of ajax (팀 내 사람 구하기(팀원들))
-											
-											html += '</div>';
-											
-										}); // end of for each
-										
-										
-									}
-								},
-								error: function(request, status, error){
-					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-					            }
-							}); // end of ajax (팀구하기)
-							
-							html += '</div>';
-					});// end of each
-					
-				}
-				
-				$('div#resultOfAjax').html(html);
-				
-			},
-			error: function(request, status, error){
+   function openAjax(){
+      $.ajax({
+          url : "<%=ctxPath%>/notice/getDept.yolo", // http://localhost:9090/hr/notice/getDept.yolo
+          dataType: "JSON",
+          async:false,
+         success: function(json){ 
+            
+            let html = "";
+            		
+            if(json.length>0){
+               
+               $.each(json, function(index1, item1){
+                  html += '<div style="display: flex; align-items: center;" class="py-1 pt-2">' +
+                           '<input type="checkbox" class="ml-3 depts" value="'+item1.deptno+'" /><label class="person ml-2" style="font-weight: bold;" onclick="toggleShow('+item1.deptno+')">'+item1.deptname+'</label>'+
+                        '</div>';
+               });   
+            }
+            
+            $('div#resultOfAjax').html(html);
+            
+         },
+         error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
             }
-			
-	    }); // end of ajax 
+         
+       }); // end of ajax 
+       
+   }
 	    
-	    
-	}
+	
 	
 </script>
 
@@ -649,17 +518,18 @@
 
       <!-- Modal body -->
       <div class="modal-body">
-      <button type="button" class="close my_writeClose" data-dismiss="modal" aria-label="Close">&times;</button> 
-      
-      <form id='noticeFrm' name="noticeFrm">
-      	<input name="subject" id="subject" placeholder="공지 제목을 입력하세요"/>
+      <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
+      <form id='noticeFrm' name="noticeFrm" enctype="multipart/form-data">
+      	<input name="subject" id="subject" name="subject"  placeholder="공지 제목을 입력하세요"/>
       	
       	<button class="dropdownBtn" type="button" id="dropdownMenuButton" onclick="search_choosePerson()">
-        	<div class="sentPsnProf"><i class="fas fa-solid fa-user"></i></div> <span style="color: #757575; font-size: 11pt; margin-left: 10px;">받는 사람 선택</span>
+        	<div class="sentPsnProf"><i class="fas fa-solid fa-user"></i></div> <span style="color: #757575; font-size: 11pt; margin-left: 10px;" >부서 선택</span>
         </button>
         
         <textarea rows="" cols="" name="content" id="noticecontent"></textarea>
-        <input type="text" name="fk_recipientno" />
+        
+        <input type="text" name="fk_deptno" />
+        <input type="text" name="deptname" />
        <!--  <input type="text" name="notino" /> -->
         
         <div id="attachArea">
@@ -692,38 +562,9 @@
 		
 		<div id="resultOfAjax"></div>
 		
-		 <!-- <div style="display: flex; align-items: center;" class="py-1 pt-2">
-			<input type="checkbox" class="ml-3"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow">&#128317;</span>
-		</div>
-        <div class="hidDept pl-5">
-        	<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-        	<div class="py-1 pt-2">
-				<input type="checkbox"/><label class="person ml-2" style="font-weight: bold;">인사부</label><span class="arrow">&#128317;</span>
-			</div>
-			<div class="hidTeam pl-5">
-					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-					<div><input type="checkbox"/><label class="person ml-2">조상운</label></div>
-			</div>
-        </div>  -->
-        
-        
-	</div>
-	<div id="rightSide">
-		<div id="rightTitle"><span style="font-weight:bold;" class="mx-3 mt-2">받는사람 목록</span></div>
-		<div id="rightUp">
-			<div id="choosedPsnResult"></div>
-			
-			<!-- <div class="choosedPsn" style="width: 100%;">
-				<div class="sentPsnProf ml-2" style="background-color: orange;"><span style="font-size: 9pt;">길동</span></div>
-				<span class="ml-2" style="padding-top: 3px;">홍길동</span>
-				<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">인사 · 관리자</span>
-			</div> -->
-		</div>
-		<div id="rightDown">
+        <div id="rightDown">
 			<button type="button" id="addPersonBtn">받는사람 추가</button>
 		</div>
-	
 	</div>
 	
 </div>		

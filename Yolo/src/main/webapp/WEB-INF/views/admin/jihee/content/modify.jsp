@@ -270,7 +270,7 @@ textarea:focus {
 </script>
 		
 <div class="contai" style="overflow-x: hidden;">
-	<form name="wirteFrm" enctype="multipart/form-data">
+	<form name="modifyFrm" enctype="multipart/form-data">
 		<div class="row" style="padding: 0px;">
 			
 				<div class="col-7 content">

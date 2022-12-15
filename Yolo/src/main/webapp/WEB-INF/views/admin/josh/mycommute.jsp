@@ -51,8 +51,24 @@
         height: 8px;
     }
 
-
+	input:focus{
+      outline-color: #07B419;
+    }	
     
+    .form-control:focus {
+	   box-shadow:none;
+	   border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4.select2-container--focus .select2-selection {
+		box-shadow: none;
+		border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
+		width: 80% !important;
+	}
+
 
 </style>
 
@@ -77,7 +93,7 @@
             strokeWidth: 4,
             easing: 'easeInOut',
             duration: 1400,
-            color: '#FFEA82',
+            color: '#66cc66',
             trailColor: '#eee',
             trailWidth: 1,
             svgStyle: {width: '100%', height: '100%'}
@@ -173,7 +189,7 @@
 	            						worktime = worktime+" 시간" 
 	            					}
 	            					else {
-	            						hour = worktime/60;
+	            						hour = Math.floor(worktime/60);
 	            						minute = worktime%60;
 	            						worktime = hour+"시간 "+minute+"분"
 	            					}
@@ -182,7 +198,7 @@
 	            						overtime = overtime+" 시간" 
 	            					}
 	            					else {
-	            						hour = overtime/60;
+	            						hour = Math.floor(worktime/60);
 	            						minute = overtime%60;
 	            						overtime = hour+"시간 "+minute+"분"
 	            					}
@@ -195,11 +211,11 @@
 	            					}
 	            					
 	            					html += "<tr>"+
-	            								"<td>"+item.dt+"</td>"+
-	            								"<td>"+item.start_work_time+"</td>"+
-	            								"<td>"+item.end_work_time+"</td>"+
-	            								"<td>"+worktime+"</td>"+
-	            								"<td>"+overtime+"</td>"+
+	            								"<td><span class='badge badge-dark rounded-pill'>"+item.dt+"</span></td>"+
+	            								"<td><span class='badge badge-light rounded-pill'>"+item.start_work_time+"</span></td>"+
+	            								"<td><span class='badge badge-light rounded-pill'>"+item.end_work_time+"</span></td>"+
+	            								"<td><span class='badge badge-light rounded-pill'>"+worktime+"</span></td>"+
+	            								"<td><span class='badge badge-warning rounded-pill'>"+overtime+"</span></td>"+
 	            							"</tr>"
 	            				})// end of $.each ------------------------------
                 				
@@ -291,40 +307,40 @@
             <table class="table table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th>날짜</th>
-                        <th>출근시각</th>
-                        <th>퇴근시각</th>   
-                        <th>근무시간</th>   
-                        <th>초과근무시간</th>   
+                        <th><span style='font-size:20px;'>&#128198;</span>날짜</th>
+                        <th><span style='font-size:20px;'>&#128337;</span>출근시각</th>
+                        <th><span style='font-size:20px;'>&#128337;</span>퇴근시각</th>   
+                        <th><span style='font-size:20px;'>&#9203;</span>근무시간</th>   
+                        <th><span style='font-size:20px;'>&#9200;</span>초과근무시간</th>   
                     </tr>
                 </thead>
                 <tbody id="schedule-data">
                 		<c:forEach var="commute" items="${requestScope.commuteList}">
                 			<tr>
-	                         <td>${commute.dt}</td>
+	                         <td><span class='badge badge-dark rounded-pill'>${commute.dt}</span></td>
 	                         <c:if test="${commute.start_work_time != 'X'}">
-	                         	<td>${commute.start_work_time}</td>
+	                         	<td><span class='badge badge-light rounded-pill'>${commute.start_work_time}</span></td>
 	                         </c:if>
 	                         <c:if test="${commute.start_work_time == 'X'}">
-	                         	<td><i class="fas fa-times"></i></td>
+	                         	<td><span class='badge badge-light rounded-pill'><i class="fas fa-times"></i></span></td>
 	                         </c:if>
 	                         <c:if test="${commute.end_work_time != 'X'}">
-	                         	<td>${commute.end_work_time}</td>
+	                         	<td><span class='badge badge-light rounded-pill'>${commute.end_work_time}</span></td>
 	                         </c:if>
 	                         <c:if test="${commute.end_work_time == 'X'}">
-	                         	<td><i class="fas fa-times"></i></td>
+	                         	<td><span class='badge badge-light rounded-pill'><i class="fas fa-times"></i></span></td>
 	                         </c:if>
 	                         <c:if test="${commute.worktime == '0'}">
-	                         	<td>${commute.worktime} 시간</td>
+	                         	<td><span class='badge badge-light rounded-pill'>${commute.worktime} 시간</span></td>
 	                         </c:if>
 	                         <c:if test="${commute.worktime != '0'}">
-	                         	<td>${commute.worktime}</td>
+	                         	<td><span class='badge badge-light rounded-pill'>${commute.worktime}</span></td>
 	                         </c:if>
 	                         <c:if test="${commute.overtime == '0'}">
-	                         	<td>${commute.overtime} 시간</td>
+	                         	<td><span class='badge badge-warning rounded-pill'>${commute.overtime} 시간</span></td>
 	                         </c:if>
 	                         <c:if test="${commute.overtime != '0'}">
-	                         	<td>${commute.overtime}</td>
+	                         	<td><span class='badge badge-warning rounded-pill'>${commute.overtime}</span></td>
 	                         </c:if>
                     		</tr>
                 		</c:forEach>

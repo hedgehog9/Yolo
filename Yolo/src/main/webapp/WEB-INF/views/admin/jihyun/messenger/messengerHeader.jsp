@@ -530,7 +530,6 @@
 			  			$('button#dropdownMenuButton').find('span').text('받는 사람 선택');
 			  	  	}
 					$(".sendMail").modal('hide');
-					// window.location.reload();
 					toastr.success('메세지를 발송하였습니다.');
 					
 				},

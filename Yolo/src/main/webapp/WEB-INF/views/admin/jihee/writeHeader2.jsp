@@ -29,6 +29,7 @@ a:active {text-decoration: none; color: #cccccc;}
 
 	function goWrite() {
 			
+		//줄바꿈 저장
 		  const frm = document.wirteFrm;
           frm.method = "POST";
           frm.action = "<%= ctxPath%>/workflow/writeEnd.yolo";
