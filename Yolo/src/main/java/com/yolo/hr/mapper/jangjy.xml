@@ -111,25 +111,6 @@
 	
 	<!-- 사원 번호를 전달받아 사원 정보 조회하기  -->
 	<select id="getEmpOne" resultMap="EmployeeMap" parameterType="HashMap">
-		<!-- select empno , name , firstname ||' '|| lastname as englishName
-			 , substr(name,2) as profileName
-		     , email , substr(mobile,1,3) || '-' || substr(mobile,4,4)|| '-' || substr(mobile,8,4) as mobile
-		     , to_char(hiredate,'yyyy.mm.dd') as hiredate
-		     , nvl(to_char(retiredate,'yyyy.mm.dd'),' ') as retiredate
-		     , fk_deptno , time_salary , position
-		     , substr(rrn,1,6) || '-' ||substr(rrn,7) as rrn
-		     , trunc(MONTHS_BETWEEN(sysdate, hiredate),0)|| '개월' as continuousServiceMonth
-		     , trunc(sysdate - hiredate,0) as workingDays
-		     , address , account , introduce , status , profile_color
-		     ,func_gender(rrn) as gender
-		     ,func_birthday(rrn) as birthday
-		     ,D1.deptname as teamname
-		     ,D2.deptname as deptname
-		from tbl_employees E left join TBL_DEPT D1
-		on E.fk_deptno = D1.deptno
-		left join tbl_dept D2
-		on D1.upper_deptno = D2.deptno
-		where empno = #{empno} -->
 		select empno , name , nvl2( lastname , firstname ||' '|| lastname,'정보 미입력') as englishName
 			 , substr(name,2) as profileName
 		     , email 
@@ -165,6 +146,10 @@
 		where empno  = #{empno}
 	</update>
 	
+	<update id="updateLeavejae" parameterType="HashMap">
+		update tbl_employees set status  = '재직'
+		where empno  = #{empno}
+	</update>
 	
 	<!-- 재직 처리해야하는 사원 목록 조회하기  -->
 	<resultMap type="HashMap" id="leaveEmpMap">
@@ -189,6 +174,10 @@
 		and to_char(sysdate, 'yyyy-mm-dd') >= to_char(startdate,'yyyy-mm-dd')
 	</select>
 	
+	<!-- 휴직 내용 변경하기  -->
+	<update id="updateLeaveDate" parameterType="HashMap">
+		${sql}
+	</update>
 	
 	
 	<!-- 휴직이 끝난 사원 재직 처리하기 (update) -->
@@ -209,6 +198,17 @@
 		</foreach>	
 	</update>
 	
+	<!-- 휴직 -> 재직 -->
+	<update id="updateLeaveStatus" parameterType="HashMap">
+		update tbl_employees set status  = '재직'
+	    where empno = #{empno}
+	</update>
+	
+	<!-- 휴직 내역 삭제  -->
+	<update id="cancelLeave" parameterType="HashMap">
+		delete from tbl_leave_absence
+		where leaveno = #{leaveno}
+	</update>
 	
 	<!-- 휴직 신청이 가능한 날짜인지 조회(select) -->
 	<select id="leaveCheck" parameterType="HashMap"  resultType="int">
@@ -627,9 +627,10 @@
 		<result property="psa_label" 		   				column="psa_label"              		 javaType="String"/>
 		<result property="memo" 		   			column="memo"                  javaType="String"/>
 		<result property="name" 		   		column="name"                javaType="String"/>
+		<result property="pk_psano" 		   	column="pk_psano"                javaType="String"/>
 	</resultMap>
 	<select id="psaListSearchWithPaging" parameterType="HashMap" resultMap="PsaPagingList_Map">
-			select before_deptname, after_deptname, before_position , after_position, psa_date, psa_label, memo, name, rno 
+			select before_deptname, after_deptname, before_position , after_position, psa_date, psa_label, memo, name, rno ,pk_psano
 			from
 			(
 			select D1.deptname as before_deptname
@@ -639,6 +640,7 @@
 			    , psa_label
 			    , memo
 			    , name
+			    , pk_psano
 			    , rownum as rno
 			from 
 			tbl_dept D1 right join tbl_personnel_appointment PA
@@ -668,7 +670,7 @@
 	    	</if>
 	    	
 	    	<if test="arr_dept != null">
-	    		and D.deptname in
+	    		and D2.deptname in
 		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
 					'${arr_dept[i]}'
 				</foreach>	
@@ -790,37 +792,37 @@
 		)V
 	</select>
 	
+	<!-- 사원 일괄 등록 (Excel) -->
 	<insert id="registEmpExcel" parameterType="com.yolo.hr.jjy.employee.model.insertVO">
-		<!-- INSERT INTO tbl_employees (
-				empno,
-                pwd, 
-                name, 
-                email, 
-                hiredate,
-                time_salary,
-                fk_deptno,
-                position
-                ) 
-                VALUES 
-            <foreach collection="excelContent" item="item" separator=",">    
-                (	
-                seq_empno.nextval,
-                'qwer1234',
-                "${item.A}",
-                "${item.B}",
-                "${item.C}",
-                "${item.D}",
-                "${item.E}",
-                "${item.F}"
-                )
-            </foreach> -->
 		<foreach collection="excelContent" item="item" index="index" separator=" "
 			open="INSERT ALL" close="SELECT * FROM DUAL">
-			INTO tbl_employees(empno,pwd,name,email,hiredate,time_salary,fk_deptno,position) 
-			VALUES(get_seq_empno(),'qwer1234','${item.A}','${item.B}','${item.C}','${item.D}','${item.E}','${item.F}')
+			INTO tbl_employees(empno,profile_color,pwd,name,email,hiredate,time_salary,fk_deptno,position) 
+			VALUES(get_seq_empno(),'#FFA9B0','qwer1234','${item.A}','${item.B}','${item.C}','${item.D}','${item.E}','${item.F}')
 		</foreach>
 	</insert>
 	
+	<update id="changePsaMemo" parameterType="HashMap">
+		update tbl_personnel_appointment set memo= #{memo}
+		where pk_psano = #{pk_psano}
+	</update>
+	
+	<!-- 현재 휴직중인 정보 조회  -->
+	<resultMap type="HashMap" id="leaveInfoMap">
+		<result property="leaveno"     			column="leaveno"    			 javaType="String"/>
+		<result property="fk_empno"          	column="fk_empno"         	     javaType="String"/>
+		<result property="leavetype" 			column="leavetype"   			 javaType="String"/>
+		<result property="startdate"           	column="startdate"             	 javaType="String"/>
+		<result property="enddate" 		   		column="enddate"              	 javaType="String"/>
+		<result property="memo" 		   		column="memo"              		 javaType="String"/>
+	</resultMap>
+	<select id="getLeaveInfo" parameterType="HashMap" resultMap="leaveInfoMap">
+		select leaveno,fk_empno,leavetype,memo
+		,to_char(startdate,'yyyy-mm-dd') as startdate
+		,to_char(enddate,'yyyy-mm-dd') as enddate
+		from tbl_leave_absence
+		where sysdate between startdate and enddate
+		and fk_empno = #{empno}
+	</select>
 	
 	
 	<!-- ====================== 조직도 =================== -->

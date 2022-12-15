@@ -102,11 +102,6 @@ button.btn_search:hover {
 	background-color: #ebebeb;
 }
 
-div#div_toggle_buttons {
-	background-color: #ebebeb;
-	padding: 3px;
-	border-radius: 5px;
-}
 
 button.btn_view_style:focus {
 	outline: none;
@@ -128,7 +123,7 @@ div#div_search {
 	border-radius: 10px;
 	height: 30px;
 	padding-left: 3px;
-	margin-top: 8px;
+	margin-top: 5px;
 	position: relative;
 	left: 38px;
 	display: none;
@@ -544,42 +539,8 @@ arr_status = [];
 		});
 		
 		
-		// 사원 관련 모든 정보 table 로 보여주는 버튼
-		$(document).on("click","button#view_table",function(){
-			func_getEmpList();
-		});
 		
-		// 사원 관련 부서, 이름 , 직위, 아이콘만 보여주는 버튼
-		$(document).on("click","button#view_list",function(){
-			$("div#search_result").empty();
-			let html ='<div style="display: flex; margin-top:20px;">'
-						+'<div class="div_personOne" style="width:100%; padding-top: 15px;">'
-							
-								<%-- 반복해서 출력할 div 묶음 시작  --%>
-								+'<div class="div_empInfo" style="display: flex; justify-content: space-between; margin: 10px; padding:10px;">'
-								+'<div class="profile2">'
-									+'<div class="profile_icon2">'
-										+'<div>길동</div>'
-									+'</div>'
-										+'<div class="div_name2" style="padding-top:3px;">홍길동</div>'
-								+'</div>'
-								+'<div class="dept_position">'
-									+'<span>직위&nbsp;&nbsp;</span>'
-									+'<span>|</span>'
-									+'<span>&nbsp;&nbsp;부서</span>'
-									+'</div>'
-								+'</div>'
-								<%-- 반복해서 출력할 div 묶음 끝  --%>
-							
-						+'</div>'<%-- end of <div style="width:75%; padding-top: 15px;"> --%>
-						
-					+'</div>';
-			$("div#search_result").html(html);
-		});
 		
-		// 문서 로딩 시 기본값 테이블 보기로 설정
-		// $("button#view_table").trigger("click");
-		// $("input#searchWord").trigger("keyup");
 		viewEmpList(1);
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
@@ -1480,16 +1441,6 @@ arr_status = [];
 			<i class="fas fa-download"></i>
 		</button>
 
-		<%-- 모든 정보 출력 or 이름,부서,직위만 출력 --%>
-		<div id="div_toggle_buttons">
-			<button type="button" id="view_table" class="btn btn_view_style">
-				<i class="fas fa-th-large"></i>
-			</button>
-
-			<button type="button" id="view_list" class="btn btn_view_style">
-				<i class="fas fa-th-list"></i>
-			</button>
-		</div>
 	</div>
 	
 	<%-- 검색필터 추가 시작  --%>

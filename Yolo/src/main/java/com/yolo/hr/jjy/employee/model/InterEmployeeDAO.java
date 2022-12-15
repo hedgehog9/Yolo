@@ -97,4 +97,22 @@ public interface InterEmployeeDAO {
 	/** 엑셀로 insert */
 	void insertExcel(Map<String, Object> paramMap);
 
+	/** 인사발령 메모 수정  
+	 * @param psaMap */
+	void changePsaMemo(Map<String, Object> psaMap);
+
+	/** 휴직 상태인 경우 활성화된 휴직정보 가져오기  */
+	Map<String, String> getLeaveInfo(Map<String, String> leaveMap);
+
+	/** 기존에 있는 휴직 내용 변경  */
+	int updateLeaveDate(Map<String, String> leaveMap);
+
+	/** 휴직 취소  */
+	int cancelLeave(Map<String, Object> paraMap);
+
+	/** tbl_employeees 테이블 휴직 -> 재직으로 변경 */
+	int updateLeaveStatus(Map<String, Object> paraMap);
+
+	void updateLeavejae(Map<String, String> leaveMap);
+
 }

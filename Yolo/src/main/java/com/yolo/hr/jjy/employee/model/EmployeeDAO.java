@@ -218,9 +218,43 @@ public class EmployeeDAO implements InterEmployeeDAO {
 
 	@Override
 	public void insertExcel(Map<String, Object> paramMap) {
-		System.out.println("확인용 paramMap : " + paramMap);
 		sqlsession.insert("jangjy.registEmpExcel",paramMap);
 		
+	}
+
+	@Override
+	public void changePsaMemo(Map<String, Object> paraMap) {
+		sqlsession.update("jangjy.changePsaMemo",paraMap);
+		
+	}
+
+	@Override
+	public Map<String, String> getLeaveInfo(Map<String, String> leaveMap) {
+		Map<String, String> leaveInfoMap = sqlsession.selectOne("jangjy.getLeaveInfo",leaveMap);
+		return leaveInfoMap;
+	}
+
+	@Override
+	public int updateLeaveDate(Map<String, String> leaveMap) {
+		int result = sqlsession.update("jangjy.updateLeaveDate",leaveMap);
+		return result;
+	}
+
+	@Override
+	public int cancelLeave(Map<String, Object> paraMap) {
+		int result = sqlsession.delete("jangjy.cancelLeave",paraMap);
+		return result;
+	}
+
+	@Override
+	public int updateLeaveStatus(Map<String, Object> paraMap) {
+		int result = sqlsession.update("jangjy.updateLeaveStatus",paraMap);
+		return result;
+	}
+
+	@Override
+	public void updateLeavejae(Map<String, String> leaveMap) {
+		sqlsession.update("jangjy.updateLeavejae",leaveMap);
 	}
 
 	

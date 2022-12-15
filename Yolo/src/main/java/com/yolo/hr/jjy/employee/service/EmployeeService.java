@@ -334,8 +334,6 @@ public class EmployeeService implements InterEmployeeService {
 		
 //		System.out.println("확인용 sql : "+ sql.toString());
 		psInfoMap.put("sql", sql);
-		String test = "  ";
-		System.out.println(test.length());
 		
 		int result = dao.changePsInfo(psInfoMap);
 		return result;
@@ -406,34 +404,88 @@ public class EmployeeService implements InterEmployeeService {
 		return empListPaging;
 	}
 
-		/*******excel upload*********/
-	    @Override
-	    public void excelUpload(File destFile) {
-	        
-	        ExcelReadOption excelReadOption = new ExcelReadOption();
-	        
-	        //파일경로 추가
-	        excelReadOption.setFilePath(destFile.getAbsolutePath());
-	        
-	        //추출할 컬럼명 추가
-	        excelReadOption.setOutputColumns("A", "B", "C", "D", "E","F");
-	        
-	        //시작행
-	        excelReadOption.setStartRow(2);
-	        
-	        List<Map<String, String>>excelContent  = ExcelRead.read(excelReadOption);
-	        
-	        Map<String, Object> paramMap = new HashMap<String, Object>();
-	        paramMap.put("excelContent", excelContent);
-	        
-	        System.out.println("확인용 : "+excelContent);
-	        
-	        try {
-	            dao.insertExcel(paramMap);
-	        }catch(Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
+	/*******excel upload*********/
+    @Override
+    public void excelUpload(File destFile) {
+        
+        ExcelReadOption excelReadOption = new ExcelReadOption();
+        
+        //파일경로 추가
+        excelReadOption.setFilePath(destFile.getAbsolutePath());
+        
+        //추출할 컬럼명 추가
+        excelReadOption.setOutputColumns("A", "B", "C", "D", "E","F");
+        
+        //시작행
+        excelReadOption.setStartRow(2);
+        
+        List<Map<String, String>>excelContent  = ExcelRead.read(excelReadOption);
+        
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("excelContent", excelContent);
+        
+        System.out.println("확인용 : "+excelContent);
+        
+        try {
+            dao.insertExcel(paramMap);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+	@Override
+	public int updateLeave(Map<String, String> leaveMap) {
+		
+		StringBuilder sql =  new StringBuilder();
+		
+		sql.append(" update tbl_leave_absence set ");
+		
+		for(String key : leaveMap.keySet()){
+            if(!"".equals(leaveMap.get(key)) && !"empno".equals(key) && !"leaveno".equals(key)) {
+    			sql.append(key + " = '" +leaveMap.get(key)+"',");
+    		}
+        }
+		
+		String str_sql = sql.substring(0, sql.length()-1).toString();
+		sql.setLength(0);
+		sql.append(str_sql);
+		
+		sql.append(" where leaveno = "+leaveMap.get("leaveno"));
+		leaveMap.put("sql", sql.toString());
+		
+		int leaveUpdateResult = dao.updateLeaveDate(leaveMap);
+		
+		// 현재 날짜와 휴직 시작일 비교, 휴직 시작일이 작은 경우 휴직처리 
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formatedNow = now.format(formatter);
+        
+        int dateResult = leaveMap.get("startdate").compareTo(formatedNow);
+		
+        if(dateResult == 0 || dateResult < 0) {// 휴직 신청 날짜가 같은 경우  또는 이후 날짜인 경우 
+			if(leaveUpdateResult == 1) {
+				
+				leaveUpdateResult = dao.updateLeave(leaveMap);
+			}
+        }
+        else {
+        	dao.updateLeavejae(leaveMap);
+        }
+        
+		return leaveUpdateResult;
+	}
+
+	@Override
+	public int cancelLeave(Map<String, Object> paraMap) {
+		
+		int result = dao.cancelLeave(paraMap);
+		
+		if(result == 1) {
+			result = dao.updateLeaveStatus(paraMap);
+		}
+		
+		return result;
+	}
 		
 
 }

@@ -62,6 +62,12 @@ public interface InterEmployeeService {
 	/** 엑셀로 insert */ 
 	void excelUpload(File destFile);
 
+	/** 기존 휴직 업데이트  */
+	int updateLeave(Map<String, String> leaveMap);
+
+	/** 휴직 취소 (트랜잭션) */
+	int cancelLeave(Map<String, Object> paraMap);
+
 	
 
 

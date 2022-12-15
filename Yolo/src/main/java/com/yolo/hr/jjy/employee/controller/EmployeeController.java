@@ -45,6 +45,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.gson.JsonObject;
 import com.yolo.hr.common.FileManager;
 import com.yolo.hr.jihyunModel.FileVO;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
@@ -265,38 +266,53 @@ public class EmployeeController {
 	// 휴직 처리 
 	@ResponseBody
 	@RequestMapping(value = "/leaveAbsence.yolo", produces = "text/plain;charset=UTF-8")
-	public String addAlarm_leaveabsence(Map<String, String> paraMap, HttpServletRequest request) {
+//	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
+	public String leaveabsence(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
 		
-		String leavetype = request.getParameter("leavetype");
-		String startdate = request.getParameter("startdate");
-		String enddate = request.getParameter("enddate");
-		String memo = request.getParameter("memo");
-		String empno = request.getParameter("empno");
+		System.out.println(leaveMap.get("leavetype"));
+		System.out.println(leaveMap.get("startdate"));
+		System.out.println(leaveMap.get("enddate"));
+		System.out.println(leaveMap.get("memo"));
+		System.out.println(leaveMap.get("empno"));
+		System.out.println(leaveMap.get("leaveno"));
 		
-		System.out.println("확인용 휴직처리할 사원번호 "+empno);
 		
-		Map<String,String> leaveMap = new HashMap<>();
-		
-		leaveMap.put("leavetype", leavetype);
-		leaveMap.put("startdate", startdate);
-		leaveMap.put("enddate", enddate);
-		leaveMap.put("memo", memo);
-		leaveMap.put("empno", empno);
-		
-		int result = service.insertLeave(leaveMap);
+		int result = 0;
+		if("".equals(leaveMap.get("leaveno"))) {
+			result = service.insertLeave(leaveMap);
+		}
+		else {
+			result = service.updateLeave(leaveMap);
+		}
 		System.out.println("휴직처리 insert 결과 : "+ result);
 		
 		if(result == 1) {
 			System.out.println("alarm 용 Map");
-			paraMap.put("fk_recipientno", empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
+			paraMap.put("fk_recipientno", leaveMap.get("empno") ); // 받는사람 (여러명일때는 ,으로 구분된 str)
 			paraMap.put("url", "/userDetail.yolo?empno=" );
-			paraMap.put("url2", " " ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+			paraMap.put("url2", leaveMap.get("empno") ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
 			paraMap.put("alarm_content", "휴직 처리되었습니다." );
 			paraMap.put("alarm_type","4" );
 		}
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/getLeaveInfo.yolo", produces = "text/plain;charset=UTF-8")
+//	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
+	public String getLeaveInfo(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
+		
+//		System.out.println(leaveMap.get("empno"));
+		
+		Map<String,String> leaveInfoMap = dao.getLeaveInfo(leaveMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("leaveInfoMap", leaveInfoMap);
 		
 		return jsonObj.toString();
 	}
@@ -604,7 +620,7 @@ public class EmployeeController {
 		
 		int totalPage = service.getTotalPsaPage(pageMap);
 		
-		System.out.println("############## 확인용 ############"+totalPage);
+//		System.out.println("############## 확인용 ############"+totalPage);
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("totalPage",totalPage); 
@@ -666,6 +682,7 @@ public class EmployeeController {
 				jsonObj.put("psa_label", psaMap.get("psa_label")); // 입사일
 				jsonObj.put("memo", psaMap.get("memo")); // 퇴사일
 				jsonObj.put("name", psaMap.get("name")); // 퇴사일
+				jsonObj.put("pk_psano", psaMap.get("pk_psano")); // 퇴사일
 				jsonObj.put("totalCount", totalCount);
 				
 				jsonArr.put(jsonObj);
@@ -686,7 +703,7 @@ public class EmployeeController {
 		
 		List<Map<String,String>> fileList = dao.getFile(paraMap);
 		
-		System.out.println("확인용 list : "+ fileList);
+//		System.out.println("확인용 list : "+ fileList);
 		
 		JSONArray jsonArr = new JSONArray();
 		for(Map<String,String> fileMap : fileList) {
@@ -712,8 +729,8 @@ public class EmployeeController {
 		String filename = request.getParameter("filename");
 		String org_filename = request.getParameter("org_filename");
 		
-		System.out.println("filename : "+ filename);
-		System.out.println("org_filename : "+ org_filename);
+//		System.out.println("filename : "+ filename);
+//		System.out.println("org_filename : "+ org_filename);
 		
 		// view단 페이지가 없기 때문에 이 자체 내에서 다 해주어야한다 
 		response.setContentType("text/html; charset=UTF-8");
@@ -802,7 +819,7 @@ public class EmployeeController {
 		
 		List<Map<String, String>> empList = service.empListDownloadExcel(searchMap);
 		
-		System.out.println("searchMap : "+ searchMap);
+//		System.out.println("searchMap : "+ searchMap);
 //		System.out.println("empList" + empList);
 		
 		SXSSFWorkbook workbook = new SXSSFWorkbook();
@@ -1079,7 +1096,33 @@ public class EmployeeController {
         return view;
     }
 	
+	
+	
+	@RequestMapping(value = "/changePsaMemo.yolo", produces="text/plain;charset=UTF-8")
+//	public String addAlarm_personnelAppointment(Map<String, String> paraMap, HttpServletRequest request , @RequestParam Map<String,Object> psaMap) {
+	public String changePsaMemo(@RequestParam Map<String,Object> psaMap) {
 
+		System.out.println("확인용 :psaMap " + psaMap);
+		
+		dao.changePsaMemo(psaMap);
+		
+		return "redirect:change_history.yolo";
+	}
+
+	
+	@ResponseBody
+	@RequestMapping(value = "/cancelLeave.yolo", produces="text/plain;charset=UTF-8")
+	public String cancelLeave(@RequestParam Map<String,Object>paraMap ) {
+		
+		System.out.println("paraMap :"+paraMap);
+		
+		int result = service.cancelLeave(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result );
+		
+		return jsonObj.toString();
+	}
 
 	
 	

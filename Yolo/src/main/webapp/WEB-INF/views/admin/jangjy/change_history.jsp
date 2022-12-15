@@ -78,7 +78,7 @@
     i.fa-check{
     	margin-right:10px;
     }
-    button#changeOk{
+    button.changeOk{
     	background-color:#00BB35; 
     	color:white;
     }
@@ -777,9 +777,35 @@ li.li_moveAll > a{
 				getDeptNameModal();
 			})// end of $(document).on("click","button#registMember",function(){}-----------
 			
-			
+			// 메모 수정 버튼 클릭시 
+			$(document).on("click","button.edit_memo",function(){
+				let pk_psano = $(this).parent().find("input.pk_psano").val();
+				let psa_memo = $(this).parent().find("input.psa_memo").val();
+				
+				$("textarea#textarea_memo").val(psa_memo);
+				$("input#psano").val(pk_psano);
+				
+			});
+					
+			// 메모 수정 모달에서 저장 버튼 클릭 시 
+			$("button#changememo").click(function(){
+				const frm = document.frm_memo;
+	 			frm.method="POST";
+	 			frm.action="<%= ctxPath%>/changePsaMemo.yolo";
+	 			frm.submit();
+			});
+					
 		});// end of $(document).ready(function(){}------------------------------------------------
 		
+				
+		//null값 체크 
+		function isEmpty(value){
+		    if(value == null || value.length === 0) {
+		           return " ";
+		     } else{
+		            return value;
+		     }
+		}	
 				
 				
 		// 검색 조건 필터를 위해 상위부서 이름 조회하는 메소드
@@ -945,17 +971,19 @@ li.li_moveAll > a{
 						  html += '<tr>'
 									  +'<td>'
 										  +'<div class="div_name">'
-										  +'<div class="div_label">'+psa.psa_label+'</div>'							
-										  +'<div class="div_name">'+psa.name+' ,<span class="span_time">'+psa.psa_date+'(목) 오후 5:33</span></div>'						
+										  +'<div class="div_label">'+isEmpty(psa.psa_label)+'</div>'							
+										  +'<div class="div_name">'+isEmpty(psa.name)+' ,<span class="span_time">'+psa.psa_date+'(목) 오후 5:33</span></div>'						
 										  +'</div>'
 									  +'</td>'
-									  +'<td>'+psa.before_deptname+'</td>'
-									  +'<td>'+psa.after_dptname+'</td>'
-									  +'<td>'+psa.before_position+'</td>'
-									  +'<td>'+psa.after_position+'</td>'
-									  +'<td>'+psa.memo+'</td>'
+									  +'<td>'+isEmpty(psa.before_deptname)+'</td>'
+									  +'<td>'+isEmpty(psa.after_deptname)+'</td>'
+									  +'<td>'+isEmpty(psa.before_position)+'</td>'
+									  +'<td>'+isEmpty(psa.after_position)+'</td>'
+									  +'<td>'+isEmpty(psa.memo)+'</td>'
 									  +'<td>'
 										  +'<span data-toggle="tooltip" data-placement="left" title="메모 수정">'
+										  +'<input class="pk_psano" type="hidden" value="'+psa.pk_psano+'" />'
+										  +'<input class="psa_memo" type="hidden" value="'+psa.memo+'" />'
 										  +'<button type="button" class="btn edit_memo" data-toggle="modal" data-target="#modal_change_memo" >'
 										  +'<i class="fas fa-pen edit"></i>'
 										  +'</button>'
@@ -1118,22 +1146,6 @@ li.li_moveAll > a{
 			<i class="fas fa-search"></i>
 		</button>
 
-		<%-- 구성원 정보 다운로드 버튼 --%>
-		<button type="button" id="btn_download" class="btn btn_search"
-			data-toggle="tooltip" data-placement="top" title="구성원 정보 다운로드">
-			<i class="fas fa-download"></i>
-		</button>
-
-		<%-- 모든 정보 출력 or 이름,부서,직위만 출력 --%>
-		<div id="div_toggle_buttons">
-			<button type="button" id="view_table" class="btn btn_view_style">
-				<i class="fas fa-th-large"></i>
-			</button>
-
-			<button type="button" id="view_list" class="btn btn_view_style">
-				<i class="fas fa-th-list"></i>
-			</button>
-		</div>
 	</div>
 	
 	<%-- 검색필터 추가 시작  --%>
@@ -1193,54 +1205,6 @@ li.li_moveAll > a{
 	    
 </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <!-- ========================== 퇴직 처리하기 모달 시작 ========================== -->
 <div class="modal fade" id="modal_change_hrInfo">
 		<div class="modal-dialog modal-dialog-centered">
@@ -1275,7 +1239,7 @@ li.li_moveAll > a{
 						<div class="dropdown-menu">
 							<button class="btn_label dropdown-item" type="button">직무 변경</button>
 							<button class="btn_label dropdown-item" type="button">부서 변경</button>
-							<button class="btn_label dropdown-item" type="button">인사 변경</button>
+							<button class="btn_label dropdown-item" type="button">인사 발령</button>
 						</div>
 					</div>
 					<%-- =========== 발령라벨 =========== --%>
@@ -1291,9 +1255,6 @@ li.li_moveAll > a{
 						</button>
 						
 						<div class="dropdown-menu">
-							<button class="btn_dept dropdown-item" type="button">부서1</button>
-							<button class="btn_dept dropdown-item" type="button">부서2</button>
-							<button class="btn_dept dropdown-item" type="button">부서3</button>
 						</div>
 					</div>
 					<%-- =========== 부서 =========== --%>
@@ -1309,9 +1270,6 @@ li.li_moveAll > a{
 						</button>
 						
 						<div class="dropdown-menu">
-							<button class="btn_detail_dept dropdown-item" type="button">세부부서1</button>
-							<button class="btn_detail_dept dropdown-item" type="button">세부부서2</button>
-							<button class="btn_detail_dept dropdown-item" type="button">세부부서3</button>
 						</div>
 					</div>
 					<%-- =========== 세부 부서 =========== --%>
@@ -1326,7 +1284,7 @@ li.li_moveAll > a{
 				<!-- Modal footer -->
 				<div class="modal-footer">
 					<button type="button" class="btn " data-dismiss="modal">취소</button>
-					<button id="changeOk" type="button" class="btn"><i class="fas fa-check"></i>발령하기</button>
+					<button id="changeOk" type="button" class="btn changeOk"><i class="fas fa-check"></i>발령하기</button>
 				</div>
 			</div>
 		</div>
@@ -1334,7 +1292,7 @@ li.li_moveAll > a{
 <!-- ========================== 퇴직 처리하기 모달 끝 ========================== -->
 
 
-<!-- ========================== 퇴직 처리하기 모달 시작 ========================== -->
+<!-- ========================== 메모 수정  모달 시작 ========================== -->
 <div class="modal fade" id="modal_change_memo">
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
@@ -1346,18 +1304,19 @@ li.li_moveAll > a{
 				<div class="modal-body">
 					<form name="frm_memo">
 						<%-- DB에 값이 입력되어 있는 경우 값 불러오기 , 아닌 경우 placeholder 출력  --%>
-						<textarea id="textarea_memo" rows="" cols="" placeholder="메모를 입력하세요"></textarea>
+						<textarea name ="memo" id="textarea_memo" rows="" cols="" placeholder="메모를 입력하세요"></textarea>
+						<input name="pk_psano" id="psano" type="hidden" />
 					</form>
 				</div>
 
 				<!-- Modal footer -->
 				<div class="modal-footer">
-					<button id="changeOk" type="button" class="btn" style="width: 100%;">저장</button>
+					<button id="changememo" type="button" class="btn changeOk" style="width: 100%;">저장</button>
 				</div>
 			</div>
 		</div>
 </div>
-<!-- ========================== 퇴직 처리하기 모달 끝 ========================== -->
+<!-- ========================== 메모 수정  모달 끝 ========================== -->
 
 
 

@@ -194,6 +194,31 @@
 		height: 120px;
 		border-radius: 10px;
 	}
+	div#leave_absence{
+		border: solid 1px #d9d9d9;
+		margin-bottom: 10px;
+		width: 300px;
+		height: 80px;
+		border-radius: 10px;
+	}
+	div#leave_absence > div {
+		display: flex;
+		padding: 15px 0px;
+	}
+	
+	div#leave_icon{
+		width: 50px;
+		height: 50px;
+		border-radius: 10px;
+		background-color:  #8F40DE;
+		margin: 0 20px;
+	}
+	
+	i.fa-pause-circle{
+		font-size: 30px;
+	    color: white;
+	    padding: 10px;
+	}
 	
 	div#progressBar {
 		margin: 16px 15px 0 0;
@@ -467,7 +492,10 @@
 		color: black;
 		cursor: pointer;
 	}
-	
+
+	input#between_date{
+		background-color: white;
+	}
 	
 </style>
 <%-- 말풍선 --%>
@@ -477,6 +505,7 @@
 
 <script>
 	let leaveFlag = false; // 휴직 신청 가능 여부 저장
+	changeLeaveFalg = false; // 휴직 변경 여부 
 	let html = "";
 	
 	
@@ -498,32 +527,36 @@
 	      let empno = $("input#empno").val();
 		  let startdate = $("input#start_date").val();
 	  	  let enddate = $("input#end_date").val();
-			
-			$.ajax({
-				
-				  url : "<%= request.getContextPath()%>/checkLeave.yolo",
-				  data : {"empno":empno
-					  	 ,"startdate":startdate
-					  	 ,"enddate":enddate},
-				  type : "POST",
-				  dataType : "JSON",
-				  success : function(json){
-					  if(json.result > 0){
-						 $("div#div_warnning").css("display","block");
-						 leaveFlag = false;
+			if(!changeLeaveFalg){
+				$.ajax({
+					
+					  url : "<%= request.getContextPath()%>/checkLeave.yolo",
+					  data : {"empno":empno
+						  	 ,"startdate":startdate
+						  	 ,"enddate":enddate},
+					  type : "POST",
+					  dataType : "JSON",
+					  success : function(json){
+						  if(json.result > 0){
+							 $("div#div_warnning").css("display","block");
+							 leaveFlag = false;
+						  }
+						  else{
+							  $("div#div_warnning").css("display","");
+							  leaveFlag = true;
+						  }
+					  },
+					  error: function(request, status, error){
+						  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 					  }
-					  else{
-						  $("div#div_warnning").css("display","");
-						  leaveFlag = true;
-					  }
-				  },
-				  error: function(request, status, error){
-					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				  }
-			  });
+				  });
+			}
 			
 		})// end of$(document).on("input","change",function(){}--------------
 		
+		$(document).on("click",".noCheckDate",function(){
+			changeLeaveFalg = true;
+		});
 		
 		<%-- ===== 달력 하나만 출력 시작 =====  --%>
 		$("input.daterange").daterangepicker({
@@ -625,6 +658,42 @@
 							--%>		
 						+"</thead>"
 					+"</table>";
+					
+					if("${requestScope.employeeMap.status}" == "휴직"){
+						$.ajax({
+							  url : "<%= request.getContextPath()%>/getLeaveInfo.yolo",
+							  data : {"empno":"${requestScope.employeeMap.empno}"},
+							  type : "POST",
+							  dataType : "JSON",
+							  success : function(json){
+								  let html2 = "";
+									html2 += '<a class="a_side" href="#" data-toggle="dropdown">'+
+													'<div id="leave_absence">'+
+													'<div>'+
+														'<div id="leave_icon">'+
+															'<i class="fas fa-pause-circle"></i>'+
+														'</div>'+
+														'<div style="flex-direction: column; display: flex; justify-content: center;">'+
+															'<div style="margin-right: 30px; font-weight: 700; font-size:14px; color:  #242A30 ">'+
+																''+json.leaveInfoMap.leavetype+'중입니다.'+
+															'</div>'+
+															'<div style="color: #556372; font-size: 12px;">'+json.leaveInfoMap.startdate+' ~ '+json.leaveInfoMap.enddate+'</div>'+
+														'</div>'+
+													'</div>'+
+												'</div>'+
+											'</a>'+
+											'<div class="dropdown-menu">'+
+												'<button class="dropdown-item noCheckDate" type="button" data-toggle="modal" data-target="#modal_leave"><i class="fas fa-edit"></i>수정하기</button>'+
+												'<button class="dropdown-item" type="button" id="deleteLeave" data-target=""><i class="fas fa-trash-alt"></i>취소하기</button>'+
+											'</div>';
+									$("input#leaveno").val(json.leaveInfoMap.leaveno);
+									$("div#div_leave_absence").html(html2);
+							  },
+							  error: function(request, status, error){
+								  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							  }
+						  });
+					}
 	  		
 	  		$("div#div_info").html(html);
 	  		
@@ -724,6 +793,7 @@
 	  		let enddate = $("input#end_date").val();
 	  		let memo = $("textarea#memo_leave").val();
 	  		let empno = $("input#empno").val();
+	  		let leaveno = $("input#leaveno").val();
 	  		
 	  		if(leaveFlag){ // 날짜를 올바르게 입력한 경우에만 휴직 신청가능
 	  		
@@ -733,7 +803,8 @@
 					     ,"startdate":startdate
 					     ,"enddate":enddate
 					     ,"memo":memo
-					     ,"empno":empno},
+					     ,"empno":empno
+					     ,"leaveno":leaveno},
 				  type : "POST",
 				  dataType : "JSON",
 				  success : function(json){
@@ -741,6 +812,7 @@
 					  if(json.result == 1){
 						  toastr.success('휴직 처리가 완료되었습니다.');
 						  $("textarea#memo_leave").val("");
+						  window.location.reload();
 					  }
 					  else{
 						  toastr.warning('휴직 처리가 취소되었습니다.');
@@ -848,11 +920,6 @@
 				  }
 			
 			}); // end of ajax()----------------------------------------------------------------------
-			
-			
-			
-			
-			
 
 			
 		});
@@ -864,7 +931,6 @@
 			$("button#btn_search_leaveInfo").addClass("btn_record_clicked");
 			
 			let empno = $("input#empno").val();
-			
 			
 			$.ajax({
 				 // 부서 이름 구해오기 
@@ -1069,8 +1135,53 @@
 		// 해당 사원 주 총 근무시간 구하기 
 		getWorkTime($("th#th_empno").text());
 		
-
+		// 휴직 종류 선택시 
+		$(document).on("click","#modal_leave > div > div > form > div > div.dropdown-menu.show > button",function(){
+			let value = $(this).text();
+			$("input#input_leave_type").val(value);
+		});
 		
+		// 휴직 삭제 버튼 클릭시 
+		$(document).on("click","button#deleteLeave",function(){
+			Swal.fire({
+				   title: '휴직을 취소할까요?',
+				   icon: 'warning',
+				   
+				   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+				   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+				   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+				   confirmButtonText: '휴직취소하기', // confirm 버튼 텍스트 지정
+				   cancelButtonText: '닫기', // cancel 버튼 텍스트 지정
+				   
+				   reverseButtons: true, // 버튼 순서 거꾸로
+				   
+				}).then(result => {
+				   // 만약 Promise리턴을 받으면, 
+				   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+				   
+					   let leaveno = $("input#leaveno").val();
+				   	   console.log("leaveno : "+ leaveno);
+					   
+					   $.ajax({
+							  url : "<%= request.getContextPath()%>/cancelLeave.yolo",
+							  data : {"empno":"${requestScope.employeeMap.empno}"
+								  	 ,"leaveno":leaveno},
+							  type : "POST",
+							  dataType : "JSON",
+							  success : function(json){
+								  if(json.result == 1){
+								  	toastr.success('취소되었습니다.');
+								  	window.location.reload();
+								  }
+							  },
+							  error: function(request, status, error){
+								  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							  }
+						  });
+				   }
+				});
+			
+		});
 		
 		
 		
@@ -1090,7 +1201,6 @@
 	            }
 	         }
 		});
-		
 		
 		// ### 스피너의 이벤트는 클릭이 아니고 change도 아니고 "spinstop" 이다 ### //
 		// 첨부파일 개수만큼 늘고 줄어들게 만들기
@@ -1667,6 +1777,7 @@
 			<div id="user_name">${requestScope.employeeMap.profileName}</div>
 			<input id="before_deptno" type="hidden" value="${requestScope.employeeMap.fk_deptno}" />
 			<input id="before_position" type="hidden" value="${requestScope.employeeMap.position}" />
+			<input id="leaveno" type="hidden"  />
 		</div>
 		<%-- ======================== 프로필 시작 ========================= --%>
 		<table>
@@ -1724,7 +1835,6 @@
 	<div class="modal fade" id="modal_leave">
 		
 			<div class="modal-dialog modal-dialog-centered">
-				<!-- .modal-dialog-centered 클래스를 사용하여 페이지 내에서 모달을 세로 및 가로 중앙에 배치합니다. -->
 				<div class="modal-content">
 	
 					<!-- Modal header -->
@@ -1735,6 +1845,7 @@
 	
 					<!-- Modal body -->
 					<form name="frm_leave">
+					<input type="hidden" id="empno" value="${requestScope.employeeMap.empno}" />
 					<div class="modal-body" style="height: 350px;">
 						<div class="modal_title">휴직종류 <span style="color: red;">＊</span></div>
 						<button id="btn" class=" btn communication" type="button"
@@ -1746,18 +1857,18 @@
 						</button>
 						
 						<input type="hidden" id="input_leave_type" value="일반휴직"/>
-						<input type="hidden" id="empno" value="${requestScope.employeeMap.empno}" />
+						
 						<div class="dropdown-menu">
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">일반휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">육아휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">산재휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">부상.질병휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">가족 돌봄휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >일반휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >육아휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >산재휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >부상.질병휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >가족 돌봄휴직</button>
 						</div>
 						
 						<div>
 							<div style="margin-top:20px;" class="modal_title">휴직기간 <span style="color: red;">＊</span></div>
-							<input id="between_date" class="form-control"  />
+							<input readonly="readonly" id="between_date" class="form-control"  />
 							<div id="div_warnning">이미 휴직이 등록된 날짜입니다.</div>
 							<input type="hidden" id="start_date"  name="start_date" />
 							<input type="hidden" id="end_date" name="end_date" />
@@ -1879,6 +1990,10 @@
 		<%-- ===================== 인사정보 내용 출력 끝 ===================== --%>
 		
 		<div id="right_sidebar">
+			<div id='div_leave_absence'></div>
+			
+			
+			
 			
 			<a class="a_side" href="<%= ctxPath%>/commute/mycommute.yolo">
 				<div class="div_rightside" id="work_time">
