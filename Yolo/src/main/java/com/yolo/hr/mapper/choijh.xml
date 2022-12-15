@@ -13,10 +13,14 @@
 	   <result property="name"       	 column="name"      			javaType="String"/>	
 	   <result property="profile_color"  column="profile_color"      	javaType="String"/>	
    	   <result property="deptname" 		 column="deptname"      		javaType="String"/>
+   	   <result property="approval" 		 column="approval"      		javaType="String"/>
+   	   <result property="approval_day" 	 column="approval_day"          javaType="String"/>
+   	   <result property="approval_no"    column="approval_no"      		javaType="String"/>
    </resultMap> 
 
 	<!-- 결재라인 알아오기 -->
 	<select id="appList" parameterType="HashMap" resultMap="approvalMap">
+		<if test="doc_no == null">
 		select G.gradeno AS levelno ,G.deptno , G.FK_EMPNO , E.position, E.name, E.profile_color, G.deptname
 		from
 		(
@@ -34,6 +38,34 @@
 		on E.empno = G.FK_EMPNO
 		where not empno =#{empno}
 		order by levelno asc
+		</if>
+		
+		<if test="doc_no != null">
+		select F. levelno , F.deptno , F.FK_EMPNO , F.position, F.name, F.profile_color, F.deptname,A. approval, A.approval_day, A.approval_no
+		from
+		(
+		select G.gradeno AS levelno ,G.deptno , G.FK_EMPNO , E.position, E.name, E.profile_color, G.deptname
+				from
+				(
+				    select V.gradeno ,V.deptno , M.FK_EMPNO , deptname
+				    from 
+				    (
+				        select level AS gradeno , deptno , deptname
+				        from TBL_DEPT 
+				        start with deptno = #{deptno}
+				        connect by NOCYCLE prior upper_deptno = deptno) V
+				        join TBL_DEPT_MAPPING M
+				        on V.deptno = M.fk_deptno
+				) G
+				join TBL_EMPLOYEES E
+				on E.empno = G.FK_EMPNO
+				where not empno =#{empno}
+				order by levelno asc
+		 ) F
+		join tbl_approval A
+		on F.fk_empno = A.fk_senior_empno
+		where fk_doc_no = #{doc_no}
+		</if>
 	</select>
 	
 	<!-- 글작성하기(기안문서 테이블) 첨부파일 없는경우 -->
@@ -67,7 +99,7 @@
 		values(#{doc_no}, #{fk_writer_empno} ,#{doc_subject},#{doc_contents}, default, default ,#{icon}, to_date(#{D_day},'yyyy-mm-dd'), #{fileName},#{orgFilename}, #{fileSize})
 	</insert>
 
-	<!--내문서함 리스트 가져오기  -->
+	<!--진행중인 내문서함 리스트 가져오기  -->
 	<resultMap type="HashMap" id="documentMap">
    	   <result property="doc_subject"    	 column="doc_subject"    			javaType="String"/>
    	   <result property="doc_contents"  	 column="doc_contents"  			javaType="String"/>
@@ -77,26 +109,110 @@
 	   <result property="orgfilename"  		 column="orgfilename"      			javaType="String"/>	
    	   <result property="filesize" 			 column="filesize"      			javaType="String"/>
    	   <result property="d_day" 			 column="d_day"      				javaType="String"/>
-   	   <result property="approval_day" 		 column="approval_day"      		javaType="String"/>
    	   <result property="approval" 		 	 column="approval"      		javaType="String"/>
    	   <result property="name" 		 		 column="name"      		javaType="String"/>
-   	   <result property="doc_no" 		 		 column="doc_no"      		javaType="String"/>
+   	   <result property="doc_no" 		     column="doc_no"      		javaType="String"/>
+   	   <result property="fk_deptno" 		 column="fk_deptno"      		javaType="String"/>
    </resultMap> 
    
-   <!--내문서함 리스트  -->
+   <!--진행중인 내문서함 리스트  -->
 	<select id="documentList" parameterType="HashMap" resultMap="documentMap">
-		select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no
+		select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno 
+		from
+		(
+		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno
+		    from 
+		    (   
+		        select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval ,fK_writer_empno ,doc_no  
+		        from tbl_documents 
+		        join TBL_approval
+		        on doc_no = fk_doc_no
+		        where fK_writer_empno =#{emp_no} or fk_senior_empno=#{emp_no}
+		    ) V
+		    join tbl_employees E
+		    on V.fk_writer_empno = E.empno
+		     where end_doc = #{end_doc}     
+		)G
+		 where rno between #{startRno} and #{endRno}
+		 order by writeday desc  
+		 
+	</select>
+	
+	 <!--진행중인 내문서함 리스트 총수(페이징X)  -->
+	<select id="getdocTotalCnt" parameterType="HashMap" resultType="int">
+		 select count (*)
+        from(
+		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno
+		    from 
+		    (   
+		        select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval ,fK_writer_empno ,doc_no  
+		        from tbl_documents 
+		        join TBL_approval
+		        on doc_no = fk_doc_no
+		        where fK_writer_empno =#{emp_no} or fk_senior_empno=#{emp_no}
+		    ) V
+		    join tbl_employees E
+		    on V.fk_writer_empno = E.empno
+		     where end_doc = '0'
+		     order by writeday desc    
+         )    
+	</select>
+	
+	 <!--완료 내문서함 리스트 총수(페이징X)  -->
+	<select id="getcomTotalCnt" parameterType="HashMap" resultType="int">
+		 select count (*)
+        from(
+		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno
+		    from 
+		    (   
+		        select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval ,fK_writer_empno ,doc_no  
+		        from tbl_documents 
+		        join TBL_approval
+		        on doc_no = fk_doc_no
+		        where fK_writer_empno =#{emp_no} or fk_senior_empno=#{emp_no}
+		    ) V
+		    join tbl_employees E
+		    on V.fk_writer_empno = E.empno
+		     where end_doc = '1'
+		     order by writeday desc    
+         )    
+	</select>
+	
+   
+   <!--내문서함 리스트  -->
+	<select id="MydocumentList" parameterType="HashMap" resultMap="documentMap">
+		select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no, fk_deptno
 		from 
 		(   
-		    select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no    
+		    select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no  
 		    from tbl_documents 
 		    join TBL_approval
 		    on doc_no = fk_doc_no
-		    where fK_writer_empno =#{empno} or fk_senior_empno=#{empno}
+		    where fK_writer_empno =#{emp_no}
 		) V
 		join tbl_employees E
 		on V.fk_writer_empno = E.empno
 		order by writeday desc
+	</select>
+	
+	<!--내문서함 총 수-->
+	<select id="getmyTotalCnt" parameterType="HashMap" resultType="int">
+		select count(*)
+		from(
+		select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no, fk_deptno
+		from 
+		(   
+		    select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no  
+		    from tbl_documents 
+		    join TBL_approval
+		    on doc_no = fk_doc_no
+		    where fK_writer_empno =#{emp_no}
+		) V
+		join tbl_employees E
+		on V.fk_writer_empno = E.empno
+		order by writeday desc
+		)
+		
 	</select>
 	
 	<!-- 페이지 로드시 첫번째 문서번호 -->
@@ -136,29 +252,135 @@
    	   <result property="name" 		 		 column="name"      				javaType="String"/>
    	   <result property="position" 		     column="position"      			javaType="String"/>
    	   <result property="fk_deptno" 		 column="fk_deptno"      			javaType="String"/>
+   	   <result property="levelno" 		 	 column="levelno"      				javaType="String"/>
+   	   <result property="approval" 		 	 column="approval"      				javaType="String"/>
+   	   <result property="approval_day" 		 column="approval_day"      				javaType="String"/>
+ 		<result property="profile_color"  	column="profile_color"      	javaType="String"/>	
    </resultMap>  
    
  	<select id="getDocDetail" parameterType="HashMap" resultMap="docDetailMap">
-		<if test='writer !=""'>
-		select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno
+		<if test="writer != null">
+		select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno,profile_color
 		from tbl_documents 
 		join tbl_employees
 		on fk_writer_empno = empno
 		where fK_writer_empno =#{empno} and  doc_no =#{doc_no}
 		</if>
 		
-		<if test='writer ==""'>
-		 select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, comments, approval_day  
-         from tbl_documents 
-         join TBL_approval
-         on doc_no = fk_doc_no
-         where fk_senior_empno=#{empno} and  doc_no =#{doc_no}
-		</if>
-		
-		
-	</select>	 
+		<if test="writer ==null">
+		 select  fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day ,name, position, fk_deptno,profile_color
+		 from(
+		         select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day  
+		         from tbl_documents 
+		         join TBL_approval
+		         on doc_no = fk_doc_no
+		         where fk_senior_empno=#{empno} and  doc_no =#{doc_no}       
+		 )
+		 join tbl_employees
+		 on fk_writer_empno = empno
+	</if>
 
+	</select>	
+	
+	<!--내 전단계 결제자 결제여부 알아오기  --> 
+	<select id="getPrestep" parameterType="String" resultType="String">
+		
+		select A.approval
+			from
+			(
+			    select V.gradeno AS levelno , M.fk_empno 
+			    from 
+			    (select level AS gradeno 
+			         , deptno
+			    from TBL_DEPT 
+			    start with deptno = #{deptno}
+			    connect by NOCYCLE prior upper_deptno = deptno) V
+			    join TBL_DEPT_MAPPING M
+			    on V.deptno = M.fk_deptno
+			    where V.gradeno = #{prelevelno}
+			)G
+			join tbl_approval A
+			on G.fk_empno = A.fk_senior_empno
+			where A.fk_doc_no =#{doc_no}
+	
+	</select>
+	
+	<!-- 승인,반려 상태 업데이트 시키기 -->
+	<update id="updateApproval" parameterType="HashMap">
+	
+		update tbl_approval set approval= #{approvalNo}, approval_day= sysdate
+		where fk_doc_no =#{doc_no} and fk_senior_empno=#{empno}
+	
+	</update>
+	
+	<!-- 승인,반려 상태 업데이트 시키기(마지막 승인자) -->
+	<update id="updateApproval_last" parameterType="HashMap">
+	
+		update tbl_approval set end_doc ='1'
+   		where fk_doc_no = #{doc_no}
+	
+	</update>
+	
+	<!-- 마지막 결제 단계 알아오기 -->
+	<select id="lastLevelno" parameterType="String" resultType="int">
+		select levelno
+		from
+		(select levelno
+		from tbl_approval
+		where fk_doc_no = #{doc_no} 
+		order by levelno desc)
+		where ROWNUM= 1
+	</select>
+	
 
+	<!--결제라인 이름 가져오기  -->
+	<select id="getAppname" parameterType="String" resultType="String">
+	
+	select LISTAGG(P.name,',') WITHIN GROUP (ORDER BY P.name) AS Arrname
+    from(
+        select distinct doc_no, name
+        from 
+        (   
+            select distinct *  
+            from tbl_documents 
+            join TBL_approval
+            on doc_no = fk_doc_no
+            where doc_no =#{doc_no}
+        ) V
+        join tbl_employees E
+        on V.fk_senior_empno = E.empno
+    )P
+    group by doc_no	
+	
+	</select>
+	
+	<!-- 총페이지수 알아오기 -->
+	<select id="getTotalPage" resultType="int" parameterType="HashMap">
+		 select ceil(count(*)/#{sizePerPage})
+		    from
+		    (
+		    select distinct row_number() over(order by writeday desc) AS rno, end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no, fk_deptno
+		        from 
+		        (   
+		            select distinct  end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no  
+		            from tbl_documents 
+		            join TBL_approval
+		            on doc_no = fk_doc_no
+		            where fK_writer_empno =#{empno} or fk_senior_empno=#{empno}
+		        ) V
+		        join tbl_employees E
+		        on V.fk_writer_empno = E.empno
+		        where end_doc = #{end_doc}
+		        order by writeday desc    
+		    )G
+  
+	</select>
+	
+	 <select id="getfilename" parameterType="HashMap" resultType="com.yolo.hr.jihee.workflow.model.documentVO">
+	 	 select fileName, orgFilename
+		 from tbl_documents
+		 where doc_no = #{doc_no}
+	 </select>
 	 
 
 </mapper>

@@ -30,12 +30,8 @@ public class AlarmController {
 	@RequestMapping(value = "/alarm/getAlarmList.yolo", produces="text/plain;charset=UTF-8")
 	public String getDept(HttpServletRequest request) {
 		
-		// 가라 세션
-		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1050");
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
-		// 가라세션 끝
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		List<AlarmVO> alarmList = service.getAlarmList(loginuser.getEmpno());
 		
@@ -63,12 +59,8 @@ public class AlarmController {
 	@RequestMapping(value = "/alarm/getPastAlarmList.yolo", produces="text/plain;charset=UTF-8")
 	public String getPastAlarmList(HttpServletRequest request) {
 		
-		// 가라 세션
-		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1050");
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
-		// 가라세션 끝
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		List<AlarmVO> alarmList = service.getPastAlarmList(loginuser.getEmpno());
 		

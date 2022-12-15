@@ -78,6 +78,7 @@ div#contents {
 	border-radius: 0.5rem;
 	border: 1px solid #dddddd; /* #b3b3b3 */
 	width: 650px;
+	height : 200px;
 	font-weight: bold;
 	font-size: 13pt;
 
@@ -223,7 +224,7 @@ textarea:focus {
  				singleDatePicker: true,
  				timePicker: true,
  				timePicker24Hour: true,
- 				startDate: new Date(),
+ 				//startDate: new Date(),
  				locale: {
  				"format": 'YYYY-MM-DD',
  				"applyLabel": "확인",
@@ -245,10 +246,10 @@ textarea:focus {
         
 
     	//textarea 높이 조절    	
-    	var textEle = $('textarea');
+    	/* var textEle = $('textarea');
     	textEle.on('keyup', function() {
     	  adjustHeight(); // 함수를 실행하면 자동으로 textarea의 높이 조절
-    	});
+    	}); */
         
         
 	}); // end of $(document).ready (function()
@@ -286,7 +287,7 @@ textarea:focus {
 					<div id="contents">
 						내용
 						<div style="margin-top: 5px;">
-						<textarea class="search" name="doc_contents" id="daterange" placeholder="내용을 입력하세요" style="margin-top: 5px; padding: 6px 10px; "></textarea>
+						<textarea class="search" name="doc_contents" id="daterange" placeholder="" style="margin-top: 5px; padding: 6px 10px; ">${requestScope.guide_form}</textarea>
 						</div>
 					</div>
 					<div id="contents">
