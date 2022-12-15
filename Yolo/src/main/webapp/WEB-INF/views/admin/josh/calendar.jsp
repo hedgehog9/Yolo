@@ -97,6 +97,25 @@
 	
 	
 	/* ========== full calendar css 끝 ========== */
+	
+    
+    input:focus{
+      outline-color: #07B419;
+    }	
+    
+    .form-control:focus {
+	   box-shadow:none;
+	   border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4.select2-container--focus .select2-selection {
+		box-shadow: none;
+		border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
+		width: 80% !important;
+	}
 
 </style>
     
@@ -108,14 +127,22 @@
 	  var calendarEl = document.getElementById('calendar');
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
+    	  	  googleCalendarApiKey : 'AIzaSyANToAe7HYMrFxgI4_lakop2Bgj_JWiqzE',
           selectable: true,
           themeSystem: 'Litera',
+          dayMaxEventRows: true,
           headerToolbar: {
               left: 'prev,next today',
               center: 'title',
               right: 'dayGridMonth,timeGridWeek'
           },
           locale : 'ko',
+          eventSources : // 한국 기념일 ko.south_korea 추가
+              [ { googleCalendarId : 'tkddns6007@gmail.com' }
+                  , { googleCalendarId : 'ko.south_korea#holiday@group.v.calendar.google.com'
+                  , className : 'ko_event'
+                	  , color: 'white'
+                  , textColor: 'red' } ],
           dateClick: function(info) {
             //alert('clicked ' + info.dateStr);
             $('#scheduleModal').modal('show');
@@ -193,30 +220,46 @@
 					  if(json.length > 0) {
 						  $.each(json, function(index, item){
 							  
-							  if(item.fk_deptno == deptno) { // 내가 속한 조직 캘린더 보기
-								  events.push({
-                         	            id: item.schedule_no,
-                                         title: item.subject,
-                                         start: item.start_date,
-                                         end: item.end_date,
-                                         color: item.color,
-                                         cid: 1,  // 사내캘린더 내의 서브캘린더 체크박스의 value값과 일치하도록 만들어야 한다. 그래야만 서브캘린더의 체크박스와 cid 값이 연결되어 체크시 풀캘린더에서 일정이 보여지고 체크해제시 풀캘린더에서 일정이 숨겨져 안보이게 된다. 
-                                         mycontent: item.content,
-                                         category: item.category,
-                                         place: item.place
-								  }); // end of events.push({})---------
+							  console.log("item.schedule_no =>"+ item.schedule_no)
+							  
+							  if(item.schedule_no != undefined) {
+								  if(item.fk_deptno == deptno) { // 내가 속한 조직 캘린더 보기
+									  events.push({
+	                         	            id: item.schedule_no,
+	                                         title: item.subject,
+	                                         start: item.start_date,
+	                                         end: item.end_date,
+	                                         color: item.color,
+	                                         cid: 1,  // 사내캘린더 내의 서브캘린더 체크박스의 value값과 일치하도록 만들어야 한다. 그래야만 서브캘린더의 체크박스와 cid 값이 연결되어 체크시 풀캘린더에서 일정이 보여지고 체크해제시 풀캘린더에서 일정이 숨겨져 안보이게 된다. 
+	                                         mycontent: item.content,
+	                                         category: item.category,
+	                                         place: item.place
+									  }); // end of events.push({})---------
+								  }
+								  else { // 전체 조직 캘린더 보기
+									  events.push({
+	                       	              id: item.schedule_no,
+	                                       title: item.subject,
+	                                       start: item.start_date,
+	                                       end: item.end_date,
+	                                       color: item.color,
+	                                       cid: 0, 
+	                                       mycontent: item.content,
+	                                       category: item.category,
+	                                       place: item.place
+	                          		  }); // end of events.push({})---------
+								  }
 							  }
-							  else { // 전체 조직 캘린더 보기
+							  
+							  else {
+								  //console.log("조건문 들어옴")
 								  events.push({
-                       	              id: item.schedule_no,
-                                       title: item.subject,
-                                       start: item.start_date,
-                                       end: item.end_date,
-                                       color: item.color,
-                                       cid: 0, 
-                                       mycontent: item.content,
-                                       category: item.category,
-                                       place: item.place
+									  title : item.name+"님 생일", 
+                                       color: "black",
+                                       start: item.birthday,
+                                       end: item.birthday,
+                                       icon:"birthday",
+                                       cid: 0
                           		  }); // end of events.push({})---------
 							  }
 							  
@@ -233,6 +276,11 @@
       		  
       	  },// end of  events:function(info, successCallback, failureCallback) {} ---------
       	  eventDidMount: function (arg) {
+      		  
+      		if(arg.event.extendedProps.icon == "birthday") {
+		    		console.log("들어오시나요?")
+		    		$(arg.el).find('.fc-event-title').prepend("<span style='font-size:10px;'>&#127881;</span>");
+	    		}
       		
       		$("select#kind-calendar").change(function() {
       			const kind_calendar = $("select#kind-calendar").val();
@@ -248,6 +296,7 @@
         					  arg.el.style.display = "none"; // 풀캘린더에서 다른 부서들의 캘린더 일정은 숨긴다.
         				  }
         		    }	
+        		    
         		  
       		})// end of $("select#kind-calendar").change
       		  
@@ -369,9 +418,10 @@
 							
 							$.each(json, function(index,item){
 								var name = item.name;
+								let empno = item.empno;
 								if(name.includes(joinuser)){ // name 이라는 문자열에 joinUserName 라는 문자열이 포함된 경우라면 true , 
 									                             // name 이라는 문자열에 joinUserName 라는 문자열이 포함되지 않은 경우라면 false 
-								   joinUserArr.push(name+"("+item.email+")");
+								   joinUserArr.push(name+"("+empno+")");
 								}
 							});
 							//console.log(joinUserArr);
@@ -449,13 +499,24 @@
     	  		
     	  		let plusUser_elm = document.querySelectorAll("form[name='schedule_register'] div.plusUser");
     			let joinUserArr = [];
+    			let joinUserEmpnoArr = [];
     			
     			plusUser_elm.forEach(function(item,index,array){
+    				
+    				let str = item.innerText.trim();
+    				let str_empno = str.substring(str.indexOf("(")+1,str.length-1);
+    				
     				joinUserArr.push(item.innerText.trim());
+    				joinUserEmpnoArr.push(str_empno);
     			});
     			
+    		    //console.log(joinUserArr)
+    				
     			let joinuser = joinUserArr.join(",");
     			$("form[name='schedule_register'] input[name=joinuser]").val(joinuser);
+    			
+    			let joinuser_empno = joinUserEmpnoArr.join(",");
+    			$("form[name='schedule_register'] input[name=joinuser_empno]").val(joinuser_empno);
     			
     			const place = $("form[name='schedule_register'] input[name='place']").val().trim()
     			if("" == place) {
@@ -527,13 +588,27 @@
 			  		
 			  		let plusUser_elm = document.querySelectorAll("form[name='schedule_modify_delete'] div.plusUser");
 					let joinUserArr = [];
+					let joinUserEmpnoArr = [];
 					
 					plusUser_elm.forEach(function(item,index,array){
-						joinUserArr.push(item.innerText.trim());
-					});
-					
-					let joinuser = joinUserArr.join(",");
-					$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
+	    				
+		    				let str = item.innerText.trim();
+		    				let str_empno = str.substring(str.indexOf("(")+1,str.length-1);
+		    				
+		    				joinUserArr.push(item.innerText.trim());
+		    				joinUserEmpnoArr.push(str_empno);
+		    				
+		    				console.log(joinUserArr)
+		    				console.log(joinUserEmpnoArr)
+	    				});
+	    			
+	    		    //console.log(joinUserArr)
+	    				
+		    			let joinuser = joinUserArr.join(",");
+		    			$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
+		    			
+		    			let joinuser_empno = joinUserEmpnoArr.join(",");
+		    			$("form[name='schedule_modify_delete'] input[name=joinuser_empno]").val(joinuser_empno);
 					
 					const place = $("form[name='schedule_modify_delete'] input[name='place']").val().trim()
 					if("" == place) {
@@ -708,7 +783,7 @@
 	                   </div>
 	                   <div class="form-group" id="daterange-group">
 	                     <label for="subject">제목<span style="color: red;">＊</span></label><br>
-	                     <input type="text" name="subject" class="form-control">
+	                     <input type="text" name="subject" class="form-control btn-custom">
 	                   </div>
 	                   <div class="form-group">
 	                       <label for="category">분류<span style="color: red;">＊</span></label>
@@ -723,6 +798,7 @@
 	                     <input type="text" class="form-control" id="joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
 	                     <div class="displayUserList mt-1"></div>
 				   		<input type="hidden" name="joinuser"/>
+				   		<input type="hidden" name="joinuser_empno"/>
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">장소<span style="color: red;">＊</span></label>
@@ -773,7 +849,7 @@
 	                   </div>
 	                   <div class="form-group">
 	                       <label for="category">분류<span style="color: red;">＊</span></label>
-	                       <select name="category" id="category" name="category" class="custom-select" id="modify_category">
+	                       <select name="category" name="category" class="custom-select" id="modify_category">
 	                           <option>출장</option>
 	                           <option>회의</option>
 	                           <option>미팅</option>
@@ -781,9 +857,10 @@
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">공유자:</label>
-	                     <input type="text" class="form-control" id="modify_joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
+	                     <input type="text" class="form-control" id="joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
 	                     <div class="displayUserList mt-1"></div>
 				   		<input type="hidden" name="joinuser"/>
+				   		<input type="hidden" name="joinuser_empno"/>
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">장소<span style="color: red;">＊</span></label>

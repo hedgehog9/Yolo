@@ -79,6 +79,7 @@ div#child2 {
 
 	function goWrite() {
 		
+		
 		  const frm = document.selectFrm;
           frm.method = "POST";
           frm.action = "<%= ctxPath%>/workflow/write.yolo";
@@ -180,6 +181,19 @@ div#child2 {
 				비품 신청
 				<input type="hidden" name="subject" value="비품 신청" readonly />
 				<input type="hidden" name="information" value="일하는 데 필요한 물품을 신청해주세요!" readonly />
+				<textarea style="display: none;" name="guide_form">품명 :		
+
+상품 정보(링크) :
+
+수량:
+
+단가:
+
+금액:
+
+사유:  
+
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				구매 신청
@@ -196,6 +210,15 @@ div#child2 {
 				경조비 신청
 				<input type="hidden" name="subject" value="경조비 신청" readonly />
 				<input type="hidden" name="information" value="아래 양식에 맞추어 신청해 주세요" readonly />
+				<textarea style="display: none;" name="guide_form">경조내용  :		
+
+경조 대상자 성명 :
+
+관계(본인, 본인의 OO) :
+
+경조일 :
+
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				복리 후생
@@ -212,6 +235,12 @@ div#child2 {
 				계정 신청
 				<input type="hidden" name="subject" value="계정 신청" readonly />
 				<input type="hidden" name="information" value="G Suite, AWS, Zeplin 등 필요한 계정의 담당자를 지정하여 계정 신청을 해주세요." readonly />
+			<textarea style="display: none;" name="guide_form">요청 계정:		
+
+희망 ID :
+
+사유 : 
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				구매 신청
@@ -228,6 +257,12 @@ div#child2 {
 				식비 사용 내역
 				<input type="hidden" name="subject" value="식비 사용 내역" readonly />
 				<input type="hidden" name="information" value="작성 시 영수증을 첨부해 주세요." readonly />
+			<textarea style="display: none;" name="guide_form">사용 금액:	
+
+식사 인원 :
+
+비고 :
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				복리 후생
@@ -245,6 +280,9 @@ div#child2 {
 				<input type="hidden" name="subject" value="계약서 검토 요청" readonly />
 				<input type="hidden" name="information" value="작성 시 계약 서류를 첨부해주세요." readonly />
 			</div>
+			<textarea style="display: none;" name="guide_form">요청 사항 :
+				 </textarea>
+			
 			<div id="fontpurpose">
 				계약
 			</div>	
@@ -262,7 +300,9 @@ div#child2 {
 			<div id="fontSubject">
 				휴직 신청
 				<input type="hidden" name="subject" value="휴직 신청" readonly />
-				<input type="hidden" name="information" value="아래 양식에 맞추어 신청해주세요." readonly />
+				<input type="hidden" name="information" value="아래 양식에 맞추어 신청해주세요." readonly />				
+			<textarea style="display: none;" name="guide_form">요청 사항 :
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				양식구분 없음
@@ -279,6 +319,8 @@ div#child2 {
 				신규 프로젝트
 				<input type="hidden" name="subject" value="신규 프로젝트" readonly />
 				<input type="hidden" name="information" value="신규 프로젝트를 아래와 같이 작성해주세요." readonly />
+			<textarea style="display: none;" name="guide_form">요청 사항 :
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				업무 신청
@@ -295,6 +337,8 @@ div#child2 {
 				개인경비청구서 
 				<input type="hidden" name="subject" value="개인경비청구서 " readonly />
 				<input type="hidden" name="information" value="개인경비청구서 입니다." readonly />
+			<textarea style="display: none;" name="guide_form">요청 사항 :
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				경비 청구
@@ -311,6 +355,20 @@ div#child2 {
 				지출결의서
 				<input type="hidden" name="subject" value="지출결의서" readonly />
 				<input type="hidden" name="information" value="작성 시 영수증을 첨부해 주세요." readonly />
+			<textarea style="display: none;" name="guide_form">1. 작성 안내
+원천징수에 대한 지출 결의서를 작성하시고,
+직인을 받은 계약서, 통장 사본, 신분증 사본을 파일로 첨부해주세요.
+
+2. 작성 기한
+매달 5일
+
+3. 승인·참조 설정
+1,000만원 이상
+1단계: 조직장(승인), 박부장(참조)
+1,000만원 이하
+1단계: 조직장(승인), 박부장(참조)
+2단계: 대표(승인)
+				 </textarea>
 			</div>
 			<div id="fontpurpose">
 				원청징수
@@ -318,4 +376,6 @@ div#child2 {
 		</div>
 </form>
 </div>
+
+
 
