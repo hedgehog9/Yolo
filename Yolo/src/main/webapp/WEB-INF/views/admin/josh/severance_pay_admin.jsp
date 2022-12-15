@@ -488,6 +488,13 @@ li.li_moveAll > a{
 }
 
 
+.badge {
+		font-size: 15px;
+	}
+	
+	td {
+		vertical-align: middle !important;
+	}
 
 </style>
 
