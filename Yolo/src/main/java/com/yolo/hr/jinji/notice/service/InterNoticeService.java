@@ -14,9 +14,15 @@ public interface InterNoticeService {
 	// 체크된 부서 목록 가져오기
 	List<Map<String, String>> getChooseDept(String str_empno);
 	
+	
+	
+	
 	// 공지글 작성하기
 	void sendNotice(NoticeVO noticevo);
 	
+	
+	
+	//////////////////// 전체 /////////////////////
 	// 전체 공지 리스트 보여주기
 	List<Map<String, String>> showAllNoticeList(String empno);
 	
@@ -28,40 +34,67 @@ public interface InterNoticeService {
 
 	// seq최신 공지번호 알아오기
 	String getSeqNotino(String empno);
+	
 
+	// 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
+	Map<String, String> showEditNoticeContent(String notino);
+
+	
+	// 공지글 수정 완료 폼 요청
+	int editNotice(NoticeVO noticevo);
+
+	// 공지글 삭제 요청하기 (1개 조회)
+	int delNoticeEnd(Map<String, String> paraMap);
+	
+	
+	// 댓글 쓰기
+	int addComment(CommentVO commentvo);
+
+	// 원공지글에 해당하는 댓글 조회하기
+	List<Map<String, String>> getCommentList(String fk_notino);
+	
+	
+	
+	
+	
+	
+	
+	//////////////////// 부서 /////////////////////
+	// 부서의 해당 공지 리스트 보여주기
+	List<Map<String, String>> depNoticeList(String fk_deptno);
+
+	// 부서 공지리스트 공지 1개 내용 조회하기(ajax)
+	Map<String, String> showDeptNoticeContent(String notino);
+
+	// 공지 수정을 위해 해당 공지번호 글  가져오기
+	NoticeVO showEditDepNoticeContent(String notino);
+
+	// 부서 공지글 1개 삭제  요청
+	int delDepNoticeEnd(Map<String, String> paraMap);
+	
+	
+	
+	
+	
+	//////////////////// 내가 쓴 공지 /////////////////////
 	// 내가 쓴 공지 리스트 가져오기
 	List<Map<String, String>> getMyNoticeList(String empno);
 
 	// 내가 쓴 공지사항 공지글 1개 보여주기(ajax)
 	Map<String, String> showMyNoticeContent(String notino);
 
-	// 로그인 유저가 속해 있는 부서의 해당 공지 리스트 보여주기
-	List<Map<String, String>> depNoticeList(String fk_deptno);
+	// 내가 쓴 공지리스트 수정
+	NoticeVO showEditMyNoticeContent(String notino);
 
-	// 부서 공지리스트 공지 1개 내용 조회하기(ajax)
-	Map<String, String> showDeptNoticeContent(String notino);
+	// 내가 쓴 공지글 1개 삭제  요청
+	int delMyNoticeEnd(Map<String, String> paraMap);
 
-	// 공지글 수정을 위한 원래 공지글 조회하기
-	// NoticeVO getEditNotice(String notino);
 
-	// 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
-	Map<String, String> showEditNoticeContent(String notino);
+	
 
-	// 공지글 수정 완료 폼 요청
-	int editNotice(NoticeVO noticevo);
 
-	// 공지글 삭제 요청하기 (1개 조회)
-	int delNoticeEnd(Map<String, String> paraMap);
 
-	// 댓글 쓰기
-	int addComment(CommentVO commentvo);
-
-	// 원공지글에 해당하는 댓글 조회하기
-	List<CommentVO> getCommentList(String fk_notino);
-
-	// 부서 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
-	NoticeVO showEditDepNoticeContent(String notino);
-
+	
 
 	
 

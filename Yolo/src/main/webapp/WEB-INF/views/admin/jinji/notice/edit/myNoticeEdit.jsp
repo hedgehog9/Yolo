@@ -1,9 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
-<% String ctxPath=request.getContextPath(); %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %> 
+
     
 <style type="text/css">
+
 
 	/* Model 시작 */
 	div.noticeEditModal{
@@ -154,7 +157,7 @@
 			// 공지 작성하기 (완료버튼) 폼 태그 전송
 			const frm = document.editNoticeFrm;
 			frm.method = "POST";
-			frm.action = "<%= ctxPath%>/notice/editNoticeFrm.yolo";
+			frm.action = "<%= request.getContextPath()%>/notice/editNoticeFrm.yolo";
 			frm.submit();	
 			
 		}); // end of $("button.editNoticeBtn").click
@@ -162,7 +165,7 @@
 	}); // end of ready
 
 </script> 
- 
+
 <!-- Modal --> 
 <div class="modal fade noticeEditModal"  id="staticBackdrop" data-backdrop="static">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
@@ -195,6 +198,6 @@
       </div>
     </div>
   </div>
-</div>	
+</div>
 		    
     

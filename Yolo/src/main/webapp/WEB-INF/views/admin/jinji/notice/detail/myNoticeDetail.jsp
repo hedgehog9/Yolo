@@ -149,7 +149,7 @@
 		margin: auto 5px;
 	}
 	
-	textarea.commentForm:focus {
+	textarea#commentContent:focus {
 		outline : 2px solid #66cc66;
 		border-radius: 0.5rem;
 		
@@ -173,9 +173,8 @@
 
 	$(document).ready(function() {
 	
-
 		// 댓글 글자수 제한
-		$('.commentForm').on('keyup', function() {
+		$('#commentContent').on('keyup', function() {
 			
 			let content = $(this).val();
 			
@@ -199,12 +198,35 @@
 	                      positionClass: 'toast-top-center'
 	                  };
 	                  toastr.error('', '글자수는 50자까지 입력 가능합니다.');
-		    };
+		    }; // end of if
 			
-    	});
+    	}); // end of 댓글 제한 
+    	
+	}); // end of ready
+	
+	
+	
+	/*
+	// 댓글 쓰기 유효성 검사
+	function goAddCmt() {
 		
-	});
-
+		// 유효성 검사
+		const commentContent = $("textarea#commentContent").val().trim();	//공백은 제거 trim()
+		// console.log(commentContent)
+		
+		if(commentContent == "") { // 공백제거 후의 commentContent가 공백이면 내용 안 쓴 것.
+			
+			alert("댓글 내용을 입력하세요");
+		
+	    	return; //메세지 뜨게 하고 종료
+		}
+		else{
+			alert("댓글쓰기가 완료되었습니다.");
+			window.location.reload();
+			goAddCmtReal();
+		}
+	} // end of function goAddWrite()
+*/
 </script>    
     
     
@@ -219,6 +241,7 @@
     	<span style="font-size:20px;">&#128226;</span><span class="myListModalTitle ml-3" style="font-size: 20px; font-weight: bold;"> 내가 쓴 공지 </span>
      	<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
     </div>
+    
    	<div class="modalBody">
   	 	<div class="modal-listContent"> 
 			<div>
@@ -240,72 +263,55 @@
 	     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
 	     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
 	     	</div>
-	     	<input id="hidden_notino" type="hidden">
+    		<input id="notino" type="text">
 	     	
      	
-     	<div style="margin: 30px 0;"> <%-- 댓글 입력란 시작 --%>
-      	<span style="font-size: 16px;">&#128313; 댓글</span>
-   		<div class="commentBox">
-	    	<form id="insertFrm" name="insertFrm">
-	       	<textarea class="commentForm" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; max-height: 10px;"></textarea>
-	       	<div class="mt-2">
-	       		<button type="button" class="commentBnt">댓글쓰기</button>
-				<button type="button" class="commentCancleBnt">취소</button>
-	        	<div class="textLengthWrap" style="float: right; color: #808080;">
-				   		<span class="textCount">0자</span>
-				    	<span class="textTotal">/50자</span>
-					</div>
+	     	 <%-- 댓글 입력란 시작 --%>     	
+		   	 <div style="margin: 30px 0;">
+	    	 <span style="font-size: 16px;">&#128313; 댓글</span>
+	 		 <div class="commentBox">
+	 		 
+	    	 <%-- 댓글폼 --%>
+		   	<form id="commentFrm" name="commentFrm" style="resize: none; width:100%; margin: 0;">
+		      	<textarea id="commentContent" name="content" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; width:100%; max-height: 10px; margin: 0;"></textarea>
+		      	<div class="mt-2">
+		      		<button type="button" class="commentBnt" onclick="goAddCmt()">댓글쓰기</button>
+				<button type="reset" class="commentCancleBnt">취소</button>
+		       	<div class="textLengthWrap" style="float: right; color: #808080;">
+			   		<span class="textCount">0자</span>
+			    	<span class="textTotal">/50자</span>
 				</div>
-	        </form>
-    	</div>
-		</div> <%-- 댓글 입력란 끝 --%>   
+				</div>
+				<input type="text" name="fk_empno" id="fk_empno"  value="${sessionScope.loginuser.empno}" />  
+				<input type="text" name="fk_notino" id="fk_notino"  value="" />
+	  		</form>
+		   		
+		   	</div>
+			</div> <%-- 댓글 입력란 끝 --%>  
+			 
+		</div>
+	</div> <%-- modal body --%>
+		
+	<div  class="modalFooter">
+		<div class="modal-cmtContent ">
+	      	<%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
+	     	<div class="mt-3 mb-2">
+	     	<div class="commentrow  px-2 py-2">
+	      	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1" id="fk_empno" >김땡땡</span><span class="ml-3" id="cmtWritedate">2022-11-30</span></span>
+	      	<div style="display:inline;	float: right;">
+	   			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
+	   			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
+	    		</div>
+	    		<div class="mt-3">
+	     		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;" id="cmtContent"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+	     		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+	      	</div>
+	      	</div>	
+	      	<hr>
+	 		</div> <%-- 댓글내용 끝 --%>
+		</div>
+	</div><%-- footer  끝 --%>
 
-      	<%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
-      	<div class="mt-3 mb-2 commentRow">
-      	<div class="commentrow  px-2 py-2">
-       	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
-       	<div style="display:inline;	float: right;">
-      			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
-      			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
-      		</div>
-      		<div class="mt-3">
-       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
-       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
-       	</div>
-       	</div>	
-       	<hr>
-       
-      	<%-- 댓글 test --%>
-		<div class="commentrow  px-2 py-2">
-	       	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
-	       	<div style="display:inline;	float: right;">
-	      			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
-	      			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
-	      		</div>
-	      		<div class="mt-3">
-	       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
-	       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
-	       	</div>
-		</div>	
-        <hr>
-       			        
-      	<div class="commentrow  px-2 py-2">
-       	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1">김땡땡</span><span class="ml-3">2022-11-30</span></span>
-       	<div style="display:inline;	float: right;">
-      			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
-      			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
-      		</div>
-      		<div class="mt-3">
-       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
-       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
-       	</div>
-       </div>	
-       <hr>	
-       <%-- 댓글 test 끝--%>
-       
-	   </div> <%-- 댓글 내용 끝 --%>
-	 </div>
-   </div> 
 </div>
 
 

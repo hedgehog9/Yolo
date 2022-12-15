@@ -108,6 +108,49 @@
 		}); // end of 공지 수정하기 버튼 클릭 이벤트
 		
 		
+		
+		// 공지글 삭제하기 버튼 클릭시 
+      	$(document).on("click","button.DeleteBnt",function(){
+	         const notino = $(this).next().find("#notino").val();
+	         const fk_senderno = $(this).next().find("#fk_senderno").val();
+	       	 
+	         /*
+	         console.log("삭제할 공지 번호 : "+ notino);
+	     	 console.log("공지 작성자 사원번호 : "+ fk_senderno);
+	         */
+	         
+          	 $.ajax({
+	             url:"<%= request.getContextPath() %>/notice/deleteDepNoticeEnd.yolo",
+	             type : "POST",
+	             data : {"notino" : notino,
+	            	 	 "fk_senderno" : fk_senderno},
+	            	
+	             dataType: "JSON",
+	             success: function(json){
+					  
+	            	 // json.result; // 컨트롤러에서 넣은 json값 가져오기
+	            	 // console.log(json.result);
+	            	 if(json.result == 0 ){
+	            		 alert(json.message);
+	            	 }	
+	            	 else{
+	            		 alert(json.message);
+	            	 }
+	            	// console.log(result);
+	               	 location.reload();
+	                
+	               },
+	               error: function(request, status, error){
+	                      alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	               }
+	               
+	           });// end of $.ajax()--------------------------------
+      });//end of $(document).on("click","button.DeleteBnt",function(){}-------
+		
+		
+		
+		
+		
 	}); // end of $(document).ready(function() ------
 
 			
@@ -162,7 +205,7 @@
 		    	data : {"notino" : notino},
 		    	dataType: "JSON",
 				success: function(json){
-					console.log(json);
+				//	console.log(json);
 					
 					$("input#editsubject").val(json.subject);
 					// 추후에 + 파일 첨부 넣기
@@ -216,13 +259,13 @@
 							</c:otherwise>
 						</c:choose>
 						&nbsp;&nbsp;
-						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2"  style= "background-color: ${deptNoti.profile_color};">댓글</span><span style="color: green;">[6]</span>	</span>
+						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ &nbsp;</span><span id="cmtCount" style="color: green;"> <span style='font-size:25px;'>&#128172;</span> [${noticevo.cmtCount}]  </span></span>
 					</div>
 					<button type="button" class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button>
 					<button type="button" class="listBnt DeleteBnt">삭제하기</button>
 					<form id="delFrm" name="delFrm">
-					<input type="text" id="notino" value="${deptNoti.notino}" name="notino">
-					<input type="text" id="fk_senderno" value="${deptNoti.fk_senderno}" name="fk_senderno">
+					<input type="hidden" id="notino" value="${deptNoti.notino}" name="notino">
+					<input type="hidden" id="fk_senderno" value="${deptNoti.fk_senderno}" name="fk_senderno">
 					</form>				
 				</div>
 			</div>

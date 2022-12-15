@@ -113,8 +113,11 @@
       	$(document).on("click","button.DeleteBnt",function(){
 	         const notino = $(this).next().find("#notino").val();
 	         const fk_senderno = $(this).next().find("#fk_senderno").val();
-	       	 console.log("삭제할 공지 번호 : "+ notino);
+	       	 
+	         /*
+	         console.log("삭제할 공지 번호 : "+ notino);
 	     	 console.log("공지 작성자 사원번호 : "+ fk_senderno);
+	         */
 	         
           	 $.ajax({
 	             url:"<%= request.getContextPath() %>/notice/deleteNoticeEnd.yolo",
@@ -170,6 +173,8 @@
 				$("#myListModal span#content").text(json.content);
 				$("#myListModal input#notino").val(json.notino);
 				$("#myListModal input#fk_notino").val(json.notino); // 댓글 fk_notino
+				
+				goReadComment(notino); // 댓글 조회하는 function
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -253,14 +258,14 @@
 							</c:otherwise>
 						</c:choose>
 						&nbsp;&nbsp;
-						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ </span><span id="prof" class="py-2" style= "background-color: ${noticevo.profile_color};">댓공지</span><span style="color: green;">[6]</span>	</span>
+						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ &nbsp;</span><span id="cmtCount" style="color: green;"> <span style='font-size:25px;'>&#128172;</span> [${noticevo.cmtCount}] </span></span>
 					</div>
 					<button class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal" >수정하기</button> 
 					
 					<button type="button" class="listBnt DeleteBnt" >삭제하기</button>
 					<form name="delFrm" id="delFrm"> <%-- 값이 있을 때 폼태그.. --%>
-					<input type="text" id="notino" value="${noticevo.notino}" name="notino">
-					<input type="text" id="fk_senderno" value="${noticevo.fk_senderno}" name="fk_senderno">
+					<input type="hidden" id="notino" value="${noticevo.notino}" name="notino">
+					<input type="hidden" id="fk_senderno" value="${noticevo.fk_senderno}" name="fk_senderno">
 					</form>
 				</div>
  			</div>
@@ -276,6 +281,7 @@
 	</c:if>
 	
 </div> <%-- 공지 리스트(boardlist) 끝 --%>	
+	
 	
 <%-- 공지 상세 모달 --%>
 <%@ include file="detail/noticeDetail.jsp" %>

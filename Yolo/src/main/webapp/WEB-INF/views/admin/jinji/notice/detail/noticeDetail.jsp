@@ -184,10 +184,10 @@
 <script type="text/javascript">
 
 	$(document).ready(function() {
-		/*
+		
 		
 		// 페이징 처리 안한 댓글 읽어오기 // 문서로딩되자마자 이 함수 호출
-		goReadComment();
+		// goReadComment();
 		
 		// 댓글 글자수 제한
 		$('#commentContent').on('keyup', function() {
@@ -218,6 +218,7 @@
 			
     	}); // end of 댓글 제한 
 		
+    	
 		
 	}); // end of ready
 
@@ -237,9 +238,10 @@
 	    	return; //메세지 뜨게 하고 종료
 		}
 		else{
+			alert("댓글쓰기가 완료되었습니다.");
+			window.location.reload();
 			goAddCmtReal();
 		}
-
 	} // end of function goAddWrite()
 	
 	
@@ -247,7 +249,6 @@
 	// 유효성 검사 통과한 댓글 쓰기인 경우
 	function goAddCmtReal() {
 		
-	 // var cmtForm = $("#commentFrm").serialize();
    		$.ajax({
 		  url:"<%= request.getContextPath()%>/notice/addComment.yolo",
 		  data: {//cmtForm,
@@ -261,10 +262,10 @@
 			success: function(json){
 			 	
 			//	console.log("goAddCmtReal json :" +json);			
-			//	josn.fk_notino;
-				console.log("json.fk_notino :" + json.fk_notino);
+			
+			//	console.log("json.fk_notino :" + json.fk_notino);
 			 
-				goReadComment(); 
+				goReadComment(notino); 
 			 	
 				$("textarea#commentContent").val("");
 				
@@ -278,30 +279,114 @@
 	
 	
 	// 작성한 댓글 읽어오기
-	function goReadComment() {
-		console.log(fk_notino);
+	function goReadComment(notino) {
+	//	console.log(fk_notino);
 		$.ajax({
    			url:"<%= request.getContextPath()%>/notice/readComment.yolo",
-   			data: {"fk_notino" : fk_notino},
+   			data: {"fk_notino" : notino},
    					 // 원글 알아야 한다.
    			dataType:"JSON",
    			success: function(data){
-   				
-   				console.log("goReadComment json 확인 : " + json);
-   		
    			
+   				let html = "";
+   				if(data.length > 0) {
+   				$.each(data,function(index, item){
+  				// 여러개의 댓글 존재할 수 있음 => for문으로  					
+   				//	console.log(item.name);
+   				//	console.log(item.fk_empno);
+   				
+   				const commentno = item.commentno;
+   			
+  				html +=
+  						'<div class="mt-3 mb-2" >'+
+   				      	'<div class="commentrow  px-2 py-3">'+
+   				       	'<span class="mt-2 mb-3" style="font-size: 12pt; color: gray;"> ┗ <span id="prof" class="py-2">'+item.nickname+'</span><span class="ml-1 mr-1" id="fk_empno" >'+item.name+'</span><span class="ml-3" id="cmtWritedate">'+item.writedate+'</span></span>';
+   				
+   				  
+   				     if( ${sessionScope.loginuser.empno} != item.fk_empno) {
+   				    	 
+   				     
+   				html +=	'<div style="display:inline; float: right;">'+
+   				    	'</div>';
+   				    	
+   				     } 	
+   				     else{
+   				    	
+   				html +=	
+   						'<div style="display:inline; float: right;">'+
+					    '<button type="button" class="MYcommentBnt mr-0" onclick="goEditCmt('+item.commentno+')">수정</button>'+
+			     		'<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>'+
+			     		'</div>';
+   				     }
+   				     
+   				 html+=	
+   				    	'<div class="mt-3">'+
+   			       		'<input name="content" id="cmtContent" class="commentrow mt-3 mb-4 " style="border-style: none; font-size: 12pt; color: gray;" id="cmtContent" placeholder=" ▶ '+item.content+'" />'+
+   			       		<%--'<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button>'+ --%>
+   				       	'</div>'+
+   				       	'</div>'+	
+   			  			'</div>'+
+   			  			'<input type="text" name="fk_notino" id="cmt_notino" value=" '+item.fk_notino+' "/>'+
+   			  			'<input type="text" name="fk_empno" id="cmt_notino" value=" '+item.fk_empno+' "/>'+
+   			         	'<input type="text" name="commentno" id="cmtno" value=" '+item.commentno+' "/>'+
+   				       	'<hr>';
+   					
+   				}); // end of $.each(data,function(index, item) -----------------
+   			} // if
+   			
+   			else{
+   				html += 
+   					'<div class="mt-3 mb-2" >'+
+				    '<div class="commentrow  px-2 py-2">'+
+				    '<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> 댓글이 없습니다.</span>'+
+				    '</div>'+
+				    '</div>';
+   			}
+   				
+   			$("#showCmt").html(html);
    			
    			},
    			error: function(request, status, error){
 	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 	        }
-		});	
+   			
+  
+		});	// end of $.ajax({ -------------------
+	
 		
-		
-		
+			
+		// 댓글 수정하기
+		function goEditCmt(commentno) {
+				
+				$.ajax({
+			    	url : "<%= request.getContextPath() %>/notice/editComment.yolo",
+			    	type: 'POST',
+			    	data : {"commentno" : commentno},
+			    	dataType: "JSON",
+					success: function(json){
+						console.log(json);
+						
+						 $("input#editsubject").val(json.subject);
+						// 추후에 + 파일 첨부 넣기
+						 $("textarea#editContent").text(json.content);               
+						 $("input#hidden_notino").val(json.notino);
+					},
+					error: function(request, status, error){
+		                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		            }
+				}); // end of 첨부파일 ajax
+
+		} // end of openDepNoticeEditModal(notino) --------------		
+	
+			
+			
+			
+			
+			
+			
 	}// end of function goReadComment()
 	
-	*/
+
 	
 </script>    
     
@@ -338,7 +423,7 @@
 		     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
 		     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
 		     	</div>
-     			<input id="notino" type="text">
+     			<input id="notino" type="hidden">
      			
 				 <%-- 댓글 입력란 시작 --%>     	
 				 <c:if test="${not empty sessionScope.loginuser }">
@@ -348,19 +433,19 @@
 		   		 <div class="commentBox">
 		   		 
 		      	 <%-- 댓글폼 --%>
-			    	<form id="commentFrm" name="commentFrm" style="resize: none; width:100%; margin: 0;">
-			       	<textarea id="commentContent" name="content" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; width:100%; max-height: 10px; margin: 0;"></textarea>
-			       	<div class="mt-2">
-			       		<button type="button" class="commentBnt" onclick="goAddCmt()">댓글쓰기</button>
-						<button type="reset" class="commentCancleBnt">취소</button>
-			        	<div class="textLengthWrap" style="float: right; color: #808080;">
-					   		<span class="textCount">0자</span>
-					    	<span class="textTotal">/50자</span>
-						</div>
+		    	<form id="commentFrm" name="commentFrm" style="resize: none; width:100%; margin: 0;">
+		       	<textarea id="commentContent" name="content" maxlength="50" placeholder="댓글을 입력하세요." style="resize: none; width:100%; max-height: 10px; margin: 0;"></textarea>
+		       	<div class="mt-2">
+		       		<button type="button" class="commentBnt" onclick="goAddCmt()">댓글쓰기</button>
+					<button type="reset" class="commentCancleBnt">취소</button>
+		        	<div class="textLengthWrap" style="float: right; color: #808080;">
+				   		<span class="textCount">0자</span>
+				    	<span class="textTotal">/50자</span>
 					</div>
-					<input type="text" name="fk_empno" id="fk_empno"  value="${sessionScope.loginuser.empno}" />  
-					<input type="text" name="fk_notino" id="fk_notino"  value="" />
-		    		</form>
+				</div>
+				<input type="text" name="fk_empno" id="fk_empno"  value="${sessionScope.loginuser.empno}" />  
+				<input type="text" name="fk_notino" id="fk_notino"  value="" />
+	    		</form>
 		    		
 		    	</div>
 				</div> <%-- 댓글 입력란 끝 --%>   
@@ -371,22 +456,30 @@
 		</div> <%-- modal body --%>
 			
 		<div  class="modalFooter">
-			<div class="modal-cmtContent ">
+			<div class="modal-cmtContent " id="showCmt">
+		      
 		      	<%-- 댓글 내용 --%> <%-- 내가 쓴 댓글은 수정, 삭제 버튼 나오게 하기 / 수정시 댓글내용은 입력폼으로 변경된다. --%>
-		      	<div class="mt-3 mb-2">
-		      	<div class="commentrow  px-2 py-2">
+		      	<%--
+		      	<div class="mt-3 mb-2" >
+		      	
+		      	
+		      	
+		      	<div class="commentrow  px-2 py-2" >
 		       	<span class="mt-2 mb-3" style="font-size: 10pt; color: gray;"> ┗ <span id="prof" class="py-2">작성자</span><span class="ml-1 mr-1" id="fk_empno" >김땡땡</span><span class="ml-3" id="cmtWritedate">2022-11-30</span></span>
 		       	<div style="display:inline;	float: right;">
-	     			<button type="button" class="MYcommentBnt mr-0" >수정</button> <%-- 수정 누를시 수정, 삭제 버튼 없애고 수정 후 확인 버튼만 오게 하기 --%>
+	     			<button type="button" class="MYcommentBnt mr-0" >수정</button> 
 	     			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
 	      		</div>
 	      		<div class="mt-3">
 	       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;" id="cmtContent"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
-	       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
+	       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button>
 		       	</div>
 		       	</div>	
+		       	
 		       	<hr>
-		  		</div> <%-- 댓글내용 끝 --%>
+		       
+		  		</div>  댓글내용 끝 
+		  		--%>
 	  		</div>
 	  	</div><%-- footer  끝 --%>
 

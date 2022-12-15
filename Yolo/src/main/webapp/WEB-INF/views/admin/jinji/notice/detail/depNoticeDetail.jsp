@@ -251,7 +251,7 @@
 		     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
 		     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
 		     	</div>
-     			<input id="notino" type="text">
+     			<input id="notino" type="hidden">
      			
 				 <%-- 댓글 입력란 시작 --%>     	
 	
@@ -264,7 +264,7 @@
 			    	<form id="commentFrm" name="commentFrm" style="resize: none; width:100%; margin: 0;">
 			       	<textarea id="commentContent" name="content" maxlength="50"  placeholder="댓글을 입력하세요." style="resize: none; width:100%; margin: 0;"></textarea>
 			       	<div class="mt-2">
-			       		<button type="button" class="commentBnt" onclick="">댓글쓰기</button>
+			       		<button type="button" class="commentBnt" onclick="goAddCmt()">댓글쓰기</button>
 						<button type="reset" class="commentCancleBnt">취소</button>
 			        	<div class="textLengthWrap" style="float: right; color: #808080;">
 					   		<span class="textCount">0자</span>
@@ -293,7 +293,7 @@
 	     			<button type="button" class="MYcommentCancelBnt mr-0">삭제</button>
 	      		</div>
 	      		<div class="mt-3">
-	       		<span class="commentrow mt-3 mb-4" style="font-size: 10pt; color: gray;" id="cmtContent"> &nbsp; ▶ 좋은 댓글 작성합니다.</span>
+	       		<input class="commentrow mt-3 mb-4" type="text"	style= "border-style: none; font-size: 10pt; color: gray;" id="cmtContent" value=" ▶ 좋은 댓글 작성합니다."/>
 	       		<button type="button" class="cmtEditBnt mr-0" style="float: right;">확인</button><%-- 댓글 수정시에만 보여주기 --%>
 		       	</div>
 		       	</div>	

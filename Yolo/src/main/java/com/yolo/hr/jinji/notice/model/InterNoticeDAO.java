@@ -19,7 +19,7 @@ public interface InterNoticeDAO {
 	
 	
 	
-
+	/////// 전체 공지////////
 	// 전체 공지 리스트 보여주기
 	List<Map<String, String>> getAllNoticeList(String empno);
 
@@ -42,8 +42,8 @@ public interface InterNoticeDAO {
 	int updateCommentCount(String fk_notino);
 
 	// 원공지글에 해당하는 댓글 조회하기
-	List<CommentVO> getCommentList(String fk_notino);
-
+	List<Map<String, String>> getCommentList(String fk_notino);
+	
 	// 공지 작성시 해당 공지 받는 사원 번호 알아오기
 	List<String> getEmpnoList(String fk_deptno);
 
@@ -53,7 +53,7 @@ public interface InterNoticeDAO {
 	
 	
 	
-	
+	///////  부서 공지 ////////
 	// 부서의 해당 공지 리스트 보여주기
 	List<Map<String, String>> depNoticeList(String fk_deptno);
 
@@ -62,20 +62,29 @@ public interface InterNoticeDAO {
 	
 	// 부서 공지 수정을 위해 해당 공지번호 글 하나만 가져오기
 	NoticeVO showEditDepNoticeContent(String notino);
-
+	
+	// 부서 공지글 1개 삭제  요청
+	int delDepNoticeEnd(Map<String, String> paraMap);
 	
 	
-
+	
+	
+	
+	/////// 내가 쓴 공지 ////////
 	// 내가 쓴 공지리스트 기져오기
 	List<Map<String, String>> getMyNoticeList(String empno);
 
 	// 내가 쓴 공지사항 공지글 1개 보여주기(ajax)
 	Map<String, String> showMyNoticeContent(String notino);
 
+	// 내가 쓴 공지리스트 수정
+	NoticeVO showEditMyNoticeContent(String notino);
+
+	// 내가 쓴 공지글 1개 삭제  요청
+	int delMyNoticeEnd(Map<String, String> paraMap);
 
 	
 
-	
 
 
 

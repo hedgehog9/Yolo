@@ -182,6 +182,7 @@ public class NoticeController {
 	    // ajax
         JSONObject jsonObj = new JSONObject(); 
         jsonObj.put("notino", notice.get("notino"));
+        jsonObj.put("fk_senderno", notice.get("fk_senderno"));
         jsonObj.put("subject", notice.get("subject"));
         jsonObj.put("content", notice.get("content"));
         jsonObj.put("writedate", notice.get("writedate"));
@@ -334,37 +335,77 @@ public class NoticeController {
        
        String fk_notino = request.getParameter("fk_notino");
        
-       System.out.println("fk_notino :"+fk_notino);
+       // System.out.println("fk_notino :"+fk_notino);
        
-       List<CommentVO> commentList = service.getCommentList(fk_notino); 
+       List<Map<String,String>> commentList = service.getCommentList(fk_notino); 
+    
+       // 어떤 글은 댓글 아예 없을 수도 있다.
        
        JSONArray jsonArr = new JSONArray();
-       
-       // 어떤 글은 댓글 아예 없을 수도 있다.
-       if(commentList != null) { 
-           for(CommentVO cmtvo : commentList) {
-               JSONObject jsonObj = new JSONObject();
-               // DB에서 읽어온 것 네임,컨텐트, 작성일자를 put 해준다.
-               jsonObj.put("commentno", cmtvo.getCommentno());
-               jsonObj.put("fk_notino", cmtvo.getFk_notino());
-               jsonObj.put("fk_empno", cmtvo.getFk_empno());
-               jsonObj.put("content", cmtvo.getContent());
-               jsonObj.put("writedate", cmtvo.getWritedate());
-               
-               jsonArr.put(jsonObj);
-               //여기 담긴 것 웹페이지에 보여줘야 한다.
-               
-               System.out.println("jsonObj :" + jsonObj);
-               
-               
-           } // end of for
-       }
-       return jsonArr.toString(); // 담긴 것 웹페이지에 보여줘야 한다.  // "[]" => 빈배열(내용없을때  // 또는 "[{}, {}. {}]"
-       // http://localhost:9090/board/readComment.action?parentSeq=4 검색해서 빈배열인지 or 댓글 내용 담겼을 때 제대로 스트링 나오는지 결과값 확인해본다.
+       // DB에서 읽어온 것 네임,컨텐트, 작성일자를 put 해준다.
+     
+		for(Map<String,String> comment: commentList) { // 뷰단에 뿌려줄 값들 모두 넣기
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("commentno", comment.get("commentno"));
+			jsonObj.put("name", comment.get("name"));
+			jsonObj.put("fk_notino", comment.get("fk_notino"));
+			jsonObj.put("fk_empno", comment.get("fk_empno"));
+			jsonObj.put("content", comment.get("content"));
+			jsonObj.put("writedate", comment.get("writedate"));
+			jsonObj.put("profile_color", comment.get("profile_color") );
+			jsonObj.put("nickname", comment.get("nickname"));
+			jsonObj.put("deptname", comment.get("deptname"));
+			jsonObj.put("position", comment.get("position"));
+			
+			jsonArr.put(jsonObj);
+		}
+	//	System.out.println(jsonArr);  
+	// 	원공지글에 대한 댓글 여러개일 수 있음 => 뷰단 ajax로 for문 돌리기((  $.each(data,function(index, item)  ))
+		return jsonArr.toString() ;
+
    }
+   
+    // 
+	// 원 공지글에 대한 댓글  수정하기 (fk_serderno 만 가능하도록 하기)
+	@ResponseBody
+	@RequestMapping(value = "/notice/editComment.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public String editComment(CommentVO commentvo, HttpServletRequest request) {
+		
+		String commentno = commentvo.getCommentno();
+	//		NoticeVO editNoticevo = service.getEditNotice(notino);
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		commentvo.setFk_empno(loginuser.getEmpno());
+		
+		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
+	    Map<String, String> editComment = service.showEditNoticeContent(commentno);
+		
+	    // service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
+		
+		
+		// ajax
+	   JSONObject jsonObj = new JSONObject();
+	   // jsonObj.put("editNoticevo", editNoticevo);
+	   jsonObj.put("commentno", editComment.get("commentno"));
+	   jsonObj.put("content", editComment.get("content"));
+	   jsonObj.put("fk_empno", editComment.get("fk_empno"));
+	   
+	   
+	   return jsonObj.toString(); 
+	}
+	
+   
+   
    
 	   
    /////////////////////////////////////////////////// 전체 공지 끝 /////////////////////////////////
+   
+   
+   
+   
+   
    
    
    /////////////////////////////////////////////////// 	부서 공지 시작 /////////////////////////////////
@@ -405,6 +446,7 @@ public class NoticeController {
 	    // ajax
         JSONObject jsonObj = new JSONObject(); 
         jsonObj.put("notino", deptNotice.get("notino"));
+        jsonObj.put("fk_senderno", deptNotice.get("fk_senderno"));
         jsonObj.put("subject", deptNotice.get("subject"));
         jsonObj.put("content", deptNotice.get("content"));
         jsonObj.put("writedate", deptNotice.get("writedate"));
@@ -425,7 +467,6 @@ public class NoticeController {
 	public String editDepNotice(NoticeVO noticevo, HttpServletRequest request ) {
 		
 		String notino = noticevo.getNotino();
-//		NoticeVO editNoticevo = service.getEditNotice(notino);
 		
 //		System.out.println("부서수정번호 : "+ notino);
 		
@@ -444,7 +485,6 @@ public class NoticeController {
         JSONObject jsonObj = new JSONObject();
 		
         jsonObj.put("notino", noticevo.getNotino());
-        jsonObj.put("notino", noticevo.getNotino());
         jsonObj.put("subject", noticevo.getSubject());
         jsonObj.put("content", noticevo.getContent());
         
@@ -452,6 +492,55 @@ public class NoticeController {
         return jsonObj.toString(); 
 	}
 	
+	// 부서 공지글 1개 삭제  요청
+   @ResponseBody
+   @RequestMapping(value = "/notice/deleteDepNoticeEnd.yolo",produces="text/plain;charset=UTF-8", method = {RequestMethod.POST })
+   public String deleteDepNoticeEnd(HttpServletRequest request, HttpServletResponse response) {
+      
+      // 삭제하고자 하는 글의 번호 가져오기
+      String notino = request.getParameter("notino"); // notino (jsp에 name or ajax로 데이터 넘겨줘야)
+      // 공지 작성자의 번호 가져오기
+      String fk_senderno = request.getParameter("fk_senderno");
+      
+      // System.out.println("글삭제번호 :" + notino);
+      
+      // 글 한 개 삭제(삭제글 정보 1개 맵에 담기)
+      Map<String, String> paraMap = new HashMap<>();
+      paraMap.put("notino", notino);
+      paraMap.put("fk_senderno", fk_senderno);
+      
+      HttpSession session = request.getSession();
+	  EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	  
+	  String empno = loginuser.getEmpno();
+	  request.setAttribute("empno", empno);
+	  
+	  paraMap.put("empno", empno);
+	  
+	  // System.out.println(paraMap);
+	  
+	  String message = "";
+
+	  int result = 0;
+	  
+	  JSONObject jsonObj = new JSONObject();
+//	  System.out.println("fk_send : " +fk_senderno);
+//    System.out.println("empno : " +empno);
+	  
+	  if( !(empno.equals(fk_senderno) )) {
+		  message = "글작성자만 삭제 가능합니다.";
+	  }
+	  else {
+		  result = service.delDepNoticeEnd(paraMap);	
+		  message = "글이 삭제되었습니다.";
+	  }
+
+	  jsonObj.put("result", result); 
+	  jsonObj.put("message", message); 
+
+	  return jsonObj.toString();
+
+   }	  
 	
 	
 	/////////////////////////////////////////////////// 부서 공지 끝 /////////////////////////////////
@@ -468,16 +557,23 @@ public class NoticeController {
 	@RequestMapping(value = "/notice/myNoticeList.yolo")
 	public ModelAndView myNoticeList(HttpServletRequest request, ModelAndView mav, NoticeVO noticevo) {
 		
+		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		request.setAttribute("empno", empno);
 		
 	 // noticevo.setFk_senderno(loginuser.getEmpno());
-		loginuser.getEmpno().equals(noticevo.getFk_senderno());
+		empno.equals(noticevo.getFk_senderno());
 			
-		List<Map<String, String>> myNoticeList = service.getMyNoticeList(loginuser.getEmpno());
+		List<Map<String, String>> myNoticeList = service.getMyNoticeList(empno);
 		
-//		System.out.println("확인용 공지 목록 : "+myNoticeList);
-		
+		/*
+		for(Map<String, String> map : myNoticeList) {
+			map.get("fk_senderno");
+			System.out.println(map.get("fk_senderno"));
+		}
+		*/
 		mav.addObject("myNoticeList", myNoticeList);
 		mav.setViewName("jinji/notice/myNoticeList.admin"); 
 		
@@ -493,7 +589,7 @@ public class NoticeController {
     
 		// 해당 공지글을 읽이 위해 필요한 공지번호를 가져오기
 		String notino = request.getParameter("notino");
-		System.out.println(notino);
+		// System.out.println(notino);
 
 			
 		// map 으로 넣기( 해당 글의 공지번호를 통해 글 하나만 가져오기)
@@ -502,6 +598,7 @@ public class NoticeController {
 	    // ajax
         JSONObject jsonObj = new JSONObject();
         jsonObj.put("notino", myNotice.get("notino"));
+        jsonObj.put("fk_senderno", myNotice.get("fk_senderno"));
         jsonObj.put("subject", myNotice.get("subject"));
         jsonObj.put("content", myNotice.get("content"));
         jsonObj.put("writedate", myNotice.get("writedate"));
@@ -517,9 +614,91 @@ public class NoticeController {
 	
 	
 	
+	// 내가 쓴 공지리스트 수정
+	@ResponseBody
+	@RequestMapping(value = "/notice/getMyNoticeContent.yolo", produces="text/plain;charset=UTF-8",  method= {RequestMethod.POST})
+	public String editMyNotice(NoticeVO noticevo, HttpServletRequest request ) {
+		
+		String notino = noticevo.getNotino();
+		
+//		System.out.println("수정번호 : "+ notino);
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		noticevo.setFk_senderno(loginuser.getEmpno());
+		
+		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기) (맵에 담으면 맵으로 받음/VO는 NoticeVO로)
+		
+				
+		noticevo =  service.showEditMyNoticeContent(notino);
+//			service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
+		
+		// ajax
+        JSONObject jsonObj = new JSONObject();
+		
+        jsonObj.put("notino", noticevo.getNotino());
+        jsonObj.put("subject", noticevo.getSubject());
+        jsonObj.put("content", noticevo.getContent());
+        
+//	      System.out.println("부서수정공지 맵 :" +jsonObj);
+        return jsonObj.toString(); 
+	}
+	
+	
+	// 내가 쓴 공지글 1개 삭제  요청
+   @ResponseBody
+   @RequestMapping(value = "/notice/deleteMyNoticeEnd.yolo",produces="text/plain;charset=UTF-8", method = {RequestMethod.POST })
+   public String deleteMyNoticeEnd(HttpServletRequest request, HttpServletResponse response) {
+      
+      // 삭제하고자 하는 글의 번호 가져오기
+      String notino = request.getParameter("notino"); // notino (jsp에 name or ajax로 데이터 넘겨줘야)
+      // 공지 작성자의 번호 가져오기
+      String fk_senderno = request.getParameter("fk_senderno");
+      // System.out.println(fk_senderno);
+      // System.out.println("글삭제번호 :" + notino);
+      
+      
+      // 글 한 개 삭제(삭제글 정보 1개 맵에 담기)
+      Map<String, String> paraMap = new HashMap<>();
+      paraMap.put("notino", notino);
+      paraMap.put("fk_senderno", fk_senderno);
+      
+      HttpSession session = request.getSession();
+	  EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	  
+	  String empno = loginuser.getEmpno();
+	  request.setAttribute("empno", empno);
+	  
+	  paraMap.put("empno", empno);
+	  
+	  String message = "";
+
+	  int result = 0;
+	  
+	  JSONObject jsonObj = new JSONObject();
+	  System.out.println("내가쓴공지:"+paraMap);
+	  
+	  if( !(empno.equals(fk_senderno) )) {
+		  message = "글작성자만 삭제 가능합니다.";
+	  }
+	  else {
+		  result = service.delMyNoticeEnd(paraMap);	
+		  message = "글이 삭제되었습니다.";
+	  }
+
+	  jsonObj.put("result", result); 
+	  jsonObj.put("message", message); 
+
+	  return jsonObj.toString();
+
+   }	  
 	
 	
 	
 	/////////////////////////////////////////////////// 내가 쓴 공지 끝 /////////////////////////////////
    
+	
+	
+	
 }

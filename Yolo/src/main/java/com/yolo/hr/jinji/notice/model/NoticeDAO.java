@@ -43,7 +43,7 @@ public class NoticeDAO implements InterNoticeDAO {
 
 	
 	
-	
+	/////// 전체 공지 ////////
 	// 전체 공지 리스트 전체 보여주기 (select)
 	@Override
 	public List<Map<String, String>> getAllNoticeList(String empno) {
@@ -60,6 +60,23 @@ public class NoticeDAO implements InterNoticeDAO {
 		return noticeContent;
 	}
 	
+	
+	// 공지 작성시 해당 공지 받는 사원 번호 알아오기
+	@Override
+	public List<String> getEmpnoList(String fk_deptno) {
+		List<String> empnoList = sqlsession.selectList("jinmj.empnoList", fk_deptno);
+		return empnoList;
+
+	}
+
+	// seq 최신 공지번호 알아오기
+	@Override
+	public String getSeqNotino(String empno) {
+		String seqNotino =  sqlsession.selectOne("jinmj.seqNotino", empno);
+		return seqNotino;
+	}
+	
+	
 	// 공지글 수정을 위한 원래 공지글 조회하기
 	@Override
 	public Map<String, String> showEditNoticeContent(String notino) {
@@ -74,7 +91,6 @@ public class NoticeDAO implements InterNoticeDAO {
 		return result;
 	}
 
-	
 	// 공지 삭제 요청하기 (글 1개 조회)
 	@Override
 	public int delNoticeEnd(Map<String, String> paraMap) {
@@ -98,36 +114,18 @@ public class NoticeDAO implements InterNoticeDAO {
 
 	// 원공지글에 해당하는 댓글 조회하기
 	@Override
-	public List<CommentVO> getCommentList(String fk_notino) {
-		List<CommentVO> commentList = sqlsession.selectList("jinmj.getCommentList", fk_notino);
-        return commentList;
-	}
-	
-	
-	
-	
-	
-	
-	// 공지 작성시 해당 공지 받는 사원 번호 알아오기
-	@Override
-	public List<String> getEmpnoList(String fk_deptno) {
-		List<String> empnoList = sqlsession.selectList("jinmj.empnoList", fk_deptno);
-		return empnoList;
-
+	public List<Map<String, String>> getCommentList(String fk_notino) {
+		List<Map<String, String>> cmtList = sqlsession.selectList("jinmj.getCommentList", fk_notino);
+		return cmtList;
 	}
 
-	// seq 최신 공지번호 알아오기
-	@Override
-	public String getSeqNotino(String empno) {
-		String seqNotino =  sqlsession.selectOne("jinmj.seqNotino", empno);
-		return seqNotino;
-	}
+	
 
 	
 	
 	
 	
-	
+	/////// 부서 공지 ////////
 	// 부서의 해당 공지 리스트 보여주기
 	@Override
 	public List<Map<String, String>> depNoticeList(String fk_deptno) {
@@ -149,11 +147,19 @@ public class NoticeDAO implements InterNoticeDAO {
 		return showEditDepNoticeContent;
 	}
 
+	// 부서 공지글 1개 삭제  요청
+	@Override
+	public int delDepNoticeEnd(Map<String, String> paraMap) {
+		int result = sqlsession.update("jinmj.delDepNotice", paraMap); 
+		return result;
+	}
+
 	
 	
 	
 	
 	
+	/////// 내가 쓴 공지 ////////
 	// 내가 쓴 공지리스트 가져오기
 	@Override
 	public List<Map<String, String>> getMyNoticeList(String empno) {
@@ -166,6 +172,20 @@ public class NoticeDAO implements InterNoticeDAO {
 	public Map<String, String> showMyNoticeContent(String notino) {
 		Map<String, String> myNoticeContent = sqlsession.selectOne("jinmj.showMyNoticeContent", notino);
 		return myNoticeContent;
+	}
+
+	// 내가 쓴 공지리스트 수정
+	@Override
+	public NoticeVO showEditMyNoticeContent(String notino) {
+		NoticeVO showEditMyNoticeContent =  sqlsession.selectOne("jinmj.showEditMyNoticeContent",notino);
+		return showEditMyNoticeContent;
+	}
+
+	// 내가 쓴 공지글 1개 삭제  요청
+	@Override
+	public int delMyNoticeEnd(Map<String, String> paraMap) {
+		int result = sqlsession.update("jinmj.delMyDepNotice", paraMap); 
+		return result;
 	}
 
 

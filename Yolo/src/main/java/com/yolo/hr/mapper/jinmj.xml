@@ -184,7 +184,6 @@
 	</update>
 	
 	
-	
 	<!--  전체 공지글에서 글 1개에 대한 원게시글에 해당하는 댓글들 조회하기-->
 	<resultMap type="HashMap" id="CommentMap">
 		<result property="commentno" column="commentno" javaType="String"/>
@@ -207,7 +206,6 @@
 		  from tbl_notice_comment A join tbl_notice B 
 		  on fk_notino = notino
 		  where fk_notino = #{fk_notino}
-		  
 		)
 		join
 		(
@@ -277,6 +275,14 @@
 		where notino = #{notino}
 	</select>
 	
+	<!--  부서 공지글의 글 1개 삭제 -->
+	<!--  status = 0 인 것으로 업데이트 해주기 -->
+	<delete id="delDepNotice" parameterType="HashMap" >
+		update tbl_notice set status = 0
+ 		where notino = #{notino}
+	</delete>	
+	
+	
 	
 	
 	
@@ -286,7 +292,7 @@
 	<select id="myNoticeList" parameterType="String" resultMap="NoticeMap">
 		select profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content 
       , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
-      , notiLevel, cmtCount, notino, showDept
+      , notiLevel, cmtCount, notino, showDept, fk_senderno
 		from
 		(  
 		    select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount ,D. deptname as showDept
@@ -307,7 +313,7 @@
 	<!-- 내가 쓴 공지사항 공지글 1개 보여주기(ajax) -->
 	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
 	<select id="showMyNoticeContent" parameterType="String" resultMap="NoticeMap">
-		select notino, subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, substr(name, -2, 2) as nickname, position, profile_color, showDept
+		select notino, subject, content, to_char(writedate , 'yyyy-mm-dd' ) as writedate, deptname, name, substr(name, -2, 2) as nickname, position, profile_color, showDept, fk_senderno
 		from 
 		( 
 		  select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount ,D. deptname as showDept
@@ -324,6 +330,19 @@
 		on fk_senderno = empno
 	</select>
 	
+	<!-- 내가 쓴 공지글 1개 수정하기 위해 원글 가져오기 -->
+	<select id="showEditMyNoticeContent" parameterType="String" resultType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		select notino, subject, content
+		from tbl_notice
+		where notino = #{notino}
+	</select>
+	
+	<!--  내가 쓴 공지글 1개 삭제  요청 -->
+	<!--  status = 0 인 것으로 업데이트 해주기 -->
+	<delete id="delMyDepNotice" parameterType="HashMap" >
+		update tbl_notice set status = 0
+ 		where notino = #{notino}
+	</delete>	
 	
 	
 	
