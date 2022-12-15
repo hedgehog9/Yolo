@@ -865,14 +865,12 @@
 							  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
 							  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
 								  		"<label for='label-a' id='sub' >"+item.name+"</label>";
-								  		if(item.levelno == 1 && item.approval == "0") {
-								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
-										}
-								  		else if(item.prestepApp == 1 && item.approval =="0" ) {
-								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
-										}
-								  		else {
+								  		
+								  		if(item.end_Doc == "0") {
 								  			html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>";
+								  		}
+								  		else {
+								  			html +=	"<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ff4d4d; color:#330000;'>완료</span>";
 								  		}
 								  		
 								  		/* else if(item.approval == 1){
@@ -1204,7 +1202,7 @@
 		    		  // 게시글이 있는 경우
 		    		  
 		    		  const totalPage = json.totalPage;
-		    		  
+		    		  console.log("totalPage :" +totalPage);
 		    		  const blockSize = 5;
 		    		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
 		    		  let loop = 1;
