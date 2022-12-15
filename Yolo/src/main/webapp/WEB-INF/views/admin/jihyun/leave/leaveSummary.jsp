@@ -96,7 +96,7 @@
 	
 	div#leaveModal {
 		/* border:solid 2px green; */
-		width: 25%;
+		width: 30%;
 		height: 100%;
 		overflow: auto;
 		display: flex;
@@ -114,7 +114,7 @@
 	
 	div#leaveModal.active {
 		top: 0px;
-		left: 75%;
+		left: 70%;
 	}
 	
 	div#leaveModal_outside {

@@ -36,4 +36,16 @@ public interface InterCommuteDAO {
 	// 급여정보 보내서 insert 하기
 	int checkedPayment(List<Map<String, Object>> paraList);
 
+	// 급여명세서 가져오는 메소드
+	List<Map<String, String>> getPayStubList(Map<String, Object> paraMap);
+	
+	// 퇴직금을 받을 수 있는 회원명단을 가져오는 메소드
+	List<Map<String, String>> getSeverancePayList(Map<String, Object> pageMap);
+
+	// 퇴직금 총 페이지수 가져오는 메소드
+	int getTotalPage(Map<String, Object> pageMap);
+
+	// 퇴직금 테이블에 insert
+	int severancePayment(List<Map<String, Object>> paraList);
+
 }

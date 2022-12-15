@@ -32,7 +32,7 @@ import com.yolo.hr.jihyunService.InterMessengerService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
 
 @Controller
-public class JihyunController {
+public class MessengerController {
 	
 	@Autowired
 	private InterMessengerService service;
@@ -47,13 +47,8 @@ public class JihyunController {
 	@RequestMapping(value = "/messenger/sentMessage.yolo")
 	public ModelAndView sentMessage( HttpServletRequest request, ModelAndView mav) {
 		
-		// 가라 세션
-		EmployeeVO loginuser = new EmployeeVO();
-		// loginuser.setEmpno("1050");
-		loginuser.setEmpno("1001");
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
-		// 가라세션 끝
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
 		
 		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 시작 === //
 		/*
@@ -248,13 +243,8 @@ public class JihyunController {
 	@RequestMapping(value = "/messenger/receivedMessage.yolo")
 	public ModelAndView receivedMessage( HttpServletRequest request, ModelAndView mav) {
 		
-		// 가라 세션
-		EmployeeVO loginuser = new EmployeeVO();
-		// loginuser.setEmpno("1001");
-		loginuser.setEmpno("1050");
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
-		// 가라세션 끝
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
 		
 		// empno 넘어오면 request 영역에 담아줘야 한다
 		String empno = request.getParameter("empno"); 
@@ -783,7 +773,7 @@ public class JihyunController {
 					// WAS의 webapp 절대경로를 알아와야한다. 
 					String root = session.getServletContext().getRealPath("/"); // 이만큼이 webapp 
 					
-					System.out.println("root 확인 :" + root);
+					// System.out.println("root 확인 :" + root);
 					// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 					
 					String path = root + "resources"+File.separator+"files"+File.separator+"massenger";
@@ -936,30 +926,5 @@ public class JihyunController {
 	    }
 	    
 	}
-	
-	
-	
-	// 관리자 내휴가 휴가 개요
-	@RequestMapping(value="/leaveSummary.yolo") 
-    public String leaveSummary() {
-		
-        return "jihyun/leave/leaveSummary.admin"; // 뷰단 페이지
-        // /WEB-INF/views/admin/{1}/{2}.jsp
-    }
-	
-
-	// 관리자 구성원 휴가 보유 현황
-	@RequestMapping(value="/empLeaveStatus.yolo") 
-    public String empLeaveStatus() {
-		
-        return "jihyun/leave/empLeaveStatus.admin"; // 뷰단 페이지
-    }
-	
-	// 관리자 구성원 휴가 사용 내역
-	@RequestMapping(value="/empLeaveUsingList.yolo") 
-    public String empLeaveUsingList() {
-		
-        return "jihyun/leave/empLeaveUsingList.admin"; // 뷰단 페이지
-    }
 		
 }
