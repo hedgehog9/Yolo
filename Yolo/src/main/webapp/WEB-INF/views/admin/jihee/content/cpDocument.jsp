@@ -1276,14 +1276,14 @@
 								    }
 								    else {
 								    	pageBarHTML += "<li class='page-item'>"+
-								    	"<a class='page-link' href='javascript:waitingDm(\""+pageNo+"\")'>"+pageNo+"</a></li>";
+								    	"<a class='page-link' href='javascript:myDocument(\""+pageNo+"\")'>"+pageNo+"</a></li>";
 								    }
 								    loop++;
 				    				pageNo++;
 				    			}// end of while--------------------------
   
 								    pageBarHTML += "<li class='page-item'>"+
-								      "<a class='page-link' href='#''>></a>"+
+								      "<a class='page-link' href='#''></a>"+
 								    "</li>"+
 								 " </ul>"+
 								"</nav>";

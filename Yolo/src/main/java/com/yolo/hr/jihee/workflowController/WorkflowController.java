@@ -561,6 +561,11 @@ public class WorkflowController {
 		paraMap.put("deptno", String.valueOf(docvo.getDeptno()));
 		paraMap.put("empno", docvo.getFk_writer_empno());
 		
+		//줄바꿈 적용시키기
+		String doc_contents = docvo.getDoc_contents();
+		doc_contents=doc_contents.replace("\r\n","<br>");
+		docvo.setDoc_contents(doc_contents);
+				
 		
 		if(attach.isEmpty() ) {
 			//파일첨부가 없는 글쓰기인 경우		
@@ -572,6 +577,7 @@ public class WorkflowController {
 			paraMap.put("attach", "yes");
 		}
 		
+		//글 작성하기
 		int doc_no = service.add(docvo,paraMap);
 		
 		
@@ -649,6 +655,9 @@ public class WorkflowController {
 			String icon = docDetailMap.get("icon");
 			String orgfilename = docDetailMap.get("orgfilename");
 			String d_day = docDetailMap.get("d_day");
+			
+			//줄바꿈 적용시키기
+			contents=contents.replace("<br>","\r\n");
 			
 			request.setAttribute("appList", appList);
 			request.setAttribute("subject", subject);
@@ -887,6 +896,13 @@ public class WorkflowController {
 			for(Map<String,String> docListmap: documentList) {
 				JSONObject jsonObj = new JSONObject();
 				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
+				
+				String doc_contents = docListmap.get("doc_contents");
+				
+				
+				//doc_contents = doc_contents.substring(0,doc_contents.indexOf("\r\n"));
+				//System.out.println("doc_contents :" + doc_contents);
+				
 				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
 				jsonObj.put("writeday", docListmap.get("writeday"));
 				jsonObj.put("modificationday", docListmap.get("modificationday"));

@@ -224,7 +224,7 @@ textarea:focus {
  				singleDatePicker: true,
  				timePicker: true,
  				timePicker24Hour: true,
- 				startDate: new Date(),
+ 				//startDate: new Date(),
  				locale: {
  				"format": 'YYYY-MM-DD',
  				"applyLabel": "확인",
@@ -246,10 +246,10 @@ textarea:focus {
         
 
     	//textarea 높이 조절    	
-    	var textEle = $('textarea');
+    	/* var textEle = $('textarea');
     	textEle.on('keyup', function() {
     	  adjustHeight(); // 함수를 실행하면 자동으로 textarea의 높이 조절
-    	});
+    	}); */
         
         
 	}); // end of $(document).ready (function()
