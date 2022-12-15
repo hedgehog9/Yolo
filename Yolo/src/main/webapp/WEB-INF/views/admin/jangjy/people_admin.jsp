@@ -795,7 +795,7 @@ arr_status = [];
 		let keyword = $("input#searchWord").val();
 		
 		$.ajax({
-			url:"<%=request.getContextPath()%>/getTotalPage.yolo",
+			url:"<%=request.getContextPath()%>/getTotalEmpPage.yolo",
 			data:{"sizePerPage":"10"
 				 ,"keyword":keyword
 				 ,"arr_position":arr_position

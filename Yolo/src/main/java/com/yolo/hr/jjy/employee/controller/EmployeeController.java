@@ -121,7 +121,7 @@ public class EmployeeController {
 	
 	// 페이징 처리를 위한 페이지수 구해오기 
 	@ResponseBody
-	@RequestMapping(value = "/getTotalPage.yolo", produces = "text/plain;charset=UTF-8")
+	@RequestMapping(value = "/getTotalEmpPage.yolo", produces = "text/plain;charset=UTF-8")
 	public String getTotalPage(HttpServletRequest request,@RequestParam(name = "arr_position[]", required = false) List<String> arr_position,
 														  @RequestParam(name = "arr_dept[]", required = false) List<String> arr_dept ,
 														  @RequestParam(name = "arr_status[]", required = false) List<String> arr_status) {
