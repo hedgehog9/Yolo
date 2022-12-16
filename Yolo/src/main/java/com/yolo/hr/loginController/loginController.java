@@ -25,6 +25,18 @@ public class loginController {
 	@Autowired
 	private InterLoginDAO dao; 
 	
+	@RequestMapping(value = "/")
+	public String main(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		
+		if(session.getAttribute("loginuser") != null) {
+			return "redirect:/notice/noticeList.yolo";
+		}
+		else {
+			return "redirect:login.yolo";
+		}
+	}
 	
 	@RequestMapping(value = "/login.yolo")
 	public String login() {
@@ -37,7 +49,7 @@ public class loginController {
 	public String logout(HttpServletRequest request) {
 		
 		HttpSession session = request.getSession();
-		session.removeAttribute("userid");
+		session.removeAttribute("loginuser");
 		
 		return "redirect:/login.yolo";
 	}
