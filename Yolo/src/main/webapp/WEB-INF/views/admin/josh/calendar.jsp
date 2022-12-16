@@ -220,7 +220,7 @@
 					  if(json.length > 0) {
 						  $.each(json, function(index, item){
 							  
-							  console.log("item.schedule_no =>"+ item.schedule_no)
+							  //console.log("item.schedule_no =>"+ item.schedule_no)
 							  
 							  if(item.schedule_no != undefined) {
 								  if(item.fk_deptno == deptno) { // 내가 속한 조직 캘린더 보기
@@ -255,7 +255,8 @@
 								  //console.log("조건문 들어옴")
 								  events.push({
 									  title : item.name+"님 생일", 
-                                       color: "black",
+                                       color: "#f2f2f2",
+                                       textColor: "#404040",
                                        start: item.birthday,
                                        end: item.birthday,
                                        icon:"birthday",
@@ -278,7 +279,7 @@
       	  eventDidMount: function (arg) {
       		  
       		if(arg.event.extendedProps.icon == "birthday") {
-		    		console.log("들어오시나요?")
+		    		//console.log("들어오시나요?")
 		    		$(arg.el).find('.fc-event-title').prepend("<span style='font-size:10px;'>&#127881;</span>");
 	    		}
       		
@@ -303,97 +304,98 @@
       		  
       	  },
       	  eventClick: function(info) {
+      		 
+	    			$('#modify_scheduleModal').modal('show');
+	        		const schedule_no = info.event.id;
+	        		
+	        		$.ajax({
+	        			url:"<%= ctxPath %>/schedule/selectDetailSchedule.yolo",
+	        			data:{"schedule_no" :schedule_no},
+	        			dataType:"JSON",
+	        			success:function(json) {
+	        				
+	        				if (json.redirect == "true") {
+	  		                		window.location.href = "<%= ctxPath %>/schedule/calendar.yolo";
+	  		            		}
+	        				else {
+	        					const start_date = json.start_date
+	            				const end_date = json.end_date
+	            				$("form[name='schedule_modify_delete'] input[name='start_date']").val(start_date)
+	            				$("form[name='schedule_modify_delete'] input[name='end_date']").val(end_date)
+	            				
+	            				$('input#daterange').daterangepicker({
+	            	                timePicker: true,
+	            	                timePicker24Hour: true,
+	            	                startDate: start_date,
+	            	                endDate: end_date,
+	            	                locale: {
+	            	                  "format": 'YYYY-MM-DD HH:mm',
+	            	                  "separator": " ~ ",
+	            	                  "applyLabel": "확인",
+	            	                  "cancelLabel": "취소",
+	            	                  "fromLabel": "From",
+	            	                  "toLabel": "To",
+	            	                  "customRangeLabel": "Custom",
+	            	                  "weekLabel": "W",
+	            	                  "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+	            	                  "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+	            	                  
+	            	                }
+	            	              },function(start, end, label) {
+	            	                $("form[name='schedule_modify_delete'] input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
+	            	                $("form[name='schedule_modify_delete'] input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
+	            	            });
+	            	      		
+	            				
+	            				$("form[name='schedule_modify_delete'] input[name='subject']").val(json.subject)
+	            				$("form[name='schedule_modify_delete'] select[name='category']").val(json.category)
+	            				
+	            				if(json.joinuser != undefined) {
+	            					const joinuser = json.joinuser.split(",")
+	            					for(var i=0; i<joinuser.length; i++) {
+	            						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
+	            						
+	            					}
+	            				}
+	            				
+	            				$("form[name='schedule_modify_delete'] input[name='place']").val(json.place)
+	            				$("form[name='schedule_modify_delete'] textarea[name='content']").val(json.content)
+	            				$("form[name='schedule_modify_delete'] input[name='schedule_no']").val(schedule_no)
+	            				
+	            				console.log(json.fk_empno)
+	            				
+	            				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
+	            					$("button#schedule_modify").hide();
+	            					$("button#schedule_delete").hide();
+	            					$("i#x-button").hide();
+	            					
+	            					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
+	            					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
+	            					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
+	            				}
+	            				
+	            				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
+	            					$("button#schedule_modify").show();
+	            					$("button#schedule_delete").show();
+	            					$("i#x-button").show();
+	            					
+	            					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
+	            					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
+	            					$("form[name='schedule_modify_delete'] textarea").attr("readonly",false);
+	            				}
+	        				}
+	        				
+	        				
+	        				
+	        				
+	        			},
+	        			error: function(request, status, error){
+	  		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	  		        }	
+	        		})// end of $.ajax ----------------------------------------------------------------------------------------------
       		
-      		$('#modify_scheduleModal').modal('show');
-      		const schedule_no = info.event.id;
-      		
-      		$.ajax({
-      			url:"<%= ctxPath %>/schedule/selectDetailSchedule.yolo",
-      			data:{"schedule_no" :schedule_no},
-      			dataType:"JSON",
-      			success:function(json) {
-      				
-      				if (json.redirect == "true") {
-		                window.location.href = "<%= ctxPath %>/schedule/calendar.yolo";
-		            }
-      				else {
-      					const start_date = json.start_date
-          				const end_date = json.end_date
-          				$("form[name='schedule_modify_delete'] input[name='start_date']").val(start_date)
-          				$("form[name='schedule_modify_delete'] input[name='end_date']").val(end_date)
-          				
-          				$('input#daterange').daterangepicker({
-          	                timePicker: true,
-          	                timePicker24Hour: true,
-          	                startDate: start_date,
-          	                endDate: end_date,
-          	                locale: {
-          	                  "format": 'YYYY-MM-DD HH:mm',
-          	                  "separator": " ~ ",
-          	                  "applyLabel": "확인",
-          	                  "cancelLabel": "취소",
-          	                  "fromLabel": "From",
-          	                  "toLabel": "To",
-          	                  "customRangeLabel": "Custom",
-          	                  "weekLabel": "W",
-          	                  "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
-          	                  "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-          	                  
-          	                }
-          	              },function(start, end, label) {
-          	                $("form[name='schedule_modify_delete'] input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
-          	                $("form[name='schedule_modify_delete'] input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
-          	            });
-          	      		
-          				
-          				$("form[name='schedule_modify_delete'] input[name='subject']").val(json.subject)
-          				$("form[name='schedule_modify_delete'] select[name='category']").val(json.category)
-          				
-          				if(json.joinuser != undefined) {
-          					const joinuser = json.joinuser.split(",")
-          					for(var i=0; i<joinuser.length; i++) {
-          						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
-          						
-          					}
-          				}
-          				
-          				$("form[name='schedule_modify_delete'] input[name='place']").val(json.place)
-          				$("form[name='schedule_modify_delete'] textarea[name='content']").val(json.content)
-          				$("form[name='schedule_modify_delete'] input[name='schedule_no']").val(schedule_no)
-          				
-          				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
-          					$("button#schedule_modify").hide();
-          					$("button#schedule_delete").hide();
-          					$("i#x-button").hide();
-          					
-          					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
-          					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
-          					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
-          				}
-          				
-          				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
-          					$("button#schedule_modify").show();
-          					$("button#schedule_delete").show();
-          					$("i#x-button").show();
-          					
-          					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
-          					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
-          					$("form[name='schedule_modify_delete'] textarea").attr("readonly",false);
-          				}
-      				}
-      				
-      				
-      				
-      				
-      			},
-      			error: function(request, status, error){
-		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		        }	
-      			
-      			
-      		})// end of $.ajax ----------------------------------------------------------------------------------------------
-      		
-      	  }
+      	  }// end of eventClick: function(info) --------------------------------
+      	  
       });
   
       calendar.render();

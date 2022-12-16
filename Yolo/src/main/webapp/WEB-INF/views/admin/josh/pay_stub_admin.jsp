@@ -848,7 +848,7 @@ arr_status = [];
 		console.log("들아옴")
 		
 		$.ajax({
-			url:"<%=request.getContextPath()%>/getTotalPage.yolo",
+			url:"<%=request.getContextPath()%>/getTotalEmpPage.yolo",
 			data:{"sizePerPage":"10"
 				 ,"keyword":keyword
 				 ,"arr_position":arr_position
