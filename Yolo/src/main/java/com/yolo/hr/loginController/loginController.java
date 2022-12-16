@@ -32,6 +32,16 @@ public class loginController {
 		return "login.login";
 	}
 	
+	// 로그아웃 
+	@RequestMapping(value = "/logout.yolo")
+	public String logout(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		session.removeAttribute("userid");
+		
+		return "redirect:/login.yolo";
+	}
+	
 	//ajax
 	@ResponseBody
 	@RequestMapping(value = "/loginContinue.yolo")
