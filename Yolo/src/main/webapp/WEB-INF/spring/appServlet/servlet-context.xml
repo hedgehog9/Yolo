@@ -90,7 +90,9 @@
    
    <!-- ====== 인터셉터 시작  ====== -->
    <!-- 로그인 여부 체크하는 인터셉터 등록 -->
+   <!--  
    	<beans:bean id="loginCheckInterceptor" class="com.yolo.hr.interceptor.controller.LoginCheckInterceptor" />
+   	-->
    <!-- 로그인되어진 사용자가 관리자등급 인지 여부를 체크하는 인터셉터 등록 -->
    <!--  
    <beans:bean id="adminLoginCheckInterceptor" class="com.yolo.interceptor.controller.AdminLoginCheckInterceptor" />

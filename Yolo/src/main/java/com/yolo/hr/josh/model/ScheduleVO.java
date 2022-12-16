@@ -3,7 +3,7 @@ package com.yolo.hr.josh.model;
 public class ScheduleVO {
 
 	private String schedule_no; 
-	private String fk_empno;
+	private String empno;
 	private String start_date;
 	private String end_date;
 	private String subject;
@@ -14,17 +14,21 @@ public class ScheduleVO {
 	private String joinuser;
 	private String place;
 	
+	// select 용 field
+	private String birthday;
+	private String name;
+	
 	public String getSchedule_no() {
 		return schedule_no;
 	}
 	public void setSchedule_no(String schedule_no) {
 		this.schedule_no = schedule_no;
 	}
-	public String getFk_empno() {
-		return fk_empno;
+	public String getEmpno() {
+		return empno;
 	}
-	public void setFk_empno(String fk_empno) {
-		this.fk_empno = fk_empno;
+	public void setEmpno(String fk_empno) {
+		this.empno = fk_empno;
 	}
 	public String getStart_date() {
 		return start_date;
@@ -79,6 +83,18 @@ public class ScheduleVO {
 	}
 	public void setPlace(String place) {
 		this.place = place;
+	}
+	public String getBirthday() {
+		return birthday;
+	}
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

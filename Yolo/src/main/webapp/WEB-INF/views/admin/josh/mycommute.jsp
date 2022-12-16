@@ -68,6 +68,14 @@
 	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
 		width: 80% !important;
 	}
+	
+	.badge {
+		font-size: 15px;
+	}
+	
+	td {
+		vertical-align: middle !important;
+	}
 
 
 </style>

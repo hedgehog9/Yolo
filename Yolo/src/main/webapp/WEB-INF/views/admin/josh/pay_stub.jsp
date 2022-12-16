@@ -66,6 +66,13 @@
 		border-bottom: 2px solid #07B419 !important;
 	}
 	
+	.badge {
+		font-size: 15px;
+	}
+	
+	td {
+		vertical-align: middle !important;
+	}
     
 </style>
 

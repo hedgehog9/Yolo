@@ -441,13 +441,17 @@
     if(distance > 32400000) {
 		toastr.warning('근무시간이 경과하였습니다. 퇴근버튼을 누르세요');
 	}
+    
+    function logout(){
+    	location.href='<%= ctxPath%>/logout.yolo';
+    }
 
 </script>
 
 		<div id="sideBar">
 		
 			<div id="sideTop" class="border-bottom">
-				<div class="sideTr mt-2" style="height: 70px;" onclick="javascript:location.href='<%= ctxPath%>/userDetail.yolo?empno=${sessionScope.loginuser.empno}'">
+				<div data-toggle="dropdown" class="sideTr mt-2" style="height: 70px;">
 					<div id="prof" style="background-color:${sessionScope.loginuser.profile_color}">
 						<c:set var="name" value="${sessionScope.loginuser.name}" />
 						${fn:substring(name,1,3) }
@@ -457,6 +461,12 @@
 						<span class="ml-2" style="font-weight: normal; color: gray; font-size: 10pt;">${sessionScope.loginuser.deptname} · ${sessionScope.loginuser.position}</span>
 					</div>
 				</div>
+				
+				<div id="div_team" class="dropdown-menu">
+					<button class="dropdown-item" type="button" onclick="javascript:location.href='<%= ctxPath%>/userDetail.yolo?empno=${sessionScope.loginuser.empno}'">내 정보</button>
+					<button class="dropdown-item" type="button" onclick="logout();">로그아웃</button>
+				</div>
+				
 				<div class="dropdown my-4" id="commute-div">
 				  <a class="btn btn-outline-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 90%;margin: auto 5%;">
 				    출근하기

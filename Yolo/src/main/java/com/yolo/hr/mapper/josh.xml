@@ -16,11 +16,14 @@
 	</insert>
 
 	<select id="selectScheduleList" resultType="com.yolo.hr.josh.model.ScheduleVO">
-		select schedule_no,fk_empno
+		select schedule_no, E.empno
 		      ,to_char(start_date,'yyyy-mm-dd hh24:mi') as start_date
 		      ,to_char(end_date,'yyyy-mm-dd hh24:mi') as end_date
-		      ,subject,content,color,category,fk_deptno,joinuser,place
-		from tbl_schedule
+		      ,subject,content,color,category,S.fk_deptno,joinuser 
+		      ,nvl(to_char(sysdate,'yyyy')||'-'||substr(rrn,3,2)||'-'||substr(rrn,5,2),0) AS birthday
+		      ,name
+		from tbl_schedule S right join tbl_employees E 
+		on S.fk_empno = E.empno
 	</select>
 	
 	<select id="selectDetailSchedule" parameterType="String" resultType="com.yolo.hr.josh.model.ScheduleVO">

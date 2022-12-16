@@ -162,6 +162,120 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return result;
 	}
 
+	@Override
+	public int updateManagerEmpno(Map<String, Object> paraMap) {
+		int result = sqlsession.update("jangjy.updateManagerEmpno",paraMap);
+		return result;
+	}
+
+	@Override
+	public List<Map<String, String>> getPsaHistory(Map<String, Object> paraMap) {
+		List<Map<String, String>> psaHistoryList = sqlsession.selectList("jangjy.getPsaHistory",paraMap);
+		return psaHistoryList;
+	}
+
+	@Override
+	public List<Map<String, String>> getLeaveAbsence(Map<String, Object> paraMap) {
+		List<Map<String, String>> leaveAbsenceList = sqlsession.selectList("jangjy.getLeaveAbsence",paraMap);
+		return leaveAbsenceList;
+	}
+
+	@Override
+	public int changePsInfo(Map<String, Object> psInfoMap) {
+		int result = sqlsession.update("jangjy.changePsInfo", psInfoMap);
+		return result;
+	}
+
+	@Override
+	public int getTotalPsaPage(Map<String, Object> pageMap) {
+		int totalCount = sqlsession.selectOne("jangjy.getTotalPsaPage",pageMap);
+		return totalCount;
+	}
+
+	@Override
+	public List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap) {
+		List<Map<String,String>> psaListPaging = sqlsession.selectList("jangjy.psaListSearchWithPaging", pageMap);
+		return psaListPaging;
+	}
+
+	@Override
+	public void addFile(Map<String, Object> fileMap) {
+		sqlsession.insert("jangjy.addFile", fileMap);
+		
+	}
+
+	@Override
+	public List<Map<String, String>> getFile(Map<String, Object> paraMap) {
+		List<Map<String, String>> FileList = sqlsession.selectList("jangjy.getFile", paraMap);
+		return FileList;
+	}
+
+	@Override
+	public List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap) {
+		List<Map<String,String>> empListPaging = sqlsession.selectList("jangjy.empListDownloadExcel", searchMap);
+		return empListPaging;
+	}
+
+	@Override
+	public void insertExcel(Map<String, Object> paramMap) {
+		sqlsession.insert("jangjy.registEmpExcel",paramMap);
+		
+	}
+
+	@Override
+	public void changePsaMemo(Map<String, Object> paraMap) {
+		sqlsession.update("jangjy.changePsaMemo",paraMap);
+		
+	}
+
+	@Override
+	public Map<String, String> getLeaveInfo(Map<String, String> leaveMap) {
+		Map<String, String> leaveInfoMap = sqlsession.selectOne("jangjy.getLeaveInfo",leaveMap);
+		return leaveInfoMap;
+	}
+
+	@Override
+	public int updateLeaveDate(Map<String, String> leaveMap) {
+		int result = sqlsession.update("jangjy.updateLeaveDate",leaveMap);
+		return result;
+	}
+
+	@Override
+	public int cancelLeave(Map<String, Object> paraMap) {
+		int result = sqlsession.delete("jangjy.cancelLeave",paraMap);
+		return result;
+	}
+
+	@Override
+	public int updateLeaveStatus(Map<String, Object> paraMap) {
+		int result = sqlsession.update("jangjy.updateLeaveStatus",paraMap);
+		return result;
+	}
+
+	@Override
+	public void updateLeavejae(Map<String, String> leaveMap) {
+		sqlsession.update("jangjy.updateLeavejae",leaveMap);
+	}
+
+	@Override
+	public void retirement(Map<String, Object> empMap) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int checkApproval(Map<String, Object> paraMap) {
+		int result = sqlsession.selectOne("jangjy.checkApproval",paraMap);
+		return result;
+	}
+
+	@Override
+	public int updateRetirement(Map<String, Object> paraMap) {
+		int result = sqlsession.update("jangjy.updateRetirement", paraMap);
+//		int result = sqlsession.delete("jangjy.deleteEmp", paraMap);
+		return result;
+	}
+
 	
 	
 	

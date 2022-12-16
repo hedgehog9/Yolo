@@ -174,6 +174,14 @@
 		display: inline-block;
 	}
 	
+	.badge {
+		font-size: 15px;
+	}
+	
+	td {
+		vertical-align: middle !important;
+	}
+	
 </style>
 
 <script>
@@ -303,7 +311,7 @@ let arrDept = [];
 					let html = "<table class='table table-hover'>"+
 					           		"<thead>"+
 						           		"<th style='width: 150px; text-align: center;'><input type='checkbox' name='chk-all' id='chk-all'/></th>"+
-					        				"<th>이름</th>"+
+					        				"<th><span style='font-size:20px;'>&#129333;</span>이름</th>"+
 					                    "<th><span style='font-size:20px;'>&#128198;</span>근무기준 달</th>"+
 					                    "<th><span style='font-size:20px;'>&#128178;</span>급여</th>"+
 					                    "<th><span style='font-size:20px;'>&#128337;</span>초과근무 수당</th>"+

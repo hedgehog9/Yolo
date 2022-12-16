@@ -195,7 +195,7 @@ public class ScheduleController {
 			for(ScheduleVO scvo : selectScheduleList) {
 				JSONObject jsonObj = new JSONObject();
 				jsonObj.put("schedule_no", scvo.getSchedule_no());
-				jsonObj.put("fk_empno", scvo.getFk_empno());
+				jsonObj.put("fk_empno", scvo.getEmpno());
 				jsonObj.put("start_date", scvo.getStart_date());
 				jsonObj.put("end_date", scvo.getEnd_date());
 				jsonObj.put("subject", scvo.getSubject());
@@ -205,6 +205,8 @@ public class ScheduleController {
 				jsonObj.put("fk_deptno", scvo.getFk_deptno());
 				jsonObj.put("joinuser", scvo.getJoinuser());
 				jsonObj.put("place", scvo.getPlace());
+				jsonObj.put("birthday", scvo.getBirthday());
+				jsonObj.put("name", scvo.getName());
 				
 				jsonArr.put(jsonObj);
 			}
@@ -231,7 +233,7 @@ public class ScheduleController {
 			ScheduleVO scvo = service.selectDetailSchedule(schedule_no);
 			
 			jsonObj.put("schedule_no", scvo.getSchedule_no());
-			jsonObj.put("fk_empno", scvo.getFk_empno());
+			jsonObj.put("fk_empno", scvo.getEmpno());
 			jsonObj.put("start_date", scvo.getStart_date());
 			jsonObj.put("end_date", scvo.getEnd_date());
 			jsonObj.put("subject", scvo.getSubject());
@@ -241,6 +243,8 @@ public class ScheduleController {
 			jsonObj.put("fk_deptno", scvo.getFk_deptno());
 			jsonObj.put("joinuser", scvo.getJoinuser());
 			jsonObj.put("place", scvo.getPlace());
+			jsonObj.put("birthday", scvo.getBirthday());
+			jsonObj.put("name", scvo.getName());
 			
 		} catch(NumberFormatException e) {
 			e.printStackTrace();

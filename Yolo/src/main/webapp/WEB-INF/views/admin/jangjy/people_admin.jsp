@@ -102,11 +102,6 @@ button.btn_search:hover {
 	background-color: #ebebeb;
 }
 
-div#div_toggle_buttons {
-	background-color: #ebebeb;
-	padding: 3px;
-	border-radius: 5px;
-}
 
 button.btn_view_style:focus {
 	outline: none;
@@ -128,7 +123,7 @@ div#div_search {
 	border-radius: 10px;
 	height: 30px;
 	padding-left: 3px;
-	margin-top: 8px;
+	margin-top: 5px;
 	position: relative;
 	left: 38px;
 	display: none;
@@ -420,6 +415,46 @@ li.li_moveAll > a{
 	display: inline-block;
 }
 
+div.filebox {
+	display: flex;
+	align-items: center;
+}
+
+.filebox .upload-name {
+    display: inline-block;
+    height: 35px;
+    padding: 0 10px;
+    vertical-align: middle;
+    border: 1px solid #dddddd;
+    width: 70%;
+    border-radius: 0.4rem;
+    color: #999999;
+}
+
+.filebox label {
+    display: inline-block;
+    padding: 7px 20px;
+    color: #fff;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #88eb1e;
+    cursor: pointer;
+    width : 25%;
+    height: 35px;
+    margin-left: 10px;
+    margin-top: 6px;
+    border-radius: 0.4rem;
+}
+
+.filebox input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+}
+
 
 
 </style>
@@ -454,34 +489,18 @@ arr_status = [];
                 "toLabel": "To",
                 "customRangeLabel": "Custom",
                 "weekLabel": "W",
-                "daysOfWeek": [
-                    "일",
-                    "월",
-                    "화",
-                    "수",
-                    "목",
-                    "금",
-                    "토"
-                ],
-                "monthNames": [
-                    "1월",
-                    "2월",
-                    "3월",
-                    "4월",
-                    "5월",
-                    "6월",
-                    "7월",
-                    "8월",
-                    "9월",
-                    "10월",
-                    "11월",
-                    "12월"
-                ],
+                "daysOfWeek": ["일","월","화","수","목","금","토"],
+                "monthNames": ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
                 "firstDay": 1
             }
         });
 		<%-- ===== 달력 하나만 출력 끝 =====  --%>
 		
+		// 파일 선택하면 선택창 바뀌도록 
+		$(document).on("change", ".file", function(){
+			  var fileName = $(this).val();
+			  $(this).parent().find($(".upload-name")).val(fileName.slice(fileName.lastIndexOf("\\")+1));
+		});
 		
 		// 테이블 형식 또는 리스트 형식 출력 버튼 클릭시 버튼 css 변경 
 		$(document).on("click","button.btn_view_style",function(){
@@ -493,6 +512,7 @@ arr_status = [];
 		$(document).on("click","button#btn_search",function(){
 			$("div#div_search").css("display","block");	
 			$("button#btn_search").addClass("hidden");
+			$("input#searchWord").focus();
 		});
 		// 검색 div 이외 영역 클릭시 값이 비어있는 경우 div 숨기기
 		$('html').click(function(e) {   
@@ -505,6 +525,9 @@ arr_status = [];
 		// 검색버튼에서 검색어 입력시 
 		$(document).on("keyup","input#searchWord",function(){
 			viewEmpList(currentShowPageNo);
+			$("input[name='searchWord']").val($(this).val());
+			$("input[name='keyword']").val($(this).val());
+			
 			
 		})// end of $(document).on("keyup","input#searchWord",function(){}------
 		
@@ -516,42 +539,8 @@ arr_status = [];
 		});
 		
 		
-		// 사원 관련 모든 정보 table 로 보여주는 버튼
-		$(document).on("click","button#view_table",function(){
-			func_getEmpList();
-		});
 		
-		// 사원 관련 부서, 이름 , 직위, 아이콘만 보여주는 버튼
-		$(document).on("click","button#view_list",function(){
-			$("div#search_result").empty();
-			let html ='<div style="display: flex; margin-top:20px;">'
-						+'<div class="div_personOne" style="width:100%; padding-top: 15px;">'
-							
-								<%-- 반복해서 출력할 div 묶음 시작  --%>
-								+'<div class="div_empInfo" style="display: flex; justify-content: space-between; margin: 10px; padding:10px;">'
-								+'<div class="profile2">'
-									+'<div class="profile_icon2">'
-										+'<div>길동</div>'
-									+'</div>'
-										+'<div class="div_name2" style="padding-top:3px;">홍길동</div>'
-								+'</div>'
-								+'<div class="dept_position">'
-									+'<span>직위&nbsp;&nbsp;</span>'
-									+'<span>|</span>'
-									+'<span>&nbsp;&nbsp;부서</span>'
-									+'</div>'
-								+'</div>'
-								<%-- 반복해서 출력할 div 묶음 끝  --%>
-							
-						+'</div>'<%-- end of <div style="width:75%; padding-top: 15px;"> --%>
-						
-					+'</div>';
-			$("div#search_result").html(html);
-		});
 		
-		// 문서 로딩 시 기본값 테이블 보기로 설정
-		// $("button#view_table").trigger("click");
-		// $("input#searchWord").trigger("keyup");
 		viewEmpList(1);
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
@@ -603,14 +592,17 @@ arr_status = [];
 				  {
 				    case "직위" :    
 				    	arr_position.push(searchWord);
+				    	$("input[name='arr_position']").val(arr_position);
 				      break;     
 
 				    case "부서" :    
 				    	arr_dept.push(searchWord);
+				    	$("input[name='arr_dept']").val(arr_dept);
 				      break;  
 				      
 				    case "상태" :    
 				    	arr_status.push(searchWord);
+				    	$("input[name='arr_status']").val(arr_status);
 				      break;   
 				  }
 			  	
@@ -657,11 +649,9 @@ arr_status = [];
 			arr_dept.length = 0;
 			arr_status.length = 0;
 			
-			<%-- 
-			console.log(arr_position);
-			console.log(arr_dept);
-			console.log(arr_status);
-			--%>
+			$("input[name='arr_position']").val("");
+			$("input[name='arr_dept']").val("");
+			$("input[name='arr_status']").val("");
 			
 			viewEmpList(currentShowPageNo);
 			
@@ -673,8 +663,72 @@ arr_status = [];
 		})// end of $(document).on("click","button#registMember",function(){}-----------
 		
 		
+		// 구성원 정보 엑셀 파일로 다운로드 
+		$(document).on("click","button#btn_download",function(){
+			 const frm = document.searchFrm;
+			 frm.method = "POST"; // select 이기때문에 보안성과는 상관 없으므로 get 방식
+			 frm.action = "<%= ctxPath%>/downloadExcelFile.yolo"; 
+			 frm.submit();
+		});
+				
+		
+		//fileData DB 넣기
+	    $("button#fileUpload").click(function(){
+	        
+	       
+	    });
+		
+	    $("#btnUploadExcel").on("change", function() {
+	    	fnUploadExcelRegChk();
+	    });
+				
+				
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
+			
+	/*************excel upload*************/
+    
+    function checkFileType(filePath) {
+        var fileFormat = filePath.split(".");
+
+        if (fileFormat.indexOf("xls") > -1 || fileFormat.indexOf("xlsx") > -1) {
+          return true;
+          } else {
+          return false;
+        }
+      }
+
+      function check() {
+
+        var file = $("#excelFile").val();
+
+        if (file == "" || file == null) {
+        alert("파일을 선택해주세요.");
+
+        return false;
+        } else if (!checkFileType(file)) {
+        alert("엑셀 파일만 업로드 가능합니다.");
+
+        return false;
+        }
+
+        if (confirm("업로드 하시겠습니까?")) {
+
+          var options = {
+
+            success : function(data) {
+                console.log(data);
+              alert("모든 데이터가 업로드 되었습니다.");
+
+            },
+            type : "POST"
+            };
+          
+          $("#excelUploadForm").ajaxSubmit(options);
+          
+        }
+      }
+
 			
 			
 	// 검색 조건 필터를 위해 상위부서 이름 조회하는 메소드
@@ -741,7 +795,7 @@ arr_status = [];
 		let keyword = $("input#searchWord").val();
 		
 		$.ajax({
-			url:"<%=request.getContextPath()%>/getTotalPage.yolo",
+			url:"<%=request.getContextPath()%>/getTotalEmpPage.yolo",
 			data:{"sizePerPage":"10"
 				 ,"keyword":keyword
 				 ,"arr_position":arr_position
@@ -752,8 +806,6 @@ arr_status = [];
 			success:function(json){
 				// json ==>  {"totalPage":4} 또는 {"totalPage":0}
 				if(json.totalPage > 0){
-					
-					console.log("totalPage => " + json.totalPage)
 					
 					const totalPage = json.totalPage;
 					
@@ -798,7 +850,9 @@ arr_status = [];
 				
 					$("div#pageBar").html(pageBarHTML);
 				}// end of if(json.totalPage > 0){}----------------------------------
-				
+				else{
+					$("div#pageBar").empty();
+				}
 			},
 			error: function(request, status, error){
 	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -1170,11 +1224,20 @@ arr_status = [];
 			<a class="a_title" href="<%=ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
 		</div>
 		<div id="button_title">
-			<button id="registMember" type="button" class="btn"
-				data-toggle="modal" data-target="#modal_registMember">
-				<span> <i class="fas fa-plus"
-					style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
+			<button id="registMember" data-toggle="dropdown" type="button" class="btn" >
+				<span> 
+					<i class="fas fa-plus" style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
 				</span>
+			</button>
+			<div class="dropdown-menu">
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_registMember">
+					<i class="fas fa-upload"></i>&nbsp;&nbsp;한명 추가하기 
+				</a> 
+				<a id = "delete_profileImg" class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_excelUpload">
+					<span style="color:#e62e00"><i class="fas fa-trash"></i>&nbsp;&nbsp;여러명 추가하기</span>
+				</a> 
+			</div>
+				
 			</button>
 		</div>
 	</div>
@@ -1284,6 +1347,7 @@ arr_status = [];
 							
 							
 							<%-- =========== 직속상관 선택 =========== --%>
+							<%-- 
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">직속 상관(삭제예정)</div>
 								<input type="hidden" name="managerid" id="managerid" />
@@ -1304,6 +1368,7 @@ arr_status = [];
 									<button class="btn_label dropdown-item" type="button">직속상관5</button>
 								</div>
 							</div>
+							--%>
 							<%-- =========== 직속상관 선택 =========== --%>
 							
 						</div>
@@ -1322,6 +1387,43 @@ arr_status = [];
 	</div>
 	<!-- ========================== 구성원 추가 모달 끝 ========================== -->
 	
+	<!-- ========================== 엑셀 파일 업로드 모달 시작 ========================== -->
+	<div class="modal fade" id="modal_excelUpload">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content" style="padding: 5px;">
+				<!-- Modal header -->
+				<div class="modal-header">
+					<h2>구성원 일괄 등록</h2>
+					<button id="btn_close_registModal" type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form id="excelUploadForm" name="excelUploadForm" enctype="multipart/form-data"
+        method="post" action= "excelUploadAjax.yolo">
+					
+						    <input type="file" id="excelFile" name="excelFile" />
+						<div class="filebox">
+						    <%-- --%><input class="upload-name" name="excelFile" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">
+						    <label for="excelFile">파일찾기</label>
+						</div>
+					
+					
+					</form>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer"
+					style="display: flex; justify-content: space-between;">
+					<%-- form 전송 --%>
+					<button type="button" class="btn" id="fileUpload" onclick="check();">
+						<i class="fas fa-check"></i>입력완료
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ========================== 엑셀 파일 업로드 모달 끝 ========================== -->
+	
+	
 	<div id="search_buttons">
 		<%-- 검색어 입력 input 태그 --%>
 		<div id="div_search">
@@ -1339,23 +1441,19 @@ arr_status = [];
 			<i class="fas fa-download"></i>
 		</button>
 
-		<%-- 모든 정보 출력 or 이름,부서,직위만 출력 --%>
-		<div id="div_toggle_buttons">
-			<button type="button" id="view_table" class="btn btn_view_style">
-				<i class="fas fa-th-large"></i>
-			</button>
-
-			<button type="button" id="view_list" class="btn btn_view_style">
-				<i class="fas fa-th-list"></i>
-			</button>
-		</div>
 	</div>
 	
 	<%-- 검색필터 추가 시작  --%>
 	<div id="div_searchTag">
 		<div id="serchTag_content">
 			<div class="dropdown">
-			
+			<form name="searchFrm">
+				<input type="hidden" name="arr_position" />
+				<input type="hidden" name="arr_dept" />
+				<input type="hidden" name="arr_status" />
+				<input type="hidden" name="keyword"/>
+			</form>
+						
 			<span id="span_searchTag"></span>
 				
 				<button id="add_searchTag" data-toggle="dropdown" type="button"
