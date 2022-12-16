@@ -615,7 +615,7 @@ public class WorkflowController {
 	
 	// 수정하기
 	@RequestMapping(value = "/workflow/modify.yolo")
-	public String modifyWorkflow(HttpServletRequest request) {
+	public String modifyWorkflow(HttpServletRequest request, documentVO docvo) {
 
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
@@ -624,11 +624,14 @@ public class WorkflowController {
 		
 		String writer_empno = request.getParameter("fk_writer_empno");
 		String doc_no = request.getParameter("doc_no");
+	
+		
 		
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("empno",empno);
 		paraMap.put("doc_no", doc_no);
 		paraMap.put("deptno", deptno);
+	
 
 		//참조 대상자들 알아오기
 		List<Map<String,String>> appList = service.appList(paraMap);
@@ -645,7 +648,7 @@ public class WorkflowController {
 		}
 		
 		if(empno.equals(writer_empno) && flag ){
-			System.out.println("if empno :" +empno +"writer_empno :" +writer_empno );
+			//System.out.println("if empno :" +empno +"writer_empno :" +writer_empno );
 			paraMap.put("writer","do");
 		
 			//문서 알아오기
@@ -656,6 +659,12 @@ public class WorkflowController {
 			String orgfilename = docDetailMap.get("orgfilename");
 			String d_day = docDetailMap.get("d_day");
 			
+			
+			docvo.setDoc_no(Integer.parseInt(docDetailMap.get("doc_no")));
+			
+			paraMap.put("contents", contents );
+			
+			
 			//줄바꿈 적용시키기
 			contents=contents.replace("<br>","\r\n");
 			
@@ -665,8 +674,11 @@ public class WorkflowController {
 			request.setAttribute("orgfilename", orgfilename);
 			request.setAttribute("d_day", d_day);
 			request.setAttribute("contents", contents);
+			request.setAttribute("doc_no", doc_no);
+			
 			
 			return "jihee/content/modify.admin";
+		
 		}
 		
 		else if(!(empno.equals(writer_empno))) {
@@ -687,9 +699,33 @@ public class WorkflowController {
 			return "/msg";
 			
 		}
+		
+		
 
 
 	}
+	
+	// 수정하기 종료
+		@RequestMapping(value = "/workflow/modifyEnd.yolo")
+		public String modifyWorkflowEnd(HttpServletRequest request, documentVO docvo) {
+			
+			//수정하기
+			int n = service.upateDoc(docvo);
+			
+			if( n == 1 ) {
+				return "redirect:/workflow.yolo";
+			}
+			else {
+				String message = "수정 실패했습니다.";
+				String loc = request.getContextPath() + "/workflow.yolo";
+				request.setAttribute("message", message);
+				request.setAttribute("loc", loc);
+				
+				return "/msg";
+			}
+			
+			
+		}
 	
 	//내문서함 글 목록 보여주기 (ajax)
 	@ResponseBody
@@ -754,6 +790,14 @@ public class WorkflowController {
 			
 			for(Map<String,String> docListmap: myDocumentList) {
 				JSONObject jsonObj = new JSONObject();
+				String doc_contents = docListmap.get("doc_contents");
+				// 엔터값 처리해주기
+				int index = doc_contents.indexOf("<br>");
+	
+				if(index != -1) {
+					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
+				}
+				
 				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
 				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
 				jsonObj.put("writeday", docListmap.get("writeday"));
@@ -771,7 +815,7 @@ public class WorkflowController {
 				jsonObj.put("emp_no", empno);
 				jsonObj.put("end_Doc", docListmap.get("end_doc"));
 				
-				System.out.println("endDOC : "+docListmap.get("end_doc"));
+				//System.out.println("endDOC : "+docListmap.get("end_doc"));
 				
 				jsonArr.put(jsonObj);
 			}// end of for----------------------
@@ -866,11 +910,16 @@ public class WorkflowController {
 				
 				String doc_contents = docListmap.get("doc_contents");
 				
+				// 엔터값 처리해주기
+				int index = doc_contents.indexOf("<br>");
+	
+				if(index != -1) {
+					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
+				}
 				
-				//doc_contents = doc_contents.substring(0,doc_contents.indexOf("\r\n"));
 				//System.out.println("doc_contents :" + doc_contents);
 				
-				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
+				jsonObj.put("doc_contents", doc_contents);
 				jsonObj.put("writeday", docListmap.get("writeday"));
 				jsonObj.put("modificationday", docListmap.get("modificationday"));
 				
@@ -1001,6 +1050,14 @@ public class WorkflowController {
 			
 			for(Map<String,String> docListmap: documentList) {
 				JSONObject jsonObj = new JSONObject();
+				
+				String doc_contents = docListmap.get("doc_contents");
+				// 엔터값 처리해주기
+				int index = doc_contents.indexOf("<br>");
+	
+				if(index != -1) {
+					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
+				}
 				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
 				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
 				jsonObj.put("writeday", docListmap.get("writeday"));
@@ -1144,10 +1201,13 @@ public class WorkflowController {
 			EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 			String emp_no = loginuser.getEmpno();
 			paraMap.put("emp_no",emp_no);
+		
 			
+			// 원글 글번호(parentSeq)에 해당하는 댓글의 totalPage 수 알아오기 (
 			
-			// 원글 글번호(parentSeq)에 해당하는 댓글의 totalPage 수 알아오기
-			int totalPage = service.getmyTotalCnt(paraMap)/sizePerPage;
+			double totalP = (double) service.getmyTotalCnt(paraMap);
+			double page = totalP/sizePerPage;
+			int totalPage = (int) Math.ceil(page);
 			
 			if(totalPage == 0 ) {
 				totalPage =1;

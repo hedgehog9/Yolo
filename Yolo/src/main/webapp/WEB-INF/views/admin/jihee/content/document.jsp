@@ -886,7 +886,7 @@
 										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'> "+item.doc_contents.substring(0,6)+"</span>"+
 										"<br>";
 										if(item.orgfilename != null ){
-										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename.substring(0,10)+"</span>"+
+										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
 										"<br>";
 										}
 										html+="<span>&nbsp;</span>"+
@@ -992,10 +992,10 @@
 										"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
 										"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
 										"<br>"+
-										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,5)+"</span>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,30)+"</span>"+
 										"<br>";
 										if(item.orgfilename != null ){
-										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'><i class='bi bi-paperclip'></i> 첨부파일 : "+item.orgfilename+"</span>"+
+										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'><i class='bi bi-paperclip'></i> 첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
 										"<br>";
 										}
 										html+="<span>&nbsp;</span>"+

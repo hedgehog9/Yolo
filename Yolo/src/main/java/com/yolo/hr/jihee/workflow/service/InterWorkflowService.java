@@ -52,5 +52,8 @@ public interface InterWorkflowService {
 	//내 게시물 수
 	int getmyTotalCnt(Map<String, String> paraMap);
 	
+	//글 수정하기
+	int upateDoc(documentVO docvo);
+	
 
 }

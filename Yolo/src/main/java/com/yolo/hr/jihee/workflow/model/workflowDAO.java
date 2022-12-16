@@ -166,8 +166,12 @@ public class workflowDAO implements InterWorkflowDAO {
 			return documentList;
 		}
 	
-	
-
+	// 수정하기 
+	@Override
+	public int update(documentVO docvo) {
+		int n = sqlsession.update("choijh.updateDoc",docvo);
+		return n;
+	}
 	
 
 	

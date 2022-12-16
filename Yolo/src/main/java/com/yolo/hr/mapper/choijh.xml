@@ -180,18 +180,23 @@
    
    <!--내문서함 리스트  -->
 	<select id="MydocumentList" parameterType="HashMap" resultMap="documentMap">
-		 select distinct doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day, name ,doc_no, fk_deptno,end_doc  
+		select doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day, name ,doc_no, fk_deptno,end_doc
+		from (
+		select distinct  row_number() over(order by writeday desc) AS rno,doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day, name ,doc_no, fk_deptno,end_doc  
 		from 
 		(   
 		    select distinct doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day ,fK_writer_empno ,doc_no ,end_doc   
 		    from tbl_documents 
 		    join TBL_approval
 		    on doc_no = fk_doc_no
-		    where fK_writer_empno =#{emp_no}
+		    where fK_writer_empno = #{emp_no}
 		) V
 		join tbl_employees E
 		on V.fk_writer_empno = E.empno
+		)
+		where rno between #{startRno} and #{endRno}
 		order by writeday desc
+
 	</select>
 	
 	<!--내문서함 총 수-->
@@ -380,6 +385,12 @@
 		 from tbl_documents
 		 where doc_no = #{doc_no}
 	 </select>
+	 
+	 <!-- 수정하기  -->
+	 <update id="updateDoc" parameterType="com.yolo.hr.jihee.workflow.model.documentVO" >
+	 	update tbl_documents set doc_contents = #{doc_contents} ,modificationday = sysdate , D_day = to_date(#{D_day},'yyyy-mm-dd')
+		where doc_no = #{doc_no}
+	 </update>
 	 
 
 </mapper>

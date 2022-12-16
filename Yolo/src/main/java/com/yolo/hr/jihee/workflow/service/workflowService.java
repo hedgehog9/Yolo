@@ -215,6 +215,27 @@ public class workflowService implements InterWorkflowService {
 			int documentList = dao.getmyTotalCnt(paraMap);
 			return documentList;
 		}
+		
+	// 글 수정하기 	
+	@Override
+	public int upateDoc(documentVO docvo) {
+		
+		int n = dao.update(docvo);	
+		
+//		if ("no".equals(paraMap.get("attach"))){
+//		document 테이블에 기안문서 수정
+//			n = dao.update(paraMap);	
+//		}
+//		
+//		
+//		 else { n = dao.upate__withFile(paraMap);
+//		 
+//		 }
+//		 
+
+		 return n;
+		
+	}
 
 
 	
