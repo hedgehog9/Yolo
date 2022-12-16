@@ -115,4 +115,13 @@ public interface InterEmployeeDAO {
 
 	void updateLeavejae(Map<String, String> leaveMap);
 
+	/** 사원 퇴직 처리 */
+	void retirement(Map<String, Object> empMap);
+
+	/** 남아있는 결재 문서 검색 */
+	int checkApproval(Map<String, Object> paraMap);
+
+	/** 사원 상태 퇴직으로 update */
+	int updateRetirement(Map<String, Object> paraMap);
+
 }

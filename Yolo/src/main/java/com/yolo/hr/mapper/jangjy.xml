@@ -212,15 +212,21 @@
 	
 	<!-- 휴직 신청이 가능한 날짜인지 조회(select) -->
 	<select id="leaveCheck" parameterType="HashMap"  resultType="int">
-		select count(*)
+		<!-- select count(*)
 		from
 		(
 			select fk_empno, startdate, enddate
 			from tbl_leave_absence
-			where #{startdate} between to_char(startdate,'yyyy-mm-dd') and to_char(enddate,'yyyy-mm-dd') 
-			or #{enddate} between to_char(startdate,'yyyy-mm-dd') and to_char(enddate,'yyyy-mm-dd') 
+			where to_date(#{startdate},'yyyy-mm-dd') between to_date(startdate,'yyyy-mm-dd') and to_date(enddate,'yyyy-mm-dd') 
+			or to_date(#{enddate},'yyyy-mm-dd') between to_date(startdate,'yyyy-mm-dd') and to_date(enddate,'yyyy-mm-dd') 
 		)
-		where fk_empno = #{empno}
+		where fk_empno = #{empno} -->
+		
+		SELECT count(*)
+		FROM tbl_leave_absence
+		 where fk_empno = #{empno}
+		 AND startdate <![CDATA[>=]]> to_date(#{startdate},'yyyy-mm-dd')
+		 AND enddate <![CDATA[<=]]> to_date(#{enddate},'yyyy-mm-dd')
 	</select>
 	
 	
@@ -433,23 +439,6 @@
 	
 		select count(fk_empno)
 		from tbl_dept_mapping
-		<!--  
-		<choose>
-
-	    	<when test="deptno==null and deptno.equals('') and teamno== null and teamno.equals('')">
-	    	   where fk_deptno = #{before_deptno}
-	    	</when>
-
-	    	<when test="deptno!=null and !deptno.equals('') and teamno == null or teamno.equals('') ">
-	    	   where fk_deptno = #{deptno}
-	    	</when>
-
-	    	<when test="deptno!=null and !deptno.equals('') and teamno!=null and !teamno.equals('')">
-	    	   where fk_deptno = #{teamno}
-	    	</when>
-	    	
-	    </choose>
-	    -->
 	    <choose>
 	    	<when test="(deptno == null or deptno.equals('')) and (teamno== null or teamno.equals(''))">
 	    	   where fk_deptno = #{before_deptno}
@@ -820,9 +809,31 @@
 		,to_char(startdate,'yyyy-mm-dd') as startdate
 		,to_char(enddate,'yyyy-mm-dd') as enddate
 		from tbl_leave_absence
-		where sysdate between startdate and enddate
+		where to_date(sysdate,'yyyy-mm-dd') between to_date(startdate,'yyyy-mm-dd') and to_date(enddate,'yyyy-mm-dd')
 		and fk_empno = #{empno}
 	</select>
+	
+	<!-- 휴직/퇴직처리 전 결재 문서 검색  -->
+	<select id="checkApproval" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_approval
+		where fk_senior_empno = #{empno}
+		and approval='0'
+	</select>
+	
+	<!-- 퇴직 처리 (update) -->
+	<update id="updateRetirement" parameterType="HashMap">
+		update tbl_employees
+		set status = '퇴직'
+		where empno = #{empno}
+	</update>
+	
+	<!-- 퇴직 처리 (delete) -->
+	<!-- <update id="updateRetirement" parameterType="HashMap">
+		update tbl_employees
+		set status = '퇴직'
+		where empno = #{empno}
+	</update> -->
 	
 	
 	<!-- ====================== 조직도 =================== -->
@@ -865,6 +876,7 @@
 		from tbl_employees E JOIN tbl_dept D
 		on E.fk_deptno = D.deptno
 		where fk_deptno = #{teamno}
+		and status in('재직','휴직')
 	</select>
 	<!-- ====================== 조직도 =================== -->
 
