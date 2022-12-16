@@ -520,9 +520,9 @@
 	       $("div#retirement_type").text("고용보험 퇴직사유 선택");
 	    });
 		
-	 // 휴직처리에서 날짜 선택 클릭시 이미 신청되어있는 휴직이 있는지 조회, 경고창 출력
-	 
-		$(document).on("change","input#between_date",function(){
+	 	// 휴직처리에서 날짜 선택 클릭시 이미 신청되어있는 휴직이 있는지 조회, 경고창 출력
+//		$(document).on("change","input#between_date",function(){
+		$("input#between_date").change(function(){
 		  
 	      let empno = $("input#empno").val();
 		  let startdate = $("input#start_date").val();
@@ -537,7 +537,7 @@
 					  type : "POST",
 					  dataType : "JSON",
 					  success : function(json){
-						  if(json.result > 0){
+						  if(json.result >= 1){
 							 $("div#div_warnning").css("display","block");
 							 leaveFlag = false;
 						  }
@@ -795,40 +795,58 @@
 	  		let empno = $("input#empno").val();
 	  		let leaveno = $("input#leaveno").val();
 	  		
-	  		if(leaveFlag){ // 날짜를 올바르게 입력한 경우에만 휴직 신청가능
-	  		
 	  		$.ajax({
-				  url : "<%= request.getContextPath()%>/leaveAbsence.yolo",
-				  data : {"leavetype":leavetype 
-					     ,"startdate":startdate
-					     ,"enddate":enddate
-					     ,"memo":memo
-					     ,"empno":empno
-					     ,"leaveno":leaveno},
-				  type : "POST",
+				  // 결재해야할 문서 여부 구해오기 
+				  url : "<%= ctxPath%>/checkApproval.yolo",
 				  dataType : "JSON",
+				  data:{"empno":empno},
 				  success : function(json){
-					  
-					  if(json.result == 1){
-						  toastr.success('휴직 처리가 완료되었습니다.');
-						  $("textarea#memo_leave").val("");
-						  window.location.reload();
+					  if(json.result > 0){
+						  Swal.fire('결재할 문서가 존재합니다.','모든 결재문서를 처리해야 휴직 처리가 가능합니다.', 'error');					  
 					  }
 					  else{
-						  toastr.warning('휴직 처리가 취소되었습니다.');
+						  
+						  if(leaveFlag){ // 날짜를 올바르게 입력한 경우에만 휴직 신청가능
+						  		
+						  		$.ajax({
+									  url : "<%= request.getContextPath()%>/leaveAbsence.yolo",
+									  data : {"leavetype":leavetype 
+										     ,"startdate":startdate
+										     ,"enddate":enddate
+										     ,"memo":memo
+										     ,"empno":empno
+										     ,"leaveno":leaveno},
+									  type : "POST",
+									  dataType : "JSON",
+									  success : function(json){
+										  
+										  if(json.result == 1){
+											  toastr.success('휴직 처리가 완료되었습니다.');
+											  $("textarea#memo_leave").val("");
+											  window.location.reload();
+										  }
+										  else{
+											  toastr.warning('휴직 처리가 취소되었습니다.');
+										  }
+									  },
+									  error: function(request, status, error){
+										  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+									  }
+								  });
+						  		
+						  		}
+						  		else{
+						  			toastr.error('이미 휴직 신청한 날짜입니다.');
+						  			return;
+						  		}
+					  
 					  }
-				  },
+				  },// end of success
 				  error: function(request, status, error){
 					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				  }
-			  });
-	  		
-	  		}
-	  		else{
-	  			toastr.error('이미 휴직 신청한 날짜입니다.');
-	  			return;
-	  		}
-	  		
+			
+			}); // end of ajax()----------------------------------------------------------------------
 	  		
 	  	});// end of $(document).on("click","button#btn_leave",function(){}-------------------------------
 	  	
@@ -1183,7 +1201,52 @@
 			
 		});
 		
-		
+		// 퇴직 모달에서 버튼 클릭시 
+		$("button#btn_retire").click(function(){
+			
+			let empno = $("th#th_empno").text();
+			
+			$.ajax({
+				  // 결재해야할 문서 여부 구해오기 
+				  url : "<%= ctxPath%>/checkApproval.yolo",
+				  dataType : "JSON",
+				  data:{"empno":empno},
+				  success : function(json){
+					  if(json.result > 0){
+						  Swal.fire('결재할 문서가 존재합니다.','모든 결재문서를 처리해야 퇴직 처리가 가능합니다.', 'error');					  
+					  }
+					  else{
+						  Swal.fire({
+							   title: '퇴직 처리 하시겠습니까?',
+							   text: '퇴직처리할 경우 해당 사원의 모든 정보가 삭제됩니다.',
+							   icon: 'warning',
+							   
+							   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+							   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+							   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+							   confirmButtonText: '퇴직처리하기', // confirm 버튼 텍스트 지정
+							   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+							   
+							   reverseButtons: true, // 버튼 순서 거꾸로
+							   
+							}).then(result => {
+							   // 만약 Promise리턴을 받으면, 
+							   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+							   		const frm = document.frm_retirement;
+							   		frm.action = "<%= request.getContextPath() %>/retirement.yolo";
+							   		frm.method = "POST";
+							   		frm.submit();
+							   }
+							});
+					  }
+				  },// end of success
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			
+			}); // end of ajax()----------------------------------------------------------------------
+			
+		}); 
 		
 	});// end of $(document).ready-----------------------------
 	
@@ -1909,7 +1972,7 @@
 					<!-- Modal body -->
 					<div class="modal-body">
 						<form name="frm_retirement">
-					
+						<input name="empno" type="hidden" id="empno" value="${requestScope.employeeMap.empno}" />
 						<div style="display:flex; justify-content: space-between; ">
 							<div>
 								<div>
@@ -1964,7 +2027,7 @@
 					<!-- Modal footer -->
 					<div class="modal-footer">
 						<button type="button" class="btn " data-dismiss="modal">취소</button>
-						<button type="button" class="btn btn-danger">퇴직 처리하기</button>
+						<button id="btn_retire" type="button" class="btn btn-danger">퇴직 처리하기</button>
 					</div>
 				</div>
 			</div>

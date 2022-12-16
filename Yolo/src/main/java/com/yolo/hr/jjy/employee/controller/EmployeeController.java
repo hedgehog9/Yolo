@@ -218,7 +218,7 @@ public class EmployeeController {
 
 		return "jangjy/change_history.admin";
 	}
-
+	
 	// 사용자 한명 상세 정보 (admin)
 	@RequestMapping(value = "/userDetail.yolo")
 	public String user_detail(HttpServletRequest request) {
@@ -307,9 +307,10 @@ public class EmployeeController {
 //	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
 	public String getLeaveInfo(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
 		
-//		System.out.println(leaveMap.get("empno"));
+		System.out.println(leaveMap.get("empno"));
 		
 		Map<String,String> leaveInfoMap = dao.getLeaveInfo(leaveMap);
+		System.out.println("leaveInfoMap :"+leaveInfoMap);
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("leaveInfoMap", leaveInfoMap);
@@ -494,7 +495,7 @@ public class EmployeeController {
 	@RequestMapping(value = "/changePsInfo.yolo", produces="text/plain;charset=UTF-8" , method= {RequestMethod.POST} )
 	public String changePsInfo( MultipartHttpServletRequest mrequest, @RequestParam Map<String,Object>psInfoMap ) {
 		
-		System.out.println("확인용 psInfoMap : "+ psInfoMap);
+//		System.out.println("확인용 psInfoMap : "+ psInfoMap);
 		int result = service.changePsInfo(psInfoMap);
 		
 		Calendar currentDate = Calendar.getInstance();
@@ -1110,6 +1111,7 @@ public class EmployeeController {
 	}
 
 	
+	// 휴직 취소 
 	@ResponseBody
 	@RequestMapping(value = "/cancelLeave.yolo", produces="text/plain;charset=UTF-8")
 	public String cancelLeave(@RequestParam Map<String,Object>paraMap ) {
@@ -1124,6 +1126,33 @@ public class EmployeeController {
 		return jsonObj.toString();
 	}
 
+	// 퇴직 처리 전 결재 문서 검사
+	@ResponseBody
+	@RequestMapping(value = "/checkApproval.yolo", produces="text/plain;charset=UTF-8")
+	public String checkApproval(@RequestParam Map<String,Object>paraMap ) {
+		
+		System.out.println("결재문서 검사 paraMap :"+paraMap);
+		
+		int result = dao.checkApproval(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result );
+		
+		return jsonObj.toString();
+	}
+	
+	
+	// 퇴직 처리 
+	@RequestMapping(value = "/retirement.yolo", produces="text/plain;charset=UTF-8")
+	public String updateRetirement(@RequestParam Map<String,Object>paraMap ) {
+		
+		System.out.println("퇴직 처리 paraMap :"+paraMap);
+		
+		int result = dao.updateRetirement(paraMap) ;
+		
+//		return "redirect:userDetail.yolo?empno="+paraMap.get("empno");
+		return "jangjy/people_admin.admin";
+	}
 	
 	
 	

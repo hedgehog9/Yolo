@@ -807,8 +807,6 @@ arr_status = [];
 				// json ==>  {"totalPage":4} 또는 {"totalPage":0}
 				if(json.totalPage > 0){
 					
-					console.log("totalPage => " + json.totalPage)
-					
 					const totalPage = json.totalPage;
 					
 					const blockSize = 10;

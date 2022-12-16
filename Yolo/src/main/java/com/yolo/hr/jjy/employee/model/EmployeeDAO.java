@@ -257,6 +257,25 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		sqlsession.update("jangjy.updateLeavejae",leaveMap);
 	}
 
+	@Override
+	public void retirement(Map<String, Object> empMap) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public int checkApproval(Map<String, Object> paraMap) {
+		int result = sqlsession.selectOne("jangjy.checkApproval",paraMap);
+		return result;
+	}
+
+	@Override
+	public int updateRetirement(Map<String, Object> paraMap) {
+		int result = sqlsession.update("jangjy.updateRetirement", paraMap);
+//		int result = sqlsession.delete("jangjy.deleteEmp", paraMap);
+		return result;
+	}
+
 	
 	
 	
