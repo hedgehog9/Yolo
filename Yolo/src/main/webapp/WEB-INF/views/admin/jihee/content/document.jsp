@@ -598,7 +598,8 @@
 			if(json.doc_no != "10") {
 				//console.log(json.doc_subject);
 					//console.log("preset:"+json.prestepApp);
-					//console.log("levelno:"+json.levelno);
+					console.log("deny : "+json.deny);
+					
 					
 			
 	 				  html += 
@@ -654,10 +655,14 @@
 								"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
 							
 						}
-						else if(json.prestepApp == "1" && json.approval =="0") {
+						else if( (json.prestepApp == "1" || json.prestepApp == "2") && json.approval =="0") {
 						html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
 						"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
 						}
+						else if(json.deny) {
+							html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
+							"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
+							}
 			    	html += "</div>"+
 			    	
 			    	// 첨부파일 토글버튼 
@@ -975,7 +980,10 @@
 								  		if(item.levelno == 1 && item.approval == "0") {
 								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
 										}
-								  		else if(item.prestepApp == 1 && item.approval == "0") {
+								  		else if((item.prestepApp == "1" || item.prestepApp == "2")&& item.approval == "0") {
+								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
+										}
+								  		else if(item.deny) {
 								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
 										}
 								  		else {

@@ -138,7 +138,6 @@ public class WorkflowController {
 	@RequestMapping(value = "/workflow/documentDetail.yolo")
 	public String documentDetail(HttpServletRequest request) {
 		
-		
 		String empno = request.getParameter("emp_no");
 		String doc_no = request.getParameter("doc_no");
 		String nodoc = "10";
@@ -164,12 +163,15 @@ public class WorkflowController {
 		//System.out.println("writer : " + writer);
 		//문서 자세히 가져오기(작성자 or 작성자 아닐때 xml에서 처리)
 		Map<String,String> docDetailMap = service.getDocDetail(paraMap);
-	
+		
 		
 		
 		//결제라인 이름만 문자열로 가져오기
 		String appName = service.getAppname(doc_no);
 		
+		String[] appNameList = appName.split(",");
+		int finalCnt = appNameList.length;
+					
 		if(appName != null) {
 			jsonObj.put("appName", appName);
 		}
@@ -178,6 +180,7 @@ public class WorkflowController {
 //		System.out.println("writer: " + writer);
 //		System.out.println("map확인 : " +docDetailMap.get("doc_contents"));
 //		System.out.println("map확인 : " +docDetailMap.get("doc_subject"));
+		
 		
 		if(docDetailMap != null) { 
 			
@@ -199,6 +202,28 @@ public class WorkflowController {
 			jsonObj.put("name",docDetailMap.get("name"));
 			jsonObj.put("position",docDetailMap.get("position"));
 			jsonObj.put("profile_color", docDetailMap.get("profile_color"));
+			
+			paraMap.put("deptno", docDetailMap.get("fk_deptno")); 
+			//이전단계 반려 하나라도 있는경우 최종결재권자에게 결재권한 주기 
+			List<Map<String,String>> appList = service.appList(paraMap);
+			
+		
+			int approvalCnt = appList.size();
+			boolean deny = false;
+			
+		
+			if(finalCnt == Integer.parseInt(docDetailMap.get("levelno"))) {
+				for(int i=0; i<approvalCnt; i++) {
+					String approval = appList.get(i).get("approval");
+					System.out.println("approval :" +approval);
+					if(approval.equals("2")) {
+						deny = true;
+					}
+				}
+				
+				jsonObj.put("deny", deny);
+			}
+			
 			
 			String prestepApp = "0"; // 팀장인경우 (작성자도아니고 이전 결제자도 없는경우)
 			if(writer==null) { // 작성자가 아닐 경우
@@ -944,6 +969,37 @@ public class WorkflowController {
 				paraMap.put("doc_no", docListmap.get("doc_no"));
 				Map<String,String> docDetailMap = service.getDocDetail(paraMap);
 				
+				paraMap.put("deptno",docListmap.get("fk_deptno"));
+				
+				//이전단계 반려 하나라도 있는경우 최종결재권자에게 결재권한 주기 ///////////////////////////
+				List<Map<String,String>> appList = service.appList(paraMap);
+				int approvalCnt = appList.size();
+				boolean deny = false;
+				
+				//결제라인 이름만 문자열로 가져오기
+				String appName = service.getAppname(docListmap.get("doc_no"));
+				
+				String[] appNameList = appName.split(",");
+				int finalCnt = appNameList.length;
+							
+				if(appName != null) {
+					jsonObj.put("appName", appName);
+				}
+				
+				if(finalCnt == Integer.parseInt(docDetailMap.get("levelno"))) {
+					for(int i=0; i<approvalCnt; i++) {
+						String approval = appList.get(i).get("approval");
+						if(approval.equals("2")) {
+							deny = true;
+						}
+					}
+					
+					jsonObj.put("deny", deny);
+				}
+				///////////////////////////////////////////////////////////////
+			
+				
+				
 				if(writer==null) { // 작성자가 아닐 경우
 				//내 결제단계에서 -1 이전사람 결제단계 알아오기 	
 				int levelno	= Integer.parseInt(docDetailMap.get("levelno"));
@@ -951,8 +1007,9 @@ public class WorkflowController {
 				jsonObj.put("levelno",levelno);
 				jsonObj.put("approval", docDetailMap.get("approval"));
 				
+	
 				paraMap.put("prelevelno",Integer.toString(prelevelno));
-				paraMap.put("deptno",docListmap.get("fk_deptno"));
+				//paraMap.put("deptno",docListmap.get("fk_deptno"));
 				
 					//1단계 결제자가 아닐경우
 					if(prelevelno != 0 ) {
@@ -967,8 +1024,6 @@ public class WorkflowController {
 					
 					}
 				}
-				
-			
 				
 				jsonObj.put("prestepApp",prestepApp);
 				jsonArr.put(jsonObj);
