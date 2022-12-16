@@ -532,15 +532,6 @@ arr_status = [];
 		})// end of $(document).on("keyup","input#searchWord",function(){}------
 		
 		
-		
-		// 다운로드 버튼 클릭시 
-		$(document).on("click","button#btn_search",function(){
-			
-		});
-		
-		
-		
-		
 		viewEmpList(1);
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
@@ -558,8 +549,8 @@ arr_status = [];
 			
 			registEmployee();
 			
-			
 		}); 
+		
 		// 구성원 등록 모달 닫기 시 
 		$('.modal').on('hidden.bs.modal', function (e) {
 			$(this).find('form')[0].reset();
@@ -567,6 +558,12 @@ arr_status = [];
 		
 		// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
 		$(document).on("click","a.dropdown-item",function(e){
+			
+			/* console.log(arr_dept);
+			console.log(arr_position);
+			console.log(arr_status); */
+			
+			deptno = $(this).parent().find("input").val();
 			
 			let flag = true;
 			
@@ -598,6 +595,7 @@ arr_status = [];
 				    case "부서" :    
 				    	arr_dept.push(searchWord);
 				    	$("input[name='arr_dept']").val(arr_dept);
+				    	$('.a_'+deptno).trigger('click');
 				      break;  
 				      
 				    case "상태" :    
@@ -672,17 +670,6 @@ arr_status = [];
 		});
 				
 		
-		//fileData DB 넣기
-	    $("button#fileUpload").click(function(){
-	        
-	       
-	    });
-		
-	    $("#btnUploadExcel").on("change", function() {
-	    	fnUploadExcelRegChk();
-	    });
-				
-				
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
 			
@@ -743,7 +730,7 @@ arr_status = [];
 			  success : function(json){
 				  let html ='';
 				  $.each(json,function(index,dept){
-					  html += '<li id=li_'+dept.deptno+'><a class="dropdown-item" href="javascript:void(0);" onmouseover="getTeam('+dept.deptno+');"><input type="hidden" value="부서" />'+dept.deptname+'</a></li>'
+					  html += '<li id=li_'+dept.deptno+'><input type="hidden" value="'+dept.deptno+'"/><a class="a_'+dept.deptno+' dropdown-item" href="javascript:void(0);" onmouseover="getTeam('+dept.deptno+');"><input type="hidden" value="부서" />'+dept.deptname+'</a></li>'
 					  
 			    });// end of $.each(json,function(index,emp){}----------------------------
 			    	
@@ -768,7 +755,8 @@ arr_status = [];
 				  let html ='<ul class="dropdown-menu dropdown-submenu">';
 				  
 				  $.each(json2,function(index,team){
-				  		html += '<li><a class="dropdown-item" href="#"><input type="hidden" value="부서" />'+team.deptname+'</a></li>';
+				  		html += '<li><a class=" a_'+deptno+' dropdown-item" href="#"><input type="hidden" value="부서" />'+team.deptname+'</a></li>';
+				  		
 			    	});// end of $.each(json,function(index,emp){}----------------------------
 			      html += '</ul>';
 			      
@@ -955,165 +943,6 @@ arr_status = [];
 	     }
 	}	
 	
-	<%--
-	// 사원 목록 조회하는 메소드 
-	function func_getEmpList(){
-		let keyword = $("input#searchWord").val();
-		$.ajax({
-			  // 검색어가 있는 사원 조회 
-			  url : "<%= ctxPath%>/getEmpList.yolo",
-			  data:{"keyword":keyword
-				   ,"currentShowPageNo":currentShowPageNo},
-			  dataType : "JSON",
-			  success : function(json){
-				  
-				  $("div#search_result").empty();
-				  let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
-						+'<thead>'
-							+'<tr>'
-								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
-								+'<th colspan=6>기본 정보</th>'
-								+'<th colspan=2>인사 정보</th>'
-								+'<th colspan=3>개인 정보</th>'
-							+'</tr>'
-							+'<tr>'
-								+'<th style="width:5%">상태</th>'
-								+'<th class="th_50">사번</th>'
-								+'<th style="width:7%">입사일</th>'
-								+'<th style="width:7%">퇴직일</th>'
-								+'<th style="width:7%">근속기간</th>'
-								+'<th class="th_100">근무일수</th>'
-								
-								+'<th class="th_50">부서</th>'
-								+'<th class="th_50">직위</th>'
-								
-								+'<th class="th_150">이메일</th>'
-								+'<th style="width:5%">성별</th>'
-								+'<th class="th_150">휴대전화</th>'
-								
-							+'</tr>'
-						+'</thead>'
-						+'<tbody>';
-				  $.each(json,function(index,emp){
-					  $("span#result_cnt").text(emp.totalCount+" 명");
-					  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
-								+'<td class="th_150">'
-									+'<div class="profile">'
-										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
-										+'<div style="padding-top:3px;">'+emp.name+'</div>'
-									+'</div>'
-								+'</td>'
-								+'<td>'+emp.status+'</td>'
-								+'<td>'+emp.empno+'</td>'
-								+'<td>'+emp.hireDate+'</td>'
-								+'<td>'+emp.retireDate+'</td>'
-								+'<td>'+emp.continuousServiceMonth+'</td>'
-								+'<td>'+emp.workingDays+'</td>'
-				
-								+'<td>'+emp.deptname+'</td>'
-								+'<td>'+emp.position+'</td>'
-				
-								+'<td>'+emp.email+'</td>'
-								+'<td>'+emp.gender+'</td>'
-								+'<td>'+emp.mobile+'</td>'
-							+'</tr>'
-						
-				    });// end of $.each(json,function(index,emp){}----------------------------
-					
-				    html +='</tbody>'   	
-					+'</table>';
-					$("div#search_result").html(html);
-					  
-			  },// end of success
-			  error: function(request, status, error){
-				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			  }
-		
-		}); // end of ajax()----------------------------------------------------------------------
-		
-	}// end of function func_getEmpList(){}------------------------------
-	--%>
-	
-	<%--
-	// 전체 사원을 조회해오는 메소드 
-	function func_getEmpList(){
-		
-		$("div#search_result").empty();
-		let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
-						+'<thead>'
-							+'<tr>'
-								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
-								+'<th colspan=6>기본 정보</th>'
-								+'<th colspan=2>인사 정보</th>'
-								+'<th colspan=3>개인 정보</th>'
-							+'</tr>'
-							+'<tr>'
-								+'<th style="width:5%">상태</th>'
-								+'<th class="th_50">사번</th>'
-								+'<th style="width:7%">입사일</th>'
-								+'<th style="width:7%">퇴직일</th>'
-								+'<th style="width:7%">근속기간</th>'
-								+'<th class="th_100">근무일수</th>'
-								
-								+'<th class="th_50">부서</th>'
-								+'<th class="th_50">직위</th>'
-								
-								+'<th class="th_150">이메일</th>'
-								+'<th style="width:5%">성별</th>'
-								+'<th class="th_150">휴대전화</th>'
-								
-							+'</tr>'
-						+'</thead>'
-						+'<tbody>';
-		
-		$.ajax({
-			  url : "<%= request.getContextPath()%>/getEmpList.yolo",
-			  // data : {"email":email ,"pwd":pwd}, 나중에 필터값 전달
-			  // type : "POST",
-			  dataType : "JSON",
-			  success : function(json){
-			 
-				  
-				  $.each(json,function(index,emp){
-					  
-				  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
-							+'<td class="th_150">'
-								+'<div class="profile">'
-									+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
-									+'<div style="padding-top:3px;">'+emp.name+'</div>'
-								+'</div>'
-							+'</td>'
-							+'<td>'+emp.status+'</td>'
-							+'<td>'+emp.empno+'</td>'
-							+'<td>'+emp.hireDate+'</td>'
-							+'<td>'+emp.retireDate+'</td>'
-							+'<td>'+emp.continuousServiceMonth+'</td>'
-							+'<td>'+emp.workingDays+'</td>'
-			
-							+'<td>'+emp.deptname+'</td>'
-							+'<td>'+emp.position+'</td>'
-			
-							+'<td>'+emp.email+'</td>'
-							+'<td>'+emp.gender+'</td>'
-							+'<td>'+emp.mobile+'</td>'
-						+'</tr>'
-					
-			    });// end of $.each(json,function(index,emp){}----------------------------
-				
-			    html +='</tbody>'   	
-				+'</table>';
-				$("div#search_result").html(html);
-				
-			  },
-			  error: function(request, status, error){
-				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			  }
-		  }); // end of ajax{}----------------------------------------------
-		
-	}// end of function func_getEmpList(){}--------------------------------------------
-	--%>
-	
-	
 	
 	// 신규 사원 등록하는 메소드 
 	function registEmployee(){
@@ -1210,8 +1039,6 @@ arr_status = [];
 			  }
 		}); // end of ajax()----------------------------------------------------------------------
 	}
-	
-	
 	
 	
 </script>
