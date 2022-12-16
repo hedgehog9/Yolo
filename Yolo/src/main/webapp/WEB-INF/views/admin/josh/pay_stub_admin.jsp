@@ -845,6 +845,7 @@ arr_status = [];
 		<%-- === 원글에 대한 댓글의 총 페이지수(totalPage)를 알아야 한다. === --%>
 		
 		let keyword = $("input#searchWord").val();
+		console.log("들아옴")
 		
 		$.ajax({
 			url:"<%=request.getContextPath()%>/getTotalPage.yolo",
