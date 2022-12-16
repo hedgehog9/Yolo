@@ -67,8 +67,8 @@ public class CommuteDAO implements InterCommuteDAO {
 
 	// 급여정산 후에 리스트 불러오기
 	@Override
-	public List<HashMap<String, String>> getPaymentList(Map<String, Object> paraMap) {
-		List<HashMap<String, String>> getPaymentList = sqlsession.selectList("josh.getPaymentList",paraMap);
+	public List<Map<String, Object>> getPaymentList(Map<String, Object> paraMap) {
+		List<Map<String, Object>> getPaymentList = sqlsession.selectList("josh.getPaymentList",paraMap);
 		return getPaymentList;
 	}
 
