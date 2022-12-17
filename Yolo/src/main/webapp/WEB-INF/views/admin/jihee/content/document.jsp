@@ -599,16 +599,18 @@
 				//console.log(json.doc_subject);
 					//console.log("preset:"+json.prestepApp);
 					console.log("deny : "+json.deny);
-					
-					
-			
+					const names = json.appName.split(",");
 	 				  html += 
 						"<div style='padding : 15px 10px' id='contents' data-bs-toggle='modal' data-bs-target='#exampleModal' onclick='approvalModal("+json.doc_no+"," +json.fk_writer_empno+")'>"+
-					    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;1/2&nbsp; </span>"+
-					    	"<span style='font-size: 12pt;'> &nbsp;&nbsp;1단계 승인대기 중입니다.</span>" +
-					    	"&nbsp;&nbsp;&nbsp;&nbsp;"+
+					    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;"+json.nowApprovalStep+"/"+names.length+"&nbsp; </span>";
+					    	if(json.end_doc == "0"){
+					    	html += "<span style='font-size: 12pt;'> &nbsp;&nbsp;"+json.nowApprovalStep+"단계 승인대기 중입니다.</span>" ;
+					    	}
+					    	else{
+						    	html += "<span style='font-size: 12pt;'> &nbsp;&nbsp;결재가 완료되었습니다.</span>" ;
+						    	}
+					    	html += "&nbsp;&nbsp;&nbsp;&nbsp;"+
 					    	"<span style='float:right; color:#cccccc; font-weight: bold; padding-left: 20px; font-size:12pt;'>></span>";
-					    	const names = json.appName.split(",");
 					    	//console.log(names.length);
 					    	 for(let i=0; i<names.length; i++) {
 					    	
@@ -711,6 +713,7 @@
 						"</div>"+
 					"</div>";	
 	 				 approvalModal(doc_no,emp_no);
+	 				
 				}
 				else {
 					html +="<div style='padding-top: 15px; text-align: center; font-size: 15pt; margin-top:35%;' >"+
@@ -741,7 +744,7 @@
 			  dataType:"JSON",
 			  success:function(json){
 				  
-				// console.log(JSON.stringify(json)); 
+				 console.log(JSON.stringify(json)); 
 				 
 					 
 				  let html = ""
@@ -749,19 +752,26 @@
 				if(json.length > 0) {
 				//	console.log(json.length);
 					$.each(json, function(index, item){	
+						console.log(index + item); 
 						
 						if(index == 0){
-							
 							const appSize= json.length;
 							
 							const jsonsize = appSize -1;
 							console.log(jsonsize);
 					
 							 html+=  "<div id='modalStatus'>"+    
-		       			   		"<span id='status' style='font-size: 13pt; '> &nbsp;"+item.first+"/"+jsonsize+"&nbsp; </span>"+
-			    				"<span style='font-size: 13pt;'> &nbsp;&nbsp;"+item.first+"단계 승인대기 중입니다.</span>"+ 
-			   				 "</div>";  
-							
+		       			   		"<span id='status' style='font-size: 13pt; '> &nbsp;"+item.nowApprovalStep +"/"+jsonsize+"&nbsp; </span>";
+							 if(item.end_doc == "0"){
+								html+= "<span style='font-size: 13pt;'> &nbsp;&nbsp;"+item.nowApprovalStep+"단계 승인대기 중입니다.</span>";
+							  }
+					    	else{
+					    		html+= "<span style='font-size: 13pt;'> &nbsp;&nbsp;결재가 완료되었습니다.</span>";
+						    	}
+								
+			   				 html +="</div>";  
+			   				 
+							 
 						} 
 						
 						else {
@@ -936,7 +946,7 @@
 		  dataType:"JSON",
 		  success:function(json){
 			  let html = ""; 
-			 
+			  
 			 
 			  if(json.length > 0) {
 				  $.each(json, function(index, item){
@@ -945,7 +955,8 @@
 					  console.log("levelno:" +item.levelno);
 				 console.log("aprroval:" +item.approval);
 				 console.log("presetpApp: " + item.prestepApp); */
-				 console.log(currentShowPageNo);
+				 //console.log(currentShowPageNo);
+				 console.log("진행중 문서empno :" + item.emp_no);
 				 
 				
 						if(index == 0){
@@ -973,7 +984,7 @@
 					  html += 
 							"<div style='padding-top: 15px;' id='contents'>"+
 					    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-						    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
+						    		"<input type='checkbox' id='label-a' class='checkNum' />&nbsp;&nbsp;"+
 							  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
 							  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
 								  		"<label for='label-a' id='sub' >"+item.name+"</label>";
