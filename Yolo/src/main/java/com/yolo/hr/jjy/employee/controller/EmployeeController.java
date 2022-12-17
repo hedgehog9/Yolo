@@ -71,6 +71,11 @@ public class EmployeeController {
 		return "jangjy/people_admin.admin";
 	}
 	
+	@RequestMapping(value = "/insight.yolo")
+	public String insight() {
+		return "jangjy/insight.admin";
+	}
+	
 	@ResponseBody 
 	@RequestMapping(value = "/getEmpList.yolo", produces="text/plain;charset=UTF-8")
 	public String getEmpList( HttpServletRequest request ) {
