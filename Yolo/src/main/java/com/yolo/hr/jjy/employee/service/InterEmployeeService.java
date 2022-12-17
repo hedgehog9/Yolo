@@ -68,6 +68,9 @@ public interface InterEmployeeService {
 	/** 휴직 취소 (트랜잭션) */
 	int cancelLeave(Map<String, Object> paraMap);
 
+	/** 구성원 등록시 부서장 / 팀장 여부 확인  */
+	int registCheckManager(Map<String, Object> paraMap);
+
 	
 
 

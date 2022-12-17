@@ -134,6 +134,7 @@
 	button.btn_edit {
 		border-radius: 10px;
 		width:30px;
+		height:30px;
 		margin: 0px;
 		background-color: transparent;
 		border: none;
@@ -507,7 +508,7 @@
 	let leaveFlag = false; // 휴직 신청 가능 여부 저장
 	changeLeaveFalg = false; // 휴직 변경 여부 
 	let html = "";
-	
+	let v_empno = 0;
 	
 	
 	$(document).ready(function(){
@@ -609,23 +610,26 @@
 	  		$("div.info_title").css("border-bottom","");
 	  		$(e.target).css("border-bottom","solid 3px green");
 	  		$("div#div_info").empty();
-	  		
+	  		v_empno = ${requestScope.employeeMap.empno};
+	  		// console.log("v_empno+ "+ v_empno);
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
 						+"<div id='div_hr_title' style=' margin-bottom:20px;'>인사 정보</div>"
 						
-						+"<button id='btn_edit_hrInfo' type='button' data-toggle='dropdown' class='btn_edit'>"
-							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
-						+"</button>"
+						if(${sessionScope.loginuser.empno} == "9999"){
 						
-						+"<div class='dropdown-menu'>"
-							+"<a id ='a_edit_hrInfo'class='dropdown-item' href='javascript:void(0);' onclick='edit_hrInfo("+`${requestScope.employeeMap.empno}`+");'><i class='fas fa-user-alt'></i>&nbsp;&nbsp;인사 정보 변경&nbsp;&nbsp;"
-								+"<span class='badge' style='background-color:#3B86C8; color:white;'>발령</span>"
-							+"</a>"
-							+"<a id='a_edit_basicInfo' class='dropdown-item' href='javascript:void(0);'onclick='edit_basicInfo()'><i class='fas fa-pen'></i>&nbsp;&nbsp;기본 정보 변경</a>" 
-						+"</div>"
-					+"</div>"
+							html +="<button id='btn_edit_hrInfo' type='button' data-toggle='dropdown' class='btn_edit'>"
+									+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
+								+"</button>"
+								
+								+"<div class='dropdown-menu'>"
+									+"<a id ='a_edit_hrInfo'class='dropdown-item' href='javascript:void(0);' onclick='edit_hrInfo("+`${requestScope.employeeMap.empno}`+");'><i class='fas fa-user-alt'></i>&nbsp;&nbsp;인사 정보 변경&nbsp;&nbsp;"
+										+"<span class='badge' style='background-color:#3B86C8; color:white;'>발령</span>"
+									+"</a>"
+								+"</div>"
+						}
 					
+			html+=	"</div>"
 					+"<table>"
 						+"<thead>"
 							+"<tr style='height:40px;'>"
@@ -709,13 +713,17 @@
 	  		
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
-						+"<div id='div_hr_title' style='margin-bottom:20px;'>개인 정보</div>"
+						+"<div id='div_hr_title' style='margin-bottom:20px;'>개인 정보</div>";
 						
-						+"<button id='btn_edit_psInfo' type='button' class='btn_edit' onclick='editInfo();'>"
+						if("${sessionScope.loginuser.empno}" == "9999" || "${sessionScope.loginuser.empno}" == v_empno){
+						
+						html+="<button id='btn_edit_psInfo' type='button' class='btn_edit' onclick='editInfo();'>"
 							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
-						+"</button>"
+						+"</button>";
 						
-					+"</div>"
+						}
+						
+				html+="</div>"
 					+"<table>"
 						+"<thead>"
 							+"<tr style='height:40px;'>"
@@ -726,45 +734,39 @@
 								+"<th class='th_title'>이름</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.name}`+"</th>"				
 							+"</tr>"			
-							<%--
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>회사 내 이름</th>"				
-								+"<th class='th_content'>홍길동</th>"				
-							+"</tr>"	
-							--%>		
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>영문 이름</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.englishName}`+"</th>"				
-							+"</tr>"		
-							<%--
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>국적, 거주국가, 체류자격 </th>"				
-								+"<th class='th_content'>Republic of Korea</th>"				
 							+"</tr>"
-							--%>			
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>생년월일</th>";
-						<%-- DB 에서 조회해온 성별이 남자인경우 뱃지 하늘색, 여자인 경우 분홍색 --%>	
-						if("${requestScope.employeeMap.gender}"=="남"){		
-							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>남</span></th>";
-						}
-						else if("${requestScope.employeeMap.gender}"=="여"){
-							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>여</span></th>";
-						}
-						else{
-							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;</th>";
-						}
-						
-								
-						html+="</tr>"			
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>주민등록번호</th>"				
-								+"<th class='th_content'>"+`${requestScope.employeeMap.rrn}`+"</th>"			
-							+"</tr>"			
+							
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>휴대전화번호</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.mobile}`+"</th>"			
-							+"</tr>"			
+							+"</tr>";
+							
+						
+						if("${sessionScope.loginuser.empno}" == "9999" || "${sessionScope.loginuser.empno}" == v_empno){
+							
+							html +="<tr style='height:40px;'>"
+								+"<th class='th_title'>주민등록번호</th>"				
+								+"<th class='th_content'>"+`${requestScope.employeeMap.rrn}`+"</th>"			
+							+"</tr>"	
+							
+							+"<tr style='height:40px;'>"
+								+"<th class='th_title'>생년월일</th>";
+								<%-- DB 에서 조회해온 성별이 남자인경우 뱃지 하늘색, 여자인 경우 분홍색 --%>	
+								if("${requestScope.employeeMap.gender}"=="남"){		
+									html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>남</span></th>";
+								}
+								else if("${requestScope.employeeMap.gender}"=="여"){
+									html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>여</span></th>";
+								}
+								else{
+									html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;</th>";
+								}
+								
+							+"</tr>"
+										
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>집주소</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.address}`+"</th>"			
@@ -774,9 +776,10 @@
 								+"<th class='th_content'>"+`${requestScope.employeeMap.account}`+"</th>"			
 							+"</tr>"
 							+"<tr class='file' style='height:40px;'>"
-							+"</tr>"
+							+"</tr>";
+						}	
 							
-						+"</thead>"
+						html+="</thead>"
 					+"</table>";
 	  		
 	  		$("div#div_info").html(html);
@@ -1545,63 +1548,6 @@
 				$("input[name='before_position']").val( $("input#before_position").val());
 	} //인사정보 페이지에서 인사 정보 변경 버튼 클릭 끝 ------------------------------------------------------------------------------------------------------------------------
 	
-	//인사정보 페이지에서 기본 정보 변경 버튼 클릭시
-	function edit_basicInfo(){
-		$("div#edit_info").empty();
-		$('#edit_info').addClass('active');
-	    $('#record_outside').fadeIn();
-		
-		let html ='';
-		
-		html += '<div class="container">'
-					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:20px 0;">'
-						+'<div style="font-size:20px; font-weight:600;">기본 정보 변경</div>'
-						+'<button id="record_close" onclick="record_close();">'
-							+'<i class="fas fa-times"></i>'
-						+'</button>'
-					+'</div>'
-					+'<form name="frm_basicInfo">'
-						+'<div>'
-							+'<div>사번</div>'
-							+'<input type="text" value="" style="width:100%; height:30px; border: solid 1px #d9d9d9; border-radius: 5px;"/>'
-						+'</div>'
-					
-					+'<div style="margin: 20px 0;">'
-						+'<div>입사일</div>'
-						+'<input type="text" value="" class="daterange" style="width:100%; height:30px;" />'
-					+'</div>'
-					
-					+'<div style="width:100%; margin-bottom: 580px;">'
-						+'<div>입사 유형</div>'
-						+'<button id="btn" class=" btn communication" type="button"'
-							+'data-toggle="dropdown"'
-								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width:100%;">'
-							+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-								+'<div id="retirement_type">입사 유형</div>'
-								+'<i class="fas fa-bars" style="padding: 5px;"></i>'
-							+'</div>'
-					+'</button>'
-					
-					+'<div class="dropdown-menu">'
-						+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">신입</button>'
-						+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">경력</button>'
-					+'</div>'
-					
-					+'<input id="career" name="career" type="hidden"/>'
-					+'</div>'
-							
-					+'<div style="display:flex; justify-content: flex-end;">'
-						+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>'
-						+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
-					+'</div>'
-				+'</form>'
-			+'</div>';
-			
-			$("div#edit_info").html(html);
-			daterange();
-		
-	}//인사정보 페이지에서 기본 정보 변경 버튼 클릭 끝--------------------------------------------------------------------------------------
-	
 	
 	
 	// 정보 변경 닫기 처리 메소드
@@ -1857,15 +1803,10 @@
 					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;${requestScope.employeeMap.position}</th>				
 				</tr>
 				<tr>
-					<th>
+					<th colspan="3">
 						<a onclick="copy_to_clipboard('${requestScope.employeeMap.mobile}')" class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="${requestScope.employeeMap.mobile}"><i class="fas fa-phone-alt"></i></a>
-					</th>
-					<th>
 						<a onclick="copy_to_clipboard('${requestScope.employeeMap.email}')" class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="${requestScope.employeeMap.email}"><i class="far fa-envelope"></i></a>
-					</th>
-					<th>
 						<a class="btn communication" href="<%= ctxPath%>/messenger/receivedMessage.yolo?empno=${requestScope.employeeMap.empno}" data-toggle="tooltip" data-placement="top" title="메신저"><i class="fas fa-comment"></i></a>
-						<%-- 메시지 받는사람 파라미터로 넘겨줘야 함. --%>
 					</th>
 					<th> 
 						<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding:3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious:10px;">
@@ -1881,11 +1822,12 @@
 								<span style="color:green;">●</span>&nbsp;&nbsp;퇴직&nbsp;&nbsp;
 							</c:if>
 						</button>
-						
+						<c:if test="${sessionScope.loginuser.empno == 9999}">
 						<div class="dropdown-menu">
 							<button class="dropdown-item" type="button" data-toggle="modal" data-target="#modal_leave"><i class="fas fa-user-slash" ></i>&nbsp;&nbsp;휴직 처리하기</button>
 							<button class="dropdown-item" type="button" data-toggle="modal" data-target="#modal_retirement"><i class="fas fa-leaf"></i>&nbsp;&nbsp;퇴직 처리하기</button>
 						</div>
+						</c:if>
 					</th>
 				</tr>
 			</thead>
@@ -2042,7 +1984,10 @@
 			<div id="div_ps" class="info_title">개인 정보</div>
 		</div>
 		<div>
-			<button id="record_search" type="button" class="btn" onclick="searchRecord()"><i class="fas fa-history" style="margin:0px; width:16px;"></i>&nbsp;&nbsp;정보 변경 내역</button>
+			<c:set var="c_empno" value="${requestScope.employeeMap.empno}"/>
+			<c:if test="${sessionScope.loginuser.empno eq '9999' || c_empno eq sessionScope.loginuser.empno}">
+				<button id="record_search" type="button" class="btn" onclick="searchRecord()"><i class="fas fa-history" style="margin:0px; width:16px;"></i>&nbsp;&nbsp;정보 변경 내역</button>
+			</c:if>
 		</div>
 	</nav>
 	<%-- ============== 인사정보, 개인정보, 정보 변경 내역 버튼 끝  ============== --%>
