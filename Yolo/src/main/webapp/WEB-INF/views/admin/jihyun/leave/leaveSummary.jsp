@@ -94,7 +94,7 @@
 	
 	/* 모달 */
 	
-	div#leaveModal {
+	div#yearLeaveModal {
 		/* border:solid 2px green; */
 		width: 30%;
 		height: 100%;
@@ -112,12 +112,12 @@
 		padding: 5px;
 	}
 	
-	div#leaveModal.active {
+	div#yearLeaveModal.active {
 		top: 0px;
 		left: 70%;
 	}
 	
-	div#leaveModal_outside {
+	div#modal_outside {
 		position: fixed;
 		top: 0px;
 		left: 0px;
@@ -129,21 +129,21 @@
 	}
 	
 	div.modalTop {
-		width: 90%;
-		margin: auto 5%;
+		width: 86%;
+		margin: auto 7%;
 		height: 7%;
 		padding-top: 15px;
 	}
 	
 	div.modalMiddle {
-		width: 90%;
-		margin: auto 5%;
+		width: 86%;
+		margin: auto 7%;
 		height: 86%;
 	}
 	
 	div.modalBottom {
-		width: 90%;
-		margin: auto 5%;
+		width: 86%;
+		margin: auto 7%;
 		height: 7%;
 		display : flex; 
 	}
@@ -152,6 +152,10 @@
 		font-size:14px; 
 		font-weight: normal; 
 		margin-right: 7px;
+	}
+	
+	input#daterange:hover{
+		cursor: pointer;
 	}
 	
 	textarea {
@@ -179,6 +183,49 @@
 		filter: brightness(90%);
 	}
 	
+	/* 파일 입력 */
+	
+	div.filebox {
+		display: flex;
+		align-items: center;
+	}
+	
+	.filebox .upload-name {
+	    display: inline-block;
+	    height: 35px;
+	    padding: 0 10px;
+	    vertical-align: middle;
+	    border: 1px solid #dddddd;
+	    width: 70%;
+	    border-radius: 0.4rem;
+	    color: #999999;
+	}
+	
+	.filebox label {
+	    display: inline-block;
+	    padding: 7px 20px;
+	    color: #fff;
+	    vertical-align: middle;
+	    text-align: center;
+	    background-color: #88eb1e;
+	    cursor: pointer;
+	    width : 25%;
+	    height: 35px;
+	    margin-left: 10px;
+	    margin-top: 6px;
+	    border-radius: 0.4rem;
+	    flex-grow: 1;
+	}
+	
+	.filebox input[type="file"] {
+	    position: absolute;
+	    width: 0;
+	    height: 0;
+	    padding: 0;
+	    overflow: hidden;
+	    border: 0;
+	}
+	
 	
 </style>
 
@@ -194,8 +241,150 @@
 		
 		$("span#myLeave").css("color", "#494949");
 		
+		// 파일 선택하면 선택창 바뀌도록 
+		$("#file").on('change',function(){
+			  var fileName = $("#file").val();
+			  $(".upload-name").val(fileName.slice(fileName.lastIndexOf("\\")+1));
+		});
+		
+		$(document).on('focus', "input#daterange",  function () {
+			setDate();
+		});
+		
+          
+		// 바깥영역 누르면 닫히는거
+		$('#modal_outside').on('click', function () {
+			closeLeaveModal();
+		});
+		
+		// x 자 누르면 닫히는거
+		$(document).on('click', "button.close",  function () {
+			closeLeaveModal();
+		});
+		
+		
+		
+		
+	}); // end of ready 
+	
+	
+	// 모달에 각자연차에 해당 내용을 집어넣기 위해서 데이터를 얻어온다
+	function getModaldata(pk_leave_type){
+		$.ajax({
+	    	url : "<%=ctxPath%>/leave/getLeaveDate.yolo",
+	    	data : {"pk_leave_type" : pk_leave_type},
+    		dataType: "JSON",
+			success: function(json){
+				console.log(json);
+
+				let htmlTop = '<span style="font-size:21px;">'+json.emoji+'</span><span class="miniTitle ml-3">'+json.leave_name+'</span>'+
+			        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>';
+				$("div.modalTop").html(htmlTop);
+				
+				
+				let htmlMiddle = '<form id="requestLeave" name="requestLeave" enctype="multipart/form-data">'+
+					      	'<span style="display: block; margin-top: 10px;">&#128204; 휴가정보</span>'+
+					      	'<div style="margin: 10px auto;">'+
+					      		'<span class="badge modalBage" style="background-color: #f8edeb;">'+json.info1+'</span>'+
+					      		'<span class="badge modalBage" style="background-color: #fcd5ce;">'+json.info2+'</span>'+
+					      		'<span class="badge modalBage" style="background-color: #f9dcc4;">'+json.info3+'</span>'+
+					      	'</div>';
+					      	
+				if(json.pk_leave_type == "half_annual"){
+					htmlMiddle += '<div style="margin-top: 30px;">'+
+										'<span style="display: block; margin-top: 10px;">&#9989; 선택하세요</span>'+
+										'<div class="btn-group pt-1" data-toggle="buttons">'+
+										 ' <label class="btn btn-outline-primary btn-sm">'+
+										   ' <input type="radio" style="display: none;" name="time" id="option1" autocomplete="off">오전'+
+										  '</label>'+
+										  '<label class="btn btn-outline-primary btn-sm">'+
+										    '<input type="radio" style="display: none;" name="time" id="option2" autocomplete="off">오후'+
+										  '</label>'+
+										'</div>'+
+									'</div>';
+				}
+				
+				if(json.pk_leave_type == "condolence" ){
+					htmlMiddle += '<div style="margin-top: 30px;">'+
+										'<span style="display: block; margin-top: 10px;">&#9989; 선택하세요</span>'+
+										'<div class="btn-group pt-1" data-toggle="buttons">'+
+										 ' <label class="btn btn-outline-primary btn-sm">'+
+										   ' <input type="radio" style="display: none;" name="time" id="option1" autocomplete="off">부모/배우자/자녀(5일)'+
+										  '</label>'+
+										  '<label class="btn btn-outline-primary btn-sm">'+
+										    '<input type="radio" style="display: none;" name="time" id="option2" autocomplete="off">조부모/형제/자매(3일)'+
+										  '</label>'+
+										'</div>'+
+									'</div>';
+				}
+				
+				if(json.pk_leave_type == "marrige" ){
+					htmlMiddle += '<div style="margin-top: 30px;">'+
+										'<span style="display: block; margin-top: 10px;">&#9989; 선택하세요</span>'+
+										'<div class="btn-group pt-1" data-toggle="buttons">'+
+										 ' <label class="btn btn-outline-primary btn-sm">'+
+										   ' <input type="radio" style="display: none;" name="time" id="option1" autocomplete="off">본인(2일)'+
+										  '</label>'+
+										  '<label class="btn btn-outline-primary btn-sm">'+
+										    '<input type="radio" style="display: none;" name="time" id="option2" autocomplete="off">자녀(1일)'+
+										  '</label>'+
+										'</div>'+
+									'</div>';
+				}
+				
+					      	
+							
+					if(json.limit_days != 0){
+						htmlMiddle += '<div>'+
+							      		'<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>'+
+							      		'<span class="badge modalBage" style="background-color: #ffb5a7; margin-top: 10px; font-weight: bold;">'+json.remaining_leave+'일</span>'+
+							      	'</div>';
+					}
+					      	
+					htmlMiddle +='<span style="display: block; margin-top: 30px; margin-bottom: 10px;">&#128221; 휴가 일정 · 필요 정보 입력</span>'+
+					      	'<input type="text" id="daterange" class="form-control text-center" placeholder="클릭하여 날짜를 지정해주세요" readonly="readonly">'+
+					        '<input type="text" name="start_date" class="form-control text-center">'+
+					        '<input type="text" name="end_date" class="form-control text-center">'+
+					        '<textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>';
+					        
+			        if(json.add_file == 1){
+			        	htmlMiddle += '<span style="display: block; margin-top: 30px;">&#128193; 자료첨부</span>'+
+			        					'<div class="filebox">'+
+										    '<input class="upload-name" value="첨부파일" placeholder="첨부파일" readonly="readonly">'+
+										    '<label for="file">파일찾기</label>'+
+										    '<input type="file" id="file">'+
+										'</div>';
+			        }
+					        
+					 htmlMiddle += '</form>';
+					 
+				$("div.modalMiddle").html(htmlMiddle);
+				
+				
+				let htmlBottom = '<span style="flex-grow: 1;"> </span>'+
+									'<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;" onclick="closeLeaveModal();">취소</button>'+
+									'<button type="button" class="leaveUsingBnt">휴가신청</button>';
+				$("div.modalBottom").html(htmlBottom);
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of ajax
+		
+		
+		openLeaveModal();
+	}
+	
+	function setDate(){
+		
+	    var maxDate = new Date();
+	    var dd = maxDate.getDate() + 7;
+	    maxDate.setDate(dd);
+		
 		$('input#daterange').daterangepicker({
-              locale: {
+			// $("#daterange").change(function(){
+            locale: {
                 "format": 'YYYY-MM-DD',
                 "separator": " ~ ",
                 "applyLabel": "확인",
@@ -209,37 +398,48 @@
                 
               }
             },function(start, end, label) {
-              $("input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
-              $("input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
+            	
+              var stDate = new Date(start._d.getFullYear(), start._d.getMonth(), start._d.getDay());
+  			  var endDate = new Date(end._d.getFullYear(), end._d.getMonth(), end._d.getDay());
+  			  console.log(stDate);
+  			  console.log(endDate);
+  			  
+  			  var btMs = endDate.getTime() - stDate.getTime() ;
+		      var btDay = btMs / (1000*60*60*24) ;
+              console.log(btDay+1);
+              
+              if(btDay+1>4){
+            	  alert('에바');
+              
+              } else {
+            	  alert("2")
+              
+            	  $("input[name='start_date']").val(start.format('YYYY-MM-DD'));
+                  $("input[name='end_date']").val(end.format('YYYY-MM-DD'));
+              }
+              
+            
+              
           }); 
-          
-		// 바깥영역 누르면 닫히는거
-		$('#leaveModal_outside').on('click', function () {
-			closeLeaveModal();
-		});
-		
-		// x 자 누르면 닫히는거
-		$("button.close").on('click', function () {
-			closeLeaveModal();
-		});
-		
-		
-		
-		
-	}); // end of ready 
+	}
 	
 	
 	// 열기
 	function openLeaveModal(){
-		$('#leaveModal').addClass('active');
-	    $('#leaveModal_outside').fadeIn();
+		$('#yearLeaveModal').addClass('active');
+	    $('#modal_outside').fadeIn();
 		
 	}
 	
 	// 닫기
 	function closeLeaveModal(){
-		$('#leaveModal').removeClass('active');
-	    $('#leaveModal_outside').fadeOut();
+		$('#yearLeaveModal').removeClass('active');
+	    $('#modal_outside').fadeOut();
+	    
+	    /* const modal_frmArr = document.querySelectorAll("form#requestLeave");
+  	  	for(let i=0; i<modal_frmArr.length; i++) {
+  			modal_frmArr[i].reset();
+  	  	} */
 	}
 	
 	
@@ -251,7 +451,7 @@
 		<div class="row">
 			<c:forEach var="leveType" items="${ requestScope.leaveTypeList}">
 				<div class="col-lg-3 mb-4">
-				  <div class="card" onclick="openLeaveModal()">
+				  <div class="card" onclick="getModaldata('${leveType.pk_leave_type }')">
 				    <div class="card-body text-left ml-2">
 					 	<span style="font-size:30px;">${leveType.emoji }</span>
 				     	<h6 class="card-title mt-4">${leveType.leave_name }
@@ -267,78 +467,6 @@
 				  </div>
 			   </div>
 			</c:forEach>
-		  <!-- <div class="col-lg-3 mb-4">
-			  <div class="card" onclick="openLeaveModal()">
-			    <div class="card-body text-left ml-2">
-				 	<span style="font-size:30px;">&#9978;</span>
-			     	<h6 class="card-title mt-4">연차</h6>	
-			      	<p class="card-text">12일</p>
-			    </div>
-			  </div>
-		  </div>
-		  <div class="col-lg-3 mb-4">
-			  <div class="card">
-			    <div class="card-body text-left ml-2">
-				 	<span style="font-size:30px;">&#128340;</span>
-			     	<h6 class="card-title mt-4">반차</h6>	
-			      	<p class="card-text">25일</p>
-			    </div>
-			  </div>
-		  </div>
-		  <div class="col-lg-3 mb-4">
-			  <div class="card" data-toggle="modal" data-target="#joy">
-			    <div class="card-body text-left ml-2">
-			    	<span style="font-size:30px;">&#9993;</span>
-			     	<h6 class="card-title mt-4">조의</h6>	
-			      	<p class="card-text">신청시 지급</p>
-			    </div>
-			  </div>
-		  </div>
-		  <div class="col-lg-3 mb-4">
-			  <div class="card">
-			    <div class="card-body text-left ml-2">
-			    	<span style="font-size:30px;">&#128138;</span>
-			     	<h6 class="card-title mt-4">병가</h6>	
-			      	<p class="card-text">90일</p>
-			    </div>
-			  </div>
-		  </div>
-		  <div class="col-lg-3 mb-4">
-			  <div class="card">
-			    <div class="card-body text-left ml-2">
-			    	<span style="font-size:30px;">&#128031;</span>
-			     	<h6 class="card-title mt-4">여름휴가</h6>	
-			      	<p class="card-text">4일</p>
-			    </div>
-			  </div>
-		  </div>
-		  <div class="col-lg-3 mb-4">
-			  <div class="card">
-			    <div class="card-body text-left ml-2">
-			    	<span style="font-size:30px;">&#128141;</span>
-			     	<h6 class="card-title mt-4">결혼</h6>	
-			      	<p class="card-text">신청시 지급</p>
-			    </div>
-			  </div>
-		  </div>
-		  <div class="col-lg-3 mb-4">
-			  <div class="card">
-			    <div class="card-body text-left ml-2">
-			    	<span style="font-size:30px;">&#128680;</span>
-			     	<h6 class="card-title mt-4">긴급</h6>	
-			      	<p class="card-text">신청시 하루지급</p>
-			    </div>
-			  </div>
-		  </div>
-		  <div class="col-lg-3 mb-4">
-			  <div class="card">
-			    <div class="card-body text-left ml-2">
-			    	<span style="font-size:30px;">&#9989;</span>
-			     	<h6 class="card-title mt-4">기타</h6>	
-			      	<p class="card-text">신청시 지급</p>
-			    </div>
-			   </div>
-		   </div> -->
 		</div>
 	</div>
 
@@ -422,36 +550,55 @@
 <!-- 휴가 상세 모달 -->
 <%@ include file="modal/leaveDetailModal.jsp" %>
 
-<div id="leaveModal_outside"></div>
+<div id="modal_outside"></div>
 
  
-<!-- 연차 Modal -->
-<div id="leaveModal">
+<!-- 연차/병가/여름휴가 Modal -->
+<div id="yearLeaveModal">
       <div class="modalTop">
-      	<span style="font-size:21px;">&#9978;</span><span class="miniTitle ml-3"> 연차</span>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+      	<!-- <span style="font-size:21px;">&#9978;</span><span class="miniTitle ml-3"> 연차</span>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button> -->
        </div>
       <div class="modalMiddle">
-	      	<span style="display: block; margin-top: 10px;">&#128204; 휴가정보</span>
-	      	<div style="margin: 10px auto;">
-	      		<span class="badge modalBage" style="background-color: #AFEEEE;">1년당 25개 사용가능</span>
-	      		<span class="badge modalBage" style="background-color: #B0E0E6;">유급</span>
-	      		<span class="badge modalBage" style="background-color: #B0C4DE;">연말만료</span>
-	      	</div>
-	      	<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>
-	      	<span class="badge modalBage" style="background-color: #AFEEEE; margin-top: 10px;">6일</span>
-	      	<span style="display: block; margin-top: 30px;">&#128221; 휴가 일정 · 필요 정보 입력</span>
-	      	<input type="text" id="daterange" class="form-control text-center">
-	        <input type="hidden" name="start_date" class="form-control text-center">
-	        <input type="hidden" name="end_date" class="form-control text-center">
-	        <textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>
+      		<!-- <form id="requestLeave" name="requestLeave" enctype="multipart/form-data">
+		      	<span style="display: block; margin-top: 10px;">&#128204; 휴가정보</span>
+		      	<div style="margin: 10px auto;">
+		      		<span class="badge modalBage" style="background-color: #f8edeb;">1년당 25개 사용가능</span>
+		      		<span class="badge modalBage" style="background-color: #fcd5ce;">유급</span>
+		      		<span class="badge modalBage" style="background-color: #f9dcc4;">연말만료</span>
+		      	</div>
+		      	<div style="margin-top: 30px;">
+					<span style="display: block; margin-top: 10px;">&#9989; 선택하세요</span>
+					<div class="btn-group pt-1" data-toggle="buttons">
+					  <label class="btn btn-outline-primary btn-sm">
+					    <input type="radio" style="display: none;" name="time" id="option1" autocomplete="off">오전
+					  </label>
+					  <label class="btn btn-outline-primary btn-sm">
+					    <input type="radio" style="display: none;" name="time" id="option2" autocomplete="off">오후
+					  </label>
+					</div>
+				</div>
+		      	<div>
+		      		<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>
+		      		<span class="badge modalBage" style="background-color: #ffb5a7; margin-top: 10px; font-weight: bold;">6일</span>
+		      	</div>
+		      	<span style="display: block; margin-top: 30px;">&#128221; 휴가 일정 · 필요 정보 입력</span>
+		      	<input type="text" id="daterange" class="form-control text-center" >
+		        <input type="text" name="start_date" class="form-control text-center">
+		        <input type="text" name="end_date" class="form-control text-center">
+		        <textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>
+		        <div class="filebox">
+				    <input class="upload-name" value="첨부파일" placeholder="첨부파일" readonly="readonly">
+				    <label for="file">파일찾기</label>
+				    <input type="file" id="file">
+				</div>
+			</form> -->
 	 </div>
- 	 
  	 <div class="modalBottom" >
- 	 	<span style="flex-grow: 1;"> </span>
-		<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;">취소</button>
-		<button type="button" class="leaveUsingBnt">휴가신청</button>
-	</div>
+ 	 	<!-- <span style="flex-grow: 1;"> </span>
+		<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;" onclick="closeLeaveModal();">취소</button>
+		<button type="button" class="leaveUsingBnt">휴가신청</button> -->
+	</div> 
 </div>
 
 

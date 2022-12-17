@@ -346,11 +346,23 @@
 		<result property="emoji" column="emoji" javaType="String"/>
 		<result property="limit_days" column="limit_days" javaType="String"/>
 		<result property="remaining_leave" column="remaining_leave" javaType="String"/>
+		<result property="info1" column="info1" javaType="String"/>
+		<result property="info2" column="info2" javaType="String"/>
+		<result property="info3" column="info3" javaType="String"/>
 	</resultMap>
 	<select id="selectLeaveType" parameterType="HashMap" resultMap="homeLeaveTypeMap">
 		select pk_leave_type, leave_name, limit_info, add_file, emoji, limit_days
 		        ,case when LIMIT_DAYS>0 then LIMIT_DAYS - (select func_get_used_leave( PK_LEAVE_TYPE , ${empno}, ${year}) from dual) end as remaining_leave
 		from tbl_leave
+	</select>
+	
+	
+	<!-- 모달에 들어갈 해당 휴가에 대한 상세 내용 알아오기 -->
+	<select id="selectLeaveData" parameterType="HashMap" resultMap="homeLeaveTypeMap">
+		select PK_LEAVE_TYPE, LEAVE_NAME, LIMIT_INFO, ADD_FILE, EMOJI, info1, info2, info3, LIMIT_DAYS
+		        ,case when LIMIT_DAYS>0 then LIMIT_DAYS - (select func_get_used_leave( PK_LEAVE_TYPE , ${empno}, to_char(sysdate, 'yyyy')) from dual) end as remaining_leave
+		from tbl_leave
+		where PK_LEAVE_TYPE = #{pk_leave_type}
 	</select>
 	
 </mapper>
