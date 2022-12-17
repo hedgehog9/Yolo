@@ -310,7 +310,7 @@ public class EmployeeController {
 		System.out.println(leaveMap.get("empno"));
 		
 		Map<String,String> leaveInfoMap = dao.getLeaveInfo(leaveMap);
-		System.out.println("leaveInfoMap :"+leaveInfoMap);
+//		System.out.println("leaveInfoMap :"+leaveInfoMap);
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("leaveInfoMap", leaveInfoMap);
@@ -370,6 +370,7 @@ public class EmployeeController {
 	public String registEmployee(@RequestParam Map<String,Object>paraMap) {
 		
 		System.out.println("사원 등록 Map" + paraMap);
+//		사원 등록 Map{name=짙은, email=zitt@yolo.com, hire_date=2022-12-17, salary=9800, department=1234, team=, position=부서장}
 		JSONObject jsonObj = new JSONObject();
 		
 		// 회원가입시 이메일 중복 여부 확인 
@@ -700,7 +701,7 @@ public class EmployeeController {
 	@RequestMapping(value = "/getFile.yolo", produces="text/plain;charset=UTF-8")
 	public String getFile( @RequestParam Map<String,Object>paraMap ) {
 		
-		System.out.println(paraMap);
+//		System.out.println(paraMap);
 		
 		List<Map<String,String>> fileList = dao.getFile(paraMap);
 		
@@ -1131,7 +1132,7 @@ public class EmployeeController {
 	@RequestMapping(value = "/checkApproval.yolo", produces="text/plain;charset=UTF-8")
 	public String checkApproval(@RequestParam Map<String,Object>paraMap ) {
 		
-		System.out.println("결재문서 검사 paraMap :"+paraMap);
+//		System.out.println("결재문서 검사 paraMap :"+paraMap);
 		
 		int result = dao.checkApproval(paraMap);
 		
@@ -1146,12 +1147,30 @@ public class EmployeeController {
 	@RequestMapping(value = "/retirement.yolo", produces="text/plain;charset=UTF-8")
 	public String updateRetirement(@RequestParam Map<String,Object>paraMap ) {
 		
-		System.out.println("퇴직 처리 paraMap :"+paraMap);
+//		System.out.println("퇴직 처리 paraMap :"+paraMap);
 		
 		int result = dao.updateRetirement(paraMap) ;
 		
 //		return "redirect:userDetail.yolo?empno="+paraMap.get("empno");
 		return "jangjy/people_admin.admin";
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/registCheckManager.yolo", produces="text/plain;charset=UTF-8")
+	public String registCheckManager( @RequestParam Map<String,Object>paraMap) {
+		
+		System.out.println(paraMap);
+//		{name=, email=, hire_date=2022-12-17, salary=, department=10, team=, position=}
+		
+		int manager_yn = service.registCheckManager(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("manager_yn", manager_yn);
+		
+		System.out.println("manager_yn"+manager_yn);
+		
+		return jsonObj.toString() ;
 	}
 	
 	

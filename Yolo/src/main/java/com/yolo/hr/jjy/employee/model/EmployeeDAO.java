@@ -218,6 +218,7 @@ public class EmployeeDAO implements InterEmployeeDAO {
 
 	@Override
 	public void insertExcel(Map<String, Object> paramMap) {
+		System.out.println("paramMap"+paramMap);
 		sqlsession.insert("jangjy.registEmpExcel",paramMap);
 		
 	}
@@ -274,6 +275,24 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		int result = sqlsession.update("jangjy.updateRetirement", paraMap);
 //		int result = sqlsession.delete("jangjy.deleteEmp", paraMap);
 		return result;
+	}
+
+	@Override 
+	public int getManagerEmpnoRegist(Map<String, Object> paraMap) {
+		int manager_yn = sqlsession.selectOne("jangjy.getManagerEmpnoRegist",paraMap);
+		return manager_yn;
+	}
+
+	@Override
+	public Map<String, String> getEmpno(Map<String, Object> paraMap) {
+		Map<String, String> empnoMap = sqlsession.selectOne("jangjy.getEmpno", paraMap);
+		return empnoMap;
+	}
+
+	@Override
+	public void updateManagerEmpnoRegist(Map<String, Object> paraMap) {
+		sqlsession.update("jangjy.updateManagerEmpnoRegist", paraMap);
+		
 	}
 
 	

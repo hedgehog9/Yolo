@@ -221,14 +221,25 @@ public class EmployeeService implements InterEmployeeService {
 	@Override
 	public int registEployee(Map<String, Object> paraMap) {
 		
+		String position = (String) paraMap.get("position");
+		
 		// 프로필 색상 랜덤 지정하기 
 		Random rand = new Random();
 		String[] arr_profile_color = {"#FFADC5","#CCD1FF","#A8C8F9","#B8F3B8","#FFDDA6","#FFA9B0","#FFCCCC","#C3C95E","#FC9EBD"};
 		
 		paraMap.put("profile_color", arr_profile_color[rand.nextInt(9)]);
-//		System.out.println("확인용 랜덤 프로필 색상 "+paraMap.get("profile_color"));
 		
 		int registResult = dao.registEployee(paraMap);
+		
+		if("팀장".equals("position") || "부서장".equals(position)) {
+			
+			Map<String,String> emailMap = dao.getEmpno(paraMap);
+			
+			paraMap.put("empno", emailMap.get("empno"));
+			
+			dao.updateManagerEmpnoRegist(paraMap);
+		}
+		
 		return registResult;
 	}
 
@@ -485,6 +496,15 @@ public class EmployeeService implements InterEmployeeService {
 		}
 		
 		return result;
+	}
+
+	@Override
+	public int registCheckManager(Map<String, Object> paraMap) {
+		int manager_yn = 0;// 팀장 부서장 여부  1:있음  0:없음
+		
+		manager_yn = dao.getManagerEmpnoRegist(paraMap);
+		
+		return manager_yn;
 	}
 		
 
