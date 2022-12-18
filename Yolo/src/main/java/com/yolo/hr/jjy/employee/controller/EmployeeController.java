@@ -271,8 +271,8 @@ public class EmployeeController {
 	// 휴직 처리 
 	@ResponseBody
 	@RequestMapping(value = "/leaveAbsence.yolo", produces = "text/plain;charset=UTF-8")
-//	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
-	public String leaveabsence(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
+	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
+//	public String leaveabsence(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
 		
 		System.out.println(leaveMap.get("leavetype"));
 		System.out.println(leaveMap.get("startdate"));
