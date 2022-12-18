@@ -548,4 +548,22 @@
 		values(#{schedule_no}, #{fk_empno}, to_date(#{start_date},'YYYY-MM-DD HH24:MI:SS'), to_date(#{end_date},'YYYY-MM-DD HH24:MI:SS'), #{subject}, #{color}, #{category}, #{fk_deptno})
 	</insert>
 	
+	
+	<resultMap type="HashMap" id="sumWorktimeByDeptMap">
+		<result property="deptname"     				column="deptname"    				 	javaType="String"/>
+		<result property="avg_worktime"          	column="avg_worktime"         			javaType="String"/>
+	</resultMap>
+	
+	<select id="sumWorktimeByDept" resultMap="sumWorktimeByDeptMap">
+		select deptname, round(avg((nvl(worktime,0)+nvl(overtime,0))/60),1) AS avg_worktime
+		from tbl_commute C join tbl_employees E
+		on C.fk_empno = E.empno
+		join tbl_dept D
+		on E.fk_deptno = D.deptno
+		where D.deptno >= 100 and  D.deptno != 9999
+		and start_work_time between add_months(sysdate, -1) and sysdate
+		group by D.deptno, deptname
+		order by avg_worktime desc
+	</select>
+	
 </mapper>
