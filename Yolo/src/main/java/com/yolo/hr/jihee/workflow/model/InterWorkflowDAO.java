@@ -67,6 +67,12 @@ public interface InterWorkflowDAO {
 	//내 게시물 총수
 	int getmyTotalCnt(Map<String, String> paraMap);
 	
+	//게시물 수정
+	int update(documentVO docvo);
+	
+	//지금 몇단계인지 알아오기 
+	String getApprovalStep(String doc_no);
+	
 	
 
 	

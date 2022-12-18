@@ -362,13 +362,13 @@ public class AdminController {
 			paraMap.put("startRno", String.valueOf(startRno));
 			paraMap.put("endRno", String.valueOf(endRno));
 			
-			List<HashMap<String, String>> getPaymentList = new ArrayList<>();
+			List<Map<String, Object>> getPaymentList = new ArrayList<>();
 	        
 			getPaymentList = service.getPaymentList(paraMap);
 	        
 	        if(getPaymentList != null) {
 	        	
-	        		for(HashMap<String, String> map : getPaymentList) {
+	        		for(Map<String, Object> map : getPaymentList) {
 	        			JSONObject jsonObj = new JSONObject();
 	        			
 	        			jsonObj.put("name", map.get("name"));
@@ -623,4 +623,36 @@ public class AdminController {
 			return jsonObj.toString();
 	
 		}
+		
+		
+		
+		
+		@ResponseBody
+		@RequestMapping(value="/admin/allPayment.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.POST})
+		public String allPayment(HttpServletRequest request, @RequestParam Map<String, Object> paraMap) {
+			
+			String month_payment = (String) paraMap.get("month_payment");
+			
+			List<Map<String, Object>> paymentList = service.getPaymentList(paraMap);
+			
+			for(Map<String, Object> map : paymentList) {
+	    			
+	    			map.put("empno", map.get("empno"));
+	    			map.put("month_payment", month_payment);
+	    			map.put("salary", map.get("worktime_salary"));
+	    			map.put("over_salary", map.get("overtime_salary"));
+			
+			}
+			
+			int n = service.checkedPayment(paymentList);
+			
+			JSONObject jsonObj = new JSONObject();
+			
+			jsonObj.put("n", n);
+			
+			return jsonObj.toString();
+		}
+		
+		
+		
 }

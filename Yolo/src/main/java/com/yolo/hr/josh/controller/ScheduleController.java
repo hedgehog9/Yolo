@@ -72,7 +72,7 @@ public class ScheduleController {
 		
 		String joinuser_empno = request.getParameter("joinuser_empno");
 		
-		// System.out.println("확인용 공유자들" + scvo.getJoinuser());
+			System.out.println("확인용 공유자들" + scvo.getJoinuser());
 		
 		switch (category) { // 카테고리에 따라 색상 주기
 		case "회의":
@@ -91,11 +91,6 @@ public class ScheduleController {
 		
 		System.out.println("확인용 => " + joinuser_empno);
 		
-		/*
-		if(scvo.getJoinuser() == "") {
-			
-		}
-		*/
 		if(n > 0) {
 			paraMap.put("fk_recipientno", joinuser_empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
 		    paraMap.put("url", "/hr/schedule/calendar.yolo" );
@@ -195,7 +190,7 @@ public class ScheduleController {
 			for(ScheduleVO scvo : selectScheduleList) {
 				JSONObject jsonObj = new JSONObject();
 				jsonObj.put("schedule_no", scvo.getSchedule_no());
-				jsonObj.put("fk_empno", scvo.getEmpno());
+				jsonObj.put("fk_empno", scvo.getFk_empno());
 				jsonObj.put("start_date", scvo.getStart_date());
 				jsonObj.put("end_date", scvo.getEnd_date());
 				jsonObj.put("subject", scvo.getSubject());
@@ -232,8 +227,10 @@ public class ScheduleController {
 			
 			ScheduleVO scvo = service.selectDetailSchedule(schedule_no);
 			
+			System.out.println(scvo.getFk_empno());
+			
 			jsonObj.put("schedule_no", scvo.getSchedule_no());
-			jsonObj.put("fk_empno", scvo.getEmpno());
+			jsonObj.put("fk_empno", scvo.getFk_empno());
 			jsonObj.put("start_date", scvo.getStart_date());
 			jsonObj.put("end_date", scvo.getEnd_date());
 			jsonObj.put("subject", scvo.getSubject());

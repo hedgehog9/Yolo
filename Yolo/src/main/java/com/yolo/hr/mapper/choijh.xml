@@ -104,26 +104,25 @@
    	   <result property="doc_subject"    	 column="doc_subject"    			javaType="String"/>
    	   <result property="doc_contents"  	 column="doc_contents"  			javaType="String"/>
    	   <result property="writeday"      	 column="writeday"      			javaType="String"/>
-   	   <result property="modificationday"    column="modificationday"      		javaType="String"/>
 	   <result property="filename"       	 column="filename"      			javaType="String"/>	
 	   <result property="orgfilename"  		 column="orgfilename"      			javaType="String"/>	
    	   <result property="filesize" 			 column="filesize"      			javaType="String"/>
    	   <result property="d_day" 			 column="d_day"      				javaType="String"/>
-   	   <result property="approval" 		 	 column="approval"      		javaType="String"/>
    	   <result property="name" 		 		 column="name"      		javaType="String"/>
    	   <result property="doc_no" 		     column="doc_no"      		javaType="String"/>
    	   <result property="fk_deptno" 		 column="fk_deptno"      		javaType="String"/>
+   	    <result property="end_doc" 		 	column="end_doc"      		javaType="String"/>
    </resultMap> 
    
    <!--진행중인 내문서함 리스트  -->
 	<select id="documentList" parameterType="HashMap" resultMap="documentMap">
-		select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno 
+		select distinct end_doc,doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day , name ,doc_no, fk_deptno 
 		from
 		(
-		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno
+		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day , name ,doc_no, fk_deptno
 		    from 
 		    (   
-		        select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval ,fK_writer_empno ,doc_no  
+		        select distinct end_doc,doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day ,fK_writer_empno ,doc_no  
 		        from tbl_documents 
 		        join TBL_approval
 		        on doc_no = fk_doc_no
@@ -142,10 +141,10 @@
 	<select id="getdocTotalCnt" parameterType="HashMap" resultType="int">
 		 select count (*)
         from(
-		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno
+		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day , name ,doc_no, fk_deptno
 		    from 
 		    (   
-		        select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval ,fK_writer_empno ,doc_no  
+		        select distinct end_doc,doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day ,fK_writer_empno ,doc_no  
 		        from tbl_documents 
 		        join TBL_approval
 		        on doc_no = fk_doc_no
@@ -162,10 +161,10 @@
 	<select id="getcomTotalCnt" parameterType="HashMap" resultType="int">
 		 select count (*)
         from(
-		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval , name ,doc_no, fk_deptno
+		select distinct row_number() over(order by writeday desc) AS rno,end_doc, doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day,  name ,doc_no, fk_deptno
 		    from 
 		    (   
-		        select distinct end_doc,doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval ,fK_writer_empno ,doc_no  
+		        select distinct end_doc,doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day,fK_writer_empno ,doc_no  
 		        from tbl_documents 
 		        join TBL_approval
 		        on doc_no = fk_doc_no
@@ -181,28 +180,33 @@
    
    <!--내문서함 리스트  -->
 	<select id="MydocumentList" parameterType="HashMap" resultMap="documentMap">
-		select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no, fk_deptno
+		select doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day, name ,doc_no, fk_deptno,end_doc
+		from (
+		select distinct  row_number() over(order by writeday desc) AS rno,doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day, name ,doc_no, fk_deptno,end_doc  
 		from 
 		(   
-		    select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no  
+		    select distinct doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day ,fK_writer_empno ,doc_no ,end_doc   
 		    from tbl_documents 
 		    join TBL_approval
 		    on doc_no = fk_doc_no
-		    where fK_writer_empno =#{emp_no}
+		    where fK_writer_empno = #{emp_no}
 		) V
 		join tbl_employees E
 		on V.fk_writer_empno = E.empno
+		)
+		where rno between #{startRno} and #{endRno}
 		order by writeday desc
+
 	</select>
 	
 	<!--내문서함 총 수-->
 	<select id="getmyTotalCnt" parameterType="HashMap" resultType="int">
 		select count(*)
 		from(
-		select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no, fk_deptno
+		select distinct doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day, name ,doc_no, fk_deptno
 		from 
 		(   
-		    select distinct doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no  
+		    select distinct doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day ,fK_writer_empno ,doc_no  
 		    from tbl_documents 
 		    join TBL_approval
 		    on doc_no = fk_doc_no
@@ -256,21 +260,35 @@
    	   <result property="approval" 		 	 column="approval"      				javaType="String"/>
    	   <result property="approval_day" 		 column="approval_day"      				javaType="String"/>
  		<result property="profile_color"  	column="profile_color"      	javaType="String"/>	
+ 		<result property="end_doc"  	column="end_doc"      	javaType="String"/>	
    </resultMap>  
    
  	<select id="getDocDetail" parameterType="HashMap" resultMap="docDetailMap">
 		<if test="writer != null">
+	<!-- 	select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno,profile_color
+		from tbl_documents 
+		join tbl_employees
+		on fk_writer_empno = empno
+		where fK_writer_empno =#{empno} and  doc_no =#{doc_no} -->
+		
+		select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno,profile_color, end_doc
+		from
+		(
 		select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno,profile_color
 		from tbl_documents 
 		join tbl_employees
 		on fk_writer_empno = empno
-		where fK_writer_empno =#{empno} and  doc_no =#{doc_no}
+		where fK_writer_empno =#{empno} and  doc_no =#{doc_no}    
+		)A
+		join tbl_approval
+		on doc_no = fk_doc_no
+		where doc_no =#{doc_no}
 		</if>
 		
 		<if test="writer ==null">
-		 select  fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day ,name, position, fk_deptno,profile_color
+		 select  fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day ,name, position, fk_deptno,profile_color,  end_doc
 		 from(
-		         select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day  
+		         select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day  , end_doc
 		         from tbl_documents 
 		         join TBL_approval
 		         on doc_no = fk_doc_no
@@ -359,10 +377,10 @@
 		 select ceil(count(*)/#{sizePerPage})
 		    from
 		    (
-		    select distinct row_number() over(order by writeday desc) AS rno, end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval , name ,doc_no, fk_deptno
+		    select distinct row_number() over(order by writeday desc) AS rno, end_doc, doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day , name ,doc_no, fk_deptno
 		        from 
 		        (   
-		            select distinct  end_doc, doc_subject, doc_contents, writeday, modificationday, filename, orgfilename,filesize, d_day, approval_day, approval ,fK_writer_empno ,doc_no  
+		            select distinct  end_doc, doc_subject, doc_contents, writeday, filename, orgfilename,filesize, d_day,fK_writer_empno ,doc_no  
 		            from tbl_documents 
 		            join TBL_approval
 		            on doc_no = fk_doc_no
@@ -381,6 +399,29 @@
 		 from tbl_documents
 		 where doc_no = #{doc_no}
 	 </select>
+	 
+	 <!-- 수정하기  -->
+	 <update id="updateDoc" parameterType="com.yolo.hr.jihee.workflow.model.documentVO" >
+	 	update tbl_documents set doc_contents = #{doc_contents} ,modificationday = sysdate , D_day = to_date(#{D_day},'yyyy-mm-dd')
+		where doc_no = #{doc_no}
+	 </update>
+	 
+	 <!--완료된 문서 가져오기  -->
+	 <select id="getApprovalStep" parameterType="String" resultType="String">
+	 	select levelno
+		from
+		(
+		select approval , levelno
+		from tbl_documents
+		join tbl_approval
+		on doc_no = fk_doc_no
+		where fk_doc_no =#{doc_no} and ( approval='1' or approval='2')
+		order by levelno desc
+		)
+		where ROWNUM= 1
+	 
+	 </select>
+	 
 	 
 
 </mapper>

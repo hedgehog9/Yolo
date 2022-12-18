@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.poi.ss.formula.functions.Vlookup;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -138,7 +139,6 @@ public class WorkflowController {
 	@RequestMapping(value = "/workflow/documentDetail.yolo")
 	public String documentDetail(HttpServletRequest request) {
 		
-		
 		String empno = request.getParameter("emp_no");
 		String doc_no = request.getParameter("doc_no");
 		String nodoc = "10";
@@ -164,12 +164,15 @@ public class WorkflowController {
 		//System.out.println("writer : " + writer);
 		//문서 자세히 가져오기(작성자 or 작성자 아닐때 xml에서 처리)
 		Map<String,String> docDetailMap = service.getDocDetail(paraMap);
-	
+		
 		
 		
 		//결제라인 이름만 문자열로 가져오기
 		String appName = service.getAppname(doc_no);
 		
+		String[] appNameList = appName.split(",");
+		int finalCnt = appNameList.length;
+					
 		if(appName != null) {
 			jsonObj.put("appName", appName);
 		}
@@ -178,6 +181,7 @@ public class WorkflowController {
 //		System.out.println("writer: " + writer);
 //		System.out.println("map확인 : " +docDetailMap.get("doc_contents"));
 //		System.out.println("map확인 : " +docDetailMap.get("doc_subject"));
+		
 		
 		if(docDetailMap != null) { 
 			
@@ -199,18 +203,49 @@ public class WorkflowController {
 			jsonObj.put("name",docDetailMap.get("name"));
 			jsonObj.put("position",docDetailMap.get("position"));
 			jsonObj.put("profile_color", docDetailMap.get("profile_color"));
+			jsonObj.put("end_doc",docDetailMap.get("end_doc"));
+			
+			paraMap.put("deptno", docDetailMap.get("fk_deptno")); 
+			int levelno = 1;
+			
 			
 			String prestepApp = "0"; // 팀장인경우 (작성자도아니고 이전 결제자도 없는경우)
 			if(writer==null) { // 작성자가 아닐 경우
 				
 				//내 결제단계에서 -1 이전사람 결제단계 알아오기 	
-				int levelno	= Integer.parseInt(docDetailMap.get("levelno"));
+				levelno	= Integer.parseInt(docDetailMap.get("levelno"));
 				int prelevelno = levelno -1;
-				jsonObj.put("levelno",levelno);
+				
+				
+				if(finalCnt < levelno) {
+					levelno = levelno - 1;				
+				}
+				
 				jsonObj.put("approval", docDetailMap.get("approval"));
 				
 				paraMap.put("prelevelno",Integer.toString(prelevelno));
 				paraMap.put("deptno",deptno);
+				
+				System.out.println("appList emp_no:" +empno);
+				//이전단계 반려 하나라도 있는경우 최종결재권자에게 결재권한 주기 
+				List<Map<String,String>> appList = service.appList(paraMap);
+				
+			
+				int approvalCnt = appList.size();
+				boolean deny = false;
+				
+			
+				if(finalCnt == Integer.parseInt(docDetailMap.get("levelno"))) {
+					for(int i=0; i<approvalCnt; i++) {
+						String approval = appList.get(i).get("approval");
+						System.out.println("approval :" +approval);
+						if(approval.equals("2")) {
+							deny = true;
+						}
+					}
+					
+					jsonObj.put("deny", deny);
+				}
 				
 				
 			
@@ -229,12 +264,53 @@ public class WorkflowController {
 			}	
 				
 			else { //작성자 일 경우
-				int levelno = 5;
-				jsonObj.put("levelno",levelno);
+				levelno = 1;
+
 				
 				prestepApp= "0";
 			}
 			
+			
+			//지금 몇단계 승인예정인지 알아오기
+			String nowApprovalStep = service.getApprovalSetp(docDetailMap.get("doc_no"));
+		
+			
+			
+			///////////////////////// 단계 표시해주기//////////
+			if (nowApprovalStep !=null) {
+				
+				//마지막 level 알아오기
+				
+				int lastLevelno = service.getlastLevelno(docDetailMap.get("doc_no"));
+				
+				
+				int n = Integer.parseInt(nowApprovalStep);
+				if(!(nowApprovalStep.equals(String.valueOf(lastLevelno)) ) ) {
+					
+					n= n+1;
+					nowApprovalStep = String.valueOf(n);
+				}
+				
+				if(finalCnt < n) {
+					n = Integer.parseInt(nowApprovalStep);
+					n= n-1;
+					nowApprovalStep = String.valueOf(n);
+					
+				}
+			
+				
+				
+			}
+			
+			
+			else {
+				
+				nowApprovalStep = "1";
+			}
+			
+			System.out.println("nowApprovalStep3 " +nowApprovalStep );
+			jsonObj.put("nowApprovalStep", nowApprovalStep);
+			jsonObj.put("levelno",levelno);
 			jsonObj.put("prestepApp", prestepApp);
 			//System.out.println("prestepApp : " +prestepApp);
 			
@@ -283,26 +359,66 @@ public class WorkflowController {
 		//문서 자세히 가져오기(작성자 or 아닐때 나뉨 xml에서 처리)
 		Map<String,String> docDetailMap = service.getDocDetail(paraMap);
 		int levelno = 5;
-		
-		
-		
+
 		if(docDetailMap != null) { 
 			//null 일떄 처리해주기
 			String deptno = docDetailMap.get("fk_deptno");
 			paraMap.put("deptno", deptno);
-			
-			
-			
-			
+
 			//참조 대상자들 알아오기
 			List<Map<String,String>> appList = service.appList(paraMap);
-			int example = 2;
 			
 			JSONObject jsonObj2 = new JSONObject();
-			jsonObj2.put("first", example);
-			jsonArr.put(jsonObj2);
+			jsonObj2.put("end_doc", docDetailMap.get("end_doc"));
 			
 			if(appList !=null) {
+				
+			
+				//지금 몇단계 승인예정인지 알아오기/////////////////////////
+				String nowApprovalStep = service.getApprovalSetp(docDetailMap.get("doc_no"));
+				
+				if (nowApprovalStep !=null) {
+					
+					int lastLevelno = service.getlastLevelno(docDetailMap.get("doc_no"));
+					
+					
+					int n = Integer.parseInt(nowApprovalStep);
+					if(!(nowApprovalStep.equals(String.valueOf(lastLevelno)) ) ) {
+						
+						n= n+1;
+						nowApprovalStep = String.valueOf(n);
+					}
+					
+					if(appList.size() < n) {
+						n = Integer.parseInt(nowApprovalStep);
+						n= n-1;
+						nowApprovalStep = String.valueOf(n);
+						
+					}	
+					
+					//JSONObject jsonObj3 = new JSONObject();
+					
+					
+					
+					
+					
+				}
+				else {
+					
+					nowApprovalStep = "1";
+				}
+				
+				/*
+				 * for(Object json : jsonArr) {
+				 * 
+				 * System.out.println("jsonArr1 : " + json); }
+				 */
+				
+				jsonObj2.put("nowApprovalStep", nowApprovalStep);
+				jsonArr.put(jsonObj2);
+				////////////////////////////////////////////
+				
+				
 				for(Map<String,String> approvalModal: appList) {
 					JSONObject jsonObj = new JSONObject();
 					jsonObj.put("levelno", approvalModal.get("levelno"));
@@ -321,7 +437,11 @@ public class WorkflowController {
 					jsonObj.put("approval_no", approvalModal.get("approval_no"));
 					jsonArr.put(jsonObj);	
 					
+					
+					//System.out.println("jsonArr2 : " + jsonArr);
 				}	
+				
+				
 			}
 		}
 		
@@ -615,7 +735,7 @@ public class WorkflowController {
 	
 	// 수정하기
 	@RequestMapping(value = "/workflow/modify.yolo")
-	public String modifyWorkflow(HttpServletRequest request) {
+	public String modifyWorkflow(HttpServletRequest request, documentVO docvo) {
 
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
@@ -624,11 +744,14 @@ public class WorkflowController {
 		
 		String writer_empno = request.getParameter("fk_writer_empno");
 		String doc_no = request.getParameter("doc_no");
+	
+		
 		
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("empno",empno);
 		paraMap.put("doc_no", doc_no);
 		paraMap.put("deptno", deptno);
+	
 
 		//참조 대상자들 알아오기
 		List<Map<String,String>> appList = service.appList(paraMap);
@@ -637,15 +760,15 @@ public class WorkflowController {
 		for(int i=0; i<appList.size(); i++) {
 			
 			 String approval = appList.get(i).get("approval"); 
-			 if(approval.equals("1")) {
+			 if(approval.equals("1") || approval.equals("2")) {
 				 flag = false;
 			 }			 
-			 System.out.println("approval : " +approval);
-			 System.out.println("flag : "  +flag);
+		//	 System.out.println("approval : " +approval);
+		//	 System.out.println("flag : "  +flag);
 		}
 		
 		if(empno.equals(writer_empno) && flag ){
-			System.out.println("if empno :" +empno +"writer_empno :" +writer_empno );
+			//System.out.println("if empno :" +empno +"writer_empno :" +writer_empno );
 			paraMap.put("writer","do");
 		
 			//문서 알아오기
@@ -656,6 +779,12 @@ public class WorkflowController {
 			String orgfilename = docDetailMap.get("orgfilename");
 			String d_day = docDetailMap.get("d_day");
 			
+			
+			docvo.setDoc_no(Integer.parseInt(docDetailMap.get("doc_no")));
+			
+			paraMap.put("contents", contents );
+			
+			
 			//줄바꿈 적용시키기
 			contents=contents.replace("<br>","\r\n");
 			
@@ -665,8 +794,11 @@ public class WorkflowController {
 			request.setAttribute("orgfilename", orgfilename);
 			request.setAttribute("d_day", d_day);
 			request.setAttribute("contents", contents);
+			request.setAttribute("doc_no", doc_no);
+			
 			
 			return "jihee/content/modify.admin";
+		
 		}
 		
 		else if(!(empno.equals(writer_empno))) {
@@ -687,9 +819,33 @@ public class WorkflowController {
 			return "/msg";
 			
 		}
+		
+		
 
 
 	}
+	
+	// 수정하기 종료
+		@RequestMapping(value = "/workflow/modifyEnd.yolo")
+		public String modifyWorkflowEnd(HttpServletRequest request, documentVO docvo) {
+			
+			//수정하기
+			int n = service.upateDoc(docvo);
+			
+			if( n == 1 ) {
+				return "redirect:/workflow.yolo";
+			}
+			else {
+				String message = "수정 실패했습니다.";
+				String loc = request.getContextPath() + "/workflow.yolo";
+				request.setAttribute("message", message);
+				request.setAttribute("loc", loc);
+				
+				return "/msg";
+			}
+			
+			
+		}
 	
 	//내문서함 글 목록 보여주기 (ajax)
 	@ResponseBody
@@ -740,7 +896,7 @@ public class WorkflowController {
 		JSONObject jsonObj2 = new JSONObject();
 		jsonObj2.put("mylistSize", listSize);
 		jsonArr.put(jsonObj2);
-				
+					
 				
 //		 for(int i = 0; i < documentList.size(); i++){ //arraylist 사이즈 만큼 for문을 실행합니다.
 //			 
@@ -752,60 +908,35 @@ public class WorkflowController {
 		
 		if(myDocumentList !=null) {
 			
-
-			String prestepApp = "0"; // 팀장인경우 (작성자도아니고 이전 결제자도 없는경우)
-			
 			for(Map<String,String> docListmap: myDocumentList) {
 				JSONObject jsonObj = new JSONObject();
+				String doc_contents = docListmap.get("doc_contents");
+				// 엔터값 처리해주기
+				int index = doc_contents.indexOf("<br>");
+	
+				if(index != -1) {
+					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
+				}
+				
 				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
 				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
 				jsonObj.put("writeday", docListmap.get("writeday"));
-				jsonObj.put("modificationday", docListmap.get("modificationday"));
+				//jsonObj.put("modificationday", docListmap.get("modificationday"));
 				
 				jsonObj.put("filename", docListmap.get("filename"));
 				jsonObj.put("orgfilename", docListmap.get("orgfilename"));
 				jsonObj.put("filesize", docListmap.get("filesize"));
 				
 				jsonObj.put("d_day", docListmap.get("d_day"));
-				jsonObj.put("approval_day", docListmap.get("approval_day"));
-				jsonObj.put("approval", docListmap.get("approval"));
+				//jsonObj.put("approval_day", docListmap.get("approval_day"));
+				//jsonObj.put("approval", docListmap.get("approval"));
 				jsonObj.put("name", docListmap.get("name"));
 				jsonObj.put("doc_no", docListmap.get("doc_no"));
 				jsonObj.put("emp_no", empno);
+				jsonObj.put("end_Doc", docListmap.get("end_doc"));
 				
-				paraMap.put("empno", empno);
-				paraMap.put("doc_no", docListmap.get("doc_no"));
-				//작성자 인지 아닌지 구분하기
-				String writer = service.checkWriter(paraMap);				
+				//System.out.println("endDOC : "+docListmap.get("end_doc"));
 				
-				paraMap.put("writer",writer);
-				paraMap.put("doc_no", docListmap.get("doc_no"));
-				Map<String,String> docDetailMap = service.getDocDetail(paraMap);
-				
-				if(writer==null) { // 작성자가 아닐 경우
-				//내 결제단계에서 -1 이전사람 결제단계 알아오기 	
-				int levelno	= Integer.parseInt(docDetailMap.get("levelno"));
-				int prelevelno = levelno -1;
-				jsonObj.put("levelno",levelno);
-				jsonObj.put("approval", docDetailMap.get("approval"));
-				
-				paraMap.put("prelevelno",Integer.toString(prelevelno));
-				paraMap.put("deptno",docListmap.get("fk_deptno"));
-				
-					//1단계 결제자가 아닐경우
-					if(prelevelno != 0 ) {
-					//내 전단계 결제자 결제여부 알아오기
-					prestepApp =service.getPrestepApp(paraMap);
-					
-						if(prestepApp == null ) {
-							prestepApp = "0";
-						}
-					
-					}
-				}	
-				
-				jsonObj.put("prestepApp",prestepApp);
-			
 				jsonArr.put(jsonObj);
 			}// end of for----------------------
 			
@@ -899,11 +1030,16 @@ public class WorkflowController {
 				
 				String doc_contents = docListmap.get("doc_contents");
 				
+				// 엔터값 처리해주기
+				int index = doc_contents.indexOf("<br>");
+	
+				if(index != -1) {
+					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
+				}
 				
-				//doc_contents = doc_contents.substring(0,doc_contents.indexOf("\r\n"));
 				//System.out.println("doc_contents :" + doc_contents);
 				
-				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
+				jsonObj.put("doc_contents", doc_contents);
 				jsonObj.put("writeday", docListmap.get("writeday"));
 				jsonObj.put("modificationday", docListmap.get("modificationday"));
 				
@@ -913,7 +1049,8 @@ public class WorkflowController {
 				
 				jsonObj.put("d_day", docListmap.get("d_day"));
 				jsonObj.put("approval_day", docListmap.get("approval_day"));
-				jsonObj.put("approval", docListmap.get("approval"));
+				jsonObj.put("approval", "0");
+				jsonObj.put("levelno", "0");
 				jsonObj.put("name", docListmap.get("name"));
 				jsonObj.put("doc_no", docListmap.get("doc_no"));
 				jsonObj.put("emp_no", empno);
@@ -927,6 +1064,17 @@ public class WorkflowController {
 				paraMap.put("doc_no", docListmap.get("doc_no"));
 				Map<String,String> docDetailMap = service.getDocDetail(paraMap);
 				
+				paraMap.put("deptno",docListmap.get("fk_deptno"));
+				
+				//이전단계 반려 하나라도 있는경우 최종결재권자에게 결재권한 주기 ///////////////////////////
+				List<Map<String,String>> appList = service.appList(paraMap);
+				int approvalCnt = appList.size();
+				boolean deny = false;
+				
+				
+			
+				
+				
 				if(writer==null) { // 작성자가 아닐 경우
 				//내 결제단계에서 -1 이전사람 결제단계 알아오기 	
 				int levelno	= Integer.parseInt(docDetailMap.get("levelno"));
@@ -934,8 +1082,31 @@ public class WorkflowController {
 				jsonObj.put("levelno",levelno);
 				jsonObj.put("approval", docDetailMap.get("approval"));
 				
+	
 				paraMap.put("prelevelno",Integer.toString(prelevelno));
-				paraMap.put("deptno",docListmap.get("fk_deptno"));
+				//paraMap.put("deptno",docListmap.get("fk_deptno"));
+				
+				//결제라인 이름만 문자열로 가져오기
+				String appName = service.getAppname(docListmap.get("doc_no"));
+				
+				String[] appNameList = appName.split(",");
+				int finalCnt = appNameList.length;
+							
+				if(appName != null) {
+					jsonObj.put("appName", appName);
+				}
+				
+				if(finalCnt == Integer.parseInt(docDetailMap.get("levelno"))) {
+					for(int i=0; i<approvalCnt; i++) {
+						String approval = appList.get(i).get("approval");
+						if(approval.equals("2")) {
+							deny = true;
+						}
+					}
+					
+					jsonObj.put("deny", deny);
+				}
+				///////////////////////////////////////////////////////////////
 				
 					//1단계 결제자가 아닐경우
 					if(prelevelno != 0 ) {
@@ -949,7 +1120,7 @@ public class WorkflowController {
 						}
 					
 					}
-				}	
+				}
 				
 				jsonObj.put("prestepApp",prestepApp);
 				jsonArr.put(jsonObj);
@@ -1031,6 +1202,14 @@ public class WorkflowController {
 			
 			for(Map<String,String> docListmap: documentList) {
 				JSONObject jsonObj = new JSONObject();
+				
+				String doc_contents = docListmap.get("doc_contents");
+				// 엔터값 처리해주기
+				int index = doc_contents.indexOf("<br>");
+	
+				if(index != -1) {
+					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
+				}
 				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
 				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
 				jsonObj.put("writeday", docListmap.get("writeday"));
@@ -1174,9 +1353,13 @@ public class WorkflowController {
 			EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 			String emp_no = loginuser.getEmpno();
 			paraMap.put("emp_no",emp_no);
+		
 			
-			// 원글 글번호(parentSeq)에 해당하는 댓글의 totalPage 수 알아오기
-			int totalPage = service.getmyTotalCnt(paraMap)/sizePerPage;
+			// 원글 글번호(parentSeq)에 해당하는 댓글의 totalPage 수 알아오기 (
+			
+			double totalP = (double) service.getmyTotalCnt(paraMap);
+			double page = totalP/sizePerPage;
+			int totalPage = (int) Math.ceil(page);
 			
 			if(totalPage == 0 ) {
 				totalPage =1;

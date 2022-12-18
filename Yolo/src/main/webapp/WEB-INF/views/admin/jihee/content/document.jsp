@@ -598,16 +598,19 @@
 			if(json.doc_no != "10") {
 				//console.log(json.doc_subject);
 					//console.log("preset:"+json.prestepApp);
-					//console.log("levelno:"+json.levelno);
-					
-			
+					console.log("deny : "+json.deny);
+					const names = json.appName.split(",");
 	 				  html += 
 						"<div style='padding : 15px 10px' id='contents' data-bs-toggle='modal' data-bs-target='#exampleModal' onclick='approvalModal("+json.doc_no+"," +json.fk_writer_empno+")'>"+
-					    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;1/2&nbsp; </span>"+
-					    	"<span style='font-size: 12pt;'> &nbsp;&nbsp;1단계 승인대기 중입니다.</span>" +
-					    	"&nbsp;&nbsp;&nbsp;&nbsp;"+
+					    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;"+json.nowApprovalStep+"/"+names.length+"&nbsp; </span>";
+					    	if(json.end_doc == "0"){
+					    	html += "<span style='font-size: 12pt;'> &nbsp;&nbsp;"+json.nowApprovalStep+"단계 승인대기 중입니다.</span>" ;
+					    	}
+					    	else{
+						    	html += "<span style='font-size: 12pt;'> &nbsp;&nbsp;결재가 완료되었습니다.</span>" ;
+						    	}
+					    	html += "&nbsp;&nbsp;&nbsp;&nbsp;"+
 					    	"<span style='float:right; color:#cccccc; font-weight: bold; padding-left: 20px; font-size:12pt;'>></span>";
-					    	const names = json.appName.split(",");
 					    	//console.log(names.length);
 					    	 for(let i=0; i<names.length; i++) {
 					    	
@@ -654,10 +657,14 @@
 								"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
 							
 						}
-						else if(json.prestepApp == "1" && json.approval =="0") {
+						else if( (json.prestepApp == "1" || json.prestepApp == "2") && json.approval =="0") {
 						html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
 						"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
 						}
+						else if(json.deny) {
+							html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
+							"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
+							}
 			    	html += "</div>"+
 			    	
 			    	// 첨부파일 토글버튼 
@@ -706,6 +713,7 @@
 						"</div>"+
 					"</div>";	
 	 				 approvalModal(doc_no,emp_no);
+	 				
 				}
 				else {
 					html +="<div style='padding-top: 15px; text-align: center; font-size: 15pt; margin-top:35%;' >"+
@@ -736,7 +744,7 @@
 			  dataType:"JSON",
 			  success:function(json){
 				  
-				// console.log(JSON.stringify(json)); 
+				 console.log(JSON.stringify(json)); 
 				 
 					 
 				  let html = ""
@@ -744,19 +752,26 @@
 				if(json.length > 0) {
 				//	console.log(json.length);
 					$.each(json, function(index, item){	
+						console.log(index + item); 
 						
 						if(index == 0){
-							
 							const appSize= json.length;
 							
 							const jsonsize = appSize -1;
 							console.log(jsonsize);
 					
 							 html+=  "<div id='modalStatus'>"+    
-		       			   		"<span id='status' style='font-size: 13pt; '> &nbsp;"+item.first+"/"+jsonsize+"&nbsp; </span>"+
-			    				"<span style='font-size: 13pt;'> &nbsp;&nbsp;"+item.first+"단계 승인대기 중입니다.</span>"+ 
-			   				 "</div>";  
-							
+		       			   		"<span id='status' style='font-size: 13pt; '> &nbsp;"+item.nowApprovalStep +"/"+jsonsize+"&nbsp; </span>";
+							 if(item.end_doc == "0"){
+								html+= "<span style='font-size: 13pt;'> &nbsp;&nbsp;"+item.nowApprovalStep+"단계 승인대기 중입니다.</span>";
+							  }
+					    	else{
+					    		html+= "<span style='font-size: 13pt;'> &nbsp;&nbsp;결재가 완료되었습니다.</span>";
+						    	}
+								
+			   				 html +="</div>";  
+			   				 
+							 
 						} 
 						
 						else {
@@ -865,14 +880,12 @@
 							  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
 							  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
 								  		"<label for='label-a' id='sub' >"+item.name+"</label>";
-								  		if(item.levelno == 1 && item.approval == "0") {
-								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
-										}
-								  		else if(item.prestepApp == 1 && item.approval =="0" ) {
-								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
-										}
-								  		else {
+								  		
+								  		if(item.end_Doc == "0") {
 								  			html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>";
+								  		}
+								  		else {
+								  			html +=	"<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ff4d4d; color:#330000;'>완료</span>";
 								  		}
 								  		
 								  		/* else if(item.approval == 1){
@@ -888,7 +901,7 @@
 										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'> "+item.doc_contents.substring(0,6)+"</span>"+
 										"<br>";
 										if(item.orgfilename != null ){
-										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename.substring(0,10)+"</span>"+
+										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
 										"<br>";
 										}
 										html+="<span>&nbsp;</span>"+
@@ -933,7 +946,7 @@
 		  dataType:"JSON",
 		  success:function(json){
 			  let html = ""; 
-			 
+			  
 			 
 			  if(json.length > 0) {
 				  $.each(json, function(index, item){
@@ -942,7 +955,8 @@
 					  console.log("levelno:" +item.levelno);
 				 console.log("aprroval:" +item.approval);
 				 console.log("presetpApp: " + item.prestepApp); */
-				 console.log(currentShowPageNo);
+				 //console.log(currentShowPageNo);
+				 console.log("진행중 문서empno :" + item.emp_no);
 				 
 				
 						if(index == 0){
@@ -970,14 +984,17 @@
 					  html += 
 							"<div style='padding-top: 15px;' id='contents'>"+
 					    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-						    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
+						    		"<input type='checkbox' id='label-a' class='checkNum' />&nbsp;&nbsp;"+
 							  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
 							  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
 								  		"<label for='label-a' id='sub' >"+item.name+"</label>";
 								  		if(item.levelno == 1 && item.approval == "0") {
 								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
 										}
-								  		else if(item.prestepApp == 1 && item.approval == "0") {
+								  		else if((item.prestepApp == "1" || item.prestepApp == "2")&& item.approval == "0") {
+								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
+										}
+								  		else if(item.deny) {
 								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
 										}
 								  		else {
@@ -994,10 +1011,10 @@
 										"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
 										"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
 										"<br>"+
-										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,5)+"</span>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,30)+"</span>"+
 										"<br>";
 										if(item.orgfilename != null ){
-										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'><i class='bi bi-paperclip'></i> 첨부파일 : "+item.orgfilename+"</span>"+
+										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'><i class='bi bi-paperclip'></i> 첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
 										"<br>";
 										}
 										html+="<span>&nbsp;</span>"+
@@ -1204,7 +1221,7 @@
 		    		  // 게시글이 있는 경우
 		    		  
 		    		  const totalPage = json.totalPage;
-		    		  
+		    		  console.log("totalPage :" +totalPage);
 		    		  const blockSize = 5;
 		    		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
 		    		  let loop = 1;

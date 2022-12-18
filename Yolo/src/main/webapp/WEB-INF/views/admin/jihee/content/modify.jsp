@@ -224,7 +224,7 @@ textarea:focus {
  				singleDatePicker: true,
  				timePicker: true,
  				timePicker24Hour: true,
- 				startDate: new Date(),
+ 				startDate: "${requestScope.d_day}",
  				locale: {
  				"format": 'YYYY-MM-DD',
  				"applyLabel": "확인",
@@ -283,6 +283,7 @@ textarea:focus {
 					<input type="hidden" name="icon" value="${requestScope.icon}" readonly />
 					<input type="hidden" name="doc_subject" value="${requestScope.subject}" readonly />
 					<input type="hidden" name="information" value="${requestScope.information}" readonly />
+					<input type="hidden" name="doc_no" value="${requestScope.doc_no}" readonly />
 					
 					<div id="contents">
 						내용

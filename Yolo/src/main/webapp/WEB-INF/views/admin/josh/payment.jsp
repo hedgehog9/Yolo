@@ -287,7 +287,7 @@ let arrDept = [];
 	function getPaymentList(currentShowPageNo) {
 		
 		//console.log("펑션안에 " + arrDept)
-		console.log(arrDept)
+		//console.log(arrDept)
 		
 		let month = getMonth();
 		let minus_month = minusGetMonth();
@@ -319,6 +319,8 @@ let arrDept = [];
 				                    "<tbody>";
 					
 					$.each(json, function(index,item) {
+						
+						//console.log(item.profile_color)
 						
 						html += "<tr>"+
 			                        "<td class='text-center'><input type='checkbox' name='chk' value='"+item.empno+"'/></td>"+
@@ -362,6 +364,79 @@ let arrDept = [];
     			}
 		})
 	} 
+	
+	
+	
+	
+	function makePageBar(currentShowPageNo, startdate, enddate, minus_month) {
+		
+		$.ajax({
+			url:"<%= ctxPath %>/admin/paymentListTotalPage.yolo",
+			data:{"startdate": startdate,
+				  "enddate":enddate,
+				  "month_payment":minus_month,
+				  "arrDept":arrDept},
+			dataType:"JSON",
+			success:function(json) {
+				
+				console.log(json.totalPage)
+				
+				if(json.totalPage > 0) {
+					// 댓글이 있는 경우
+					
+					const totalPage = json.totalPage;
+					
+					const blockSize = 10;
+					
+					let loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize)] 까지만 증가하는 용도이다.
+			        
+			        if( typeof currentShowPageNo == "string"){ // 마우스를 클릭해서 들어오는경우는 보고있는 페이지 번호가 string 타입으로 들어오므로 정수형으로 바꿔줘야 한다.
+			        	currentShowPageNo = Number(currentShowPageNo);
+			        }
+			        
+					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
+					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
+					
+					let pageBarHTML = "<ul class='ul_pagebar'>";
+					
+					// ==== [맨처음] [이전] 만들기 === // 
+					if(pageNo != 1 ) {
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:getPaymentList(1)' > << </a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:getPaymentList("+(pageNo-1)+")' >Previous</a></li>";
+					}
+					while( !(loop > blockSize || pageNo > totalPage ) ) {
+						
+						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
+							pageBarHTML +="<li class='li_currentpage'>"+pageNo+"</li>";
+						}
+						else {
+							pageBarHTML +="<li class='li_pagebar'><a href='javascript:getPaymentList("+pageNo+")' >"+pageNo+"</a></li>";
+						}
+						loop++;
+						pageNo++;
+					}// end of while()------------------------
+					
+					
+					// ==== [다음] [마지막] 만들기 === //
+					if(pageNo <= totalPage) {
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:getPaymentList("+pageNo+")' >Next</a></li>";
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:getPaymentList("+totalPage+")' > >> </a></li>";
+					}
+					
+					pageBarHTML +="</ul>";
+				
+					$("div#pageBar").html(pageBarHTML);
+				}// end of if(json.totalPage > 0){}----------------------------------
+				else {
+					$("#table-div").empty();
+					$("h3#table-font").show();
+					
+				}
+			}
+			
+		})
+	}
+	
 	
 	
 	function checkedPayment() {
@@ -438,74 +513,57 @@ let arrDept = [];
 	}
 	
 	
-	function makePageBar(currentShowPageNo, startdate, enddate, minus_month) {
+	
+	function allPayment() {
 		
-		$.ajax({
-			url:"<%= ctxPath %>/admin/paymentListTotalPage.yolo",
-			data:{"startdate": startdate,
-				  "enddate":enddate,
-				  "month_payment":minus_month,
-				  "arrDept":arrDept},
-			dataType:"JSON",
-			success:function(json) {
+		Swal.fire({
+			   title: '모든 구성원 급여지급을 하시겠습니까?',
+			   text: "한번 선택하시면 되돌릴 수 없습니다",
+			   icon: 'warning',
+			   
+			   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+			   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+			   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+			   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+			   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+			   
+			   reverseButtons: true, // 버튼 순서 거꾸로
+			   
+			}).then(result => {
+			   // 만약 Promise리턴을 받으면,
+			   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+				   
+				   let month = getMonth();
+				   let minus_month = minusGetMonth();
+				   const startdate = minus_month+"-25";
+				   const enddate = month+"-25";
+					
+			   
+					$.ajax({
+						url:"<%= ctxPath %>/admin/allPayment.yolo",
+						type:"POST",
+						data:{"startdate": startdate,
+							  "enddate":enddate,
+							  "month_payment":minus_month},
+						dataType:"JSON",
+						success:function(json) {
+							
+							if(json.n > 0) {
+								Swal.fire('급여지급 완료','지급완료','success');
+								setTimeout("location.reload()", 1000);
+							}
+							
+						},
+						error: function(request, status, error){
+				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			    			}
+					})
 				
-				console.log(json.totalPage)
-				
-				if(json.totalPage > 0) {
-					// 댓글이 있는 경우
-					
-					const totalPage = json.totalPage;
-					
-					const blockSize = 10;
-					
-					let loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize)] 까지만 증가하는 용도이다.
-			        
-			        if( typeof currentShowPageNo == "string"){ // 마우스를 클릭해서 들어오는경우는 보고있는 페이지 번호가 string 타입으로 들어오므로 정수형으로 바꿔줘야 한다.
-			        	currentShowPageNo = Number(currentShowPageNo);
-			        }
-			        
-					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
-					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
-					
-					let pageBarHTML = "<ul class='ul_pagebar'>";
-					
-					// ==== [맨처음] [이전] 만들기 === // 
-					if(pageNo != 1 ) {
-						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:getPaymentList(1)' > << </a></li>";
-						pageBarHTML +="<li class='li_moveOne'><a href='javascript:getPaymentList("+(pageNo-1)+")' >Previous</a></li>";
-					}
-					while( !(loop > blockSize || pageNo > totalPage ) ) {
-						
-						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
-							pageBarHTML +="<li class='li_currentpage'>"+pageNo+"</li>";
-						}
-						else {
-							pageBarHTML +="<li class='li_pagebar'><a href='javascript:getPaymentList("+pageNo+")' >"+pageNo+"</a></li>";
-						}
-						loop++;
-						pageNo++;
-					}// end of while()------------------------
-					
-					
-					// ==== [다음] [마지막] 만들기 === //
-					if(pageNo <= totalPage) {
-						pageBarHTML +="<li class='li_moveOne'><a href='javascript:getPaymentList("+pageNo+")' >Next</a></li>";
-						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:getPaymentList("+totalPage+")' > >> </a></li>";
-					}
-					
-					pageBarHTML +="</ul>";
-				
-					$("div#pageBar").html(pageBarHTML);
-				}// end of if(json.totalPage > 0){}----------------------------------
-				else {
-					$("#table-div").empty();
-					$("h3#table-font").show();
-					
-				}
-			}
-			
-		})
+			   }
+			   
+			});
 	}
+	
 	
 	
 	function getDate() { // 현재날짜만 가져오는 메소드
@@ -603,6 +661,7 @@ let arrDept = [];
         <%-- === 페이지바 ==== --%>
         <div style="display: flex;" class="mt-5">
           <button type="button" class="btn btn-light btn-outline-secondary btn-sm ml-3 gopay" id="checkedPayment">체크지급</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm ml-3 gopay" id="allPayment" onclick="allPayment()">모든구성원 지급</button>
       	  <div id="pageBar" style="margin: auto; text-align: center;"></div>
         </div>
 		      

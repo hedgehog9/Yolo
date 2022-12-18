@@ -16,14 +16,28 @@
 	</insert>
 
 	<select id="selectScheduleList" resultType="com.yolo.hr.josh.model.ScheduleVO">
-		select schedule_no, E.empno
+		select  null AS birthday
+		       ,schedule_no,fk_empno
 		      ,to_char(start_date,'yyyy-mm-dd hh24:mi') as start_date
 		      ,to_char(end_date,'yyyy-mm-dd hh24:mi') as end_date
-		      ,subject,content,color,category,S.fk_deptno,joinuser 
-		      ,nvl(to_char(sysdate,'yyyy')||'-'||substr(rrn,3,2)||'-'||substr(rrn,5,2),0) AS birthday
+		      ,subject,content,color,category,fk_deptno,joinuser,place  
+		      ,null as name
+		from tbl_schedule  
+		union all
+		select nvl(to_char(sysdate,'yyyy')||'-'||substr(rrn,3,2)||'-'||substr(rrn,5,2),0) AS birthday
+		      ,null as schedule_no
+		      ,null as fk_empno
+		      ,null as start_date
+		      ,null as end_date
+		      ,null as subject
+		      ,null as content
+		      ,null as color
+		      ,null as category
+		      ,fk_deptno
+		      ,null as joinuser
+		      ,null as place
 		      ,name
-		from tbl_schedule S right join tbl_employees E 
-		on S.fk_empno = E.empno
+		from tbl_employees
 	</select>
 	
 	<select id="selectDetailSchedule" parameterType="String" resultType="com.yolo.hr.josh.model.ScheduleVO">
@@ -178,6 +192,7 @@
 		<result property="deptname" 			column="deptname" 			javaType="String"/>
 		<result property="upper_deptname" 	column="upper_deptname" 		javaType="String"/>
 		<result property="sum_salary" 		column="sum_salary" 			javaType="String"/>
+		<result property="profile_color" 	column="profile_color" 		javaType="String"/>
 	</resultMap>
 	
 	
@@ -221,7 +236,9 @@
 		on C.empno = D.fk_empno
 		where month_payment is null
 		)
+		<if test="startRno != null and endRno != null">
 		where rno between #{startRno} and #{endRno}
+		</if>
 	</select>
 	
 	

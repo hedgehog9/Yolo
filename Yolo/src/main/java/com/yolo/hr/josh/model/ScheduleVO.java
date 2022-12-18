@@ -3,7 +3,7 @@ package com.yolo.hr.josh.model;
 public class ScheduleVO {
 
 	private String schedule_no; 
-	private String empno;
+	private String fk_empno;
 	private String start_date;
 	private String end_date;
 	private String subject;
@@ -24,11 +24,11 @@ public class ScheduleVO {
 	public void setSchedule_no(String schedule_no) {
 		this.schedule_no = schedule_no;
 	}
-	public String getEmpno() {
-		return empno;
+	public String getFk_empno() {
+		return fk_empno;
 	}
-	public void setEmpno(String fk_empno) {
-		this.empno = fk_empno;
+	public void setFk_empno(String fk_empno) {
+		this.fk_empno = fk_empno;
 	}
 	public String getStart_date() {
 		return start_date;

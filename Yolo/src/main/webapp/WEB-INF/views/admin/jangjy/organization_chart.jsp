@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <% String ctxPath = request.getContextPath();%>    
 
 
@@ -116,7 +118,9 @@ a.current,a.current:hover {
 	        <div id="header_title">
 	            <a class="a_title" href="<%= ctxPath%>/people.yolo"><span class="title">구성원</span></a>
 	            <a class="current" href="<%= ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a>
-	            <a class="a_title" href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
+	            <c:if test="${sessionScope.loginuser.empno == 9999}">
+	            	<a class="a_title" href="<%= ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
+	            </c:if>
 	        </div>
 	    </div>
 </div>
@@ -181,7 +185,7 @@ function func_networkgraph(){
 										  employeeArr.push(employee.name);      //  [조승남]
 										  dataArr.push(employeeArr);            //[ [개발1팀, 조승남],[개발1팀, 서세훈] ]
 									  });
-									  console.log("### 확인용 두번째 부서명 호출 ### "+ dataArr);
+									  // console.log("### 확인용 두번째 부서명 호출 ### "+ dataArr);
 									  
 								  },error: function(request, status, error){
 									  console.log("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -197,7 +201,6 @@ function func_networkgraph(){
 				 
 			  }); // end of $.each(json, function(index,dept){}---------------------------------------
 					  
-			  console.log("=== 확인용 두번째 부서명 호출 ==="+ dataArr);
 			  Highcharts.addEvent(
 					    Highcharts.Series,
 					    'afterSetOptions',
