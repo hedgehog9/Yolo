@@ -422,6 +422,27 @@
 	 
 	 </select>
 	 
+	 <insert id="insertHistory" parameterType="com.yolo.hr.jihee.workflow.model.documentVO">
+	 insert into tbl_history(fk_history_doc_no, emp_name, contents,  historyDate) values (#{doc_no},#{name},#{contents},sysdate)
+	 
+	 </insert>
+	 
+	  <resultMap type="HashMap" id="historyMap">
+	 	<result property="fk_history_doc_no"   column="fk_history_doc_no"    		javaType="String"/>
+	 	<result property="emp_name"    	     column="emp_name"    				javaType="String"/>
+   	   <result property="contents"    	 column="contents"    			javaType="String"/>
+   	   <result property="historyDate"  	 column="historyDate"  			javaType="String"/>
+   	   
+   </resultMap>  
+	 
+	 <select id="getHistory" parameterType="String" resultMap="historyMap">
+	 	select fk_history_doc_no, emp_name, contents,  historyDate
+		from tbl_history
+		where fk_history_doc_no=#{doc_no}
+		order by historyDate asc
+			 
+	 </select>
+	 
 	 
 
 </mapper>

@@ -72,6 +72,12 @@ public interface InterWorkflowDAO {
 	
 	//지금 몇단계인지 알아오기 
 	String getApprovalStep(String doc_no);
+
+	//작성할때 히스토리 넣어주기
+	int insertHistory(documentVO docvo);
+
+	//히스토리 가져오기
+	List<Map<String, String>> getHistory(String doc_no);
 	
 	
 

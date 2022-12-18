@@ -510,7 +510,7 @@
 	               <i class="fas fa-solid fa-comments-dollar sideIcon"></i><span>퇴직금</span>
 	            </div>
 	            </c:if>
-				<div class="sideTr" onclick="#">
+				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/insight.yolo'">
 					<i class="fas fa-solid fa-chart-pie sideIcon"></i><span>인사이트</span>
 				</div>
 			</div>

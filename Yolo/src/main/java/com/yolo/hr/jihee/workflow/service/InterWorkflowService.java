@@ -60,6 +60,9 @@ public interface InterWorkflowService {
 
 	//마지막 레벨 알아오기
 	int getlastLevelno(String string);
+
+	//히스토리 가져오기
+	List<Map<String, String>> getHistory(String doc_no);
 	
 
 }

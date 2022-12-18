@@ -697,21 +697,32 @@
 						   "히스토리"+
 						  "</span>"+
 						  "<span class='font' style='float: right;'> > </span>"+
-						"</p>"+
-						"<div class='collapse' id='collapseExample2'>"+
+						"</p>";
+						if(json.historyFlag){
+							for(let i=0; i<json.historyList.length; i++ ) {
+								console.log(json.historyList);
+							html +="<div class='collapse' id='collapseExample2'>"+
 						  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
 						  "<span><i class='bi bi-pencil-square'></i></span>"+
-						  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-						  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 작성했습니다.</span>"+
-						  "</div>"+
+						  "<span id='sizebold' style='color: #404040;'> "+json.historyList[i].emp_name.substring(1,3)+" </span>"+
+						  "<span style='font-size:12pt; color:#404040;'> " +json.historyList[i].contents+"</span>"+
+						  "<span style='font-size:12pt; color:#404040;'>&nbsp;&nbsp;&nbsp; <i class='bi bi-table'> </i>"+json.historyList[i].historyDate.substring(0,10)+"</span>"+
+						  "</div>";
 						  
-						  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
-						  "<span><i class='bi bi-pencil-square'></i></span>"+
-						  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-						  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 수정했습니다.</span>"+
-						  "</div>"+
-						"</div>"+
-					"</div>";	
+							}
+						}
+					
+						else {
+							html +="<div class='collapse' id='collapseExample2'>"+
+							  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
+							  "<span><i class='bi bi-pencil-square'></i></span>"+
+							  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
+							  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 작성했습니다.</span>"+
+							  "<span style='font-size:12pt; color:#404040;'>&nbsp;&nbsp;&nbsp; <i class='bi bi-table'> </i>날짜(히스토리만들기이전 게시물 안나오는게 정상)</span>"+
+							  "</div>";
+						}
+						 
+					html += "</div>";	
 	 				 approvalModal(doc_no,emp_no);
 	 				
 				}
@@ -946,9 +957,15 @@
 		  dataType:"JSON",
 		  success:function(json){
 			  let html = ""; 
-			  
-			 
-			  if(json.length > 0) {
+			/*   const jsonSize = json.length 
+			  if(json.waitinglistSize == 0) {
+				  jsonSize = 0;
+				  console.log("size1:"+jsonSize);
+			  }
+			  console.log("size2:"+jsonSize); */
+			  if(json.length > 1) {
+				  console.log(JSON.stringify(json));
+
 				  $.each(json, function(index, item){
 					 // console.log(item.name);
 					/*  console.log("이름: " + item.name);
@@ -1011,7 +1028,7 @@
 										"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
 										"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
 										"<br>"+
-										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,30)+"</span>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,20)+"</span>"+
 										"<br>";
 										if(item.orgfilename != null ){
 										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'><i class='bi bi-paperclip'></i> 첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
@@ -1027,7 +1044,7 @@
 			  }
 			  
 			  else {
-				  
+				  console.log("0보다작다고");
 				  html += 
 						"<div style='padding-top: 15px; text-align: center; font-size: 15pt; margin-top:50%;' >"+
 									
