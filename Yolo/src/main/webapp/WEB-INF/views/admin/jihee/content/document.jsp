@@ -652,19 +652,20 @@
 				    		"<span class='font' style='margin-right: 10px;'>&nbsp;&nbsp;희망기한 </span>"+
 				    		"<span style='font-size:11pt; color:#262626;'>"+json.d_day.substring(0,10)+" </span>"+
 						"</div>";
-						if(json.levelno == 1 && json.approval == "0") {
+						if(json.levelno == 1 && json.approval == "0" && json.end_doc == "0") {
 								html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
 								"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
 							
 						}
-						else if( (json.prestepApp == "1" || json.prestepApp == "2") && json.approval =="0") {
+						else if( (json.prestepApp == "1" || json.prestepApp == "2") && json.approval =="0" && json.end_doc == "0") {
 						html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
 						"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
 						}
-						else if(json.deny) {
+						else if(json.deny && json.end_doc == "0") {
 							html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
 							"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
 							}
+						
 			    	html += "</div>"+
 			    	
 			    	// 첨부파일 토글버튼 
@@ -909,7 +910,7 @@
 										"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
 										"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
 										"<br>"+
-										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'> "+item.doc_contents.substring(0,6)+"</span>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'> "+item.doc_contents.substring(0,20)+"</span>"+
 										"<br>";
 										if(item.orgfilename != null ){
 										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
@@ -1118,7 +1119,7 @@
 											"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
 											"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
 											"<br>"+
-											"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,6)+"</span>"+
+											"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,10)+"</span>"+
 											"<br>";
 											if(item.orgfilename != null ){
 											html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename+"</span>"+

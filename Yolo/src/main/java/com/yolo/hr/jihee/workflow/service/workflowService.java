@@ -142,15 +142,16 @@ public class workflowService implements InterWorkflowService {
 		String doc_no = paraMap.get("doc_no");
 		
 		int lastLevelno = dao.getLastlevelno(doc_no);
-		int levelno = Integer.parseInt(paraMap.get("levelno"));
+		int myLevelno = dao.getMylevelno(paraMap);
+		
 		
 		int n = 0;
 		
-		if(lastLevelno != levelno ) {
+		if(lastLevelno != myLevelno ) {
 			//마지막 단계 아닐때 
 			n = dao.updateApproval(paraMap);
 		}
-		if(lastLevelno== levelno ) {
+		if(lastLevelno== myLevelno ) {
 		//마지막 단계 일때
 
 			// 승인,반려 업데이트 시키기	
