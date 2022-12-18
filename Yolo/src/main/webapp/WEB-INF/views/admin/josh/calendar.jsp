@@ -230,7 +230,7 @@
 	                                         start: item.start_date,
 	                                         end: item.end_date,
 	                                         color: item.color,
-	                                         cid: 1,  // 사내캘린더 내의 서브캘린더 체크박스의 value값과 일치하도록 만들어야 한다. 그래야만 서브캘린더의 체크박스와 cid 값이 연결되어 체크시 풀캘린더에서 일정이 보여지고 체크해제시 풀캘린더에서 일정이 숨겨져 안보이게 된다. 
+	                                         cid: 1,   
 	                                         mycontent: item.content,
 	                                         category: item.category,
 	                                         place: item.place
@@ -252,16 +252,30 @@
 							  }
 							  
 							  else {
-								  //console.log("조건문 들어옴")
-								  events.push({
-									  title : item.name+"님 생일", 
-                                       color: "#f2f2f2",
-                                       textColor: "#404040",
-                                       start: item.birthday,
-                                       end: item.birthday,
-                                       icon:"birthday",
-                                       cid: 0
-                          		  }); // end of events.push({})---------
+								  if(item.fk_deptno == deptno) {
+									  events.push({
+										  title : item.name+"님 생일", 
+	                                       color: "#f2f2f2",
+	                                       textColor: "#404040",
+	                                       start: item.birthday,
+	                                       end: item.birthday,
+	                                       icon:"birthday",
+	                                       cid: 1
+	                          		  }); // end of events.push({})---------
+									  
+								  }
+								  else {
+									  events.push({
+										  title : item.name+"님 생일", 
+	                                       color: "#f2f2f2",
+	                                       textColor: "#404040",
+	                                       start: item.birthday,
+	                                       end: item.birthday,
+	                                       icon:"birthday",
+	                                       cid: 0
+	                          		  }); // end of events.push({})---------
+								  }
+								  
 							  }
 							  
 						  })// end of $.each(json, function(index, item){})
@@ -278,6 +292,8 @@
       	  },// end of  events:function(info, successCallback, failureCallback) {} ---------
       	  eventDidMount: function (arg) {
       		  
+      		calendarSet(arg)
+      		  
       		if(arg.event.extendedProps.icon == "birthday") {
 		    		//console.log("들어오시나요?")
 		    		$(arg.el).find('.fc-event-title').prepend("<span style='font-size:10px;'>&#127881;</span>");
@@ -293,7 +309,7 @@
         				  if(arg.event.extendedProps.cid == 1) {
         				      arg.el.style.display = "block"; // 풀캘린더에서 내가속한 조직 캘린더만 보여줌
         				  }
-        				  else if(arg.event.extendedProps.cid != 1){
+        				  else if(arg.event.extendedProps.cid == 0){
         					  arg.el.style.display = "none"; // 풀캘린더에서 다른 부서들의 캘린더 일정은 숨긴다.
         				  }
         		    }	
@@ -728,7 +744,29 @@
 		
 	}// end of function add_joinUser(value){}----------------------------	
 
+	
+	function calendarSet(arg) {
 		
+		
+		const val = $("select#kind-calendar").val();
+  			
+				
+		const kind_calendar = $("select#kind-calendar").val();
+      		  
+	    if(kind_calendar == 0) { // 모든부서 캘린더보기 선택시
+			  arg.el.style.display = "block"; // 풀캘린더에서 모든 일정을 보여준다.
+	    }
+	    else {// 내가속한 조직 캘린더만 볼때
+			  if(arg.event.extendedProps.cid == 1) {
+			      arg.el.style.display = "block"; // 풀캘린더에서 내가속한 조직 캘린더만 보여줌
+			  }
+			  else if(arg.event.extendedProps.cid == 0){
+				  arg.el.style.display = "none"; // 풀캘린더에서 다른 부서들의 캘린더 일정은 숨긴다.
+			  }
+	    }	
+    		    
+  		
+	}
 		   
 			
 		
