@@ -179,6 +179,20 @@ public class workflowDAO implements InterWorkflowDAO {
 		String nowStepApproval =sqlsession.selectOne("choijh.getApprovalStep", doc_no);
 		return nowStepApproval;
 	}
+
+	//작성할때 히스토리 넣어주기
+	@Override
+	public int insertHistory(documentVO docvo) {
+		int insertHistory =sqlsession.insert("choijh.insertHistory",docvo);
+		return insertHistory;
+	}
+
+	//히스토리 가져오기
+	@Override
+	public List<Map<String, String>> getHistory(String doc_no) {
+		List<Map<String, String>> HistoryList = sqlsession.selectList("choijh.getHistory",doc_no);
+		return HistoryList;
+	}
 	
 
 	

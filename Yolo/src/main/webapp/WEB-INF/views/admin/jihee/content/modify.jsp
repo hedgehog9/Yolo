@@ -284,6 +284,7 @@ textarea:focus {
 					<input type="hidden" name="doc_subject" value="${requestScope.subject}" readonly />
 					<input type="hidden" name="information" value="${requestScope.information}" readonly />
 					<input type="hidden" name="doc_no" value="${requestScope.doc_no}" readonly />
+					<input type="hidden" name="name" value="${requestScope.name}" readonly />
 					
 					<div id="contents">
 						내용

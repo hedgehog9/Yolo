@@ -92,6 +92,10 @@ public class workflowService implements InterWorkflowService {
 			}	
 		}// end of if 
 		
+		docvo.setContents("님이 문서를 작성했습니다.");
+		//히스토리 테이블에 작성하기
+		int h = dao.insertHistory(docvo);
+		
 		return doc_no;
 
 	}
@@ -232,6 +236,9 @@ public class workflowService implements InterWorkflowService {
 //		 
 //		 }
 //		 
+		//히스토리 작성
+		docvo.setContents("님이 문서를 수정했습니다.");
+		int h = dao.insertHistory(docvo);
 
 		 return n;
 		
@@ -249,6 +256,13 @@ public class workflowService implements InterWorkflowService {
 	public int getlastLevelno(String doc_no) {
 		int lastLevelno = dao.getLastlevelno(doc_no);
 		return lastLevelno;
+	}
+
+	//히스토리 가져오기
+	@Override
+	public List<Map<String, String>> getHistory(String doc_no) {
+		List<Map<String, String>> HistoryList = dao.getHistory(doc_no);
+		return HistoryList;
 	}
 
 

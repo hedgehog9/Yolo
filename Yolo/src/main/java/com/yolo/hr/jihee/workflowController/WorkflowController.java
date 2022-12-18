@@ -170,11 +170,15 @@ public class WorkflowController {
 		//결제라인 이름만 문자열로 가져오기
 		String appName = service.getAppname(doc_no);
 		
-		String[] appNameList = appName.split(",");
-		int finalCnt = appNameList.length;
-					
+		/*
+		 * String[] appNameList = appName.split(","); int finalCnt = appNameList.length;
+		 */
+		int finalCnt = 0;			
 		if(appName != null) {
 			jsonObj.put("appName", appName);
+			String[] appNameList = appName.split(",");
+			finalCnt = appNameList.length;
+		
 		}
 	
 //		System.out.println("doc_no:" + doc_no );
@@ -226,7 +230,7 @@ public class WorkflowController {
 				paraMap.put("prelevelno",Integer.toString(prelevelno));
 				paraMap.put("deptno",deptno);
 				
-				System.out.println("appList emp_no:" +empno);
+				
 				//이전단계 반려 하나라도 있는경우 최종결재권자에게 결재권한 주기 
 				List<Map<String,String>> appList = service.appList(paraMap);
 				
@@ -308,7 +312,7 @@ public class WorkflowController {
 				nowApprovalStep = "1";
 			}
 			
-			System.out.println("nowApprovalStep3 " +nowApprovalStep );
+			
 			jsonObj.put("nowApprovalStep", nowApprovalStep);
 			jsonObj.put("levelno",levelno);
 			jsonObj.put("prestepApp", prestepApp);
@@ -324,6 +328,21 @@ public class WorkflowController {
 			jsonObj.put("doc_no", doc_no);
 			System.out.println("doc_no :" + doc_no);
 		}
+		
+		//히스토리 가져오기 
+		List<Map<String,String>> historyList = service.getHistory(docDetailMap.get("doc_no"));
+		
+		boolean historyFlag = false;
+		if(historyList != null) {
+			
+			historyFlag = true;
+			jsonObj.put("historyList", historyList);
+			jsonObj.put("historyFlag", historyFlag);
+			
+		}
+		
+		
+		
 		return jsonObj.toString(); //"{n:1}"
 	}
 	
@@ -697,6 +716,10 @@ public class WorkflowController {
 			paraMap.put("attach", "yes");
 		}
 		
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		String name = loginuser.getName();
+		docvo.setName(name);
+		
 		//글 작성하기
 		int doc_no = service.add(docvo,paraMap);
 		
@@ -719,7 +742,7 @@ public class WorkflowController {
 		  String fk_empno = String.join(",", alarmList);
 		  
 		
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	
 		
 		
 		// === AOP After Advice를 사용하기 === //
@@ -778,6 +801,7 @@ public class WorkflowController {
 			String icon = docDetailMap.get("icon");
 			String orgfilename = docDetailMap.get("orgfilename");
 			String d_day = docDetailMap.get("d_day");
+			String name = docDetailMap.get("name");
 			
 			
 			docvo.setDoc_no(Integer.parseInt(docDetailMap.get("doc_no")));
@@ -795,6 +819,7 @@ public class WorkflowController {
 			request.setAttribute("d_day", d_day);
 			request.setAttribute("contents", contents);
 			request.setAttribute("doc_no", doc_no);
+			request.setAttribute("name", name);
 			
 			
 			return "jihee/content/modify.admin";
@@ -1005,6 +1030,7 @@ public class WorkflowController {
 		
 		// 리스트 개수 알아오기
 		int listSize = documentList.size();
+
 		request.setAttribute("waitinglistSize", listSize);
 		JSONObject jsonObj2 = new JSONObject();
 		jsonObj2.put("waitinglistSize", listSize);
@@ -1089,11 +1115,13 @@ public class WorkflowController {
 				//결제라인 이름만 문자열로 가져오기
 				String appName = service.getAppname(docListmap.get("doc_no"));
 				
-				String[] appNameList = appName.split(",");
-				int finalCnt = appNameList.length;
+				//String[] appNameList = appName.split(",");
+				int finalCnt =0;
 							
 				if(appName != null) {
 					jsonObj.put("appName", appName);
+					String[] appNameList = appName.split(",");
+					finalCnt = appNameList.length;
 				}
 				
 				if(finalCnt == Integer.parseInt(docDetailMap.get("levelno"))) {
