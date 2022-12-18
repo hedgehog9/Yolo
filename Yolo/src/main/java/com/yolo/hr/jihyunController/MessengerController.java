@@ -536,21 +536,8 @@ public class MessengerController {
 		try {
 			
 			if(fileName!=null && !"".equals(fileName)) {
-				HttpSession session = request.getSession();
-				String root = session.getServletContext().getRealPath("/"); // 이만큼이 webapp 
 				
-				// System.out.println("root 확인 :" + root);
-				// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
-				
-				String path = root + "resources"+File.separator+"files"+File.separator+"massenger";
-				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
-			            운영체제가 Windows 이라면 File.separator 는  "\" 이고,
-			            운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
-			    */
-				
-				// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
-				// System.out.println("확인용 path : "+ path); 
-				// 확인용 path : C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
+				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\massenger\\";
 				
 				// **** file 다운로드 하기 **** // 
 				boolean flag = false ;// file 다운로드 성공/ 실패를 알려주는 용도
@@ -764,31 +751,9 @@ public class MessengerController {
 				
 				// attach(첨부파일)가 비어있지 않다면 (즉 첨부파일이 있는 경우라면 )
 				if( !attach.isEmpty()) {
-					/*
-			            1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다. 
-			           >>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
-			                                 우리는 WAS의 webapp/resources/files 라는 폴더로 지정해준다.
-			                                 조심할 것은  Package Explorer 에서  files 라는 폴더를 만드는 것이 아니다.       
-			       */
-					// WAS의 webapp 절대경로를 알아와야한다. 
-					String root = session.getServletContext().getRealPath("/"); // 이만큼이 webapp 
 					
-					// System.out.println("root 확인 :" + root);
-					// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
+					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\massenger\\";
 					
-					String path = root + "resources"+File.separator+"files"+File.separator+"massenger";
-					/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
-				            운영체제가 Windows 이라면 File.separator 는  "\" 이고,
-				            운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
-				    */
-					
-					// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
-					// System.out.println("확인용 path : "+ path); 
-					// 확인용 path : C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files
-					
-					/*
-					 	2. 파일첨부를 위한 변수의 설정 및 값을 초기화 한 후 파일 올리기
-					*/
 					String newFileName = "";
 					// WAS(톰캣)의 디스크에 저장되어질 파일네임 날짜 + 나노시간 + 파일확장자 식으로 저장되어짐
 					
