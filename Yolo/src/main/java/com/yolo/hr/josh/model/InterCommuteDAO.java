@@ -48,4 +48,6 @@ public interface InterCommuteDAO {
 	// 퇴직금 테이블에 insert
 	int severancePayment(List<Map<String, Object>> paraList);
 
+	List<Map<String, Object>> sumWorktimeByDept();
+
 }

@@ -41,4 +41,6 @@ public interface InterCommuteService {
 	// 퇴직금 테이블에 지급기록을 insert 
 	int severancePayment(List<Map<String, Object>> paraList);
 
+	List<Map<String, Object>> sumWorktimeByDept();
+
 }

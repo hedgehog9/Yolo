@@ -113,5 +113,11 @@ public class CommuteDAO implements InterCommuteDAO {
 		int n = sqlsession.insert("josh.severancePayment", paraList);
 		return n;
 	}
+
+	@Override
+	public List<Map<String, Object>> sumWorktimeByDept() {
+		List<Map<String, Object>> sumWorktimeByDeptList = sqlsession.selectList("josh.sumWorktimeByDept");
+		return sumWorktimeByDeptList;
+	}
 	
 }

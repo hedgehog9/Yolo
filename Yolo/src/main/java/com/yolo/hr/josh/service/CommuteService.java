@@ -127,5 +127,11 @@ public class CommuteService implements InterCommuteService {
 		int n = dao.severancePayment(paraList);
 		return n;
 	}
+
+	@Override
+	public List<Map<String, Object>> sumWorktimeByDept() {
+		List<Map<String, Object>> sumWorktimeByDeptList = dao.sumWorktimeByDept();
+		return sumWorktimeByDeptList;
+	}
 	
 }

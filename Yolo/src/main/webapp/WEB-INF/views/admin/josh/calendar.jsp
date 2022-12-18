@@ -378,19 +378,9 @@
 	            				$("form[name='schedule_modify_delete'] textarea[name='content']").val(json.content)
 	            				$("form[name='schedule_modify_delete'] input[name='schedule_no']").val(schedule_no)
 	            				
-	            				console.log(json.fk_empno)
+	            				let loginuser = ${sessionScope.loginuser.empno} 
 	            				
-	            				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
-	            					$("button#schedule_modify").hide();
-	            					$("button#schedule_delete").hide();
-	            					$("i#x-button").hide();
-	            					
-	            					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
-	            					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
-	            					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
-	            				}
-	            				
-	            				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
+	            				if(json.fk_empno == '${sessionScope.loginuser.empno}' || ${sessionScope.loginuser.empno} == 9999) { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
 	            					$("button#schedule_modify").show();
 	            					$("button#schedule_delete").show();
 	            					$("i#x-button").show();
@@ -399,10 +389,16 @@
 	            					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
 	            					$("form[name='schedule_modify_delete'] textarea").attr("readonly",false);
 	            				}
+	            				else {
+	            					$("button#schedule_modify").hide();
+	            					$("button#schedule_delete").hide();
+	            					$("i#x-button").hide();
+	            					
+	            					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
+	            					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
+	            					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
+	            				}
 	        				}
-	        				
-	        				
-	        				
 	        				
 	        			},
 	        			error: function(request, status, error){
