@@ -11,4 +11,13 @@ public interface InterLeaveService {
 	// 모달에 들어갈 해당 휴가에 대한 상세 내용 알아오기
 	Map<String, String> getLeaveDate(Map<String, String> paraMap);
 
+	// 휴가 신청하기
+	void requestLeave(Map<String, String> parameterMap);
+
+	// 휴가 사용 내역 조회하기
+	List<Map<String, String>> getLeaveRecode(Map<String, String> paraMap);
+
+	// 휴가 예정 내역 조회하기
+	List<Map<String, String>> getLeavePlan(Map<String, String> paraMap);
+
 }

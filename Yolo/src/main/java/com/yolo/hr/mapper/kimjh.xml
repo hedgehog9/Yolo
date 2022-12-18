@@ -365,4 +365,70 @@
 		where PK_LEAVE_TYPE = #{pk_leave_type}
 	</select>
 	
+	
+	<!-- 휴가 신청하기 -->
+	<insert id="insertRequestLeave" parameterType="HashMap">
+		insert into tbl_request_leave (pk_request_leaveno, fk_empno, fk_leave_type, start_day, end_day, use_days, use_reason, add_file, fileName, orgFilename)
+		values (seq_tbl_request_leave.nextval, #{empno}, #{pk_leave_type}, to_date('${start_day}','yyyy-mm-dd'), to_date('${end_day}','yyyy-mm-dd'), #{use_days}, #{use_reason}, #{add_file}, '${fileName}', '${originalFilename}')
+	</insert>
+	
+	
+	<!-- 휴가 신청하면서 사용내역 업데이트 하기 -->
+	<update id="plusUsedLeave" parameterType="HashMap">
+		update tbl_used_leave set ${pk_leave_type} = ${pk_leave_type} + ${use_days}
+		where pk_fk_empno = #{empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	<!-- 연차 사용내역 업데이트 -->
+	<update id="plusUsedLeaveAnnual" parameterType="HashMap">
+		update tbl_used_leave set ${pk_leave_type} = ${pk_leave_type} + ${use_days} , half_annual = half_annual + (${use_days}*2)
+		where pk_fk_empno = #{empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	<!-- 반차 사용 내역 업데이트 -->
+	<update id="plusUsedLeaveHalf_annual" parameterType="HashMap">
+		update tbl_used_leave set annual = annual + 0.5 , half_annual = half_annual + 1
+		where pk_fk_empno = #{empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	
+	<!-- 휴가 사용 내역 조회하기 -->
+	<resultMap type="HashMap" id="leaveListMap">
+		<result property="pk_request_leaveno" column="pk_request_leaveno" javaType="String"/>
+		<result property="fk_leave_type" column="fk_leave_type" javaType="String"/>
+		<result property="start_day" column="start_day2" javaType="String"/>
+		<result property="end_day" column="end_day2" javaType="String"/>
+		<result property="use_days" column="use_days" javaType="String"/>
+		<result property="use_reason" column="use_reason" javaType="String"/>
+		<result property="opproval_status" column="opproval_status" javaType="String"/>
+		<result property="add_file" column="add_file" javaType="String"/>
+		<result property="filename" column="filename" javaType="String"/>
+		<result property="orgfilename" column="orgfilename" javaType="String"/>
+		<result property="emoji" column="emoji" javaType="String"/>
+		<result property="leave_name" column="leave_name" javaType="String"/>
+	</resultMap>
+	<select id="getLeaveRecode"  parameterType="HashMap" resultMap="leaveListMap">
+		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
+				use_days, use_reason, opproval_status, r.add_file, filename, orgfilename, emoji, leave_name
+		from tbl_request_leave R join tbl_leave L
+		on FK_LEAVE_TYPE = PK_LEAVE_TYPE
+		<![CDATA[where fk_empno = #{empno} and to_char(START_DAY, 'yyyy')= #{year}  and START_DAY < sysdate]]>
+	</select>
+	
+	
+	<select id="getLeavePlan"  parameterType="HashMap" resultMap="leaveListMap">
+		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
+				use_days, use_reason, opproval_status, r.add_file, filename, orgfilename, emoji, leave_name
+		from tbl_request_leave R join tbl_leave L
+		on FK_LEAVE_TYPE = PK_LEAVE_TYPE
+		<![CDATA[where fk_empno = #{empno} and to_char(START_DAY, 'yyyy')= #{year}  and START_DAY > sysdate]]>
+	</select>
+	
+	
+	
+	
+	
 </mapper>

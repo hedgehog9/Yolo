@@ -68,7 +68,6 @@
 		font-size: 16pt;
 		display: flex;
   		align-items: center;
-  		padding-left: 4px;
 	}
 	
 	button.submitCancle {
@@ -273,6 +272,9 @@
 		});
 		
 		
+		let date = new Date();
+		getRecord(date.getFullYear()); // 휴가 사용 내역 조회하기
+		getPlan(date.getFullYear()); // 예정 휴가 조회하기
 		
 		
 	}); // end of ready 
@@ -285,7 +287,7 @@
 	    	data : {"pk_leave_type" : pk_leave_type},
     		dataType: "JSON",
 			success: function(json){
-				console.log(json);
+				// console.log(json);
 
 				let htmlTop = '<span style="font-size:21px;">'+json.emoji+'</span><span class="miniTitle ml-3">'+json.leave_name+'</span>'+
 			        '<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>';
@@ -355,14 +357,14 @@
 					      	'<input type="text" id="daterange" class="form-control text-center" placeholder="클릭하여 날짜를 지정해주세요" readonly="readonly">'+
 					        '<input type="text" name="start_date" class="form-control text-center">'+
 					        '<input type="text" name="end_date" class="form-control text-center">'+
-					        '<textarea rows="4" style="padding:5px;" placeholder="휴가 등록 메세지 입력"></textarea>';
+					        '<textarea rows="4" name="leave_content" style="padding:5px;" placeholder="휴가 등록 메세지 입력"></textarea>';
 					        
 			        if(json.add_file == 1){
 			        	htmlMiddle += '<span style="display: block; margin-top: 30px;">&#128193; 자료첨부 (추후 업로드 가능)</span>'+
 			        					'<div class="filebox">'+
 										    '<input class="upload-name" value="첨부파일" placeholder="첨부파일" readonly="readonly">'+
 										    '<label for="file">파일찾기</label>'+
-										    '<input type="file" id="file">'+
+										    '<input type="file" id="file" name="attach">'+
 										'</div>';
 			        }
 					
@@ -375,14 +377,16 @@
 					}
 			        
 			        
-					htmlMiddle += '</form>';
+					htmlMiddle += '<input type="hidden" name="pk_leave_type" value="'+json.pk_leave_type+'">'+
+									'<input type="hidden" name="add_file" value="'+json.add_file+'">'+
+									'</form>';
 					 
 				$("div.modalMiddle").html(htmlMiddle);
 				
 				
 				let htmlBottom = '<span style="flex-grow: 1;"> </span>'+
 									'<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;" onclick="closeLeaveModal();">취소</button>'+
-									'<button type="button" class="leaveUsingBnt">휴가신청</button>';
+									'<button type="button" class="leaveUsingBnt" onclick="requestLeaveForm();" >휴가신청</button>';
 				$("div.modalBottom").html(htmlBottom);
 				
 				$("input:radio").hide();
@@ -393,7 +397,6 @@
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
             }
 		}); // end of ajax
-		
 		
 		openLeaveModal();
 	}
@@ -423,11 +426,12 @@
   			  
   			  var btMs = endDate.getTime() - stDate.getTime() ;
 		      var btDay = btMs / (1000*60*60*24) ;
-              console.log(btDay+1);
+              // console.log(btDay+1);
               
               if(btDay+1> num ){
             	  
-            	  alert('선택 가능 일수를 벗어났습니다. 다시 클릭하여 날짜를 지정해주세요');
+            	  Swal.fire('선택 가능 일수를 벗어났습니다.','다시 클릭하여 날짜를 지정해주세요.', 'error');
+            	  // alert('선택 가능 일수를 벗어났습니다. 다시 클릭하여 날짜를 지정해주세요');
             	  //console.log($(this)[0]);
             	  //$(this).value ="클릭하여 날짜를 지정해주세요";
             	  //$("input#daterange").val('');
@@ -449,14 +453,14 @@
 	}
 	
 	
-	// 열기
+	// 모달 열기
 	function openLeaveModal(){
 		$('#yearLeaveModal').addClass('active');
 	    $('#modal_outside').fadeIn();
 		
 	}
 	
-	// 닫기
+	// 모달 닫기
 	function closeLeaveModal(){
 		$('#yearLeaveModal').removeClass('active');
 	    $('#modal_outside').fadeOut();
@@ -467,6 +471,151 @@
   	  	} */
 	}
 	
+	
+	// 휴가 신청하기
+	function requestLeaveForm() {
+		
+		if($('div#yearLeaveModal input[name="start_date"]').val().trim()== "" ){
+			Swal.fire('날짜가 선택되지 않았습니다.','다시 선택해주세요', 'error');
+			return;
+		}
+		
+		if($('div#yearLeaveModal textarea[name="leave_content"]').val().trim()== "" ){
+			Swal.fire('휴가 등록 메세지는','비워둘 수 없습니다.', 'error');
+			return;
+		}
+	    
+		var form = $("form")[0];        
+        var queryString = new FormData(form);
+		
+		$.ajax({
+	    	url : "<%=ctxPath%>/leave/requestLeave.yolo",
+	    	data : queryString,
+	    	type: 'POST',
+	    	enctype: 'multipart/form-data',
+	    	processData: false,
+	        contentType: false,
+			success: function(){
+				
+				// $(".sendMail").modal('hide');
+				window.location.reload();
+				toastr.success('휴가를 신청하셨습니다.');
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of ajax
+	}
+	
+	
+	// 휴가 사용 내역 조회하기
+	function getRecord(year){
+		$.ajax({
+	    	url : "<%=ctxPath%>/leave/getLeaveRecode.yolo",
+	    	data : {'year' : year},
+	    	dataType: "JSON",
+			success: function(json){
+				
+				let html = '';
+				
+				if(json.length>0){
+					html +='<div>'+
+							'<span class="miniTitle">사용 기록</span><span class="miniTitleNumber">'+json.length+'</span>'+
+							'</div>'+
+							'<table class="table table-borderless table table-hover ">';
+							
+					$.each(json, function(index, item){	
+						
+						html += '<tr>'+
+							      '<td class="head"><div class="leaveProf"><span style="display:block; margin: auto;">'+item.emoji+'</span></div></td>'+
+							      '<td class="patop">'+item.leave_name+'</td>'+
+							      '<td class="patop">'+item.start_day+' ~ '+item.end_day+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
+							      '<td class="patop">';
+							      
+						if(item.add_file == 1 && item.filename != null){
+							html += '<span class="badge badge-success rounded-pill">자료 첨부완료</span>';
+						} else if (item.add_file == 1 && item.filename == null){
+							html += '<span class="badge badge-warning rounded-pill">자료 미첨부</span>';
+						} 
+						
+						if(item.opproval_status == 0){
+							html += '</td>'+
+									'<td class="patop"><span class="badge badge-light rounded-pill">미승인</span></td>';
+						} else {
+							html += '</td>'+
+									'<td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>';
+						}
+							      
+						html +='<td class="tail"></td>'+
+							    '</tr>';
+						
+					}); // end of each
+					
+					html += '</table>';
+					
+				}
+				
+				$("div#record").html(html);
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of ajax
+	}
+	
+	function getPlan(year){
+		$.ajax({
+	    	url : "<%=ctxPath%>/leave/getLeavePlan.yolo",
+	    	data : {'year' : year},
+	    	dataType: "JSON",
+			success: function(json){
+				
+				console.log(json);
+				
+				let html = '';
+				
+				if(json.length>0){
+					html = '<span class="miniTitle">예정 휴가</span><span class="miniTitleNumber">'+json.length+'</span>'+
+						'<table class="table table-borderless table table-hover ">';
+						
+					$.each(json, function(index, item){	
+						html += '<tr data-toggle="modal" data-target="#leaveDetail">'+
+						      '<td class="head"><div class="leaveProf"><span style="display:block; margin: auto;">'+item.emoji+'</span></div></td>'+
+						      '<td class="patop">'+item.leave_name+'</td>'+
+						      '<td class="patop">'+item.start_day+' ~ '+item.end_day+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
+						      '<td class="patop">';
+						      
+						if(item.add_file == 1 && item.filename != null){
+							html += '<span class="badge badge-success rounded-pill">자료 첨부완료</span>';
+						} else if (item.add_file == 1 && item.filename == null){
+							html += '<span class="badge badge-warning rounded-pill">자료 미첨부</span>';
+						} 
+						
+						if(item.opproval_status == 0){
+							html += '</td>'+
+									'<td class="patop"><span class="badge badge-light rounded-pill">미승인</span></td>';
+						} else {
+							html += '</td>'+
+									'<td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>';
+						}
+						      
+						html += '<td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>'+
+						    '</tr>';
+					}); // end of each
+					
+					html += '</table>';
+				}
+				
+				$("div#plan").html(html);
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of ajax
+	}
 	
 </script>
 
@@ -512,8 +661,8 @@
 	
 	<%-- 예정휴가 테이블 --%>
 	<%-- 휴가 신청으로 예정된 휴가 있는 경우 --%>
-	<div class="dashBoard">
-		<span class="miniTitle">예정 휴가</span><span class="miniTitleNumber">6</span>
+	<div class="dashBoard" id="plan">
+		<!-- <span class="miniTitle">예정 휴가</span><span class="miniTitleNumber">6</span>
 		<table class="table table-borderless table table-hover ">
 		    <tr data-toggle="modal" data-target="#leaveDetail">
 		      <td class="head"><div class="leaveProf">&#9978;</div></td>
@@ -539,15 +688,15 @@
 		      <td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>
 		      <td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>
 		    </tr>
-		</table>
-	  </div>
+		</table> -->
+	 </div>
 	<%-- 예정된 휴가 없는 경우 --%>
 	<%-- 예정 휴가 태이블 끝 --%>
 	   
 	    
     <%-- 휴가 사용 기록 시작 --%>
-    <div class="dashBoard mt-5">
-    	<div>
+    <div class="dashBoard mt-5" id="record">
+    	<!-- <div>
 		<span class="miniTitle">사용 기록</span><span class="miniTitleNumber">6</span>
 		</div>
 		<table class="table table-borderless table table-hover ">
@@ -567,8 +716,8 @@
 		      <td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>
 		      <td class="tail"></td>
 		    </tr>
-		</table>
-	  </div>
+		</table> -->
+	</div>
     
     <%-- 휴가 사용 기록 끝 --%>     
  
@@ -579,7 +728,7 @@
 <div id="modal_outside"></div>
 
  
-<!-- 연차/병가/여름휴가 Modal -->
+<!-- 휴가 신청 Modal -->
 <div id="yearLeaveModal">
       <div class="modalTop">
       	<!-- <span style="font-size:21px;">&#9978;</span><span class="miniTitle ml-3"> 연차</span>

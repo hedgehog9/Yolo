@@ -29,4 +29,47 @@ public class LeaveDAO implements InterLeaveDAO {
 		return leaveData;
 	}
 
+
+	// 휴가 신청하기
+	@Override
+	public void requestLeave(Map<String, String> parameterMap) {
+		sqlsession.insert("kimjh.insertRequestLeave",parameterMap);
+	}
+
+	
+	// 휴가 신청하면서 사용내역 업데이트 하기
+	@Override
+	public void plusUsedLeave(Map<String, String> parameterMap) {
+		sqlsession.update("kimjh.plusUsedLeave",parameterMap);
+	}
+
+
+	// 연차 사용내역 업데이트 
+	@Override
+	public void plusUsedLeaveAnnual(Map<String, String> parameterMap) {
+		sqlsession.update("kimjh.plusUsedLeaveAnnual",parameterMap);
+	}
+
+	// 반차 사용 내역 업데이트
+	@Override
+	public void plusUsedLeaveHalf_annual(Map<String, String> parameterMap) {
+		sqlsession.update("kimjh.plusUsedLeaveHalf_annual",parameterMap);
+	}
+
+
+	// 휴가 사용 내역 조회하기
+	@Override
+	public List<Map<String, String>> getLeaveRecode(Map<String, String> paraMap) {
+		List<Map<String, String>> leaveRecodeList = sqlsession.selectList("kimjh.getLeaveRecode", paraMap);
+		return leaveRecodeList;
+	}
+
+
+	// 휴가 예정 내역 조회하기
+	@Override
+	public List<Map<String, String>> getLeavePlan(Map<String, String> paraMap) {
+		List<Map<String, String>> leavePlanList = sqlsession.selectList("kimjh.getLeavePlan", paraMap);
+		return leavePlanList;
+	}
+
 }
