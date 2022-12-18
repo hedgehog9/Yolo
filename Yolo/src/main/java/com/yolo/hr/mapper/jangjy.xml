@@ -654,7 +654,7 @@
 			select D1.deptname as before_deptname
 			    , D2.deptname as after_deptname
 			    , before_position, after_position
-			    , psa_date
+			    , to_char(psa_date,'yyyy-mm-dd') as psa_date
 			    , psa_label
 			    , memo
 			    , name
