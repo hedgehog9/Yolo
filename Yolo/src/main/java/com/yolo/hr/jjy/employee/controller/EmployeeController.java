@@ -1179,7 +1179,19 @@ public class EmployeeController {
 	}
 	
 	
+	@ResponseBody
+	@RequestMapping(value="/insight/genderRate.yolo", method = {RequestMethod.GET})
+	public List<Map<String,Object>> genderRate(HttpServletRequest request) {
+		
+		return dao.genderRate();
+	}
 	
+	@ResponseBody
+	@RequestMapping(value="/insight/empCntDept.yolo", method = {RequestMethod.GET})
+	public List<Map<String,Object>> empCntDept(HttpServletRequest request) {
+		
+		return dao.empCntDept();
+	}
 	
 
 	

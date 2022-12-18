@@ -48,7 +48,7 @@ canvas#myChart{
 		<div style="width:100%; display: flex;">
 			<div id="chart1" class="div_chart">
 				<div>
-					<div>부서별 인원</div>
+					<div>구성원 성비</div>
 					<div>기준 . 재직 구성원</div>
 				</div>
 				<canvas id="myChart1" width="300px" height="300px"></canvas>			
@@ -57,7 +57,7 @@ canvas#myChart{
 			
 			<div id="chart2" class="div_chart">
 				<div>
-					<div>구성원 성비</div>
+					<div>부서별 인원</div>
 					<div>기준 . 재직 구성원</div>
 				</div>
 				<canvas id="myChart2" width="300px" height="300px"></canvas>		
@@ -90,104 +90,125 @@ canvas#myChart{
 
 $(document).ready(function() {
 	
-	<%--  구성원 성비  --%>
-	const ctx = document.getElementById('myChart1').getContext('2d');
-	const myChart1 = new Chart(ctx, {
-	    type: 'pie',
-	    data: {
-	        datasets: [{
-	            label: '# of Votes',
-	            data: [12, 19, 3, 5, 2, 3],
-	            backgroundColor: [
-	                'rgba(255, 99, 132, 0.2)',
-	                'rgba(54, 162, 235, 0.2)',
-	                'rgba(255, 206, 86, 0.2)',
-	                'rgba(75, 192, 192, 0.2)',
-	                'rgba(153, 102, 255, 0.2)',
-	                'rgba(255, 159, 64, 0.2)'
-	            ],
-	            borderColor: [
-	                'rgba(255, 99, 132, 1)',
-	                'rgba(54, 162, 235, 1)',
-	                'rgba(255, 206, 86, 1)',
-	                'rgba(75, 192, 192, 1)',
-	                'rgba(153, 102, 255, 1)',
-	                'rgba(255, 159, 64, 1)'
-	            ],
-	            borderWidth: 1
-	        }]
-	    },
-	    options: {
-	        scales: {
-	            y: {
-	                beginAtZero: true
-	            }
-	        }
-	    }
-	});
+	let arr_rate=[];
+	let arr_gender=[];
+	$.ajax({
+		url:"<%= ctxPath%>/insight/genderRate.yolo",
+		dataType:"JSON",
+		success:function(json) {
+			arr.push(...json);
+					
+			$.each(arr, function(index, item){
+				arr_gender.push(item.gender);
+				arr_rate.push(item.rate);
+			});
+			
+			console.log(arr_gender);
+			<%--  구성원 성비  --%>
+			const ctx = document.getElementById('myChart1').getContext('2d');
+			const myChart1 = new Chart(ctx, {
+			    type: 'pie',
+			    data: {
+		        	labels: arr_gender,
+			        datasets: [{
+			            data: arr_rate,
+			            backgroundColor: [
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {
+			        scales: {
+			            y: {
+			                beginAtZero: true
+			            }
+			        }
+			    }
+			});
+			},
+			error: function(request, status, error){
+		        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	
+	})
 
 
 
 	<%-- 부서별 급여 평균 --%>
-	var context2 = document.getElementById('myChart2').getContext('2d');
-	var myChart2 = new Chart(context2, {
-	type: 'line', // 차트의 형태
-	data: { // 차트에 들어갈 데이터
-	    labels: [
-	        //x 축
-	        '1','2','3','4','5','6','7'
-	    ],
-	    datasets: [
-	        { //데이터
-	            label: 'test1', //차트 제목
-	            fill: false, // line 형태일 때, 선 안쪽을 채우는지 안채우는지
-	            data: [
-	                21,19,25,20,23,26,25 //x축 label에 대응되는 데이터 값
-	            ],
-	            backgroundColor: [
-	                //색상
-	                'rgba(255, 99, 132, 0.2)',
-	                'rgba(54, 162, 235, 0.2)',
-	                'rgba(255, 206, 86, 0.2)',
-	                'rgba(75, 192, 192, 0.2)',
-	                'rgba(153, 102, 255, 0.2)',
-	                'rgba(255, 159, 64, 0.2)'
-	            ],
-	            borderColor: [
-	                //경계선 색상
-	                'rgba(255, 99, 132, 1)',
-	                'rgba(54, 162, 235, 1)',
-	                'rgba(255, 206, 86, 1)',
-	                'rgba(75, 192, 192, 1)',
-	                'rgba(153, 102, 255, 1)',
-	                'rgba(255, 159, 64, 1)'
-	            ],
-	            borderWidth: 1 //경계선 굵기
-	        }/* ,
-	        {
-	            label: 'test2',
-	            fill: false,
-	            data: [
-	                8, 34, 12, 24
-	            ],
-	            backgroundColor: 'rgb(157, 109, 12)',
-	            borderColor: 'rgb(157, 109, 12)'
-	        } */
-	    ]
-	},
-	options: {
-	    scales: {
-	        yAxes: [
-	            {
-	                ticks: {
-	                    beginAtZero: true
-	                }
-	            }
-	        ]
-	    }
-	}
+	let arr_deptNameEmp=[];
+	let arr_empCnt=[];
+	$.ajax({
+		url:"<%= ctxPath%>/insight/empCntDept.yolo",
+		dataType:"JSON",
+		success:function(json) {
+			arr.push(...json);
+					
+			$.each(arr, function(index, item){
+				arr_deptNameEmp.push(item.deptname);
+				arr_empCnt.push(item.empCnt);
+			});
+			
+			console.log(arr_gender);
+			<%--  구성원 성비  --%>
+			const ctx = document.getElementById('myChart2').getContext('2d');
+			const myChart2 = new Chart(ctx, {
+			    type: 'pie',
+			    data: {
+		        	labels: arr_deptNameEmp,
+			        datasets: [{
+			            data: arr_empCnt,
+			            backgroundColor: [
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+			            ],
+			            borderWidth: 1
+			        }]
+			    },
+			    options: {
+			    	plugins:{
+		                legend: {
+		                    display: false
+		                }
+		            },
+			        scales: {
+			            y: {
+			                beginAtZero: true
+			            }
+			        }
+			    }
+			});
+			},
+			error: function(request, status, error){
+		        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	
 	});
-
 
 
 

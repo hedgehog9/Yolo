@@ -295,6 +295,18 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		
 	}
 
+	@Override
+	public List<Map<String, Object>> genderRate() {
+		List<Map<String, Object>> genderRateList = sqlsession.selectList("jangjy.genderRate");
+		return genderRateList;
+	}
+
+	@Override
+	public List<Map<String, Object>> empCntDept() {
+		List<Map<String, Object>> empCntList = sqlsession.selectList("jangjy.empCntDept");
+		return empCntList;
+	}
+
 	
 	
 	

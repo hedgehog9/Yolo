@@ -461,6 +461,12 @@ button#fileUpload{
 	background-color:#07B419;
 }
 
+span.span_badge {
+	background-color: #d9d9d9;
+	border-radius: 5px;
+	padding: 0 5px;
+}
+
 
 
 </style>
@@ -964,9 +970,24 @@ arr_status = [];
 										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
 										+'<div style="padding-top:3px;">'+emp.name+'</div>'
 									+'</div>'
-								+'</td>'
+								+'</td>';
+								
 								+'<td>'+emp.status+'</td>'
-								+'<td>'+emp.empno+'</td>'
+									
+								if(emp.status=="재직"){		
+									html+="<td><span id='label_status' class='span_badge' style='background-color:#07B419; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else if(emp.status=="휴직"){
+									html+="<td><span id='label_status' class='span_badge' style='background-color:#8F40DE; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else if(emp.status=="퇴직"){
+									html+="<td><span id='label_status' class='span_badge' style='background-color:gray; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else{
+									html+="<td></td>";
+								}	
+									
+								html +='<td>'+emp.empno+'</td>';
 								
 								if(${sessionScope.loginuser.empno} == "9999"){
 									
@@ -978,12 +999,26 @@ arr_status = [];
 				
 								html +='<td>'+emp.deptname+'</td>'
 								+'<td>'+emp.position+'</td>'
-				
-								+'<td>'+emp.email+'</td>'
-								+'<td>'+isEmpty(emp.gender)+'</td>';
-								if(${sessionScope.loginuser.empno} == "9999"){
-								html+='<td>'+isEmpty(emp.mobile)+'</td>';
+								+'<td>'+emp.email+'</td>';
+								// +'<td>'+isEmpty(emp.gender)+'</td>';
+								
+								if(emp.gender=="남"){		
+									html+="<td><span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>"+isEmpty(emp.gender)+"</span></td>";
 								}
+								else if(emp.gender=="여"){
+									html+="<td><span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>"+isEmpty(emp.gender)+"</span></td>";
+								}
+								else{
+									html+="<td></td>";
+								}
+								
+								
+								
+								
+								if(${sessionScope.loginuser.empno} == "9999"){
+									html+='<td>'+isEmpty(emp.mobile)+'</td>';
+								}
+								
 							+'</tr>';
 							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
 						

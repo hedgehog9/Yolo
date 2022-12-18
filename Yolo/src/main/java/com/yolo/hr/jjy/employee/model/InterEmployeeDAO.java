@@ -132,4 +132,10 @@ public interface InterEmployeeDAO {
 	/** 구성원 등록시 팀장 또는 부서장이 변경되는 경우  */
 	void updateManagerEmpnoRegist(Map<String, Object> paraMap);
 
+	/** 구성원 전체 성비 */
+	List<Map<String, Object>> genderRate();
+
+	/** 부서별 구성원 인원수 */
+	List<Map<String, Object>> empCntDept();
+
 }

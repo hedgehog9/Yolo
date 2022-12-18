@@ -918,6 +918,40 @@
 	<!-- ====================== 조직도 =================== -->
 
 
+	<!-- 인사이트 성별 -->
+	<resultMap type="HashMap" id="genderMap">
+		<result property="gender"   column="gender"  javaType="String"/>
+		<result property="rate"     column="rate"    	 javaType="String"/>
+	</resultMap>
+	<select id="genderRate" resultMap="genderMap">
+		select gender,
+       count(*) as rate
+		from
+		(
+		    select func_gender(rrn) as gender 
+		    from tbl_employees
+		)V
+		group by v.gender
+	</select>
+	<!-- 인사이트 부서별 인원수 -->
+	<resultMap type="HashMap" id="empCntMap">
+		<result property="empCnt"   column="empCnt"  javaType="String"/>
+		<result property="deptname"     column="deptname"    	 javaType="String"/>
+	</resultMap>
+	<select id="empCntDept" resultMap="empCntMap">
+		select count(*) as empCnt , deptname
+		from
+		(
+			select deptname, empno
+			from tbl_dept D join tbl_employees E
+			on D.deptno = E.fk_deptno
+			where D.deptno >= 100 and  D.deptno != 9999
+		)V
+		group by deptname
+	</select>
+	
+
+
 </mapper>
 
 
