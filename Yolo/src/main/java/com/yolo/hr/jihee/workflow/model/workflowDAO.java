@@ -172,6 +172,13 @@ public class workflowDAO implements InterWorkflowDAO {
 		int n = sqlsession.update("choijh.updateDoc",docvo);
 		return n;
 	}
+
+	//지금 몇단계인지 알아오기
+	@Override
+	public String getApprovalStep(String doc_no) {
+		String nowStepApproval =sqlsession.selectOne("choijh.getApprovalStep", doc_no);
+		return nowStepApproval;
+	}
 	
 
 	

@@ -54,6 +54,12 @@ public interface InterWorkflowService {
 	
 	//글 수정하기
 	int upateDoc(documentVO docvo);
+
+	//지금 몇단계인지 알아오기
+	String getApprovalSetp(String doc_no);
+
+	//마지막 레벨 알아오기
+	int getlastLevelno(String string);
 	
 
 }

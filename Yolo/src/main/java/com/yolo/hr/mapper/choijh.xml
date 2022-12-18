@@ -260,21 +260,35 @@
    	   <result property="approval" 		 	 column="approval"      				javaType="String"/>
    	   <result property="approval_day" 		 column="approval_day"      				javaType="String"/>
  		<result property="profile_color"  	column="profile_color"      	javaType="String"/>	
+ 		<result property="end_doc"  	column="end_doc"      	javaType="String"/>	
    </resultMap>  
    
  	<select id="getDocDetail" parameterType="HashMap" resultMap="docDetailMap">
 		<if test="writer != null">
+	<!-- 	select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno,profile_color
+		from tbl_documents 
+		join tbl_employees
+		on fk_writer_empno = empno
+		where fK_writer_empno =#{empno} and  doc_no =#{doc_no} -->
+		
+		select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno,profile_color, end_doc
+		from
+		(
 		select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, name, position,fk_deptno,profile_color
 		from tbl_documents 
 		join tbl_employees
 		on fk_writer_empno = empno
-		where fK_writer_empno =#{empno} and  doc_no =#{doc_no}
+		where fK_writer_empno =#{empno} and  doc_no =#{doc_no}    
+		)A
+		join tbl_approval
+		on doc_no = fk_doc_no
+		where doc_no =#{doc_no}
 		</if>
 		
 		<if test="writer ==null">
-		 select  fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day ,name, position, fk_deptno,profile_color
+		 select  fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day ,name, position, fk_deptno,profile_color,  end_doc
 		 from(
-		         select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day  
+		         select distinct fk_writer_empno, doc_no, doc_subject, doc_contents, writeday, modificationday, icon, filename, orgfilename,filesize, d_day, approval_no, fk_doc_no, fk_senior_empno, levelno, approval, approval_day  , end_doc
 		         from tbl_documents 
 		         join TBL_approval
 		         on doc_no = fk_doc_no
@@ -391,6 +405,23 @@
 	 	update tbl_documents set doc_contents = #{doc_contents} ,modificationday = sysdate , D_day = to_date(#{D_day},'yyyy-mm-dd')
 		where doc_no = #{doc_no}
 	 </update>
+	 
+	 <!--완료된 문서 가져오기  -->
+	 <select id="getApprovalStep" parameterType="String" resultType="String">
+	 	select levelno
+		from
+		(
+		select approval , levelno
+		from tbl_documents
+		join tbl_approval
+		on doc_no = fk_doc_no
+		where fk_doc_no =#{doc_no} and ( approval='1' or approval='2')
+		order by levelno desc
+		)
+		where ROWNUM= 1
+	 
+	 </select>
+	 
 	 
 
 </mapper>
