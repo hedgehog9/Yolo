@@ -20,4 +20,16 @@ public interface InterLeaveService {
 	// 휴가 예정 내역 조회하기
 	List<Map<String, String>> getLeavePlan(Map<String, String> paraMap);
 
+	// 하위 부서 번호 전부 알아오기
+	List<String> getLowerDeptnoList(String fk_deptno);
+
+	// 조회한 부서에 해당하는 사원들의 휴가 신청내역을 불러온다
+	List<Map<String, String>> getRequestLeaveList(String deptJoin);
+
+	// 조회한 부서에 해당하는 사원들의 휴가 사용/잔여 내역을 불러온다
+	List<Map<String, String>> getLeaveStatusList(String deptJoin);
+
+	// 관리자 사원번호 리스트 가져오기
+	List<String> getAdminEmpnoList();
+
 }

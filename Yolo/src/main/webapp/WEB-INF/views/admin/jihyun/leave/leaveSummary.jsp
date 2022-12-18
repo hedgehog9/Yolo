@@ -253,11 +253,15 @@
 		$(document).on('focus', "input#daterange",  function () {
 			
 			// 히든 넘버 넣어주기
-			let num = $("input:radio:checked").val();
-			// console.log(num);
-			$("input#hiddenNumber").val(num);
+			if($("input:radio:checked").length>0){
+				let num = $("input:radio:checked").val();
+				// console.log(num);
+				$("input#hiddenNumber").val(num);
+			}
 			
-			setDate(Number(num));
+			let hiddenNumber = $("input#hiddenNumber").val();
+			
+			setDate(Number(hiddenNumber));
 		});
 		
           
@@ -372,6 +376,8 @@
 			        // 히든넘버 넣어주기
 					if(json.limit_days != 0){
 						 htmlMiddle += '<input type="hidden" id="hiddenNumber" value="'+json.remaining_leave+'">';
+					} else if ( json.pk_leave_type == "emergency" ||  json.pk_leave_type == "etc"){
+						htmlMiddle += '<input type="hidden" id="hiddenNumber" value="1">';
 					} else{
 						 htmlMiddle += '<input type="hidden" id="hiddenNumber">';
 					}
@@ -572,7 +578,7 @@
 	    	dataType: "JSON",
 			success: function(json){
 				
-				console.log(json);
+				// console.log(json);
 				
 				let html = '';
 				

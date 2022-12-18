@@ -27,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.JsonArray;
 import com.yolo.hr.common.FileManager;
 import com.yolo.hr.jihyunService.InterLeaveService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
@@ -41,6 +40,27 @@ public class LeaveController {
 	// === #155. 파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) ===
 	@Autowired
 	private FileManager fileManager; // bean으로 올라간 애를 쓰겠다
+	
+	
+	// 사용자의 권한을 조회해서 넘겨주는 ajax
+	@ResponseBody
+	@RequestMapping(value = "/leave/checkAuthority.yolo" , produces="text/plain;charset=UTF-8")
+	public String checkAuthority(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+		
+		List<String> adminEmpnoList = service.getAdminEmpnoList();
+		
+		String empno = loginuser.getEmpno();
+		
+		if(adminEmpnoList.contains(empno)) {
+			return "1";
+		} else {
+			return "0";
+		}
+	}
+	
 
 	// 내휴가 
 	@RequestMapping(value="/leaveSummary.yolo") 
@@ -63,6 +83,11 @@ public class LeaveController {
 		List<Map<String, String>> leaveTypeList = service.getLeaveTypeList(paraMap); // 휴가 종류와 남은 일수 구해오기
 		mav.addObject("leaveTypeList", leaveTypeList);
 		
+		// 관리자 권한 알아보기
+		List<String> adminEmpnoList = service.getAdminEmpnoList();
+		if(adminEmpnoList.contains(loginuser.getEmpno())) {
+			mav.addObject("isAdmin", "1");
+		} 
 		
 		mav.setViewName("jihyun/leave/leaveSummary.admin");
 		
@@ -275,20 +300,77 @@ public class LeaveController {
 	}
 	
 
+	
 	// 관리자 구성원 휴가 보유 현황
 	@RequestMapping(value="/empLeaveStatus.yolo") 
-    public String empLeaveStatus() {
+    public String empLeaveStatus(HttpServletRequest request) {
 		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+				
+		// 관리자의 부서번호를 통해서 아래부서를 다 알아온다 
+		List<String> deptnoList = service.getLowerDeptnoList(loginuser.getFk_deptno());
+		
+		// 위에서 조회한 부서에 해당하는 사원들의 휴가 사용/잔여 내역을 불러온다
+		List<Map<String,String>> leaveStatusList = service.getLeaveStatusList(String.join(",", deptnoList));
+		
+		request.setAttribute("leaveStatusList", leaveStatusList);
+		
+		// 관리자 권한 알아보기
+		List<String> adminEmpnoList = service.getAdminEmpnoList();
+		if(adminEmpnoList.contains(loginuser.getEmpno())) {
+			request.setAttribute("isAdmin", "1");
+		}
+				
         return "jihyun/leave/empLeaveStatus.admin"; // 뷰단 페이지
     }
 	
+	
+	
 	// 관리자 구성원 휴가 사용 내역
 	@RequestMapping(value="/empLeaveUsingList.yolo") 
-    public String empLeaveUsingList() {
+    public String empLeaveUsingList(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+				
+		// 관리자의 부서번호를 통해서 아래부서를 다 알아온다 
+		List<String> deptnoList = service.getLowerDeptnoList(loginuser.getFk_deptno());
+		
+		// 위에서 조회한 부서에 해당하는 사원들의 휴가 신청내역을 불러온다
+		List<Map<String,String>> requestLeaveList = service.getRequestLeaveList(String.join(",", deptnoList));
+		
+		request.setAttribute("requestLeaveList", requestLeaveList);
+		
+		// 관리자 권한 알아보기
+		List<String> adminEmpnoList = service.getAdminEmpnoList();
+		if(adminEmpnoList.contains(loginuser.getEmpno())) {
+			request.setAttribute("isAdmin", "1");
+		}
 		
         return "jihyun/leave/empLeaveUsingList.admin"; // 뷰단 페이지
     }
 	
+	
+	
+	// 연차촉진하기 
+	@ResponseBody
+	@RequestMapping(value = "/leave/promoteAnnual.yolo")
+	public void addAlarm_promoteAnnual(Map<String, String> paraMap, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+		
+		String empno = request.getParameter("empno");
+		
+		paraMap.put("fk_recipientno", empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
+		paraMap.put("url", "/leaveSummary" );
+		paraMap.put("url2", ".yolo" ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+		paraMap.put("alarm_content", loginuser.getName()+"님이 연차 사용을 요청했습니다." );
+		paraMap.put("alarm_type", "1" );
+		
+	}
+		
 	
 	/*
     @ExceptionHandler 에 대해서.....

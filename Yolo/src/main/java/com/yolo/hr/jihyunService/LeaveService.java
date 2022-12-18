@@ -59,5 +59,37 @@ public class LeaveService implements InterLeaveService {
 		List<Map<String, String>> leavePlanList = ldao.getLeavePlan(paraMap);
 		return leavePlanList;
 	}
+
+	
+	// 하위 부서 번호 전부 알아오기
+	@Override
+	public List<String> getLowerDeptnoList(String fk_deptno) {
+		List<String> lowerDeptnoList = ldao.getLowerDeptnoList(fk_deptno);
+		return lowerDeptnoList;
+	}
+
+	
+	// 조회한 부서에 해당하는 사원들의 휴가 신청내역을 불러온다
+	@Override
+	public List<Map<String, String>> getRequestLeaveList(String deptJoin) {
+		List<Map<String,String>> requestLeaveList = ldao.getRequestLeaveList(deptJoin);
+		return requestLeaveList;
+	}
+	
+	
+	// 조회한 부서에 해당하는 사원들의 휴가 사용/잔여 내역을 불러온다
+	@Override
+	public List<Map<String, String>> getLeaveStatusList(String deptJoin) {
+		List<Map<String,String>> leaveStatusList = ldao.getLeaveStatusList(deptJoin);
+		return leaveStatusList;
+	}
+
+	
+	// 관리자 사원번호 리스트 가져오기
+	@Override
+	public List<String> getAdminEmpnoList() {
+		List<String> adminEmpnoList = ldao.getAdminEmpnoList();
+		return adminEmpnoList;
+	}
 	
 }

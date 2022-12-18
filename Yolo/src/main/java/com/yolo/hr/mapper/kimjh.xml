@@ -435,6 +435,92 @@
 	
 	
 	
+	<!-- 하위 부서 번호 전부 알아오기 -->
+	<select id="getLowerDeptnoList" parameterType="String" resultType="String">
+		select V.deptno
+		from 
+		(select  deptno
+		from TBL_DEPT 
+		start with deptno = #{fk_deptno}
+		connect by NOCYCLE prior deptno =  upper_deptno) V
+		join TBL_DEPT_MAPPING M
+		on V.deptno = M.fk_deptno
+	</select>
 	
+	
+	
+	<!-- 조회한 부서에 해당하는 사원들의 휴가 신청내역을 불러온다 -->
+	<resultMap type="HashMap" id="deptRequestMap">
+		<result property="pk_request_leaveno" column="pk_request_leaveno" javaType="String"/>
+		<result property="fk_leave_type" column="fk_leave_type" javaType="String"/>
+		<result property="start_day" column="start_day2" javaType="String"/>
+		<result property="end_day" column="end_day2" javaType="String"/>
+		<result property="start_name" column="start_name" javaType="String"/>
+		<result property="end_name" column="end_name" javaType="String"/>
+		<result property="use_days" column="use_days" javaType="String"/>
+		<result property="use_reason" column="use_reason" javaType="String"/>
+		<result property="opproval_status" column="opproval_status" javaType="String"/>
+		<result property="add_file" column="add_file" javaType="String"/>
+		<result property="filename" column="filename" javaType="String"/>
+		<result property="leave_name" column="leave_name" javaType="String"/>
+		<result property="fk_empno" column="fk_empno" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+	</resultMap>
+	<select id="getRequestLeaveList" parameterType="String" resultMap="deptRequestMap">
+		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
+        func_get_day(start_day) as start_name , func_get_day(end_day) as end_name ,
+        use_days, use_reason, opproval_status, r.add_file, filename, leave_name
+        , fk_empno, name,substr(name, -2, 2) as nickname, position, profile_color
+		from (select *
+		    from tbl_request_leave 
+		    join TBL_EMPLOYEES
+		    on fk_empno = empno )R 
+		join tbl_leave L
+		on FK_LEAVE_TYPE = PK_LEAVE_TYPE
+		<![CDATA[where fk_deptno in (${deptJoin}) and ABS(sysdate-start_day) < 100]]>
+		order by opproval_status desc , pk_request_leaveno desc
+	</select>
+	
+	
+	
+	<!-- 조회한 부서에 해당하는 사원들의 휴가 사용/잔여 내역을 불러온다 -->
+	<resultMap type="HashMap" id="leavetStatusMap">
+		<result property="annual" column="annual" javaType="String"/>
+		<result property="half_annual" column="half_annual" javaType="String"/>
+		<result property="condolence" column="condolence" javaType="String"/>
+		<result property="sick" column="sick" javaType="String"/>
+		<result property="summer" column="summer" javaType="String"/>
+		<result property="marrige" column="marrige" javaType="String"/>
+		<result property="emergency" column="emergency" javaType="String"/>
+		<result property="etc" column="etc" javaType="String"/>
+		<result property="empno" column="empno" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+		<result property="deptname" column="deptname" javaType="String"/>
+	</resultMap>
+	<select id="getLeaveStatusList" parameterType="String" resultMap="leavetStatusMap">
+		select 15-annual as annual, 30 - half_annual as half_annual, condolence, 90 - sick as sick, 4- summer as summer, marrige, emergency, etc, 
+        		empno, name, substr(name, -2, 2) as nickname, position, profile_color, deptname
+		from tbl_used_leave 
+		join (  select *
+		        from tbl_employees
+		        join tbl_dept
+		        on fk_deptno = deptno)
+		on PK_FK_EMPNO = empno
+		where PK_USED_YEAR = to_char(sysdate, 'yyyy') and deptno in (${deptJoin})
+		order by deptno , empno
+	</select> 
+	
+	
+	<!-- 관리자 사원번호 리스트 가져오기 -->
+	<select id="getAdminEmpnoList" resultType="String">
+		select FK_EMPNO
+		from TBL_DEPT_MAPPING
+	</select>
 	
 </mapper>

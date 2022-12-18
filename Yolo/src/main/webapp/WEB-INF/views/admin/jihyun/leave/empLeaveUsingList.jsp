@@ -3,6 +3,7 @@
 
 <% String ctxPath=request.getContextPath(); %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <jsp:include page="leaveCategory.jsp" />
     
 <style type="text/css">
@@ -99,41 +100,55 @@
 		    <tr>
 		      <th class="head"><span class="tableTitle">이름</span></th>
 		      <th><span class="tableTitle">사번</span></th>
+		      <th><span class="tableTitle">직급</span></th>
 		      <th><span class="tableTitle">기간</span></th>
 		      <th><span class="tableTitle">항목</span></th>
-		      <th><span class="tableTitle">사용시간</span></th>
+		      <th><span class="tableTitle">사용기간</span></th>
 		      <th><span class="tableTitle">증명자료</span></th>
 		      <th><span class="tableTitle">승인</span></th>
 		    </tr>
 		</thead>
 		<tbody>
-		    <tr>
+			<c:forEach items="${requestLeaveList }" var="requestLeave">
+				<tr>
+			      <td><div class="tableProf" style="background-color: ${requestLeave.profile_color }">${requestLeave.nickname }</div>${requestLeave.name }</td>
+			      <td class="patop">${requestLeave.fk_empno }</td>
+			      <td class="patop">${requestLeave.position }</td>
+			      <td class="patop">${requestLeave.start_day } ${requestLeave.start_name } ~ ${requestLeave.end_day } ${requestLeave.end_name }</td>
+			      <td class="patop">${requestLeave.leave_name }</td>
+			      <td class="patop">${requestLeave.use_days }일</td>
+			      <c:if test="${requestLeave.add_file eq 1 and not empty requestLeave.filename }">
+			      	<td class="patop"><span class="badge badge-success rounded-pill">제출완료</span></td>
+			      </c:if>
+			      <c:if test="${requestLeave.add_file eq 1 and empty requestLeave.filename }">
+			      	<td class="patop"><span class="badge badge-warning rounded-pill">미제출</span></td>
+			      </c:if>
+			      <c:if test="${requestLeave.add_file eq 0}">
+			      	<td class="patop"></td>
+			      </c:if>
+			      
+			      <c:if test="${requestLeave.opproval_status eq 0}">
+			      	<td><button type="button" class="btn btn-outline-secondary btn-sm approve">승인 / 취소</button></td>
+			      </c:if>
+			      <c:if test="${requestLeave.opproval_status eq 1}">
+			      	<td>승인 완료</td>
+			      </c:if>
+			      <c:if test="${requestLeave.opproval_status eq 2}">
+			      	<td>취소</td>
+			      </c:if>
+			      
+			    </tr>
+			</c:forEach>
+		    <!-- <tr>
 		      <td><div class="tableProf">지현</div>김지현</td>
 		      <td class="patop">103</td>
+		      <td class="patop">대리</td>
 		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)</td>
 		      <td class="patop">연차</td>
 		      <td class="patop">오후</td>
 		      <td class="patop"></td>
 		      <td><button type="button" class="btn btn-outline-secondary btn-sm approve">승인 / 취소</button></td>
-		    </tr>
-		    <tr>
-		      <td><div class="tableProf">지현</div>김지현</td>
-		      <td class="patop">103</td>
-		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)</td>
-		      <td class="patop">병가</td>
-		      <td class="patop">3일</td>
-		      <td class="patop"><span class="badge badge-success rounded-pill">제출완료</span></td>
-		      <td class="patop">승인 완료</td>
-		    </tr>
-		    <tr>
-		      <td><div class="tableProf">지현</div>김지현</td>
-		      <td class="patop">103</td>
-		      <td class="patop">2022.11.11(금) ~ 2022.11.11(금)</td>
-		      <td class="patop">결혼-자녀</td>
-		      <td class="patop">1일</td>
-		      <td class="patop"></td>
-		      <td class="patop">승인 취소</td>
-		    </tr>
+		    </tr> -->
 		    
 	    </tbody>
 	</table>
