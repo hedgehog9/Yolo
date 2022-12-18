@@ -64,6 +64,74 @@
 		filter: brightness(90%);
 	}  
 	
+	
+	/* 페이징 처리 */	
+	
+	
+	a{
+	  text-decoration: none;
+	}
+	
+	p, li, a{
+	  font-size: 14px;
+	}
+	
+	.container{
+	  width: 50%;
+	  margin: 0 auto;
+	  position: relative;
+	  text-align: center;
+	}
+	
+	
+	.pagination{
+	  padding: 30px 0;
+	}
+	
+	.pagination ul{
+	  margin: 0;
+	  padding: 0;
+	  list-style-type: none;
+	}
+	
+	.pagination a{
+	  display: inline-block;
+	  width: 40px;
+	  height: 40px;
+	  text-align: center;
+	  padding-top: 7px;
+	  color: #2ecc71;
+	  font-weight: bold;
+	}
+	
+	
+	.p12 a.last{
+		border: 2px solid #2ecc71;
+	  	background-color: #2ecc71;
+	  	color: #fff;
+	  	font-weight: bold;
+	  	border-radius: 50%;
+	}
+	
+	.p12 .is-active{
+		border: 2px solid #2ecc71;
+	  	background-color: #2ecc71;
+	  	color: #fff;
+	  	font-weight: bold;
+	  	border-radius: 50%;
+	}
+	
+	.p12 a.box {
+		border: 2px solid #2ecc71;
+		color : #2ecc71;
+		width: 100px;
+		font-weight: bold;
+		border-radius: 1.8rem;
+		margin-left: 5px;
+		margin-right: 5px;
+	}
+	
+	
 
 </style>
 
@@ -101,9 +169,26 @@
 		$("button.EditBnt").click(function(){
 		
 			let notino = $(this).parent().find($("input#notino")).val();
-		//	console.log(notino);
-		// 	alert('수정 버튼 클릭!');
-			openNoticeEditModal(notino);
+			let fk_senderno = $(this).parent().find($("input#fk_senderno")).val();
+			let empno = ${sessionScope.loginuser.empno}
+			
+			// console.log(notino);
+			// console.log(fk_senderno);
+			// console.log(empno);
+			//	alert('수정 버튼 클릭!');
+			
+			if( empno == fk_senderno || empno == '9999' ){
+				openNoticeEditModal(notino);
+				// $("#noticeEditModal").modal('hide');
+			}
+			else{
+				alert('작성자만 수정 가능합니다.');
+				// $('div.noticeEditModal').modal('hide');
+				// $('div.noticeEditModal').trigger('hide');
+				$(this).attr("disabled", true);
+				window.location.reload();
+				
+			}
 			
 		}); // end of 공지 수정하기 버튼 클릭 이벤트
 		
@@ -171,10 +256,51 @@
 				$("#myListModal span#name").text(json.name + " · " + json.position + " · " +  json.deptname + " ▶ " + json.showDept);
 				$("#myListModal span#writedate").text(json.writedate);
 				$("#myListModal span#subject").text(json.subject);
-				// 추후에 + 파일 첨부 넣기
+				
+				$("#myListModal span#noticeFile").text(json.orgFilename);
+				$("#myListModal input#file_notino").val(json.notino);
+				
 				$("#myListModal span#content").text(json.content);
 				$("#myListModal input#notino").val(json.notino);
-				$("#myListModal input#fk_senderno").val(json.notino);
+				$("#myListModal input#fk_notino").val(json.notino);
+				
+				
+				// 첨부 파일을 구해오는 ajax
+				if(json.fileName != null){
+					
+				// console.log(json.fileName);
+					
+				 const file_notino = $("#myListModal input#file_notino").val();
+				 // console.log(file_notino);
+					$.ajax({
+				    	url : "<%= request.getContextPath() %>/notice/getDepFile.yolo",
+				    	data : {"notino" : file_notino},
+				    	dataType: "JSON",
+						success: function(json2){
+							
+						//	console.log(json2);
+							let html = "";
+							
+							if(json2.length>0){
+								let html = '<dic class="filedownload">[첨부파일]</div>';
+								$.each(json2, function(index2, item2){
+									html+='<span style="font-size: 10pt; color: gray;"><i class="fas fa-solid fa-paperclip ml-3 mr-1"></i></span>'+
+							        	'<span id="notifile"  style="cursor:pointer;" onclick="javascript:location.href=\'<%= request.getContextPath() %>/notice/downloadDepFile.yolo?fileName='+item2.fileName+'&orgFilename='+item2.orgFilename+'\'" >'+item2.orgFilename+'</span><br>';
+								});
+								
+								$("span#noticeFile").html(html);
+							}
+						},
+						error: function(request, status, error){
+			                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			            }
+					}); // end of 첨부파일 ajax
+			} else {
+				$("div#mailAttachArea").html('');
+			}
+				
+				goReadComment(notino); // 댓글 조회하는 function
+				
 			},
 			error: function(request, status, error){
                 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -240,7 +366,10 @@
 							<span id="readCount"  style="color: green;">[${deptNoti.readCount}]</span>	
 						</c:if>
 						
+						<c:if test="${deptNoti.fileName ne null}">
 						<span><i class="fa fa-paperclip" aria-hidden="true"></i></span> <%-- 파일 첨부할 경우 --%>
+						</c:if>
+						
 						<span id="writedate" style="margin-left: 20px; font-size: 10pt;">${deptNoti.writedate}</span>
 						<span id="name" style="display:block; font-size: 10pt;">${deptNoti.name} · ${deptNoti.position } · ${deptNoti.deptname} ▶ ${deptNoti.showDept }</span>  
 						
@@ -259,7 +388,7 @@
 							</c:otherwise>
 						</c:choose>
 						&nbsp;&nbsp;
-						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ &nbsp;</span><span id="cmtCount" style="color: green;"> <span style='font-size:25px;'>&#128172;</span> [${noticevo.cmtCount}]  </span></span>
+						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ &nbsp;</span><span id="cmtCount" style="color: green;"> <span style='font-size:25px;'>&#128172;</span> [${deptNoti.cmtCount}]  </span></span>
 					</div>
 					<button type="button" class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button>
 					<button type="button" class="listBnt DeleteBnt">삭제하기</button>
@@ -280,9 +409,18 @@
 		</div>
 	</c:if>
 	
+	
+	<%-- 페이징 처리 --%>
+	<div class="container"> 
+    <div class="pagination p12">
+      ${requestScope.pageBar}
+    </div>
+  	</div>
+	
+	
+	
 </div> <%-- 공지 리스트(boardlist) 끝 --%>
 
-<%-- 공지 수정 모달 --%>
 
 
 <%-- 공지 상세 모달 --%>
