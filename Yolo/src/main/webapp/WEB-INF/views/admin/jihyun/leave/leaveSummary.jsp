@@ -530,7 +530,7 @@
 						html += '<tr>'+
 							      '<td class="head"><div class="leaveProf"><span style="display:block; margin: auto;">'+item.emoji+'</span></div></td>'+
 							      '<td class="patop">'+item.leave_name+'</td>'+
-							      '<td class="patop">'+item.start_day+' ~ '+item.end_day+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
+							      '<td class="patop">'+item.start_day + " " + item.start_name+' ~ '+item.end_day + " " + item.end_name+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
 							      '<td class="patop">';
 							      
 						if(item.add_file == 1 && item.filename != null){
@@ -584,7 +584,7 @@
 						html += '<tr data-toggle="modal" data-target="#leaveDetail">'+
 						      '<td class="head"><div class="leaveProf"><span style="display:block; margin: auto;">'+item.emoji+'</span></div></td>'+
 						      '<td class="patop">'+item.leave_name+'</td>'+
-						      '<td class="patop">'+item.start_day+' ~ '+item.end_day+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
+						      '<td class="patop">'+item.start_day + " " + item.start_name+' ~ '+item.end_day + " " + item.end_name+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
 						      '<td class="patop">';
 						      
 						if(item.add_file == 1 && item.filename != null){

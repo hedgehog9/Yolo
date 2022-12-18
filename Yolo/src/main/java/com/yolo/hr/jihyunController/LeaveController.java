@@ -171,18 +171,10 @@ public class LeaveController {
 			parameterMap.put("originalFilename", ""); // 강아지.png
 		}
 		
-		// 시작날짜 끝날짜 차이
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date start = sdf.parse(start_date);
-		Date end = sdf.parse(end_date);
-		// System.out.println(end.compareTo(start)+1);
-		
-		
 		parameterMap.put("empno", loginuser.getEmpno());
 		parameterMap.put("pk_leave_type", pk_leave_type);
 		parameterMap.put("start_day", start_date);
 		parameterMap.put("end_day", end_date);
-		parameterMap.put("use_days", String.valueOf((end.compareTo(start)+1)));
 		parameterMap.put("use_reason", leave_content);
 		parameterMap.put("add_file", add_file);
 		
@@ -221,6 +213,8 @@ public class LeaveController {
 			jsonObj.put("start_day", leaveRecord.get("start_day"));
 			jsonObj.put("end_day", leaveRecord.get("end_day"));
 			jsonObj.put("use_days", leaveRecord.get("use_days"));
+			jsonObj.put("start_name", leaveRecord.get("start_name"));
+			jsonObj.put("end_name", leaveRecord.get("end_name"));
 			jsonObj.put("opproval_status", leaveRecord.get("opproval_status"));
 			jsonObj.put("add_file", leaveRecord.get("add_file"));
 			jsonObj.put("filename", leaveRecord.get("filename"));
@@ -264,6 +258,8 @@ public class LeaveController {
 			jsonObj.put("start_day", leaveRecord.get("start_day"));
 			jsonObj.put("end_day", leaveRecord.get("end_day"));
 			jsonObj.put("use_days", leaveRecord.get("use_days"));
+			jsonObj.put("start_name", leaveRecord.get("start_name"));
+			jsonObj.put("end_name", leaveRecord.get("end_name"));
 			jsonObj.put("opproval_status", leaveRecord.get("opproval_status"));
 			jsonObj.put("add_file", leaveRecord.get("add_file"));
 			jsonObj.put("filename", leaveRecord.get("filename"));
