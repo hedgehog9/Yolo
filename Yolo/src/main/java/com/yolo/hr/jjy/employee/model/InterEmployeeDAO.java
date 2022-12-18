@@ -124,4 +124,12 @@ public interface InterEmployeeDAO {
 	/** 사원 상태 퇴직으로 update */
 	int updateRetirement(Map<String, Object> paraMap);
 
+	int getManagerEmpnoRegist(Map<String, Object> paraMap);
+
+	/** 이메일을 전달받아 해당하는 사원의 사번 알아오기 */
+	Map<String, String> getEmpno(Map<String, Object> paraMap);
+	
+	/** 구성원 등록시 팀장 또는 부서장이 변경되는 경우  */
+	void updateManagerEmpnoRegist(Map<String, Object> paraMap);
+
 }

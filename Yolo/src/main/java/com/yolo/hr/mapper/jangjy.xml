@@ -454,6 +454,21 @@
 	    </choose>
 	</select>
 	
+	<select id="getManagerEmpnoRegist" parameterType="HashMap" resultType="int">
+	
+		select count(fk_empno)
+		from tbl_dept_mapping
+	    <choose>
+	    	<when test="!department.equals('') and team.equals('')">
+	    	   where fk_deptno = #{department}
+	    	</when>
+
+	    	<when test="!department.equals('') and !team.equals('')">
+	    	   where fk_deptno = #{team}
+	    	</when>
+	    </choose>
+	</select>
+	
 	<!--  인사발령 기록 테이블에 insert -->
 	<insert id="insertPsa" parameterType="HashMap">
 		insert into tbl_personnel_appointment(  pk_psano 
@@ -510,6 +525,20 @@
 	    </choose>
 	</update>
 	
+	<!-- 구성원 등록시 팀장 또는 부서장이 변경되는 경우 업데이트 -->
+		<update id="updateManagerEmpnoRegist" parameterType="HashMap">
+		update tbl_dept_mapping set fk_empno = #{empno}
+		<choose>
+	    	<when test="(!department.equals('')) and ( team.equals(''))">
+	    	   where fk_deptno = #{department}
+	    	</when>
+	    	
+	    	<when test="(!department.equals('')) and ( !team.equals(''))">
+	    	   where fk_deptno = #{team}
+	    	</when>
+
+	    </choose>
+	</update>
 	
 	
 	<!-- 사원번호를 전달받아 해당 사원의 인사발령 기록 조회  -->
@@ -783,8 +812,7 @@
 	
 	<!-- 사원 일괄 등록 (Excel) -->
 	<insert id="registEmpExcel" parameterType="com.yolo.hr.jjy.employee.model.insertVO">
-		<foreach collection="excelContent" item="item" index="index" separator=" "
-			open="INSERT ALL" close="SELECT * FROM DUAL">
+		<foreach collection="excelContent" item="item" index="index" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
 			INTO tbl_employees(empno,profile_color,pwd,name,email,hiredate,time_salary,fk_deptno,position) 
 			VALUES(get_seq_empno(),'#FFA9B0','qwer1234','${item.A}','${item.B}','${item.C}','${item.D}','${item.E}','${item.F}')
 		</foreach>
@@ -834,7 +862,16 @@
 		set status = '퇴직'
 		where empno = #{empno}
 	</update> -->
-	
+
+	<!-- 이메일로 사원번호 구해오기  -->
+	<resultMap type="HashMap" id="empEmailMap">
+		<result property="empno"    	column="empno"   	 javaType="String"/>
+	</resultMap>
+	<select id="getEmpno" parameterType="HashMap" resultMap="empEmailMap">
+		select empno
+		from tbl_employees
+		where email = #{email}
+	</select>
 	
 	<!-- ====================== 조직도 =================== -->
 	<!-- 모든 부서 정보 조회하기 -->

@@ -60,7 +60,7 @@
 	}
 	
 	textarea[name='content'] {
-		min-height: 400px;
+		height: 400px;
 		width: 80%;
 		margin: 10px 10% 5px 10%;
 		border: 1px solid #dddddd;
@@ -291,11 +291,11 @@
 	$(document).ready(function() {
 		
 		// 파일
-		$(document).on("change", ".file", function(){
-			  var fileName = $(this).val();
-			  $(this).parent().find($(".upload-name")).val(fileName.slice(fileName.lastIndexOf("\\")+1));
-		});
-		
+      $("#file").on('change',function(){
+           var fileName = $("#file").val();
+           $(".upload-name").val(fileName);
+      });
+      
 		
 		// 전체 선택
 		
@@ -494,7 +494,7 @@
 
 <div id="noticeNav">
 	<div id="category">
-		<span style="font-size: 20pt; font-weight: bold;" onclick="">공지사항</span>
+		<span style="font-size: 20pt; font-weight: bold;">공지사항</span>
 		<button type="button" class="headerBtn" data-toggle="modal" data-target=".sendNotice">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 작성하기
 		</button>
@@ -511,7 +511,7 @@
 <hr width = "100%;">
 
 
-<!-- Modal --> 
+<!-- sendNotice Modal --> 
 <div class="modal fade sendNotice"  id="staticBackdrop" data-backdrop="static">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
     <div class="modal-content">
@@ -528,15 +528,15 @@
         
         <textarea rows="" cols="" name="content" id="noticecontent"></textarea>
         
-        <input type="text" name="fk_deptno" />
-        <input type="text" name="deptname" />
+        <input type="hidden" name="fk_deptno" />
+        <input type="hidden" name="deptname" />
        <!--  <input type="text" name="notino" /> -->
         
         <div id="attachArea">
         	<div class="filebox">
 			    <input class="upload-name" value="첨부파일" placeholder="첨부파일">
 			    <label for="file">파일 찾기</label> 
-			    <input type="file" id="file" multiple="multiple">
+			    <input type="file" id="file" multiple="multiple" name="attach">
 			</div>
         </div>
       </form>
