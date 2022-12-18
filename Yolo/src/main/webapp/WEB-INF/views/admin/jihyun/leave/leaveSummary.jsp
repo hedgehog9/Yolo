@@ -224,6 +224,7 @@
 	    padding: 0;
 	    overflow: hidden;
 	    border: 0;
+	    
 	}
 	
 	
@@ -242,13 +243,22 @@
 		$("span#myLeave").css("color", "#494949");
 		
 		// 파일 선택하면 선택창 바뀌도록 
-		$("#file").on('change',function(){
+		$(document).on('change', "#file",  function () {
+		// $("#file").on('change',function(){
 			  var fileName = $("#file").val();
 			  $(".upload-name").val(fileName.slice(fileName.lastIndexOf("\\")+1));
 		});
 		
+		
+		// 날짜선택
 		$(document).on('focus', "input#daterange",  function () {
-			setDate();
+			
+			// 히든 넘버 넣어주기
+			let num = $("input:radio:checked").val();
+			// console.log(num);
+			$("input#hiddenNumber").val(num);
+			
+			setDate(Number(num));
 		});
 		
           
@@ -294,11 +304,11 @@
 					htmlMiddle += '<div style="margin-top: 30px;">'+
 										'<span style="display: block; margin-top: 10px;">&#9989; 선택하세요</span>'+
 										'<div class="btn-group pt-1" data-toggle="buttons">'+
-										 ' <label class="btn btn-outline-primary btn-sm">'+
-										   ' <input type="radio" style="display: none;" name="time" id="option1" autocomplete="off">오전'+
+										 ' <label class="btn btn-outline-primary btn-sm  active">'+
+										   ' <input type="radio" name="time" id="option1" value="1" autocomplete="off" checked>오전'+
 										  '</label>'+
 										  '<label class="btn btn-outline-primary btn-sm">'+
-										    '<input type="radio" style="display: none;" name="time" id="option2" autocomplete="off">오후'+
+										    '<input type="radio" name="time" id="option2" value="1" autocomplete="off">오후'+
 										  '</label>'+
 										'</div>'+
 									'</div>';
@@ -308,11 +318,11 @@
 					htmlMiddle += '<div style="margin-top: 30px;">'+
 										'<span style="display: block; margin-top: 10px;">&#9989; 선택하세요</span>'+
 										'<div class="btn-group pt-1" data-toggle="buttons">'+
-										 ' <label class="btn btn-outline-primary btn-sm">'+
-										   ' <input type="radio" style="display: none;" name="time" id="option1" autocomplete="off">부모/배우자/자녀(5일)'+
+										 ' <label class="btn btn-outline-primary btn-sm active" >'+
+										   ' <input type="radio" name="time" id="option1" value="5" autocomplete="off" checked>부모/배우자/자녀(5일)'+
 										  '</label>'+
 										  '<label class="btn btn-outline-primary btn-sm">'+
-										    '<input type="radio" style="display: none;" name="time" id="option2" autocomplete="off">조부모/형제/자매(3일)'+
+										    '<input type="radio" name="time" id="option2" value="3" autocomplete="off">조부모/형제/자매(3일)'+
 										  '</label>'+
 										'</div>'+
 									'</div>';
@@ -322,11 +332,11 @@
 					htmlMiddle += '<div style="margin-top: 30px;">'+
 										'<span style="display: block; margin-top: 10px;">&#9989; 선택하세요</span>'+
 										'<div class="btn-group pt-1" data-toggle="buttons">'+
-										 ' <label class="btn btn-outline-primary btn-sm">'+
-										   ' <input type="radio" style="display: none;" name="time" id="option1" autocomplete="off">본인(2일)'+
+										 ' <label class="btn btn-outline-primary btn-sm active"  >'+
+										   ' <input type="radio" name="time" id="option1" value="2" autocomplete="off" checked>본인(2일)'+
 										  '</label>'+
 										  '<label class="btn btn-outline-primary btn-sm">'+
-										    '<input type="radio" style="display: none;" name="time" id="option2" autocomplete="off">자녀(1일)'+
+										    '<input type="radio" name="time" id="option2" value="1" autocomplete="off">자녀(1일)'+
 										  '</label>'+
 										'</div>'+
 									'</div>';
@@ -336,7 +346,7 @@
 							
 					if(json.limit_days != 0){
 						htmlMiddle += '<div>'+
-							      		'<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 연차 </span>'+
+							      		'<span style="display: block; margin-top: 30px;">&#128161; 사용 가능 '+json.leave_name+' </span>'+
 							      		'<span class="badge modalBage" style="background-color: #ffb5a7; margin-top: 10px; font-weight: bold;">'+json.remaining_leave+'일</span>'+
 							      	'</div>';
 					}
@@ -345,18 +355,27 @@
 					      	'<input type="text" id="daterange" class="form-control text-center" placeholder="클릭하여 날짜를 지정해주세요" readonly="readonly">'+
 					        '<input type="text" name="start_date" class="form-control text-center">'+
 					        '<input type="text" name="end_date" class="form-control text-center">'+
-					        '<textarea rows="4" cols="" placeholder="휴가 등록 메세지 입력"></textarea>';
+					        '<textarea rows="4" style="padding:5px;" placeholder="휴가 등록 메세지 입력"></textarea>';
 					        
 			        if(json.add_file == 1){
-			        	htmlMiddle += '<span style="display: block; margin-top: 30px;">&#128193; 자료첨부</span>'+
+			        	htmlMiddle += '<span style="display: block; margin-top: 30px;">&#128193; 자료첨부 (추후 업로드 가능)</span>'+
 			        					'<div class="filebox">'+
 										    '<input class="upload-name" value="첨부파일" placeholder="첨부파일" readonly="readonly">'+
 										    '<label for="file">파일찾기</label>'+
 										    '<input type="file" id="file">'+
 										'</div>';
 			        }
-					        
-					 htmlMiddle += '</form>';
+					
+			        
+			        // 히든넘버 넣어주기
+					if(json.limit_days != 0){
+						 htmlMiddle += '<input type="hidden" id="hiddenNumber" value="'+json.remaining_leave+'">';
+					} else{
+						 htmlMiddle += '<input type="hidden" id="hiddenNumber">';
+					}
+			        
+			        
+					htmlMiddle += '</form>';
 					 
 				$("div.modalMiddle").html(htmlMiddle);
 				
@@ -365,6 +384,9 @@
 									'<button type="button" class="leaveUsingBnt" style="background-color: white; color: #07b419;" onclick="closeLeaveModal();">취소</button>'+
 									'<button type="button" class="leaveUsingBnt">휴가신청</button>';
 				$("div.modalBottom").html(htmlBottom);
+				
+				$("input:radio").hide();
+				
 				
 			},
 			error: function(request, status, error){
@@ -376,11 +398,7 @@
 		openLeaveModal();
 	}
 	
-	function setDate(){
-		
-	    var maxDate = new Date();
-	    var dd = maxDate.getDate() + 7;
-	    maxDate.setDate(dd);
+	function setDate(num){
 		
 		$('input#daterange').daterangepicker({
 			// $("#daterange").change(function(){
@@ -399,26 +417,33 @@
               }
             },function(start, end, label) {
             	
-              var stDate = new Date(start._d.getFullYear(), start._d.getMonth(), start._d.getDay());
-  			  var endDate = new Date(end._d.getFullYear(), end._d.getMonth(), end._d.getDay());
-  			  console.log(stDate);
-  			  console.log(endDate);
+            
+              var stDate = new Date(start._d.getFullYear(), start._d.getMonth(), start._d.getDate());
+  			  var endDate = new Date(end._d.getFullYear(), end._d.getMonth(), end._d.getDate());
   			  
   			  var btMs = endDate.getTime() - stDate.getTime() ;
 		      var btDay = btMs / (1000*60*60*24) ;
               console.log(btDay+1);
               
-              if(btDay+1>4){
-            	  alert('에바');
-              
+              if(btDay+1> num ){
+            	  
+            	  alert('선택 가능 일수를 벗어났습니다. 다시 클릭하여 날짜를 지정해주세요');
+            	  //console.log($(this)[0]);
+            	  //$(this).value ="클릭하여 날짜를 지정해주세요";
+            	  //$("input#daterange").val('');
+            	  //$("input#daterange").value = "";
+            	  
+            	  //$(this)[0].element[0].value = "클릭하여 날짜를 지정해주세요";
+            	  //console.log($(this)[0].element[0]);
+            	  $("input#daterange").css('background-color','red');
+            	  
               } else {
-            	  alert("2")
+            	  // alert("2")
+            	  $("input#daterange").css('background-color','');
               
             	  $("input[name='start_date']").val(start.format('YYYY-MM-DD'));
                   $("input[name='end_date']").val(end.format('YYYY-MM-DD'));
               }
-              
-            
               
           }); 
 	}
@@ -473,7 +498,8 @@
 	<%-- 대쉬보드 끝 --%>
 	
 	
-	<div style="width: 90%; margin: auto;">
+	<div style="width: 90%; margin: auto; display: flex;">
+		<span style="flex-grow: 1;"></span>
 		<select>
 			<option selected="selected">2022</option>
 			<option>2021</option>
