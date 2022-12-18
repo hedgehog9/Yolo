@@ -27,6 +27,11 @@ public class AlarmSevice implements InterAlarmService {
 		String time = dateft.format(currentDate.getTime());
 
 		String str_fk_recipientno = paraMap.get("fk_recipientno");
+		
+		if(str_fk_recipientno == null || str_fk_recipientno == "") {
+			return;
+		}
+		
 		String str_url2 = paraMap.get("url2");
 		String[] arr_fk_recipientno = str_fk_recipientno.split(",");
 		String[] arr_url2 = str_url2.split(",");

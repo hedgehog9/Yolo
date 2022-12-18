@@ -134,6 +134,7 @@
 	button.btn_edit {
 		border-radius: 10px;
 		width:30px;
+		height:30px;
 		margin: 0px;
 		background-color: transparent;
 		border: none;
@@ -193,6 +194,31 @@
 		width: 300px;
 		height: 120px;
 		border-radius: 10px;
+	}
+	div#leave_absence{
+		border: solid 1px #d9d9d9;
+		margin-bottom: 10px;
+		width: 300px;
+		height: 80px;
+		border-radius: 10px;
+	}
+	div#leave_absence > div {
+		display: flex;
+		padding: 15px 0px;
+	}
+	
+	div#leave_icon{
+		width: 50px;
+		height: 50px;
+		border-radius: 10px;
+		background-color:  #8F40DE;
+		margin: 0 20px;
+	}
+	
+	i.fa-pause-circle{
+		font-size: 30px;
+	    color: white;
+	    padding: 10px;
 	}
 	
 	div#progressBar {
@@ -264,6 +290,7 @@
 		color: black;
 		transition: all 0.5s;
 		padding: 10px;
+		overflow: auto;
 	}
 	
 	div#record.active {
@@ -443,6 +470,33 @@
 	}
 	
 	
+	span#mailContent {
+		width: 80%;
+		margin: 20px 10% 15px 10%;
+		display: block;
+		min-height: 300px;
+		max-height: 400px;
+	}
+	
+	div#mailAttachArea{
+		width: 80%;
+		margin: 10px 10% 25px auto;
+	}
+	
+	span.mailFiles {
+		text-decoration: underline;
+		color: gray;
+	}
+	
+	span.mailFiles:hover {
+		font-weight: bold;
+		color: black;
+		cursor: pointer;
+	}
+
+	input#between_date{
+		background-color: white;
+	}
 	
 </style>
 <%-- 말풍선 --%>
@@ -452,8 +506,9 @@
 
 <script>
 	let leaveFlag = false; // 휴직 신청 가능 여부 저장
+	changeLeaveFalg = false; // 휴직 변경 여부 
 	let html = "";
-	
+	let v_empno = 0;
 	
 	
 	$(document).ready(function(){
@@ -466,39 +521,43 @@
 	       $("div#retirement_type").text("고용보험 퇴직사유 선택");
 	    });
 		
-	 // 휴직처리에서 날짜 선택 클릭시 이미 신청되어있는 휴직이 있는지 조회, 경고창 출력
-	 
-		$(document).on("change","input#between_date",function(){
+	 	// 휴직처리에서 날짜 선택 클릭시 이미 신청되어있는 휴직이 있는지 조회, 경고창 출력
+//		$(document).on("change","input#between_date",function(){
+		$("input#between_date").change(function(){
 		  
 	      let empno = $("input#empno").val();
 		  let startdate = $("input#start_date").val();
 	  	  let enddate = $("input#end_date").val();
-			
-			$.ajax({
-				
-				  url : "<%= request.getContextPath()%>/checkLeave.yolo",
-				  data : {"empno":empno
-					  	 ,"startdate":startdate
-					  	 ,"enddate":enddate},
-				  type : "POST",
-				  dataType : "JSON",
-				  success : function(json){
-					  if(json.result > 0){
-						 $("div#div_warnning").css("display","block");
-						 leaveFlag = false;
+			if(!changeLeaveFalg){
+				$.ajax({
+					
+					  url : "<%= request.getContextPath()%>/checkLeave.yolo",
+					  data : {"empno":empno
+						  	 ,"startdate":startdate
+						  	 ,"enddate":enddate},
+					  type : "POST",
+					  dataType : "JSON",
+					  success : function(json){
+						  if(json.result >= 1){
+							 $("div#div_warnning").css("display","block");
+							 leaveFlag = false;
+						  }
+						  else{
+							  $("div#div_warnning").css("display","");
+							  leaveFlag = true;
+						  }
+					  },
+					  error: function(request, status, error){
+						  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 					  }
-					  else{
-						  $("div#div_warnning").css("display","");
-						  leaveFlag = true;
-					  }
-				  },
-				  error: function(request, status, error){
-					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				  }
-			  });
+				  });
+			}
 			
 		})// end of$(document).on("input","change",function(){}--------------
 		
+		$(document).on("click",".noCheckDate",function(){
+			changeLeaveFalg = true;
+		});
 		
 		<%-- ===== 달력 하나만 출력 시작 =====  --%>
 		$("input.daterange").daterangepicker({
@@ -512,29 +571,8 @@
                 "toLabel": "To",
                 "customRangeLabel": "Custom",
                 "weekLabel": "W",
-                "daysOfWeek": [
-                    "일",
-                    "월",
-                    "화",
-                    "수",
-                    "목",
-                    "금",
-                    "토"
-                ],
-                "monthNames": [
-                    "1월",
-                    "2월",
-                    "3월",
-                    "4월",
-                    "5월",
-                    "6월",
-                    "7월",
-                    "8월",
-                    "9월",
-                    "10월",
-                    "11월",
-                    "12월"
-                ],
+                "daysOfWeek": ["일","월","화","수","목","금","토"],
+                "monthNames": ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
                 "firstDay": 1
             },
             
@@ -572,23 +610,26 @@
 	  		$("div.info_title").css("border-bottom","");
 	  		$(e.target).css("border-bottom","solid 3px green");
 	  		$("div#div_info").empty();
-	  		
+	  		v_empno = ${requestScope.employeeMap.empno};
+	  		// console.log("v_empno+ "+ v_empno);
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
 						+"<div id='div_hr_title' style=' margin-bottom:20px;'>인사 정보</div>"
 						
-						+"<button id='btn_edit_hrInfo' type='button' data-toggle='dropdown' class='btn_edit'>"
-							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
-						+"</button>"
+						if(${sessionScope.loginuser.empno} == "9999"){
 						
-						+"<div class='dropdown-menu'>"
-							+"<a id ='a_edit_hrInfo'class='dropdown-item' href='javascript:void(0);' onclick='edit_hrInfo("+`${requestScope.employeeMap.empno}`+");'><i class='fas fa-user-alt'></i>&nbsp;&nbsp;인사 정보 변경&nbsp;&nbsp;"
-								+"<span class='badge' style='background-color:#3B86C8; color:white;'>발령</span>"
-							+"</a>"
-							+"<a id='a_edit_basicInfo' class='dropdown-item' href='javascript:void(0);'onclick='edit_basicInfo()'><i class='fas fa-pen'></i>&nbsp;&nbsp;기본 정보 변경</a>" 
-						+"</div>"
-					+"</div>"
+							html +="<button id='btn_edit_hrInfo' type='button' data-toggle='dropdown' class='btn_edit'>"
+									+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
+								+"</button>"
+								
+								+"<div class='dropdown-menu'>"
+									+"<a id ='a_edit_hrInfo'class='dropdown-item' href='javascript:void(0);' onclick='edit_hrInfo("+`${requestScope.employeeMap.empno}`+");'><i class='fas fa-user-alt'></i>&nbsp;&nbsp;인사 정보 변경&nbsp;&nbsp;"
+										+"<span class='badge' style='background-color:#3B86C8; color:white;'>발령</span>"
+									+"</a>"
+								+"</div>"
+						}
 					
+			html+=	"</div>"
 					+"<table>"
 						+"<thead>"
 							+"<tr style='height:40px;'>"
@@ -621,6 +662,42 @@
 							--%>		
 						+"</thead>"
 					+"</table>";
+					
+					if("${requestScope.employeeMap.status}" == "휴직"){
+						$.ajax({
+							  url : "<%= request.getContextPath()%>/getLeaveInfo.yolo",
+							  data : {"empno":"${requestScope.employeeMap.empno}"},
+							  type : "POST",
+							  dataType : "JSON",
+							  success : function(json){
+								  let html2 = "";
+									html2 += '<a class="a_side" href="#" data-toggle="dropdown">'+
+													'<div id="leave_absence">'+
+													'<div>'+
+														'<div id="leave_icon">'+
+															'<i class="fas fa-pause-circle"></i>'+
+														'</div>'+
+														'<div style="flex-direction: column; display: flex; justify-content: center;">'+
+															'<div style="margin-right: 30px; font-weight: 700; font-size:14px; color:  #242A30 ">'+
+																''+json.leaveInfoMap.leavetype+'중입니다.'+
+															'</div>'+
+															'<div style="color: #556372; font-size: 12px;">'+json.leaveInfoMap.startdate+' ~ '+json.leaveInfoMap.enddate+'</div>'+
+														'</div>'+
+													'</div>'+
+												'</div>'+
+											'</a>'+
+											'<div class="dropdown-menu">'+
+												'<button class="dropdown-item noCheckDate" type="button" data-toggle="modal" data-target="#modal_leave"><i class="fas fa-edit"></i>수정하기</button>'+
+												'<button class="dropdown-item" type="button" id="deleteLeave" data-target=""><i class="fas fa-trash-alt"></i>취소하기</button>'+
+											'</div>';
+									$("input#leaveno").val(json.leaveInfoMap.leaveno);
+									$("div#div_leave_absence").html(html2);
+							  },
+							  error: function(request, status, error){
+								  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							  }
+						  });
+					}
 	  		
 	  		$("div#div_info").html(html);
 	  		
@@ -636,13 +713,17 @@
 	  		
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
-						+"<div id='div_hr_title' style='margin-bottom:20px;'>개인 정보</div>"
+						+"<div id='div_hr_title' style='margin-bottom:20px;'>개인 정보</div>";
 						
-						+"<button id='btn_edit_psInfo' type='button' class='btn_edit'>"
+						if("${sessionScope.loginuser.empno}" == "9999" || "${sessionScope.loginuser.empno}" == v_empno){
+						
+						html+="<button id='btn_edit_psInfo' type='button' class='btn_edit' onclick='editInfo();'>"
 							+"<i class='fas fa-pen' style='margin:0px; width:16px;'></i>"
-						+"</button>"
+						+"</button>";
 						
-					+"</div>"
+						}
+						
+				html+="</div>"
 					+"<table>"
 						+"<thead>"
 							+"<tr style='height:40px;'>"
@@ -653,45 +734,39 @@
 								+"<th class='th_title'>이름</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.name}`+"</th>"				
 							+"</tr>"			
-							<%--
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>회사 내 이름</th>"				
-								+"<th class='th_content'>홍길동</th>"				
-							+"</tr>"	
-							--%>		
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>영문 이름</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.englishName}`+"</th>"				
-							+"</tr>"		
-							<%--
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>국적, 거주국가, 체류자격 </th>"				
-								+"<th class='th_content'>Republic of Korea</th>"				
 							+"</tr>"
-							--%>			
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>생년월일</th>";
-						<%-- DB 에서 조회해온 성별이 남자인경우 뱃지 하늘색, 여자인 경우 분홍색 --%>	
-						if("${requestScope.employeeMap.gender}"=="남"){		
-							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>남</span></th>";
-						}
-						else if("${requestScope.employeeMap.gender}"=="여"){
-							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>여</span></th>";
-						}
-						else{
-							html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;</th>";
-						}
-						
-								
-						html+="</tr>"			
-							+"<tr style='height:40px;'>"
-								+"<th class='th_title'>주민등록번호</th>"				
-								+"<th class='th_content'>"+`${requestScope.employeeMap.rrn}`+"</th>"			
-							+"</tr>"			
+							
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>휴대전화번호</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.mobile}`+"</th>"			
-							+"</tr>"			
+							+"</tr>";
+							
+						
+						if("${sessionScope.loginuser.empno}" == "9999" || "${sessionScope.loginuser.empno}" == v_empno){
+							
+							html +="<tr style='height:40px;'>"
+								+"<th class='th_title'>주민등록번호</th>"				
+								+"<th class='th_content'>"+`${requestScope.employeeMap.rrn}`+"</th>"			
+							+"</tr>"	
+							
+							+"<tr style='height:40px;'>"
+								+"<th class='th_title'>생년월일</th>";
+								<%-- DB 에서 조회해온 성별이 남자인경우 뱃지 하늘색, 여자인 경우 분홍색 --%>	
+								if("${requestScope.employeeMap.gender}"=="남"){		
+									html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>남</span></th>";
+								}
+								else if("${requestScope.employeeMap.gender}"=="여"){
+									html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;<span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>여</span></th>";
+								}
+								else{
+									html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;</th>";
+								}
+								
+							+"</tr>"
+										
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>집주소</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.address}`+"</th>"			
@@ -699,11 +774,16 @@
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>급여계좌</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.account}`+"</th>"			
-							+"</tr>"			
-						+"</thead>"
+							+"</tr>"
+							+"<tr class='file' style='height:40px;'>"
+							+"</tr>";
+						}	
+							
+						html+="</thead>"
 					+"</table>";
 	  		
 	  		$("div#div_info").html(html);
+	  		getFile("${requestScope.employeeMap.empno}");
 	  		
 	  	});
 	  	<%-- =========== 개인정보 클릭 끝  =========== --%>
@@ -716,39 +796,60 @@
 	  		let enddate = $("input#end_date").val();
 	  		let memo = $("textarea#memo_leave").val();
 	  		let empno = $("input#empno").val();
-	  		
-	  		if(leaveFlag){ // 날짜를 올바르게 입력한 경우에만 휴직 신청가능
+	  		let leaveno = $("input#leaveno").val();
 	  		
 	  		$.ajax({
-				  url : "<%= request.getContextPath()%>/leaveAbsence.yolo",
-				  data : {"leavetype":leavetype 
-					     ,"startdate":startdate
-					     ,"enddate":enddate
-					     ,"memo":memo
-					     ,"empno":empno},
-				  type : "POST",
+				  // 결재해야할 문서 여부 구해오기 
+				  url : "<%= ctxPath%>/checkApproval.yolo",
 				  dataType : "JSON",
+				  data:{"empno":empno},
 				  success : function(json){
-					  
-					  if(json.result == 1){
-						  toastr.success('휴직 처리가 완료되었습니다.');
-						  $("textarea#memo_leave").val("");
+					  if(json.result > 0){
+						  Swal.fire('결재할 문서가 존재합니다.','모든 결재문서를 처리해야 휴직 처리가 가능합니다.', 'error');					  
 					  }
 					  else{
-						  toastr.warning('휴직 처리가 취소되었습니다.');
+						  
+						  if(leaveFlag){ // 날짜를 올바르게 입력한 경우에만 휴직 신청가능
+						  		
+						  		$.ajax({
+									  url : "<%= request.getContextPath()%>/leaveAbsence.yolo",
+									  data : {"leavetype":leavetype 
+										     ,"startdate":startdate
+										     ,"enddate":enddate
+										     ,"memo":memo
+										     ,"empno":empno
+										     ,"leaveno":leaveno},
+									  type : "POST",
+									  dataType : "JSON",
+									  success : function(json){
+										  
+										  if(json.result == 1){
+											  toastr.success('휴직 처리가 완료되었습니다.');
+											  $("textarea#memo_leave").val("");
+											  window.location.reload();
+										  }
+										  else{
+											  toastr.warning('휴직 처리가 취소되었습니다.');
+										  }
+									  },
+									  error: function(request, status, error){
+										  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+									  }
+								  });
+						  		
+						  		}
+						  		else{
+						  			toastr.error('이미 휴직 신청한 날짜입니다.');
+						  			return;
+						  		}
+					  
 					  }
-				  },
+				  },// end of success
 				  error: function(request, status, error){
 					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				  }
-			  });
-	  		
-	  		}
-	  		else{
-	  			toastr.error('이미 휴직 신청한 날짜입니다.');
-	  			return;
-	  		}
-	  		
+			
+			}); // end of ajax()----------------------------------------------------------------------
 	  		
 	  	});// end of $(document).on("click","button#btn_leave",function(){}-------------------------------
 	  	
@@ -795,51 +896,52 @@
 			$("button.btn_record").removeClass("btn_record_clicked");
 			$("button#btn_search_hrInfo").addClass("btn_record_clicked");
 			
-			$("div#div_result").html(""); 
-			let html ="";
+			let empno = $("input#empno").val();
 			
-			html += "<table class='table table-hover'>"
-						+"<thead>"
-							+"<tr>"
-								+"<th>발령일</th>"
-								+"<th>발령라벨</th>"
-								+"<th>부서</th>"
-								+"<th>직무</th>"
-								+"<th>직위</th>"
-								+"<th>메모</th>"
-							+"</tr>"
-						+"</thead>"
+			$.ajax({
+				 // 부서 이름 구해오기 
+				  url : "<%= ctxPath%>/getPsaHistory.yolo",
+				  data: {"empno":empno},
+				  dataType : "JSON",
+				  success : function(json){
+					  
+				  		$("div#div_result").html(""); 
+						let html ="";
+						
+						html += "<table class='table table-hover'>"
+									+"<thead>"
+										+"<tr>"
+											+"<th>발령일</th>"
+											+"<th>발령라벨</th>"
+											+"<th>부서</th>"
+											+"<th>직위</th>"
+											+"<th>메모</th>"
+										+"</tr>"
+									+"</thead>"
+									+"<tbody>";
+							  $.each(json,function(index,history){
+								  html += "<tr>"
+											+"<td>"+history.psa_date+"</td>"
+											+"<td>"+history.psa_label+"</td>"
+											+"<td>"+isEmptyPsa(history.after_deptname)+"</td>"
+											+"<td>"+isEmptyPsa(history.after_position)+"</td>"
+											+"<td>"+isEmptyPsa(history.memo)+"</td>"
+										 +"</tr>";
+									  
+						      });// end of $.each(json,function(index,emp){}----------------------------
+									
+							html += "</tbody></table>";
+								
+								
+						$("div#div_result").html(html);
+					
+				  },// end of success
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
 			
-						+"<tbody>"
-							+"<tr>"
-								+"<td>2022.11.17</td>"
-								+"<td>발령라벨</td>"
-								+"<td>인사</td>"
-								+"<td>직무</td>"
-								+"<td>대리</td>"
-								+"<td>메모1</td>"
-							+"</tr>"
-							+"<tr>"
-								+"<td>2022.11.17</td>"
-								+"<td>발령라벨</td>"
-								+"<td>인사</td>"
-								+"<td>직무</td>"
-								+"<td>대리</td>"
-								+"<td>메몽2</td>"
-							+"</tr>"
-							+"<tr>"
-								+"<td>2022.11.17</td>"
-								+"<td>발령라벨</td>"
-								+"<td>인사</td>"
-								+"<td>직무</td>"
-								+"<td>대리</td>"
-								+"<td>메몽3</td>"
-							+"</tr>"
-						+"</tbody>"
-					+"</table>";
+			}); // end of ajax()----------------------------------------------------------------------
 
-			
-			$("div#div_result").html(html);
 			
 		});
 		
@@ -849,61 +951,47 @@
 			$("button.btn_record").removeClass("btn_record_clicked");
 			$("button#btn_search_leaveInfo").addClass("btn_record_clicked");
 			
-			$("div#div_result").html(""); 
-			let html ="";
+			let empno = $("input#empno").val();
 			
-			html += "<table class='table table-hover'>"
-						+"<thead>"
-							+"<tr>"
-								+"<th style='width:150px;'>수정,삭제</th>"
-								+"<th>휴직기간</th>"
-								+"<th>휴직종류</th>"
-								+"<th>메모</th>"
-								+"<th>기타</th>"
-							+"</tr>"
-						+"</thead>"
-			
-						+"<tbody>"
+			$.ajax({
+				 // 부서 이름 구해오기 
+				  url : "<%= ctxPath%>/getLeaveAbsence.yolo",
+				  data: {"empno":empno},
+				  dataType : "JSON",
+				  success : function(json){
+				  		$("div#div_result").html(""); 
+						let html ="";
 						
-							+"<tr>"
-								+"<td>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
-								+"</td>"
-								+"<td>2022.11.17 ~ 2022.11.18</td>"
-								+"<td>일반휴직</td>"
-								+"<td>직무</td>"
-								+"<td>메모1</td>"
-							+"</tr>"
+						html += "<table class='table table-hover'>"
+								+"<thead>"
+									+"<tr>"
+										+"<th style='width:150px;'>수정,삭제</th>"
+										+"<th>휴직기간</th>"
+										+"<th>휴직종류</th>"
+										+"<th>메모</th>"
+										+"<th>기타</th>"
+									+"</tr>"
+								+"</thead>"
+								+"<tbody>";
+							  $.each(json,function(index,leaveMap){
+								  html += +"<tr>"
+											  +"<td>"
+												  +"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
+												  +"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
+											  +"</td>"
+											  +"<td>"+leaveMap.startdate+" ~ "+leaveMap.enddate+"</td>"
+											  +"<td>"+isEmptyPsa(leaveMap.leavetype)+"</td>"
+											  +"<td>"+isEmptyPsa(leaveMap.memo)+"</td>"
+											  +"<td></td>"
+											+"</tr>";
+						      });// end of $.each(json,function(index,emp){}----------------------------			
 							
-							+"<tr>"
-								+"<td>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
-									+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
-								+"</td>"
-								+"<td>2022.11.17 ~ 2022.11.18</td>"
-								+"<td>일반휴직</td>"
-								+"<td>직무</td>"
-								+"<td>메모1</td>"
-							+"</tr>"
-						
-						+"<tr>"
-							+"<td>"
-								+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
-								+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
-							+"</td>"
-							+"<td>2022.11.17 ~ 2022.11.18</td>"
-							+"<td>일반휴직</td>"
-							+"<td>직무</td>"
-							+"<td>메모1</td>"
-						+"</tr>"
-							
-						+"</tbody>"
-					+"</table>";
-
+						html +="</tbody></table>";
 			
 			$("div#div_result").html(html);
-			
+				
+				}
+			});
 		});
 		
 		<%-- ===== 정보 변경 내역 클릭시 인사정보 버튼 클릭되도록 tirgger 설정 ===== --%>
@@ -911,11 +999,6 @@
 			$("button#btn_search_hrInfo").trigger("click");
 		});
 		
-		<%-- 기본정보 변경에서 경력 div 클릭시 --%>
-		$(document).on("click","button#btn_edit_psInfo",function(){
-			 editInfo();
-			 
-		});
 		
 		$(document).on("keyup","input#registeration_no",function(){
 			
@@ -1073,8 +1156,150 @@
 		// 해당 사원 주 총 근무시간 구하기 
 		getWorkTime($("th#th_empno").text());
 		
+		// 휴직 종류 선택시 
+		$(document).on("click","#modal_leave > div > div > form > div > div.dropdown-menu.show > button",function(){
+			let value = $(this).text();
+			$("input#input_leave_type").val(value);
+		});
+		
+		// 휴직 삭제 버튼 클릭시 
+		$(document).on("click","button#deleteLeave",function(){
+			Swal.fire({
+				   title: '휴직을 취소할까요?',
+				   icon: 'warning',
+				   
+				   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+				   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+				   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+				   confirmButtonText: '휴직취소하기', // confirm 버튼 텍스트 지정
+				   cancelButtonText: '닫기', // cancel 버튼 텍스트 지정
+				   
+				   reverseButtons: true, // 버튼 순서 거꾸로
+				   
+				}).then(result => {
+				   // 만약 Promise리턴을 받으면, 
+				   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+				   
+					   let leaveno = $("input#leaveno").val();
+				   	   console.log("leaveno : "+ leaveno);
+					   
+					   $.ajax({
+							  url : "<%= request.getContextPath()%>/cancelLeave.yolo",
+							  data : {"empno":"${requestScope.employeeMap.empno}"
+								  	 ,"leaveno":leaveno},
+							  type : "POST",
+							  dataType : "JSON",
+							  success : function(json){
+								  if(json.result == 1){
+								  	toastr.success('취소되었습니다.');
+								  	window.location.reload();
+								  }
+							  },
+							  error: function(request, status, error){
+								  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							  }
+						  });
+				   }
+				});
+			
+		});
+		
+		// 퇴직 모달에서 버튼 클릭시 
+		$("button#btn_retire").click(function(){
+			
+			let empno = $("th#th_empno").text();
+			
+			$.ajax({
+				  // 결재해야할 문서 여부 구해오기 
+				  url : "<%= ctxPath%>/checkApproval.yolo",
+				  dataType : "JSON",
+				  data:{"empno":empno},
+				  success : function(json){
+					  if(json.result > 0){
+						  Swal.fire('결재할 문서가 존재합니다.','모든 결재문서를 처리해야 퇴직 처리가 가능합니다.', 'error');					  
+					  }
+					  else{
+						  Swal.fire({
+							   title: '퇴직 처리 하시겠습니까?',
+							   text: '퇴직처리할 경우 해당 사원의 모든 정보가 삭제됩니다.',
+							   icon: 'warning',
+							   
+							   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+							   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+							   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+							   confirmButtonText: '퇴직처리하기', // confirm 버튼 텍스트 지정
+							   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+							   
+							   reverseButtons: true, // 버튼 순서 거꾸로
+							   
+							}).then(result => {
+							   // 만약 Promise리턴을 받으면, 
+							   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+							   		const frm = document.frm_retirement;
+							   		frm.action = "<%= request.getContextPath() %>/retirement.yolo";
+							   		frm.method = "POST";
+							   		frm.submit();
+							   }
+							});
+					  }
+				  },// end of success
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			
+			}); // end of ajax()----------------------------------------------------------------------
+			
+		}); 
 		
 	});// end of $(document).ready-----------------------------
+	
+	function spinner(){
+		// 추가 이미지 파일에 스피너 달아주기 // 최소값 최대값
+		$("input#spinnerImgQty").spinner({
+			spin:function(event,ui){
+	            if(ui.value > 10) {
+	               $(this).spinner("value", 10);
+	               return false;
+	            }
+	            else if(ui.value < 0) {
+	               $(this).spinner("value", 0);
+	               return false;
+	            }
+	         }
+		});
+		
+		// ### 스피너의 이벤트는 클릭이 아니고 change도 아니고 "spinstop" 이다 ### //
+		// 첨부파일 개수만큼 늘고 줄어들게 만들기
+		$("input#spinnerImgQty").bind("spinstop", function(){
+
+			let html = '';
+			const cnt = $(this).val();
+			
+			//console.log(cnt);
+			
+			for(let i=0; i<Number(cnt); i++){
+				html+= '<div class="filebox">'+
+						    '<input class="upload-name" name="attachName'+i+'" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">'+
+						    '<label for="attach'+i+'">파일찾기</label>'+
+						    '<input type="file" class="file" id="attach'+i+'" name="attach'+i+'">'+
+						'</div>';
+			}
+			
+			$("div#divfileattach").html(html);
+			
+			$("input#attachCount").val(cnt);
+			
+		}); // end of 첨부파일 개수만큼 늘고 줄어들게 만들기
+		
+	}
+	
+	// 개인정보 수정 메소드 
+	function changePsInfo(){
+		  const frm = document.frm_psInfo;
+		  frm.action="<%= ctxPath%>/changePsInfo.yolo";
+		  frm.method="POST";
+		  frm.submit();
+	}
 	
 	function func_psa(){
 		const frm = document.frm_ps_appointment;
@@ -1089,6 +1314,14 @@
 	           return "";
 	     } else{
 	            return "정보 미입력";
+	     }
+	}	
+	
+	function isEmptyPsa(value){
+	    if(value == null || value.length === 0 || value == undefined) {
+	    	return "정보 없음";
+	     } else{
+	    	 return value;
 	     }
 	}	
 	
@@ -1212,9 +1445,9 @@
 						+'</div>'
 						
 					+'<form name="frm_ps_appointment">'
-						+'<input name = "empno" type="text" value="'+empno+'"/>'
-						+'<input name = "before_deptno" type="text" value="'+before_deptno+'"/>'
-						+'<input name = "before_position" type="text" value="'+before_position+'"/>'
+						+'<input name = "empno" type="hidden" value="'+empno+'"/>'
+						+'<input name = "before_deptno" type="hidden" value="'+before_deptno+'"/>'
+						+'<input name = "before_position" type="hidden" value="'+before_position+'"/>'
 						
 						+'<div style="padding-bottom: 10px;">'
 							+'<div>발령일<span style="color: red;">＊</span></div>'
@@ -1222,7 +1455,7 @@
 						+'</div>'
 						
 						+'<div style="margin:5px 0; padding-bottom: 10px;">'		
-							+'<div>발령 라벨</div><input id="changeType" name="changeType" type="text" />'
+							+'<div>발령 라벨</div><input id="changeType" name="changeType" type="hidden" />'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
 									+'<div id="retirement_type" class="retirement_type">발령 라벨</div>'
@@ -1239,7 +1472,8 @@
 						
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
-							+'<div>부서</div> <input id="deptno" name="deptno" type="text"/>'
+							+'<div>부서</div>'
+							+'<input id="deptno" name="deptno" type="hidden"/>'
 							+'<button onclick="getDeptName()" id="btn" class=" btn communication" type="button"'
 								+'data-toggle="dropdown"'
 								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
@@ -1253,7 +1487,8 @@
 						+'</div>'
 						
 						+'<div style="margin:5px 0;padding-bottom: 10px;">'
-							+'<div>세부 부서</div><input id="teamno" name="teamno" type="text"/>'
+							+'<div>세부 부서</div>'
+							+'<input id="teamno" name="teamno" type="hidden"/>'
 							+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 								+'<div style="display: flex; justify-content: space-between; width: 100%;">'
 									+'<div class="retirement_type">세부 부서</div>'
@@ -1268,7 +1503,8 @@
 						
 						+'<div style="margin:5px 0; padding-bottom: 10px;">'
 							+'<div style="width: 100%;">'
-								+'<div>직위</div><input id="position" name="position" type="text" />'
+								+'<div>직위</div>'
+								+'<input id="position" name="position" type="hidden" />'
 								+'<button id="btn" class=" btn communication" type="button" data-toggle="dropdown"'
 									+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width: 100%;">'
 									+'<div style="display: flex; justify-content: space-between; width: 100%;">'
@@ -1306,67 +1542,11 @@
 					+'</form>'
 				+'</div>'
 			$("div#edit_info").html(html);
+			
 			daterange();
 				$("input[name='before_deptno']").val( $("input#before_deptno").val());
 				$("input[name='before_position']").val( $("input#before_position").val());
 	} //인사정보 페이지에서 인사 정보 변경 버튼 클릭 끝 ------------------------------------------------------------------------------------------------------------------------
-	
-	//인사정보 페이지에서 기본 정보 변경 버튼 클릭시
-	function edit_basicInfo(){
-		$("div#edit_info").empty();
-		$('#edit_info').addClass('active');
-	    $('#record_outside').fadeIn();
-		
-		let html ='';
-		
-		html += '<div class="container">'
-					+'<div style="display: flex; justify-content: space-between; border-bottom: #ebebeb; margin:20px 0;">'
-						+'<div style="font-size:20px; font-weight:600;">기본 정보 변경</div>'
-						+'<button id="record_close" onclick="record_close();">'
-							+'<i class="fas fa-times"></i>'
-						+'</button>'
-					+'</div>'
-					+'<form name="frm_basicInfo">'
-						+'<div>'
-							+'<div>사번</div>'
-							+'<input type="text" value="" style="width:100%; height:30px; border: solid 1px #d9d9d9; border-radius: 5px;"/>'
-						+'</div>'
-					
-					+'<div style="margin: 20px 0;">'
-						+'<div>입사일</div>'
-						+'<input type="text" value="" class="daterange" style="width:100%; height:30px;" />'
-					+'</div>'
-					
-					+'<div style="width:100%; margin-bottom: 580px;">'
-						+'<div>입사 유형</div>'
-						+'<button id="btn" class=" btn communication" type="button"'
-							+'data-toggle="dropdown"'
-								+'style="background-color: white; padding: 3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious: 10px; width:100%;">'
-							+'<div style="display: flex; justify-content: space-between; width: 100%;">'
-								+'<div id="retirement_type">입사 유형</div>'
-								+'<i class="fas fa-bars" style="padding: 5px;"></i>'
-							+'</div>'
-					+'</button>'
-					
-					+'<div class="dropdown-menu">'
-						+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">신입</button>'
-						+'<button class="btn_retirement dropdown-item" type="button" style="width: 100%;">경력</button>'
-					+'</div>'
-					
-					+'<input id="career" name="career" type="hidden"/>'
-					+'</div>'
-							
-					+'<div style="display:flex; justify-content: flex-end;">'
-						+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>'
-						+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
-					+'</div>'
-				+'</form>'
-			+'</div>';
-			
-			$("div#edit_info").html(html);
-			daterange();
-		
-	}//인사정보 페이지에서 기본 정보 변경 버튼 클릭 끝--------------------------------------------------------------------------------------
 	
 	
 	
@@ -1393,6 +1573,7 @@
 		$("div#edit_info").empty();
 		$('#edit_info').addClass('active');
 	    $('#record_outside').fadeIn();
+	    let empno = $("input#empno").val();
 	    
 	    let html ='';
 	    
@@ -1404,50 +1585,55 @@
 						+'</button>'
 					+'</div>'
 					
-					+'<form name="frm_basicInfo">'
+					+'<form name="frm_psInfo" enctype="multipart/form-data">'
 						+'<div style="margin: 20px 0;">'
 							+'<div>이름</div>'
-							+'<input class="input_edit_info" type="text" value=""/>'
+							+'<input name ="name" class="input_edit_info" type="text"/>'
+							+'<input name ="empno" type="hidden" value="'+empno+'" />'
 						+'</div>'
 						+'<div style="margin: 20px 0;">'
 							+'<div>영문 이름</div>'
 							+'<div style="display: flex;">'
-								+'<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="이름(First Name)" />'
-								+'<input type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>'
+								+'<input name="firstname" type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="이름(First Name)" />'
+								+'<input name="lastname" type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>'
 							+'</div>'
 						+'</div>'
 						+'<div style="margin: 20px 0;">'
 							+'<div>내 소개</div>'
-							+'<textarea id="introduce" rows="1" cols="" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
+							+'<textarea name="introduce" id="introduce" rows="1" cols="" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
 						+'</div>'
 						+'<div>'
 							+'<div>주민등록번호</div>'
-							+'<input class="input_edit_info" type="text" id="registeration_no" onkeydown=" OnlyNumericInput();" maxlength="14" placeholder="주민등록번호 입력" />'
+							+'<input class="input_edit_info" name="rrn" type="text" id="registeration_no" onkeydown="OnlyNumericInput();" maxlength="14" placeholder="주민등록번호 입력" />'
 						+'</div>'
-					
+					<%--
 						+'<div style="margin: 20px 0;">'
 							+'<div>생년월일</div>'
-							+'<input class="input_edit_info daterange" type="text" />'
+							+'<input  class="input_edit_info daterange" type="text" />'
 						+'</div>'
-						
+					--%>
 						+'<div style="margin: 20px 0;">'
 							+'<div>휴대전화 번호</div>'
-							+'<input class="input_edit_info" type="text" id="mobile" onkeydown=" OnlyNumericInput();" maxlength="13" placeholder="휴대전화번호 입력" />'
+							+'<input class="input_edit_info" type="text" id="mobile" name="mobile" onkeydown=" OnlyNumericInput();" maxlength="13" placeholder="휴대전화번호 입력" />'
 						+'</div>'
 						
 						+'<div style="margin: 20px 0;">'
 							+'<div>집 주소</div>'
-							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" value="" /><br/>'
-							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" value="" />&nbsp;'
-							<%-- 나중에 아래 코드와 같이 수정
-							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" value="${sessionScope.loginuser.address}" /><br/>'
-							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" value="${sessionScope.loginuser.detailaddress}" />&nbsp;'
-							--%>
+							+'<input class="input_edit_info" readonly ="readonly" placeholder="주소 검색" type="text" id="address" name="address" /><br/>'
+							+'<input class="input_edit_info" placeholder="상세 주소를 입력하세요" type="text" id="detailAddress" name="detailAddress" />&nbsp;'
+						+'</div>'
+						
+						+'<div id="attachArea">'
+							+'<span>파일 첨부하기</span>'
+							+'<label for="spinnerImgQty">파일갯수 : </label>'
+							+'<input id="spinnerImgQty" value="0" style="width: 30px; height: 20px;">'
+							+'<div id="divfileattach"></div>'
+							+'<input type="hidden" name="attachCount" id="attachCount" />'
 						+'</div>'
 							
 						+'<div style="display:flex; justify-content: flex-end;">'
 							+'<button type="button" class="btn btn_save_cancel" style="background-color: #F6F6F6;border:solid 1px #d9d9d9;"onclick="record_close();">취소</button>'
-							+'<button type="button" class="btn btn_save_cancel" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
+							+'<button type="button" class="btn btn_save_cancel"  onclick="changePsInfo();" style="background-color: #06A016; color: white; margin-left:10px;"><i style="color:white;" class="fas fa-check"></i>&nbsp;&nbsp;저장하기</button>'
 						+'</div>'
 					+'</form>'
 				+'</div>'
@@ -1455,6 +1641,7 @@
 	    
 	    
 	    $("div#edit_info").html(html);
+		spinner();
 		daterange();
 	}
 	
@@ -1560,6 +1747,30 @@
 		}); // end of ajax()----------------------------------------------------------------------
 	}// end of function getTeam(deptno){}--------------------------------------
 	
+	function getFile(empno){
+		$.ajax({
+			  url : "<%= request.getContextPath()%>/getFile.yolo",
+			  data : {"empno":empno},
+			  type : "POST",
+			  dataType : "JSON",
+			  success : function(json){
+				  if(json.length>0){
+						let html = '<span style="display: block; margin-bottom:5px; font-weight: bold">첨부파일</span>';
+						$.each(json, function(index, item){
+							html+='<span style="font-size: 10pt; color: gray;"><i class="fas fa-solid fa-paperclip ml-3 mr-1"></i></span>'+
+					        	'<span class="mailFiles" onclick="javascript:location.href=\'<%=ctxPath%>/downloadFile.yolo?filename='+item.filename+'&org_filename='+item.org_filename+'\'" >'+item.org_filename+'</span><br>';
+						});
+						
+						$("tr.file").html(html);
+					}
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+	}
+	
 	
 	
 </script>
@@ -1575,17 +1786,7 @@
 			<div id="user_name">${requestScope.employeeMap.profileName}</div>
 			<input id="before_deptno" type="hidden" value="${requestScope.employeeMap.fk_deptno}" />
 			<input id="before_position" type="hidden" value="${requestScope.employeeMap.position}" />
-			
-			
-			<%-- 
-			<button id="btn_profileImg" type="button" data-toggle="dropdown" style="background-color: white; border: solid 1px gray; border-radius: 50%; position:relative; top:40px; left:20px;">
-				<i class="fas fa-camera"></i>
-			</button>
-			<div class="dropdown-menu">
-				<a class="dropdown-item" href="#"><i class="fas fa-upload"></i>&nbsp;&nbsp;사진 업로드하기</a> 
-				<a id = "delete_profileImg" class="dropdown-item" href="#"><span style="color:#e62e00"><i class="fas fa-trash"></i>&nbsp;&nbsp;삭제하기</span></a> 
-			</div>
-			--%>
+			<input id="leaveno" type="hidden"  />
 		</div>
 		<%-- ======================== 프로필 시작 ========================= --%>
 		<table>
@@ -1602,15 +1803,10 @@
 					<th class="user_dept_position">&nbsp;&nbsp;&nbsp;${requestScope.employeeMap.position}</th>				
 				</tr>
 				<tr>
-					<th>
+					<th colspan="3">
 						<a onclick="copy_to_clipboard('${requestScope.employeeMap.mobile}')" class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="${requestScope.employeeMap.mobile}"><i class="fas fa-phone-alt"></i></a>
-					</th>
-					<th>
 						<a onclick="copy_to_clipboard('${requestScope.employeeMap.email}')" class="btn communication" href="#" data-toggle="tooltip" data-placement="top" title="${requestScope.employeeMap.email}"><i class="far fa-envelope"></i></a>
-					</th>
-					<th>
 						<a class="btn communication" href="<%= ctxPath%>/messenger/receivedMessage.yolo?empno=${requestScope.employeeMap.empno}" data-toggle="tooltip" data-placement="top" title="메신저"><i class="fas fa-comment"></i></a>
-						<%-- 메시지 받는사람 파라미터로 넘겨줘야 함. --%>
 					</th>
 					<th> 
 						<button id="btn" class=" btn communication" type="button" data-toggle="dropdown" style="background-color: white; padding:3px 0px 3px 5px; border: solid 1px #d9d9d9; border-radious:10px;">
@@ -1626,11 +1822,12 @@
 								<span style="color:green;">●</span>&nbsp;&nbsp;퇴직&nbsp;&nbsp;
 							</c:if>
 						</button>
-						
+						<c:if test="${sessionScope.loginuser.empno == 9999}">
 						<div class="dropdown-menu">
 							<button class="dropdown-item" type="button" data-toggle="modal" data-target="#modal_leave"><i class="fas fa-user-slash" ></i>&nbsp;&nbsp;휴직 처리하기</button>
 							<button class="dropdown-item" type="button" data-toggle="modal" data-target="#modal_retirement"><i class="fas fa-leaf"></i>&nbsp;&nbsp;퇴직 처리하기</button>
 						</div>
+						</c:if>
 					</th>
 				</tr>
 			</thead>
@@ -1643,7 +1840,6 @@
 	<div class="modal fade" id="modal_leave">
 		
 			<div class="modal-dialog modal-dialog-centered">
-				<!-- .modal-dialog-centered 클래스를 사용하여 페이지 내에서 모달을 세로 및 가로 중앙에 배치합니다. -->
 				<div class="modal-content">
 	
 					<!-- Modal header -->
@@ -1654,6 +1850,7 @@
 	
 					<!-- Modal body -->
 					<form name="frm_leave">
+					<input type="hidden" id="empno" value="${requestScope.employeeMap.empno}" />
 					<div class="modal-body" style="height: 350px;">
 						<div class="modal_title">휴직종류 <span style="color: red;">＊</span></div>
 						<button id="btn" class=" btn communication" type="button"
@@ -1665,18 +1862,18 @@
 						</button>
 						
 						<input type="hidden" id="input_leave_type" value="일반휴직"/>
-						<input type="hidden" id="empno" value="${requestScope.employeeMap.empno}" />
+						
 						<div class="dropdown-menu">
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">일반휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">육아휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">산재휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">부상.질병휴직</button>
-							<button class="btn_leave dropdown-item" type="button" style ="width:460px;">가족 돌봄휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >일반휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >육아휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >산재휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >부상.질병휴직</button>
+							<button class="btn_leave dropdown-item" type="button" style ="width:460px;" >가족 돌봄휴직</button>
 						</div>
 						
 						<div>
 							<div style="margin-top:20px;" class="modal_title">휴직기간 <span style="color: red;">＊</span></div>
-							<input id="between_date" class="form-control"  />
+							<input readonly="readonly" id="between_date" class="form-control"  />
 							<div id="div_warnning">이미 휴직이 등록된 날짜입니다.</div>
 							<input type="hidden" id="start_date"  name="start_date" />
 							<input type="hidden" id="end_date" name="end_date" />
@@ -1717,7 +1914,7 @@
 					<!-- Modal body -->
 					<div class="modal-body">
 						<form name="frm_retirement">
-					
+						<input name="empno" type="hidden" id="empno" value="${requestScope.employeeMap.empno}" />
 						<div style="display:flex; justify-content: space-between; ">
 							<div>
 								<div>
@@ -1772,7 +1969,7 @@
 					<!-- Modal footer -->
 					<div class="modal-footer">
 						<button type="button" class="btn " data-dismiss="modal">취소</button>
-						<button type="button" class="btn btn-danger">퇴직 처리하기</button>
+						<button id="btn_retire" type="button" class="btn btn-danger">퇴직 처리하기</button>
 					</div>
 				</div>
 			</div>
@@ -1787,7 +1984,10 @@
 			<div id="div_ps" class="info_title">개인 정보</div>
 		</div>
 		<div>
-			<button id="record_search" type="button" class="btn" onclick="searchRecord()"><i class="fas fa-history" style="margin:0px; width:16px;"></i>&nbsp;&nbsp;정보 변경 내역</button>
+			<c:set var="c_empno" value="${requestScope.employeeMap.empno}"/>
+			<c:if test="${sessionScope.loginuser.empno eq '9999' || c_empno eq sessionScope.loginuser.empno}">
+				<button id="record_search" type="button" class="btn" onclick="searchRecord()"><i class="fas fa-history" style="margin:0px; width:16px;"></i>&nbsp;&nbsp;정보 변경 내역</button>
+			</c:if>
 		</div>
 	</nav>
 	<%-- ============== 인사정보, 개인정보, 정보 변경 내역 버튼 끝  ============== --%>
@@ -1798,6 +1998,10 @@
 		<%-- ===================== 인사정보 내용 출력 끝 ===================== --%>
 		
 		<div id="right_sidebar">
+			<div id='div_leave_absence'></div>
+			
+			
+			
 			
 			<a class="a_side" href="<%= ctxPath%>/commute/mycommute.yolo">
 				<div class="div_rightside" id="work_time">

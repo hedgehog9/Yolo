@@ -67,8 +67,8 @@ public class CommuteDAO implements InterCommuteDAO {
 
 	// 급여정산 후에 리스트 불러오기
 	@Override
-	public List<HashMap<String, String>> getPaymentList(Map<String, Object> paraMap) {
-		List<HashMap<String, String>> getPaymentList = sqlsession.selectList("josh.getPaymentList",paraMap);
+	public List<Map<String, Object>> getPaymentList(Map<String, Object> paraMap) {
+		List<Map<String, Object>> getPaymentList = sqlsession.selectList("josh.getPaymentList",paraMap);
 		return getPaymentList;
 	}
 
@@ -91,6 +91,33 @@ public class CommuteDAO implements InterCommuteDAO {
 	public List<Map<String, String>> getPayStubList(Map<String, Object> paraMap) {
 		List<Map<String, String>> payStubList = sqlsession.selectList("josh.getPayStubList", paraMap);
 		return payStubList;
+	}
+
+	// 퇴직금을 받을 수 있는 회원명단을 가져오는 메소드
+	@Override
+	public List<Map<String, String>> getSeverancePayList(Map<String, Object> pageMap) {
+		List<Map<String, String>> getSeverancePayList = sqlsession.selectList("josh.getSeverancePayList", pageMap);
+		return getSeverancePayList;
+	}
+
+	// 퇴직금 총 페이지수 가져오는 메소드
+	@Override
+	public int getTotalPage(Map<String, Object> pageMap) {
+		int totalPage = sqlsession.selectOne("josh.getSeverancePayListTotalPage",pageMap);
+		return totalPage;
+	}
+
+	// 퇴직금 테이블에 insert
+	@Override
+	public int severancePayment(List<Map<String, Object>> paraList) {
+		int n = sqlsession.insert("josh.severancePayment", paraList);
+		return n;
+	}
+
+	@Override
+	public List<Map<String, Object>> sumWorktimeByDept() {
+		List<Map<String, Object>> sumWorktimeByDeptList = sqlsession.selectList("josh.sumWorktimeByDept");
+		return sumWorktimeByDeptList;
 	}
 	
 }

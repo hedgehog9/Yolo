@@ -29,8 +29,11 @@
 	                     /WEB-INF/spring/config/websocketContext.xml
 	         </param-value>
          -->
-         
       </init-param>
+      <init-param>
+		 <param-name>throwExceptionIfNoHandlerFound</param-name>
+		 <param-value>true</param-value>
+	  </init-param>
       <load-on-startup>1</load-on-startup>
    </servlet>
       
@@ -57,7 +60,7 @@
     
     <!--  ===== #14. 시작 웹페이지 등록하기 ===== -->
    <welcome-file-list>
-       <welcome-file>index.yolo</welcome-file>
+       <welcome-file>login.yolo</welcome-file>
    </welcome-file-list>
 
 </web-app>

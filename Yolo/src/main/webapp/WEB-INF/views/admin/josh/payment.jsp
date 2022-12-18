@@ -65,15 +65,130 @@
 	    height: fit-content;
 	}
 	
+	input:focus{
+      outline-color: #07B419;
+    }	
+    
+    .form-control:focus {
+	   box-shadow:none;
+	   border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4.select2-container--focus .select2-selection {
+		box-shadow: none;
+		border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
+		width: 80% !important;
+	}
+	
+	.green_bottom {
+		border-bottom: 2px solid #07B419 !important;
+	}
+	
+	<%-- 페이지바 css 시작 --%>
+	ul.ul_pagebar{
+		list-style:none; 
+		margin:0 auto;
+		width:700px;
+		display: flex;
+		align-items: baseline;
+		padding: 0;
+		justify-content: center;
+	}
+	
+	
+	li.li_pagebar{
+		display: inline-block;
+	    padding-top: 9px;
+	    width: 40px;
+	    height: 40px;
+	    text-align: center;
+	    font-weight: 700;
+	}
+	
+	li.li_pagebar > a{
+		text-decoration: none;
+		font-size: 14px;
+		color:#2ecc71;
+	}
+	
+	li.li_currentpage{
+		background-color: #2ecc71;
+	    color: white;
+	    font-weight: 700;
+	
+	    display: inline-block;
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 50%;
+	    text-align: center;
+	    vertical-align: middle;
+	    padding-top: 9px;
+	}
+	
+	.dropdown-toggle::after {
+	    display: none;
+	    margin-left: 0.255em;
+	    vertical-align: 0.255em;
+	    content: "";
+	    border-top: 0.3em solid;
+	    border-right: 0.3em solid transparent;
+	    border-bottom: 0;
+	    border-left: 0.3em solid transparent;
+	}
+	
+	li.li_moveOne{
+		display: inline-block;
+	    width: 100px;
+	    font-size: 12pt;
+	    text-align: center;
+	    padding: 6px;
+	    border-radius: 100px;
+	    color: white;
+	    border: solid 3px #2ecc71;
+	    margin: 0 10px;
+	}
+	
+	li.li_moveOne > a{
+		color:#2ecc71;
+		text-decoration: none;
+	}
+	
+	li.li_moveAll{
+		background-color: #2ecc71;
+	    font-weight: 700;
+	    border-radius: 50%;
+	    width: 40px;
+	    height: 40px;
+	    border-radius: 50%;
+	    text-align: center;
+	    vertical-align: middle;
+	    padding-top: 9px;
+	}
+	
+	li.li_moveAll > a{
+		color: white;
+		text-decoration: none;
+		display: inline-block;
+	}
+	
+	.badge {
+		font-size: 15px;
+	}
+	
+	td {
+		vertical-align: middle !important;
+	}
+	
 </style>
 
 <script>
 
+let arrDept = [];
 
 	$(document).ready(function() {
-		
-		
-		let arrDept;
 		
 		$("input#year-select").val(getDate());
 		
@@ -96,7 +211,7 @@
     		
     		$("#getPaymentList").click(function(){
     			console.log(arrDept)
-    			getPaymentList(1,arrDept);
+    			getPaymentList(1);
     			
     		})
     		
@@ -122,7 +237,7 @@
     	    $("#checkedPayment").click(function(){
     	    	
     	    		if(check_length() > 0) {
-    	    			checkedPayment(arrDept);
+    	    			checkedPayment();
     	    		}
     	    		else {
     	    			toastr.error('지급할 직원에 체크를 해주세요');
@@ -169,9 +284,10 @@
 	}
 	
 	
-	function getPaymentList(currentShowPageNo,arrDept) {
+	function getPaymentList(currentShowPageNo) {
 		
-		console.log("펑션안에 " + arrDept)
+		//console.log("펑션안에 " + arrDept)
+		//console.log(arrDept)
 		
 		let month = getMonth();
 		let minus_month = minusGetMonth();
@@ -195,14 +311,16 @@
 					let html = "<table class='table table-hover'>"+
 					           		"<thead>"+
 						           		"<th style='width: 150px; text-align: center;'><input type='checkbox' name='chk-all' id='chk-all'/></th>"+
-					        				"<th>이름</th>"+
-					                    "<th>근무기준 달</th>"+
-					                    "<th>급여</th>"+
-					                    "<th>초과근무 수당</th>"+
-					                    "<th>합계</th>"+
+					        				"<th><span style='font-size:20px;'>&#129333;</span>이름</th>"+
+					                    "<th><span style='font-size:20px;'>&#128198;</span>근무기준 달</th>"+
+					                    "<th><span style='font-size:20px;'>&#128178;</span>급여</th>"+
+					                    "<th><span style='font-size:20px;'>&#128337;</span>초과근무 수당</th>"+
+					                    "<th><span style='font-size:20px;'>&#128176;</span>합계</th>"+
 				                    "<tbody>";
 					
 					$.each(json, function(index,item) {
+						
+						//console.log(item.profile_color)
 						
 						html += "<tr>"+
 			                        "<td class='text-center'><input type='checkbox' name='chk' value='"+item.empno+"'/></td>"+
@@ -213,10 +331,10 @@
 									"<span style='font-weight: normal; color: gray; font-size: 10pt;'>"+item.upper_deptname+" · "+item.deptname+"</span>"+
 									"</div>"+
 		                            "</td>"+
-			                        "<td>"+minus_month+"</td>"+
-			                        "<td>"+Number(item.worktime_salary).toLocaleString('en')+"<span> 원</span></td>"+
-			                        "<td>"+Number(item.overtime_salary).toLocaleString('en')+"<span> 원</span></td>"+
-			                        "<td>"+Number(item.sum_salary).toLocaleString('en')+"<span> 원</span></td>"+
+			                        "<td><span class='badge badge-dark rounded-pill'>"+minus_month+"</span></td>"+
+			                        "<td><span class='badge badge-light rounded-pill'>"+Number(item.worktime_salary).toLocaleString('en')+"원</span></td>"+
+			                        "<td><span class='badge badge-light rounded-pill'>"+Number(item.overtime_salary).toLocaleString('en')+"원</span></td>"+
+			                        "<td><span class='badge badge-warning rounded-pill'>"+Number(item.sum_salary).toLocaleString('en')+"원</span></td>"+
 			                    "</tr>"	
 						
 						
@@ -228,13 +346,16 @@
 					$("#table-div").html(html)
 					$("#table-font").hide();
 					
+					$("#pageBar").show();
 					// 페이지바 함수 호출
-					makePageBar(currentShowPageNo, arrDept, startdate, enddate, minus_month);
+					makePageBar(currentShowPageNo, startdate, enddate, minus_month);
+					
 				}
 				
 				else {
-					$("#table_div").empty();
+					$("#table-div").html("<span class='text-bold text-muted' id='table-font' style='margin-left:45%'> 검색결과가 없습니다 </span>");
 					$("h3#table-font").show();
+					$("#pageBar").hide();
 				}
 				
 			},
@@ -245,7 +366,80 @@
 	} 
 	
 	
-	function checkedPayment(arrDept) {
+	
+	
+	function makePageBar(currentShowPageNo, startdate, enddate, minus_month) {
+		
+		$.ajax({
+			url:"<%= ctxPath %>/admin/paymentListTotalPage.yolo",
+			data:{"startdate": startdate,
+				  "enddate":enddate,
+				  "month_payment":minus_month,
+				  "arrDept":arrDept},
+			dataType:"JSON",
+			success:function(json) {
+				
+				console.log(json.totalPage)
+				
+				if(json.totalPage > 0) {
+					// 댓글이 있는 경우
+					
+					const totalPage = json.totalPage;
+					
+					const blockSize = 10;
+					
+					let loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize)] 까지만 증가하는 용도이다.
+			        
+			        if( typeof currentShowPageNo == "string"){ // 마우스를 클릭해서 들어오는경우는 보고있는 페이지 번호가 string 타입으로 들어오므로 정수형으로 바꿔줘야 한다.
+			        	currentShowPageNo = Number(currentShowPageNo);
+			        }
+			        
+					// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
+					let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
+					
+					let pageBarHTML = "<ul class='ul_pagebar'>";
+					
+					// ==== [맨처음] [이전] 만들기 === // 
+					if(pageNo != 1 ) {
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:getPaymentList(1)' > << </a></li>";
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:getPaymentList("+(pageNo-1)+")' >Previous</a></li>";
+					}
+					while( !(loop > blockSize || pageNo > totalPage ) ) {
+						
+						if(pageNo == currentShowPageNo) { // 보고있는 페이지와 페이지바의 선택된 페이지가 같으면 링크 제거 
+							pageBarHTML +="<li class='li_currentpage'>"+pageNo+"</li>";
+						}
+						else {
+							pageBarHTML +="<li class='li_pagebar'><a href='javascript:getPaymentList("+pageNo+")' >"+pageNo+"</a></li>";
+						}
+						loop++;
+						pageNo++;
+					}// end of while()------------------------
+					
+					
+					// ==== [다음] [마지막] 만들기 === //
+					if(pageNo <= totalPage) {
+						pageBarHTML +="<li class='li_moveOne'><a href='javascript:getPaymentList("+pageNo+")' >Next</a></li>";
+						pageBarHTML +="<li class='li_moveAll li_pagebar'><a href='javascript:getPaymentList("+totalPage+")' > >> </a></li>";
+					}
+					
+					pageBarHTML +="</ul>";
+				
+					$("div#pageBar").html(pageBarHTML);
+				}// end of if(json.totalPage > 0){}----------------------------------
+				else {
+					$("#table-div").empty();
+					$("h3#table-font").show();
+					
+				}
+			}
+			
+		})
+	}
+	
+	
+	
+	function checkedPayment() {
 		
 		Swal.fire({
 			   title: '급여지급을 하시겠습니까?',
@@ -304,7 +498,7 @@
 							
 							if(json.n > 0) {
 								Swal.fire('급여지급 완료','지급완료','success');
-								setTimeout("location.reload()",1000);
+								setTimeout("location.reload()", 1000);
 							}
 							
 						},
@@ -316,87 +510,60 @@
 			   }
 			   
 			});
-		
-		
-		
-		
-		
 	}
 	
 	
-	function makePageBar(currentShowPageNo, arrDept, startdate, enddate, minus_month) {
+	
+	function allPayment() {
 		
-		$.ajax({
-			url:"<%= ctxPath %>/admin/paymentListTotalPage.yolo",
-			data:{"startdate": startdate,
-				  "enddate":enddate,
-				  "month_payment":minus_month,
-				  "arrDept":arrDept},
-			dataType:"JSON",
-			contentType: "application/x-www-form-urlencoded; charset=UTF-8",
-			success:function(json) {
-				
-				console.log(json.totalPage)
-				
-				if(json.totalPage > 0) {
-				// 댓글이 있는 경우
-				
-				const totalPage = json.totalPage;
-				
-				const blockSize = 10;
-				
-				let loop = 1; // 증가해야 하기 때문에 const 가 아닌 let 으로 선언
-				
-				if(typeof currentShowPageNo == "string") {
-					// currentShowPageNo 는 웹에서 받아오면 String 타입이기 때문에 Number 타입으로 변환해준다.
-					currentShowPageNo = Number(currentShowPageNo);
-				}
-				
-				// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! ***//
-				let pageNo = Math.floor((currentShowPageNo - 1)/blockSize) * blockSize + 1; 
-				
-				
-				let pageBarHTML = "<ul class='pagination'>";
-				
-				if(pageNo != 1) {
-					pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:getPaymentList(\"1\")'>[맨처음]</a></li>";
-					pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:getPaymentList("+pageNo-1+","+arrDept+")'>[이전]</a></li>";
-				}
-				
-				while( !(loop > blockSize || pageNo > totalPage) ) {
+		Swal.fire({
+			   title: '모든 구성원 급여지급을 하시겠습니까?',
+			   text: "한번 선택하시면 되돌릴 수 없습니다",
+			   icon: 'warning',
+			   
+			   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+			   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+			   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+			   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+			   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+			   
+			   reverseButtons: true, // 버튼 순서 거꾸로
+			   
+			}).then(result => {
+			   // 만약 Promise리턴을 받으면,
+			   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+				   
+				   let month = getMonth();
+				   let minus_month = minusGetMonth();
+				   const startdate = minus_month+"-25";
+				   const enddate = month+"-25";
 					
-					if(pageNo == currentShowPageNo) {
-						pageBarHTML += "<li class='page-item active'><a class='page-link' href='#'>"+pageNo+"</a></li>";
-					}
-					else {
-						pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:getPaymentList("+pageNo+","+arrDept+")'>"+pageNo+"</a></li>";
-					}
-					
-					loop++;
-					pageNo++;
-				}// end of while -----------------------------------
+			   
+					$.ajax({
+						url:"<%= ctxPath %>/admin/allPayment.yolo",
+						type:"POST",
+						data:{"startdate": startdate,
+							  "enddate":enddate,
+							  "month_payment":minus_month},
+						dataType:"JSON",
+						success:function(json) {
+							
+							if(json.n > 0) {
+								Swal.fire('급여지급 완료','지급완료','success');
+								setTimeout("location.reload()", 1000);
+							}
+							
+						},
+						error: function(request, status, error){
+				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			    			}
+					})
 				
-				// === [다음] [마지막] 만들기 === //
-				
-				if(pageNo <= totalPage) {
-					pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:getPaymentList("+pageNo+","+arrDept+")'>[다음]</a></li>";
-					pageBarHTML += "<li class='page-item'><a class='page-link' href='javascript:getPaymentList("+totalPage+","+arrDept+")'>[마지막]</a></li>";
-				}
-				
-				pageBarHTML += "</ul>";
-				
-				$("div#pageBar").html(pageBarHTML);
-				
-				
-			}// end of if(json.totalPage > 0) ------------------
-			else {
-				$("#table_div").empty();
-				$("h3#table-font").show();
-			}
-			}
-			
-		})
+			   }
+			   
+			});
 	}
+	
 	
 	
 	function getDate() { // 현재날짜만 가져오는 메소드
@@ -439,9 +606,9 @@
     <div id="pay-stub-content">
         <div id="category" class="d-flex">
             <a href="<%= ctxPath%>/admin/payStub.yolo" class="text-muted font-weight-bold mr-2 detail-category"><span>급여명세서 목록</span></a> <!-- border-bottom border-dark 을 사용하여 url에 따라 밑줄 생성 -->
-            <a href="#" class="text-muted font-weight-bold mr-2 detail-category border-bottom border-dark"><span>급여정산 및 지급</span></a>
+            <a href="#" class="text-muted font-weight-bold mr-2 detail-category green_bottom"><span>급여정산 및 지급</span></a>
             <div id="button-div" style="margin-left: auto" class="pt-3">
-                <button type="button" class="btn btn-light btn-outline-primary btn-sm" data-toggle="modal" data-target="#myModal">급여정산</button>
+                <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#myModal" style="background-color: #66cc66; color: white;">급여정산</button>
             </div>
             <!-- The Modal -->
             <form>
@@ -494,6 +661,7 @@
         <%-- === 페이지바 ==== --%>
         <div style="display: flex;" class="mt-5">
           <button type="button" class="btn btn-light btn-outline-secondary btn-sm ml-3 gopay" id="checkedPayment">체크지급</button>
+          <button type="button" class="btn btn-outline-secondary btn-sm ml-3 gopay" id="allPayment" onclick="allPayment()">모든구성원 지급</button>
       	  <div id="pageBar" style="margin: auto; text-align: center;"></div>
         </div>
 		      

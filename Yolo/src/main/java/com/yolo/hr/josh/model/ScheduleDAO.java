@@ -1,6 +1,7 @@
 package com.yolo.hr.josh.model;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -52,6 +53,19 @@ public class ScheduleDAO implements InterScheduleDAO {
 	public int deleteSchedule(String schedule_no) {
 		int n = sqlsession.delete("josh.deleteSchedule", schedule_no);
 		return n;
+	}
+
+	// 시퀀스 넘버를 가져오는 메소드
+	@Override
+	public String getSequenceNo() {
+		String seq_no = sqlsession.selectOne("josh.getSequenceNo");
+		return seq_no;
+	}
+	
+	// 휴가신청후 스케줄테이블에 등록하는 메소드
+	@Override
+	public void insertVactionSchedule(Map<String, String> paraMap) {
+		sqlsession.insert("josh.insertVactionSchedule");
 	}
 
 }

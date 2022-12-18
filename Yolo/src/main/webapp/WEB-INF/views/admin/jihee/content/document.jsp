@@ -109,6 +109,19 @@
 
 	}
 	
+	span#needstatus{
+	width: 58px; 
+	height: 25px; 
+	background-color: #c1f0c1;
+	border-radius: 0.5rem;
+	color: #4d4d4d;;
+	text-align: center;
+	/* border: 1px solid #ccced0; */
+	margin: auto;
+
+
+	}
+	
 	div#contents:hover {
 	background-color: #efefef;
 	cursor: pointer;
@@ -278,7 +291,7 @@
   }
 	
   div#startContents{
-  	height: 600px;
+  	height: 638px;
   }
   
   span#sizebold{
@@ -423,17 +436,31 @@
 <script type="text/javascript">
 
 	 $(document).ready(function(){
+		 
+		 
 		
-	 	// 문서 띄우기 에이젝스 함수
-	 	myDocument();
-	 	
-	 	const doc_no = ${requestScope.doc_no};
-	 	const emp_no = ${requestScope.empno};
-	 	//alert(doc_no);
+		 
+		if( ${requestScope.alarmDocno == null}){
+			 
+			
+			waitingDm(1);
+		 	
+		 	const doc_no = ${requestScope.doc_no};
+		 	const emp_no = ${requestScope.empno};
+		 	//alert(doc_no);
+		 	goReadDocument(doc_no,emp_no);
 		
-	 	goReadDocument(doc_no,emp_no);
+		 }
+		 else {
+			
+			 waitingDm(1);
+		  // const alarmDocno = ${requestScope.alarmDocno};
+		  // alert("${requestScope.alarmDocno}");
+			 goReadDocument("${requestScope.alarmDocno}", "${requestScope.empno}");
+		 }   
+		 
 		
-	  	
+	
 	 	//체크박스 체크되면 전체 체크박스 선택
 	    $(".allCheckBox").click(function(){
 			var bool = $(this).is(":checked");
@@ -466,18 +493,28 @@
 				  $(this).css("border-bottom", "4px solid #00cc00");
 		          $("button#mine").css("border-bottom", "none"); 
 		          $("button#complete").css("border-bottom", "none"); 
+		          $("span.doc2").css("color", "gray");	
+		          $("span.doc3").css("color", "gray");	
+		          $("span.doc1").css("color", "black");	
+		         
 		        }); 
 			
 			$("button#complete").click(function(){
 				  $(this).css("border-bottom", "4px solid #00cc00");
 		          $("button#mine").css("border-bottom", "none"); 
 		          $("button#wating").css("border-bottom", "none"); 
+		          $("span.doc1").css("color", "gray");	
+		          $("span.doc2").css("color", "gray");
+		          $("span.doc3").css("color", "black");	
 		        }); 
 			
 			$("button#mine").click(function(){
 				  $(this).css("border-bottom", "4px solid #00cc00");
 		          $("button#wating").css("border-bottom", "none"); 
 		          $("button#complete").css("border-bottom", "none"); 
+		          $("span.doc1").css("color", "gray");	
+		          $("span.doc3").css("color", "gray");	
+		          $("span.doc2").css("color", "black");	
 		        }); 
 			
 		
@@ -487,15 +524,68 @@
 	//수정하기 창으로 이동
 	function goModify() {
 		
-		location.href="<%= request.getContextPath()%>/workflow/modify.yolo";
+		 const frm = document.modifyFrm;
+         frm.method = "POST";
+         frm.action = "<%= request.getContextPath()%>/workflow/modify.yolo";
+         frm.submit();
+		
+		
 	} 
 	
+	function goApproval(approval,doc_no,levelno) {
+		
+		$.ajax({
+			url:"<%= request.getContextPath()%>/workflow/approval.yolo",
+			data :{"approval":approval,
+				   "doc_no": doc_no,
+				   "levelno":levelno},
+				   
+			dataType : "JSON",
+			success: function(json) {
+				 if (approval == 2) { 
+				
+					if(json.n >= 1) {
+						alert("문서가 반려되었습니다.");	
+						
+						 location.reload();
+						 
+						
+					}
+					else{
+						alert("실패");
+					}	
+				}
+				
+				else {
+					if(json.n >= 1) {
+						alert("문서가 승인되었습니다.");	
+						
+						location.reload();
+						
+					}
+					else{
+						alert("실패2");
+					}
+				} 
+				
+			 },	
+			 error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+				
+			
+			
+			
+		});
+		
+	}
 
 	
 	//문서 자세히 에이젝스 
 	function goReadDocument(doc_no,emp_no) {
 		 
-	       // alert("문서번호 " + doc_no +"/ empno:" + emp_no);
+	       // alert("문서번호 " + `doc_no +"/ empno:" + emp_no);
+	   
 	
 	  $.ajax({
 		  url:"<%= request.getContextPath()%>/workflow/documentDetail.yolo",
@@ -503,23 +593,39 @@
 			  	"emp_no":emp_no},
 		  dataType:"JSON",
 		  success:function(json){
-			  let html = "";
-			if(json.doc_no !=null) {
+			  
+			  let html="";
+			if(json.doc_no != "10") {
 				//console.log(json.doc_subject);
+					//console.log("preset:"+json.prestepApp);
+					console.log("deny : "+json.deny);
+					const names = json.appName.split(",");
 	 				  html += 
 						"<div style='padding : 15px 10px' id='contents' data-bs-toggle='modal' data-bs-target='#exampleModal' onclick='approvalModal("+json.doc_no+"," +json.fk_writer_empno+")'>"+
-					    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;1/2&nbsp; </span>"+
-					    	"<span style='font-size: 12pt;'> &nbsp;&nbsp;1단계 승인대기 중입니다.</span>" +
-					    	"&nbsp;&nbsp;&nbsp;&nbsp;"+
-					    	"<span style='float:right; color:#cccccc; font-weight: bold; padding-left: 20px; font-size:12pt;'>></span>"+
-					    	"<span id='profile' style='float:right; margin-bottom: 5px;'>이름</span>"+
-					    	"<span id='profile' style='float:right; margin-bottom: 5px;'>이름</span>"+ 
-				    	"</div>"+
+					    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;"+json.nowApprovalStep+"/"+names.length+"&nbsp; </span>";
+					    	if(json.end_doc == "0"){
+					    	html += "<span style='font-size: 12pt;'> &nbsp;&nbsp;"+json.nowApprovalStep+"단계 승인대기 중입니다.</span>" ;
+					    	}
+					    	else{
+						    	html += "<span style='font-size: 12pt;'> &nbsp;&nbsp;결재가 완료되었습니다.</span>" ;
+						    	}
+					    	html += "&nbsp;&nbsp;&nbsp;&nbsp;"+
+					    	"<span style='float:right; color:#cccccc; font-weight: bold; padding-left: 20px; font-size:12pt;'>></span>";
+					    	//console.log(names.length);
+					    	 for(let i=0; i<names.length; i++) {
+					    	
+					    		html+="<span id='profile' style='float:right; margin-bottom: 5px; '>"+names[i].substring(1)+"</span>";
+					    	} 
+				    	html += "</div>"+
 		   	  			"<div id='parent'>"+
 					    	"<div id='child' style='margin:17px 0px 10px 10px; font-size: 25pt; font-weight: bold;'>"+
 					    	""+json.doc_subject+"</div>"+
 					    	"<div id='icon' style='margin-top:22px; float: right;'>"+
 				    			"<div id='iconhover' onclick='goModify();'>"+
+						    			"<form name='modifyFrm'>"+
+				    					"<input type='hidden' name='fk_writer_empno' value='"+json.fk_writer_empno+"' readonly />"+
+				    					"<input type='hidden' name='doc_no' value='"+json.doc_no+"' readonly />"+
+				    					"</form>"+
 										"<i class='bi bi-pencil-fill' style='font-size: 13pt;'></i>"+
 										"&nbsp;<span style='font-size: 13pt;'>수정</span>"+
 									"</div>"+
@@ -527,7 +633,7 @@
 					    	"</div>"+				    	
 				    	"</div>"+
 				    	"<div style='padding : 10px; padding-bottom: 20px;' class='border-bottom'>"+
-			    		"<span id='profile' style='margin-right: 10px;'>"+json.name.substring(1,3)+"</span> "+
+			    		"<span id='profile' style='margin-right: 10px; background-color:"+json.profile_color+"'>"+json.name.substring(1,3)+"</span> "+
 			    		"<span id='sizebold'>"+json.name+" ·</span> <span style='font-size: 13pt;'>"+json.position+"</span>"+
 			    		"<span style='font-size: 12pt; float:right; color:gray;'>"+
 			    		"<i class='bi bi-table'></i> &nbsp;&nbsp;"+
@@ -545,12 +651,21 @@
 				    		"<span><i class='bi bi-calendar4-event'></i></span>"+
 				    		"<span class='font' style='margin-right: 10px;'>&nbsp;&nbsp;희망기한 </span>"+
 				    		"<span style='font-size:11pt; color:#262626;'>"+json.d_day.substring(0,10)+" </span>"+
-						"</div>"+
-						
-						"<button type='button' id='denial' class='bhover'>반려</button>"+
-						"&nbsp;<button type='button' id='accept' class='bhover'>✓ 승인</button>"+
-			    		
-			    	"</div>"+
+						"</div>";
+						if(json.levelno == 1 && json.approval == "0") {
+								html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
+								"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
+							
+						}
+						else if( (json.prestepApp == "1" || json.prestepApp == "2") && json.approval =="0") {
+						html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
+						"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
+						}
+						else if(json.deny) {
+							html += "<button type='button' id='denial' class='bhover' onclick='goApproval(2,"+doc_no+","+json.levelno+");'>반려</button>"+
+							"&nbsp;<button type='button' id='accept' class='bhover' onclick='goApproval(1,"+doc_no+","+json.levelno+");'>✓ 승인</button>";
+							}
+			    	html += "</div>"+
 			    	
 			    	// 첨부파일 토글버튼 
 			    	"<div style='padding : 10px;  padding-bottom: 40px; margin-top: 20px;'  class='border-bottom'>"+
@@ -562,15 +677,19 @@
 						  "<span class='font' style='float: right;'> > </span>"+
 						"</p>"+
 						"<div class='collapse' id='collapseExample'>"+
-						  "<div class='' style='margin-left: 10px;'>"+  
-						    "첨부파일 이지롱<br>"+
-						     "그렇게<br>"+
-						     "됐다"+		    
-						  "</div>"+
+						 "<div class='' style='margin-left: 10px;'>";
+						 if(json.orgfilename != null){
+						  html+= "<a href='<%= request.getContextPath()%>/download.yolo?doc_no="+json.doc_no+"'>"+json.orgfilename+"</a>"+      
+						  "<br><img src='<%= ctxPath%>/files/workflow/"+json.filename+"' style='width=100px; height=100px;'>";
+						 }		  
+						 else {
+							 html+="첨부파일이 없습니다.";
+						 }
+						 html+= "</div>"+
 						"</div>"+
 					"</div>"+
 					
-					//히스토리 토글버튼 
+					//히스토리 토글버튼 	
 			    	"<div style='padding : 10px; padding-bottom: 40px; margin-top: 20px;'>"+
 					   	"<p class='p'  data-bs-toggle='collapse' href='#collapseExample2' role='button' aria-expanded='false' aria-controls='collapseExample2'>"+
 					   	  "<span><i class='bi bi-clock'></i></span>&nbsp;"+
@@ -578,52 +697,97 @@
 						   "히스토리"+
 						  "</span>"+
 						  "<span class='font' style='float: right;'> > </span>"+
-						"</p>"+
-						"<div class='collapse' id='collapseExample2'>"+
+						"</p>";
+						if(json.historyFlag){
+							for(let i=0; i<json.historyList.length; i++ ) {
+								console.log(json.historyList);
+							html +="<div class='collapse' id='collapseExample2'>"+
 						  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
 						  "<span><i class='bi bi-pencil-square'></i></span>"+
-						  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-						  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 작성했습니다.</span>"+
-						  "</div>"+
+						  "<span id='sizebold' style='color: #404040;'> "+json.historyList[i].emp_name.substring(1,3)+" </span>"+
+						  "<span style='font-size:12pt; color:#404040;'> " +json.historyList[i].contents+"</span>"+
+						  "<span style='font-size:12pt; color:#404040;'>&nbsp;&nbsp;&nbsp; <i class='bi bi-table'> </i>"+json.historyList[i].historyDate.substring(0,10)+"</span>"+
+						  "</div>";
 						  
-						  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
-						  "<span><i class='bi bi-pencil-square'></i></span>"+
-						  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-						  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 수정했습니다.</span>"+
-						  "</div>"+
-						"</div>"+
-					"</div>";	
+							}
+						}
+					
+						else {
+							html +="<div class='collapse' id='collapseExample2'>"+
+							  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
+							  "<span><i class='bi bi-pencil-square'></i></span>"+
+							  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
+							  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 작성했습니다.</span>"+
+							  "<span style='font-size:12pt; color:#404040;'>&nbsp;&nbsp;&nbsp; <i class='bi bi-table'> </i>날짜(히스토리만들기이전 게시물 안나오는게 정상)</span>"+
+							  "</div>";
+						}
+						 
+					html += "</div>";	
 	 				 approvalModal(doc_no,emp_no);
+	 				
 				}
 				else {
-					html +="<div>"+
-					"안나옴"+
+					html +="<div style='padding-top: 15px; text-align: center; font-size: 15pt; margin-top:35%;' >"+
+					"작성된 문서가 없습니다."+
 					"</div>";
 			    	
 				}
 			  $("div#rightFirst").html(html);
+			  
 		  },
 		  error: function(request, status, error){
 			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		  }
 	  });
-	  
+	
+	
 	  
   }// end of function goReadDocument()--------------------------- 
 	
 	// 결제라인 알아오는 모달
 	function approvalModal(doc_no, emp_no) {
 		  
+	  
 		  $.ajax({
 			  url:"<%= request.getContextPath()%>/workflow/modalApproval.yolo",
 			  data:{"doc_no":doc_no,
 				  	"emp_no":emp_no},
 			  dataType:"JSON",
 			  success:function(json){
+				  
+				 console.log(JSON.stringify(json)); 
+				 
+					 
 				  let html = ""
+				  
 				if(json.length > 0) {
+				//	console.log(json.length);
 					$.each(json, function(index, item){	
-						console.log(item.name);
+						console.log(index + item); 
+						
+						if(index == 0){
+							const appSize= json.length;
+							
+							const jsonsize = appSize -1;
+							console.log(jsonsize);
+					
+							 html+=  "<div id='modalStatus'>"+    
+		       			   		"<span id='status' style='font-size: 13pt; '> &nbsp;"+item.nowApprovalStep +"/"+jsonsize+"&nbsp; </span>";
+							 if(item.end_doc == "0"){
+								html+= "<span style='font-size: 13pt;'> &nbsp;&nbsp;"+item.nowApprovalStep+"단계 승인대기 중입니다.</span>";
+							  }
+					    	else{
+					    		html+= "<span style='font-size: 13pt;'> &nbsp;&nbsp;결재가 완료되었습니다.</span>";
+						    	}
+								
+			   				 html +="</div>";  
+			   				 
+							 
+						} 
+						
+						else {
+							
+						
 						 html +=  "<div id='modalNumber' style=' float:left; margin: 35px 15px 15px 10px; font-size: 11pt; font-weight: bold; padding-top: 6px; color: #333333'>"+
 						 			"&nbsp;&nbsp;"+item.levelno+"&nbsp;&nbsp;"+
 						   		  "</div>"+
@@ -633,20 +797,36 @@
 									    		"<tr>"+
 									    			"<td rowspan='2' style='padding-left: 13px;'><span id='modalprof' style='background-color: "+item.profile_color+";'>"+item.name.substring(1,3)+"</span></td>"+
 									    		    "<td class='td-2' style='vertical-align : bottom; padding-bottom : 0px; margin-bottom: 0px; font-weight: bold; font-size: 12pt;'>"+item.name+"</td>"+
-									    			"<td rowspan='2' style='padding-right: 10px;''><span id='status2' style='font-size: 12pt; padding: 3px 5px; float: right;'>"+
-									    			"승인</span>	</td>"+	
-									    		"</tr>"+
+									    			"<td rowspan='2' style='padding-right: 10px;''><span id='status2' style='font-size: 12pt; padding: 3px 5px; float: right; ";
+									    		    if(item.approval == '0'){ html+= "background-color :#ffd699'>";}
+									    			else if(item.approval == '1'){ html+= "background-color :#c1f0c1;'>";}
+									    			else if(item.approval == '2'){ html+= "background-color :#ff8080'>";}
+									    			
+									    			if(item.approval == '0'){ html+= "대기중</span>	</td>";	}
+									    			else if(item.approval == '1'){ html+= "승인</span>	</td>";}
+									    			else if(item.approval == '2'){ html+= "반려</span>	</td>";}
+									    html+= "</tr>"+
 									    		"<tr>"+	
 									    			"<td style='vertical-align : top; padding-top: 0px; margin-top: 0px; color: gray; font-size: 11pt;'>"+item.position+"· "+item.deptname+" </td>"+
 									    		"</tr>"+	
 									    	"</tbody>"+
 									    "</table>"+
 									    "<div style='margin-top: 12px;'>"+
-										   "<span style='font-size: 12pt;'><i class='bi bi-check-lg'></i> "+item.name+
-										   "님 승인진행중</span>"+
-										    "<span style='font-size: 12pt; float:right;'>완료시 날짜</span>"+
-									    "</div>"+ 
+										   "<span style='font-size: 12pt;'><i class='bi bi-check-lg'></i> "+item.name;
+										   	if(item.approval == '0'){ html+=  "님 승인진행중</span>";	}
+							    			else if(item.approval == '1'){ html+= "님 승인완료</span>	</td>";}
+							    			else if(item.approval == '2'){ html+= "님 반려</span>	</td>";}
+								   html+= "<span style='font-size: 12pt; float:right;'> ";
+								   if (item.approval==''){
+					    				html+="</span>";
+					    			}
+								   else if(item.approval == '1' || item.approval =='2'){ html+= ""+item.approval_day.substring(5,7)+"월 "+item.approval_day.substring(8,10)+"일</span>";}
+					    			
+					    			
+									html+= "</div>"+ 
 					     		 	"</div>";
+					     		 	
+						}
 		     		
 					});
 					
@@ -657,7 +837,7 @@
 						"</div>";
 				    	
 					}
-				  $("div#approvalModal").html(html);
+				  $("div#modal-body").html(html);
 			  },
 			  error: function(request, status, error){
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -666,132 +846,43 @@
 		  
 	  }
   
-
-  //에이젝스 테스트용 ///////////////////////////////////
-  	function goReadDocument2() {
-	  
-	  $.ajax({
-		  url:"<%= request.getContextPath()%>/workflow/documentDetail.yolo",
-		  data:{},
-		  dataType:"JSON",
-		  success:function(json){
-
-			  let html = "";
-
-				  html += 
-					
-		    	
-				"<div style='padding : 15px 10px' id='contents' data-bs-toggle='modal' data-bs-target='#exampleModal' onclick='#'>"+
-		    	"<span id='status2' style='font-size: 11pt; font-weight:bold; color:#4d4d4d; padding:3px;'> &nbsp;1/2&nbsp; </span>"+
-		    	"<span style='font-size: 12pt;'> &nbsp;&nbsp;1단계 승인대기 중입니다.</span>" +
-		    	"&nbsp;&nbsp;&nbsp;&nbsp;"+
-		    	"<span style='float:right; color:#cccccc; font-weight: bold; padding-left: 20px; font-size:12pt;'>></span>"+
-		    	"<span id='profile' style='float:right; margin-bottom: 5px;'>이름</span>"+
-		    	"<span id='profile2' style='float:right; margin-bottom: 5px;'>이름</span>"+ 
-	    	"</div>"+
-	  			"<div id='parent'>"+
-		    	"<div id='child' style='margin:17px 0px 10px 10px; font-size: 25pt; font-weight: bold;'>"+
-		    	"디자인 요청(제목)</div>"+
-		    	"<div id='icon' style='margin-top:22px; float: right;'>"+
-	    			"<div id='iconhover' onclick='goModify();'>"+
-							"<i class='bi bi-pencil-fill' style='font-size: 13pt;'></i>"+
-							"&nbsp;<span style='font-size: 13pt;'>수정</span>"+
-						"</div>"+
-			    	"</div>"+
-		    	"</div>"+				    	
-	    	"</div>"+
-	    	"<div style='padding : 10px; padding-bottom: 20px;' class='border-bottom'>"+
-    		"<span id='profile' style='margin-right: 10px;'>이름</span> "+
-    		"<span id='sizebold'>이름 ·</span> <span style='font-size: 13pt;'>직책</span>"+
-    		"<span style='font-size: 12pt; float:right; color:gray;'>"+
-    		"<i class='bi bi-table'></i> &nbsp;&nbsp;"+
-    		"2022.11.28(화) 14:25(날짜 코딩)</span>"+
-    	"</div>"+
-    	
-    	"<div style='padding : 10px; padding-bottom: 40px; margin-top: 20px;'  class='border-bottom'>"+
-    		"<span><i class='bi bi-chat-left-text'></i></span>"+
-    		"<span class='font'>&nbsp;&nbsp;요청 내용 </span>"+
-    		"<div style='font-size: 11.5pt; margin-top: 5px;'>"+
-      			"잘나오는지 <br>"+
-    			"테스트합니다"+
-    		"</div>"+
-    		
-    		"<div style='margin-top: 20px;'>"+
-	    		"<span><i class='bi bi-calendar4-event'></i></span>"+
-	    		"<span class='font' style='margin-right: 10px;'>&nbsp;&nbsp;희망기한 </span>"+
-	    		"<span style='font-size:11pt; color:#262626;'>2022.11.28(화) 14:25(날짜 코딩) </span>"+
-			"</div>"+
-			
-			"<button type='button' id='denial' class='bhover'>반려</button>"+
-			"&nbsp;<button type='button' id='accept' class='bhover'>✓ 승인</button>"+
-    		
-    	"</div>"+
-    	
-    	// 첨부파일 토글버튼 
-    	"<div style='padding : 10px;  padding-bottom: 40px; margin-top: 20px;'  class='border-bottom'>"+
-	    	"<p class='p'  data-bs-toggle='collapse' href='#collapseExample' role='button' aria-expanded='false' aria-controls='collapseExample'>"+
-	    	  "<span><i class='bi bi-paperclip'></i></span>&nbsp;"+
-			  "<span class='font'>"+
-			    "첨부파일"+
-			  "</span>"+
-			  "<span class='font' style='float: right;'> > </span>"+
-			"</p>"+
-			"<div class='collapse' id='collapseExample'>"+
-			  "<div class='' style='margin-left: 10px;'>"+  
-			    "첨부파일 이지롱<br>"+
-			     "그렇게<br>"+
-			     "됐다"+		    
-			  "</div>"+
-			"</div>"+
-		"</div>"+
-		
-		//히스토리 토글버튼 
-    	"<div style='padding : 10px; padding-bottom: 40px; margin-top: 20px;'>"+
-		   	"<p class='p'  data-bs-toggle='collapse' href='#collapseExample2' role='button' aria-expanded='false' aria-controls='collapseExample2'>"+
-		   	  "<span><i class='bi bi-clock'></i></span>&nbsp;"+
-			  "<span class='font'>"+
-			   "히스토리"+
-			  "</span>"+
-			  "<span class='font' style='float: right;'> > </span>"+
-			"</p>"+
-			"<div class='collapse' id='collapseExample2'>"+
-			  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
-			  "<span><i class='bi bi-pencil-square'></i></span>"+
-			  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-			  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 작성했습니다.</span>"+
-			  "</div>"+
-			  
-			  "<div class='' style='margin-left: 10px; margin-bottom: 5px;'>"+ 
-			  "<span><i class='bi bi-pencil-square'></i></span>"+
-			  "<span id='sizebold' style='color: #404040;'> 이름(코딩) </span>"+
-			  "<span style='font-size:12pt; color:#404040;'> 님이 문서를 수정했습니다.</span>"+
-			  "</div>"+
-			"</div>"+
-		"</div>";
-				
-			  $("div#rightFirst").html(html);
-		  },
-		  error: function(request, status, error){
-			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		  }
-	  });
-	  
-  }// end of function goReadDocument()--------------------------- 
   
   
-  
-  function myDocument() {
+  function myDocument(currentShowPageNo) {
 	  
 	  $.ajax({
 		  url:"<%= request.getContextPath()%>/workflow/myDocument_dm.yolo",
-		  data:{},
+		  data:{"currentShowPageNo":currentShowPageNo},
 		  dataType:"JSON",
 		  success:function(json){
 				
 			  let html = "";
+			
+				
 			  if(json.length > 0) {
 				  $.each(json, function(index, item){
 					 // console.log(item.name);
+					 
+					  if(index == 0){
+							
+
+							 html += "<div style='padding-bottom: 10px; padding-top: 25px; margin-left: 35px; '>"+
+						  		"<input type='checkbox' id='label-a' class='allCheckBox' />&nbsp;&nbsp;";
+						  		if(item.mylistSize!=0){
+						  			html+="<label for='label-a' id='sub' >1- "+item.mylistSize+"</label>";
+						  		}
+						  		else{
+						  			html+="<label for='label-a' id='sub' >0</label>";
+						  		}
+						  		html+= "<span style='font-size: 13pt;'> / "+${requestScope.myTotalCnt}+" </span>"+
+						  		"<button id='delete'><i class='bi bi-trash-fill' style='color: #404040; font-size: 10pt;'></i></button>"+
+						  		
+						  		"</div>";
+						  		
+						  	
+						} 
+					
+						else {
 					  
 					  html += 
 							"<div style='padding-top: 15px;' id='contents'>"+
@@ -800,22 +891,35 @@
 							  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
 							  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
 								  		"<label for='label-a' id='sub' >"+item.name+"</label>";
-								  		if(item.approval == 0){
-								  		html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>";
+								  		
+								  		if(item.end_Doc == "0") {
+								  			html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>";
 								  		}
+								  		else {
+								  			html +=	"<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ff4d4d; color:#330000;'>완료</span>";
+								  		}
+								  		
+								  		/* else if(item.approval == 1){
+									  		html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color: #c1f0c1; color:#4d4d4d;'>승인</span>";
+									  		}
+								  		if(item.approval == 2){
+									  		html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color: #ff8080; color:#4d4d4d;'>반려</span>";
+									  		} */
 								  		html+= "<br>"+
 										"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
 										"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
 										"<br>"+
-										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>요청내용 : "+item.doc_contents.substring(0,6)+"</span>"+
-										"<br>"+
-										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename+"</span>"+
-										"<br>"+
-										"<span>&nbsp;</span>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'> "+item.doc_contents.substring(0,6)+"</span>"+
+										"<br>";
+										if(item.orgfilename != null ){
+										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
+										"<br>";
+										}
+										html+="<span>&nbsp;</span>"+
 									"</span>"+
 								"</div>"+
 				    		"</div>";
-					  
+						}
 					  
 				  });
 				  
@@ -832,6 +936,8 @@
 			  }	
 				
 			  $("div#startContents").html(html);
+			
+			  myDmPageBar(currentShowPageNo);
 		  },
 		  error: function(request, status, error){
 			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -842,132 +948,411 @@
 	  
   }// end of function
   
-  function waitingDm() {
+  function waitingDm(currentShowPageNo) {
+	
 	  
 	  $.ajax({
 		  url:"<%= request.getContextPath()%>/workflow/watingDm.yolo",
-		  data:{},
+		  data:{"currentShowPageNo":currentShowPageNo},
 		  dataType:"JSON",
 		  success:function(json){
+			  let html = ""; 
+			/*   const jsonSize = json.length 
+			  if(json.waitinglistSize == 0) {
+				  jsonSize = 0;
+				  console.log("size1:"+jsonSize);
+			  }
+			  console.log("size2:"+jsonSize); */
+			  if(json.length > 1) {
+				  console.log(JSON.stringify(json));
 
-			  let html = "";
-
-				  html += 
-						"<div style='padding-top: 15px;' id='contents' >"+
-			    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-				    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-					  		"<span onclick='goReadDocument();'>"+
-						  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-						  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-								"<br>"+
-								"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>진행중인 문서</span>"+
-								"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-								"<br>"+
-								"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-								"<br>"+
-								"<span>&nbsp;</span>"+
-							"</span>"+
-						"</div>"+
-		    		"</div>"+
-		    		
-		    		
-		    		"<div style='padding-top: 15px;' id='contents' >"+
-		    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-			    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-				  		"<span onclick='goReadDocument2();'>"+
-					  		"<label for='label-a' id='sub' >에이젝트 테스트</label>"+
-					  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-							"<br>"+
-							"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-							"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-							"<br>"+
-							"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-							"<br>"+
-							"<span>&nbsp;</span>"+
-						"</span>"+
-					"</div>"+
-	    		"</div>"+
-	    		"<div style='padding-top: 15px;' id='contents' >"+
-	    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-		    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-			  		"<span onclick='goReadDocument();'>"+
-				  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-				  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-						"<br>"+
-						"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-						"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-						"<br>"+
-						"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-						"<br>"+
-						"<span>&nbsp;</span>"+
-					"</span>"+
-				"</div>"+
-    		"</div>"+
-    		"<div style='padding-top: 15px;' id='contents' >"+
-    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-	    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-		  		"<span onclick='goReadDocument();'>"+
-			  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-			  		"<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>"+
-					"<br>"+
-					"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>디자인 요청(제목)</span>"+
-					"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-					"<br>"+
-					"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-					"<br>"+
-					"<span>&nbsp;</span>"+
-				"</span>"+
-			"</div>"+
-		"</div>";
-
+				  $.each(json, function(index, item){
+					 // console.log(item.name);
+					/*  console.log("이름: " + item.name);
+					  console.log("levelno:" +item.levelno);
+				 console.log("aprroval:" +item.approval);
+				 console.log("presetpApp: " + item.prestepApp); */
+				 //console.log(currentShowPageNo);
+				 console.log("진행중 문서empno :" + item.emp_no);
+				 
 				
+						if(index == 0){
+							
+							 
+							// console.log(${requestScope.waitingTotalCnt})
+							 html += "<div style='padding-bottom: 10px; padding-top: 25px; margin-left: 35px; '>"+
+						  		"<input type='checkbox' id='label-a' class='allCheckBox' />&nbsp;&nbsp;";
+						  		if(item.waitinglistSize!=0){
+						  			html+="<label for='label-a' id='sub' >1- "+item.waitinglistSize+"</label>";
+						  		}
+						  		else{
+						  			html+="<label for='label-a' id='sub' >0</label>";
+						  		}
+						  		html+= "<span style='font-size: 13pt;'> / "+${requestScope.waitingTotalCnt}+"</span>"+
+						  		"<button id='delete'><i class='bi bi-trash-fill' style='color: #404040; font-size: 10pt;'></i></button>"+
+						  		
+						  		"</div>";
+						  		
+						  		$("span.num1").text(${requestScope.waitingTotalCnt});
+						  		
+						}		
+					
+						else {
+					  html += 
+							"<div style='padding-top: 15px;' id='contents'>"+
+					    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
+						    		"<input type='checkbox' id='label-a' class='checkNum' />&nbsp;&nbsp;"+
+							  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
+							  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
+								  		"<label for='label-a' id='sub' >"+item.name+"</label>";
+								  		if(item.levelno == 1 && item.approval == "0") {
+								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
+										}
+								  		else if((item.prestepApp == "1" || item.prestepApp == "2")&& item.approval == "0") {
+								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
+										}
+								  		else if(item.deny) {
+								  			html += "<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ffb3b3; color:#4d4d4d;'>승인필요</span>";
+										}
+								  		else {
+								  			html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>진행중</span>";
+								  		}
+								  		
+								  		/* else if(item.approval == 1){
+									  		html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color: #c1f0c1; color:#4d4d4d;'>승인</span>";
+									  		}
+								  		if(item.approval == 2){
+									  		html += "<span id='status' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color: #ff8080; color:#4d4d4d;'>반려</span>";
+									  		} */
+								  		html+= "<br>"+
+										"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
+										"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
+										"<br>"+
+										"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,20)+"</span>"+
+										"<br>";
+										if(item.orgfilename != null ){
+										html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'><i class='bi bi-paperclip'></i> 첨부파일 : "+item.orgfilename.substring(0,35)+"</span>"+
+										"<br>";
+										}
+										html+="<span>&nbsp;</span>"+
+									"</span>"+
+								"</div>"+
+				    		"</div>";
+						} 
+				  });
+				  
+			  }
+			  
+			  else {
+				  console.log("0보다작다고");
+				  html += 
+						"<div style='padding-top: 15px; text-align: center; font-size: 15pt; margin-top:50%;' >"+
+									
+									"진행중인 문서가 없습니다."+
+			    		"</div>";
+				  
+			  }	
+			 
 			  $("div#startContents").html(html);
+			 
+			  
+			  //페이지바 호출
+			  waitingDmPageBar(currentShowPageNo);
+			 
 		  },
 		  error: function(request, status, error){
 			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		  }
 	  });
-	  
   }
   
-   function completeDm() {
+   function completeDm(currentShowPageNo) {
 	  
-	  $.ajax({
-		  url:"<%= request.getContextPath()%>/workflow/watingDm.yolo",
-		  data:{},
-		  dataType:"JSON",
-		  success:function(json){
-
-			  let html = "";
-
-				  html += 
-					  
-					  "<div style='padding-top: 15px;' id='contents' >"+
-			    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
-				    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
-					  		"<span onclick='goReadDocument();'>"+
-						  		"<label for='label-a' id='sub' >이름(코딩)</label>"+
-						  		"<span id='status3' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; color:#4d4d4d;'>완료</span>"+
-								"<br>"+
-								"<span style='padding:30px; font-size: 11.5pt; margin-left:7px; '>진행중인 문서</span>"+
-								"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>11월 16일</span>"+
-								"<br>"+
-								"<span style='padding:30px; font-size: 11.5pt; margin-left:9px;'>요청내용 : 내용</span>"+
-								"<br>"+
-								"<span>&nbsp;</span>"+
-							"</span>"+
-						"</div>"+
-		    		"</div>";
-		    		
+	   $.ajax({
+			  url:"<%= request.getContextPath()%>/workflow/completeDm.yolo",
+			  data:{"currentShowPageNo":currentShowPageNo},
+			  dataType:"JSON",
+			  success:function(json){
+				 
+				  let html = "";
+				 
+	  				
+				  if(json.length > 0) {
+					  $.each(json, function(index, item){
+						 // console.log(item.name);
+						/*  console.log("이름: " + item.name);
+						  console.log("levelno:" +item.levelno);
+					 console.log("aprroval:" +item.approval);
+					 console.log("presetpApp: " + item.prestepApp); */
+						  if(index == 0){
+								
+							  html += "<div style='padding-bottom: 10px; padding-top: 25px; margin-left: 35px; '>"+
+						  		"<input type='checkbox' id='label-a' class='allCheckBox' />&nbsp;&nbsp;";
+						  		if(item.completelistSize!=0){
+						  			html+="<label for='label-a' id='sub' >1- "+item.completelistSize+"</label>";
+						  		}
+						  		else{
+						  			html+="<label for='label-a' id='sub' >0</label>";
+						  		}
+						  		html+= "<span style='font-size: 13pt;'> / "+${requestScope.completeTotalCnt}+" </span>"+
+						  		"<button id='delete'><i class='bi bi-trash-fill' style='color: #404040; font-size: 10pt;'></i></button>"+
+						  		
+						  		"</div>";
+						  		$("span.num3").text(${requestScope.completeTotalCnt});
+						  		
+						  		
+						  	
+							} 
 						
-			  $("div#startContents").html(html);
-		  },
-		  error: function(request, status, error){
-			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		  }
-	  });
+							else {
+						  
+						  html += 
+								"<div style='padding-top: 15px;' id='contents'>"+
+						    		"<div style='margin-left: 35px; margin-right: 25px;' class='border-bottom'>"+
+							    		"<input type='checkbox' id='label-a' class='checkNum'/>&nbsp;&nbsp;"+
+								  		"<span id='getdocno' onclick='goReadDocument("+item.doc_no+","+item.emp_no+");'>"+
+								  		" <input type='hidden' class='doc_no' name='' value="+item.doc_no+" /> "+
+									  		"<label for='label-a' id='sub' >"+item.name+"</label>"+
+									  		"<span id='needstatus' style='font-size: 10.5pt; float:right; margin: 5px; padding-top:3px; font-weight:bold; background-color : #ff4d4d; color:#330000;'>완료</span>"+
+									  		"<br>"+
+											"<span style='padding:30px; font-size: 12pt; margin-left:7px; '>"+item.doc_subject+"</span>"+
+											"<span style='font-size: 11pt; float:right; margin: 5px 8px; color:#737373;'>"+item.writeday.substring(5,7)+"월 "+item.writeday.substring(8,10)+"일</span>"+
+											"<br>"+
+											"<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>"+item.doc_contents.substring(0,6)+"</span>"+
+											"<br>";
+											if(item.orgfilename != null ){
+											html += "<span style='padding:30px; font-size: 11.5pt; margin-left:7px;'>첨부파일 : "+item.orgfilename+"</span>"+
+											"<br>";
+											}
+											html+="<span>&nbsp;</span>"+
+										"</span>"+
+									"</div>"+
+					    		"</div>";
+						  
+							}
+					  });
+					  
+				  }
+				  
+				  else {
+					  
+					  html += 
+							"<div style='padding-top: 15px; text-align: center; font-size: 15pt; margin-top:50%;' >"+
+										
+										"완료된 문서가 없습니다."+
+				    		"</div>";
+					  
+				  }	
+					
+				  $("div#startContents").html(html);
+				 
+				  
+				  //페이지바 호출
+				  completeDmPageBar(currentShowPageNo);
+				 
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
 	  
   }
+   
+	// ==== 페이지바 만들기 진행중인(Ajax 로 처리해야 함) ==== //
+   function waitingDmPageBar(currentShowPageNo) {
+
+	   <%-- === 원글에 대한 댓글의 totalPage 수를 알아와야 한다. === --%>
+		  $.ajax({
+			  url:"<%= request.getContextPath()%>/getTotalPage.yolo",
+			  data:{"sizePerPage":"10"},
+		      type:"GET",
+		      dataType:"JSON",
+		      success:function(json){
+		    	 
+		    	  if(json.totalPage > 0) {
+		    		  // 게시글이 있는 경우
+		    		  
+		    		  const totalPage = json.totalPage;
+		    		  
+		    		  const blockSize = 5;
+		    		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
+		    		  let loop = 1;
+		    		// loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+		    		  if(typeof currentShowPageNo == "string") {
+	    			   currentShowPageNo = Number(currentShowPageNo);
+	    		   	  }
+		    		
+		    		// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! *** //
+		    		   let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
+		    			    		   
+		    		  let pageBarHTML ="";
+		    		  
+		    		  pageBarHTML ="<nav aria-label='..'>"+
+								  "<ul class='pagination'>"+
+								    "<li class='page-item disabled'>"+
+								     "<a class='page-link' href='#' tabindex='-1' aria-disabled='true'><</a>"+
+								    "</li>";
+								    while( !(loop > blockSize || pageNo > totalPage) ) {
+								    if(pageNo == currentShowPageNo) {
+								    pageBarHTML += "<li class='page-item'>"+
+								    	"<a class='page-link'>"+pageNo+"</a></li>";
+								    }
+								    else {
+								    	pageBarHTML += "<li class='page-item'>"+
+								    	"<a class='page-link' href='javascript:waitingDm(\""+pageNo+"\")'>"+pageNo+"</a></li>";
+								    }
+								    loop++;
+				    				pageNo++;
+				    			}// end of while--------------------------
+  
+								    pageBarHTML += "<li class='page-item'>"+
+								      "<a class='page-link' href='#''>></a>"+
+								    "</li>"+
+								 " </ul>"+
+								"</nav>";
+					    		  
+		    			
+		    		  
+		    		    $("div#pageBar").html(pageBarHTML);
+		    	  }// end of if(json.totalPage > 0){}----------------------------
+		    	  
+		      },
+		      error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+   }
+	
+	// ==== 페이지바 만들기 진행중인(Ajax 로 처리해야 함) ==== //
+   function completeDmPageBar(currentShowPageNo) {
+
+	   <%-- === 원글에 대한 댓글의 totalPage 수를 알아와야 한다. === --%>
+		  $.ajax({
+			  url:"<%= request.getContextPath()%>/getTotalPageCom.yolo",
+			  data:{"sizePerPage":"10"},
+		      type:"GET",
+		      dataType:"JSON",
+		      success:function(json){
+		    	  
+		    	  if(json.totalPage > 0) {
+		    		  // 게시글이 있는 경우
+		    		  
+		    		  const totalPage = json.totalPage;
+		    		  console.log("totalPage :" +totalPage);
+		    		  const blockSize = 5;
+		    		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
+		    		  let loop = 1;
+		    		// loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+		    		  if(typeof currentShowPageNo == "string") {
+	    			   currentShowPageNo = Number(currentShowPageNo);
+	    		   	  }
+		    		
+		    		// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! *** //
+		    		   let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
+		    			    		   
+		    		  let pageBarHTML ="";
+		    		  
+		    		  pageBarHTML ="<nav aria-label='..'>"+
+								  "<ul class='pagination'>"+
+								    "<li class='page-item disabled'>"+
+								     "<a class='page-link' href='#' tabindex='-1' aria-disabled='true'><</a>"+
+								    "</li>";
+								    while( !(loop > blockSize || pageNo > totalPage) ) {
+								    if(pageNo == currentShowPageNo) {
+								    pageBarHTML += "<li class='page-item'>"+
+								    	"<a class='page-link'>"+pageNo+"</a></li>";
+								    }
+								    else {
+								    	pageBarHTML += "<li class='page-item'>"+
+								    	"<a class='page-link' href='javascript:completeDm(\""+pageNo+"\")'>"+pageNo+"</a></li>";
+								    }
+								    loop++;
+				    				pageNo++;
+				    			}// end of while--------------------------
+  
+								    pageBarHTML += "<li class='page-item'>"+
+								      "<a class='page-link' href='#''>></a>"+
+								    "</li>"+
+								 " </ul>"+
+								"</nav>";
+					    		  
+		    			
+		    		  
+		    		    $("div#pageBar").html(pageBarHTML);
+		    	  }// end of if(json.totalPage > 0){}----------------------------
+		    	  
+		      },
+		      error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+   }
+	
+// ==== 페이지바 만들기 진행중인(Ajax 로 처리해야 함) ==== //
+   function myDmPageBar(currentShowPageNo) {
+
+	   <%-- === 원글에 대한 댓글의 totalPage 수를 알아와야 한다. === --%>
+		  $.ajax({
+			  url:"<%= request.getContextPath()%>/getTotalPagemy.yolo",
+			  data:{"sizePerPage":"10"},
+		      type:"GET",
+		      dataType:"JSON",
+		      success:function(json){
+		    	  
+		    	  if(json.totalPage > 0) {
+		    		  // 게시글이 있는 경우
+		    		  
+		    		  const totalPage = json.totalPage;
+		    		  
+		    		  const blockSize = 5;
+		    		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
+		    		  let loop = 1;
+		    		// loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수[ 지금은 10개(== blockSize) ] 까지만 증가하는 용도이다.
+		    		  if(typeof currentShowPageNo == "string") {
+	    			   currentShowPageNo = Number(currentShowPageNo);
+	    		   	  }
+		    		
+		    		// *** !! 다음은 currentShowPageNo 를 얻어와서 pageNo 를 구하는 공식이다. !! *** //
+		    		   let pageNo = Math.floor( (currentShowPageNo - 1)/blockSize ) * blockSize + 1;
+		    			    		   
+		    		  let pageBarHTML ="";
+		    		  
+		    		  pageBarHTML ="<nav aria-label='..'>"+
+								  "<ul class='pagination'>"+
+								    "<li class='page-item disabled'>"+
+								     "<a class='page-link' href='#' tabindex='-1' aria-disabled='true'><</a>"+
+								    "</li>";
+								    while( !(loop > blockSize || pageNo > totalPage) ) {
+								    if(pageNo == currentShowPageNo) {
+								    pageBarHTML += "<li class='page-item'>"+
+								    	"<a class='page-link'>"+pageNo+"</a></li>";
+								    }
+								    else {
+								    	pageBarHTML += "<li class='page-item'>"+
+								    	"<a class='page-link' href='javascript:myDocument(\""+pageNo+"\")'>"+pageNo+"</a></li>";
+								    }
+								    loop++;
+				    				pageNo++;
+				    			}// end of while--------------------------
+  
+								    pageBarHTML += "<li class='page-item'>"+
+								      "<a class='page-link' href='#''>></a>"+
+								    "</li>"+
+								 " </ul>"+
+								"</nav>";
+					    		  
+		    			
+		    		  
+		    		    $("div#pageBar").html(pageBarHTML);
+		    	  }// end of if(json.totalPage > 0){}----------------------------
+		    	  
+		      },
+		      error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+   }
+	
   
   
   /////////////////////////////////////////////
@@ -992,32 +1377,33 @@
 	    	
 	    	 	<!-- <a href="#" class="mylink"><span id=subject style="color:black;">내가 쓴 문서 </span><span id="number"> 4 </span></a>	
 	    	 	<a href="#" class="link"><span id=subject style="color:gray;">&nbsp;&nbsp;&nbsp;완료</span> <span id="number"> 3</span></a> -->
-	    		<button class="bottom-line" id="mine" style="border-bottom : 4px solid #00cc00;" onclick="myDocument();"> 
-	    		<span id=subject style="color:black;">내가 쓴 문서 </span><span id="number"> 4 </span>	
+	    		<button class="bottom-line" id="wating" style="border-bottom : 4px solid #00cc00;" onclick="waitingDm(1);"> 
+	    		<span id=subject class="doc1" style="color:balck;">진행 중 </span><span id="number" class="num1">  </span>	
 	    		</button>
-	    		<button class="bottom-line" id="wating" onclick="waitingDm();"> 
-	    		<span id=subject style="color:gray;">진행 중 </span>
+	    		<button class="bottom-line" id="mine"  onclick="myDocument(1);"> 
+	    		<span id=subject class="doc2" style="color:gray;">내가 쓴 문서 </span><span id="number" class="num2">${requestScope.myTotalCnt} </span>	
 	    		</button>
-	    		<button class="bottom-line" id="complete" onclick="completeDm();"> 
-	    		<span id=subject style="color:gray;">완료</span> <span id="number"> 3</span>
+	    		<button class="bottom-line" id="complete" onclick="completeDm(1);"> 
+	    		<span id=subject class="doc3" style="color:gray;">완료</span> <span id="number" class="num3">${requestScope.completeTotalCnt} </span>
 	    		</button>
 	    	
     	 </div>
 	    <div id="documentContent" class="border-top" > <!-- height: 200px; -->
-	    	<div style="padding-bottom: 10px; padding-top: 25px; margin-left: 35px; ">
-		  		<input type="checkbox" id="label-a" class="allCheckBox" />&nbsp;&nbsp;
+	    	<!--    <div id ="topcont" style="padding-bottom: 10px; padding-top: 25px; margin-left: 35px; ">
+		   	<input type="checkbox" id="label-a" class="allCheckBox" />&nbsp;&nbsp;
 		  		<label for="label-a" id="sub" >1-4</label> <span style="font-size: 13pt;"> / 4(코딩)</span>
-		  		<button id="delete"><i class="bi bi-trash-fill" style="color: #404040; font-size: 10pt;"></i></button>
-		 	    <!-- <span id=subject style="font-size: 10pt; padding-top: 0px; margin-top: 0px;" > 1-4 </span><span> / 4(코딩) </span> -->
-	    	</div>
+		  		<button id="delete"><i class="bi bi-trash-fill" style="color: #404040; font-size: 10pt;"></i></button>  
+		 	    <span id=subject style="font-size: 10pt; padding-top: 0px; margin-top: 0px;" > 1-4 </span><span> / 4(코딩) </span> 
+	    	
+	    	</div>-->
 	    	
 	    	<div id="startContents" class="border-bottom startContents"> 
 		    	
-	    	</div>
+	    	</div> 
 	    	
 	    	<!-- 페이지바 -->
-	    	<div style="margin: 15px auto auto 15px;"> 
-		    	 <nav aria-label="...">
+	    	<div style="margin: 20px auto auto 25px;" id="pageBar"> 
+		    	<!--  <nav aria-label="...">
 				  <ul class="pagination">
 				    <li class="page-item disabled">
 				      <a class="page-link" href="#" tabindex="-1" aria-disabled="true"><</a>
@@ -1031,7 +1417,7 @@
 				      <a class="page-link" href="#">></a>
 				    </li>
 				  </ul>
-				</nav>
+				</nav> -->
 			</div>	
 	    </div> 
 	<!-- ajax 올릴 것 끝1 -->    
@@ -1043,7 +1429,7 @@
     </div>
     
   </div>
-</div>
+
 
 
 
@@ -1060,10 +1446,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="modal-body">
-			<div id="modalStatus">    
-	       		<span id="status" style="font-size: 13pt; "> &nbsp;1/2&nbsp; </span> 
-		    	<span style="font-size: 13pt;"> &nbsp;&nbsp;1단계 승인대기 중입니다.</span> 
-		    </div>  
+			
 		    
 		    <!-- <div id="modalContents">
 		    	<span id="modalNumber" style="	margin-top: 10px; margin-left : 30px; ">&nbsp;&nbsp;1&nbsp;&nbsp;</span>
@@ -1074,7 +1457,7 @@
 		    	
 		    </div> -->
 		    <!-- 내용 시작 -->
-		    <div id="approvalModal">
+		    <!-- <div id="approvalModal"> -->
 				    
      		  
      		 

@@ -13,6 +13,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -106,6 +107,8 @@ public class AdminController {
 	        
 	        totalCommuteList = service.totalCommuteList(paraMap);
 	        
+	        System.out.println("확인용"+totalCommuteList.size());
+	        
 	        if(totalCommuteList != null) {
 	        	
 	        		for(HashMap<String, String> map : totalCommuteList) {
@@ -140,6 +143,8 @@ public class AdminController {
 		String startdate = request.getParameter("startdate");
 		String enddate = request.getParameter("enddate");
 		
+		System.out.println("totalpage 컨트롤러 확인용 arrDept => " + arrDept);
+		
 		Map<String, Object> paraMap = new HashMap<>();
 		paraMap.put("startdate", startdate);
 		paraMap.put("enddate", enddate);
@@ -165,29 +170,14 @@ public class AdminController {
 		
 		String select_year = request.getParameter("select-year");
 		
+		if(select_year == null) {
+			
+			Calendar now = Calendar.getInstance();
+			 
+			select_year = String.valueOf(now.get(Calendar.YEAR));
+		}
+		
 		Map<String, Object> paraMap = new HashMap<>();
-		
-		
-		if(empno.equals("9999")) { // 관리자 아이디로 들어왔을때
-			if(select_year == null) {
-				
-				Calendar now = Calendar.getInstance();
-				 
-				select_year = String.valueOf(now.get(Calendar.YEAR));
-			}
-			
-			
-		}
-		else { // 일반사원이 들어왔을 때
-			
-			if(select_year == null) {
-				
-				Calendar now = Calendar.getInstance();
-				 
-				select_year = String.valueOf(now.get(Calendar.YEAR));
-			}
-			
-		}
 		
 		paraMap.put("empno",empno);
 		paraMap.put("select_year",select_year);
@@ -197,8 +187,94 @@ public class AdminController {
 		request.setAttribute("payStubList", payStubList);
 		
 		
-		return "josh/pay_stub.admin";
+		
+		if(empno.equals("9999")) { // 관리자 아이디로 들어왔을때
+			
+			
+			return "josh/pay_stub_admin.admin";
+		}
+		
+		else { // 일반사원이 들어왔을 때
+			
+			
+			return "josh/pay_stub.admin";
+			
+		}
+		
+		
+		
 	}
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(value="/admin/ajaxPayStub.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.GET})
+	public String ajaxPayStub(@RequestParam Map<String,Object> paraMap, HttpServletRequest request) {
+		
+		JSONArray jsonArr = new JSONArray();
+		
+		List<Map<String, String>> payStubList = service.getPayStubList(paraMap);
+		
+		if(payStubList != null) {
+			
+			for(Map<String, String> map : payStubList) {
+				
+				JSONObject jsonObj = new JSONObject();
+				jsonObj.put("month_payment", map.get("month_payment"));
+				jsonObj.put("salary", map.get("salary"));
+				jsonObj.put("over_salary", map.get("over_salary"));
+				
+				jsonArr.put(jsonObj);
+			}
+			
+		}
+		
+		
+		return jsonArr.toString();
+	}
+	
+	// 퇴직금 페이지
+	@RequestMapping(value="/admin/severance_pay.yolo")
+	public String severance_pay(HttpServletRequest request, HttpServletResponse response) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO empvo = (EmployeeVO) session.getAttribute("loginuser");
+		String empno = empvo.getEmpno();
+		
+		if(!empno.equals("9999")) { // 관리자가 아닌데 접근했을 경우
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/notice/noticeList.yolo");
+			try {
+				dispatcher.forward(request, response);
+			} catch (ServletException | IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		else {
+			String select_year = request.getParameter("select-year");
+			
+			if(select_year == null) {
+				
+				Calendar now = Calendar.getInstance();
+				 
+				select_year = String.valueOf(now.get(Calendar.YEAR));
+			}
+			
+			Map<String, Object> paraMap = new HashMap<>();
+			
+			paraMap.put("empno",empno);
+			paraMap.put("select_year",select_year);
+			
+			List<Map<String, String>> payStubList = service.getPayStubList(paraMap);
+			
+			request.setAttribute("payStubList", payStubList);
+		}
+		
+		return "josh/severance_pay_admin.admin";
+		
+	}
+	
+	
 	
 	@RequestMapping(value="/admin/payment.yolo")
 	public String payment(HttpServletRequest request, HttpServletResponse response) {
@@ -257,6 +333,8 @@ public class AdminController {
 			System.out.println("getPaymentList 확인용 enddate => " + enddate);
 			System.out.println("getPaymentList 확인용 currentShowPageNo => " + currentShowPageNo);
 			System.out.println("getPaymentList 확인용 arrDept => " + arrDept);
+			
+			
 			/*
 			확인용 startdate => 2022-11-28
 			확인용 enddate => 2022-12-02
@@ -284,13 +362,13 @@ public class AdminController {
 			paraMap.put("startRno", String.valueOf(startRno));
 			paraMap.put("endRno", String.valueOf(endRno));
 			
-			List<HashMap<String, String>> getPaymentList = new ArrayList<>();
+			List<Map<String, Object>> getPaymentList = new ArrayList<>();
 	        
 			getPaymentList = service.getPaymentList(paraMap);
 	        
 	        if(getPaymentList != null) {
 	        	
-	        		for(HashMap<String, String> map : getPaymentList) {
+	        		for(Map<String, Object> map : getPaymentList) {
 	        			JSONObject jsonObj = new JSONObject();
 	        			
 	        			jsonObj.put("name", map.get("name"));
@@ -394,4 +472,187 @@ public class AdminController {
 	}
 	
 	
+	
+	// 페이징 처리를 위한 페이지수 구해오기 
+		@ResponseBody
+		@RequestMapping(value = "/admin/getSeverancePayList.yolo", produces = "text/plain;charset=UTF-8")
+		public String empListPaging(HttpServletRequest request, @RequestParam(name = "arr_position[]", required = false) List<String> arr_position,
+																@RequestParam(name = "arr_dept[]", required = false) List<String> arr_dept ,
+																@RequestParam(name = "arr_status[]", required = false) List<String> arr_status) {
+			
+			String currentShowPageNo = request.getParameter("currentShowPageNo");
+			String keyword = request.getParameter("keyword");
+			
+			Map<String,Object> pageMap = new HashMap<>();
+			pageMap.put("currentShowPageNo", currentShowPageNo);
+			pageMap.put("keyword", keyword);
+			pageMap.put("arr_position", arr_position);
+			pageMap.put("arr_dept", arr_dept);
+			pageMap.put("arr_status", arr_status);
+			
+			
+			if(currentShowPageNo == null) {
+				currentShowPageNo ="1";
+			}
+			
+			int sizePerPage = 10; 
+
+			int startRno = ((Integer.parseInt(currentShowPageNo) - 1) * sizePerPage) + 1;
+		    int endRno = startRno + sizePerPage - 1;
+			
+		    pageMap.put("startRno", String.valueOf(startRno));
+		    pageMap.put("endRno", String.valueOf(endRno));
+		    
+		    
+//		    System.out.println("currentShowPageNo : "+currentShowPageNo);
+//			System.out.println("String.valueOf(startRno) : "+String.valueOf(startRno));
+//			System.out.println("String.valueOf(endRno) : "+String.valueOf(endRno));
+			
+//			List<Map<String,String>> empList = service.empListWithRno(pageMap);
+			
+			// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+		    List<Map<String,String>> getSeverancePayList = service.getSeverancePayList(pageMap);
+			
+//			System.out.println("확인용 페이징 empList : "+ empListPaging);
+			
+			JSONArray jsonArr = new JSONArray();
+			
+			if(getSeverancePayList.size() != 0) {
+				for(Map<String,String> map: getSeverancePayList) {
+					
+					JSONObject jsonObj = new JSONObject();
+					
+					jsonObj.put("empno", map.get("empno"));
+					jsonObj.put("name", map.get("name"));
+					jsonObj.put("position", map.get("position"));
+					jsonObj.put("continuousServiceMonth", map.get("continuousServiceMonth"));
+					jsonObj.put("workingDays", map.get("workingDays"));
+					jsonObj.put("deptname", map.get("deptname"));
+					jsonObj.put("severance_pay", map.get("severance_pay"));
+					jsonObj.put("profile_color", map.get("profile_color"));
+					jsonObj.put("status", map.get("status"));
+					
+					jsonArr.put(jsonObj);
+					
+				}
+			}
+			
+			return jsonArr.toString();
+			
+			
+
+		}
+		
+		
+		
+		// 페이징 처리를 위한 페이지수 구해오기 
+		@ResponseBody
+		@RequestMapping(value = "/admin/getTotalPage.yolo", produces = "text/plain;charset=UTF-8")
+		public String getTotalPage(HttpServletRequest request,@RequestParam(name = "arr_position[]", required = false) List<String> arr_position,
+															  @RequestParam(name = "arr_dept[]", required = false) List<String> arr_dept ,
+															  @RequestParam(name = "arr_status[]", required = false) List<String> arr_status) {
+			
+			String sizePerPage = request.getParameter("sizePerPage");
+			String keyword = request.getParameter("keyword");
+			
+//			System.out.println(arr_position);
+//			System.out.println(arr_dept);
+//			System.out.println(arr_status);
+//			
+//			System.out.println("sizePerPage"+sizePerPage);
+//			System.out.println("keyword"+keyword);
+			
+			
+			Map<String,Object> pageMap = new HashMap<>();
+			pageMap.put("sizePerPage", sizePerPage);
+			pageMap.put("keyword", keyword); // 검색어를 입력한 경우 
+			pageMap.put("arr_position", arr_position); // 검색어를 입력한 경우 
+			pageMap.put("arr_dept", arr_dept); // 검색어를 입력한 경우 
+			pageMap.put("arr_status", arr_status); // 검색어를 입력한 경우 
+			
+			int totalPage = service.getTotalPage(pageMap);
+			
+			// System.out.println("############## 확인용 ############"+totalPage);
+
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("totalPage",totalPage); 
+			
+			return jsonObj.toString();
+		}
+		
+		
+		
+		
+	
+		
+		@ResponseBody
+		@RequestMapping(value="/admin/severancePayment.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.POST})
+		public String severancePayment(HttpServletRequest request, @RequestParam String jsonData) {
+			
+			JSONObject jsonObj = new JSONObject();
+			
+			JSONArray array = new JSONArray(jsonData);
+			
+			List<Map<String, Object>> paraList = new ArrayList<Map<String, Object>>();
+			
+			for(Object obj : array) {
+				 
+				jsonObj = (JSONObject)obj;
+				 
+				//System.out.println("확인용 jsonObj => " + jsonObj);
+				 
+				String empno = (String) jsonObj.get("empno");
+				String serverance_pay = (String) jsonObj.get("serverance_pay");
+				
+				System.out.println("empno => " + empno);
+				System.out.println("serverance_pay => " + serverance_pay);
+				
+				Map<String, Object> paymentMap = new HashMap<>();
+				paymentMap.put("empno", empno);
+				paymentMap.put("serverance_pay", serverance_pay);
+				
+				paraList.add(paymentMap);
+				
+				 
+			 }// end of for ------------------------------------------
+			
+			int n = service.severancePayment(paraList);
+			
+			jsonObj.put("n",n);
+			
+			return jsonObj.toString();
+	
+		}
+		
+		
+		
+		
+		@ResponseBody
+		@RequestMapping(value="/admin/allPayment.yolo", produces="text/plain;charset=UTF-8", method = {RequestMethod.POST})
+		public String allPayment(HttpServletRequest request, @RequestParam Map<String, Object> paraMap) {
+			
+			String month_payment = (String) paraMap.get("month_payment");
+			
+			List<Map<String, Object>> paymentList = service.getPaymentList(paraMap);
+			
+			for(Map<String, Object> map : paymentList) {
+	    			
+	    			map.put("empno", map.get("empno"));
+	    			map.put("month_payment", month_payment);
+	    			map.put("salary", map.get("worktime_salary"));
+	    			map.put("over_salary", map.get("overtime_salary"));
+			
+			}
+			
+			int n = service.checkedPayment(paymentList);
+			
+			JSONObject jsonObj = new JSONObject();
+			
+			jsonObj.put("n", n);
+			
+			return jsonObj.toString();
+		}
+		
+		
+		
 }

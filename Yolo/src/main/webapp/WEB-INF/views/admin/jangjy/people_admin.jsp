@@ -1,9 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 
-<%
-	String ctxPath = request.getContextPath();
-%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<% String ctxPath = request.getContextPath(); %>
 
 <style>
 
@@ -102,11 +102,6 @@ button.btn_search:hover {
 	background-color: #ebebeb;
 }
 
-div#div_toggle_buttons {
-	background-color: #ebebeb;
-	padding: 3px;
-	border-radius: 5px;
-}
 
 button.btn_view_style:focus {
 	outline: none;
@@ -128,7 +123,7 @@ div#div_search {
 	border-radius: 10px;
 	height: 30px;
 	padding-left: 3px;
-	margin-top: 8px;
+	margin-top: 5px;
 	position: relative;
 	left: 38px;
 	display: none;
@@ -420,6 +415,58 @@ li.li_moveAll > a{
 	display: inline-block;
 }
 
+div.filebox {
+	display: flex;
+	align-items: center;
+}
+
+.filebox .upload-name {
+    display: inline-block;
+    height: 35px;
+    padding: 0 10px;
+    vertical-align: middle;
+    border: 1px solid #dddddd;
+    width: 70%;
+    border-radius: 0.4rem;
+    color: #999999;
+}
+
+.filebox label {
+    display: inline-block;
+    padding: 7px 20px;
+    color: #fff;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #88eb1e;
+    cursor: pointer;
+    width : 25%;
+    height: 35px;
+    margin-left: 10px;
+    margin-top: 6px;
+    border-radius: 0.4rem;
+}
+
+.filebox input[type="file"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+}
+
+button#fileUpload{
+	width: 100%;
+	color:white;
+	background-color:#07B419;
+}
+
+span.span_badge {
+	background-color: #d9d9d9;
+	border-radius: 5px;
+	padding: 0 5px;
+}
+
 
 
 </style>
@@ -427,6 +474,7 @@ li.li_moveAll > a{
 <script>
 
 let currentShowPageNo = 1;
+let managerFlag = false;
 arr_position = [];
 arr_dept = [];
 arr_status = [];
@@ -454,45 +502,25 @@ arr_status = [];
                 "toLabel": "To",
                 "customRangeLabel": "Custom",
                 "weekLabel": "W",
-                "daysOfWeek": [
-                    "일",
-                    "월",
-                    "화",
-                    "수",
-                    "목",
-                    "금",
-                    "토"
-                ],
-                "monthNames": [
-                    "1월",
-                    "2월",
-                    "3월",
-                    "4월",
-                    "5월",
-                    "6월",
-                    "7월",
-                    "8월",
-                    "9월",
-                    "10월",
-                    "11월",
-                    "12월"
-                ],
+                "daysOfWeek": ["일","월","화","수","목","금","토"],
+                "monthNames": ["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],
                 "firstDay": 1
             }
         });
 		<%-- ===== 달력 하나만 출력 끝 =====  --%>
 		
-		
-		// 테이블 형식 또는 리스트 형식 출력 버튼 클릭시 버튼 css 변경 
-		$(document).on("click","button.btn_view_style",function(){
-			$("button.btn_view_style").css("background-color","");
-			$(this).css("background-color","white");
+		// 파일 선택하면 선택창 바뀌도록 
+		$(document).on("change", ".file", function(){
+			  var fileName = $(this).val();
+			  console.log(fileName);
+			  $(this).parent().find($(".upload-name")).val(fileName.slice(fileName.lastIndexOf("\\")+1));
 		});
 		
 		// 검색 버튼 클릭시 
 		$(document).on("click","button#btn_search",function(){
 			$("div#div_search").css("display","block");	
 			$("button#btn_search").addClass("hidden");
+			$("input#searchWord").focus();
 		});
 		// 검색 div 이외 영역 클릭시 값이 비어있는 경우 div 숨기기
 		$('html').click(function(e) {   
@@ -505,53 +533,12 @@ arr_status = [];
 		// 검색버튼에서 검색어 입력시 
 		$(document).on("keyup","input#searchWord",function(){
 			viewEmpList(currentShowPageNo);
+			$("input[name='searchWord']").val($(this).val());
+			$("input[name='keyword']").val($(this).val());
 			
 		})// end of $(document).on("keyup","input#searchWord",function(){}------
 		
 		
-		
-		// 다운로드 버튼 클릭시 
-		$(document).on("click","button#btn_search",function(){
-			
-		});
-		
-		
-		// 사원 관련 모든 정보 table 로 보여주는 버튼
-		$(document).on("click","button#view_table",function(){
-			func_getEmpList();
-		});
-		
-		// 사원 관련 부서, 이름 , 직위, 아이콘만 보여주는 버튼
-		$(document).on("click","button#view_list",function(){
-			$("div#search_result").empty();
-			let html ='<div style="display: flex; margin-top:20px;">'
-						+'<div class="div_personOne" style="width:100%; padding-top: 15px;">'
-							
-								<%-- 반복해서 출력할 div 묶음 시작  --%>
-								+'<div class="div_empInfo" style="display: flex; justify-content: space-between; margin: 10px; padding:10px;">'
-								+'<div class="profile2">'
-									+'<div class="profile_icon2">'
-										+'<div>길동</div>'
-									+'</div>'
-										+'<div class="div_name2" style="padding-top:3px;">홍길동</div>'
-								+'</div>'
-								+'<div class="dept_position">'
-									+'<span>직위&nbsp;&nbsp;</span>'
-									+'<span>|</span>'
-									+'<span>&nbsp;&nbsp;부서</span>'
-									+'</div>'
-								+'</div>'
-								<%-- 반복해서 출력할 div 묶음 끝  --%>
-							
-						+'</div>'<%-- end of <div style="width:75%; padding-top: 15px;"> --%>
-						
-					+'</div>';
-			$("div#search_result").html(html);
-		});
-		
-		// 문서 로딩 시 기본값 테이블 보기로 설정
-		// $("button#view_table").trigger("click");
-		// $("input#searchWord").trigger("keyup");
 		viewEmpList(1);
 		
 		// 구성원 등록 모달에서 드롭다운으로 나오는 속성 클릭 시 
@@ -559,18 +546,65 @@ arr_status = [];
 			let selected = $(this).text(); // 부서, 부서장 
 			let val = $(this).find("input.input_registValue").val(); // 10, 20, 부서장
 			
-			$(this).parent().parent().find("input").val(val); // 전송을 위해 input 태그에 값 입력
-			$(this).parent().parent().find("div.regist_value").text(selected);
+			// console.log("selected : "+ selected);
+			// console.log("val : "+ val);
 			
+			if(selected =="부서장" || selected == "팀장"){
+				let formValues = $("form[name=regist_frm]").serialize() ;
+				$.ajax({
+					  url : "<%= ctxPath%>/registCheckManager.yolo",
+					  data : formValues,    
+					  type : "POST",
+					  dataType : "JSON",
+					  success : function(json){
+						
+						  if(json.manager_yn == 1){
+							  Swal.fire({
+								   title: '해당 부서에 부서장/팀장이 이미 존재합니다.',
+								   text: '변경하시겠습니까?',
+								   icon: 'warning',
+								   
+								   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+								   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+								   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+								   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+								   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+								   
+								   reverseButtons: true, // 버튼 순서 거꾸로
+								   
+								}).then(result => {
+								   if (result.isConfirmed) { // 부서장/ 팀장을 바꾸는 경우 
+									  
+								   }
+								   else{ // 부서장/팀장을 안바꾸는 경우 
+									   $("input#position").val("");
+								   	   $("div#title_position").text("직위 선택");
+								   }
+								});
+							  
+						  }// end of if(josn.manager_yn == 1)
+						  
+					  }
+				});// end of ajax
+			}
+			
+			if($(this).hasClass("selectedPosition")){
+				$(this).parent().parent().find("input.selected").val(selected); // 전송을 위해 input 태그에 값 입력
+				$(this).parent().parent().find("div.regist_value").text(selected);
+			}
+			else{
+				$(this).parent().parent().find("input.selected").val(val); // 전송을 위해 input 태그에 값 입력
+				$(this).parent().parent().find("div.regist_value").text(selected);
+			}
 		});
+		
+		
 		
 		// 구성원 등록 모달에서 입력완료 버튼 클릭시 
 		$("button#regist_member_btn").click(function(){
-			
 			registEmployee();
-			
-			
 		}); 
+		
 		// 구성원 등록 모달 닫기 시 
 		$('.modal').on('hidden.bs.modal', function (e) {
 			$(this).find('form')[0].reset();
@@ -578,6 +612,12 @@ arr_status = [];
 		
 		// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
 		$(document).on("click","a.dropdown-item",function(e){
+			
+			/* console.log(arr_dept);
+			console.log(arr_position);
+			console.log(arr_status); */
+			
+			deptno = $(this).parent().find("input").val();
 			
 			let flag = true;
 			
@@ -603,14 +643,18 @@ arr_status = [];
 				  {
 				    case "직위" :    
 				    	arr_position.push(searchWord);
+				    	$("input[name='arr_position']").val(arr_position);
 				      break;     
 
 				    case "부서" :    
 				    	arr_dept.push(searchWord);
+				    	$("input[name='arr_dept']").val(arr_dept);
+				    	$('.a_'+deptno).trigger('click');
 				      break;  
 				      
 				    case "상태" :    
 				    	arr_status.push(searchWord);
+				    	$("input[name='arr_status']").val(arr_status);
 				      break;   
 				  }
 			  	
@@ -657,11 +701,9 @@ arr_status = [];
 			arr_dept.length = 0;
 			arr_status.length = 0;
 			
-			<%-- 
-			console.log(arr_position);
-			console.log(arr_dept);
-			console.log(arr_status);
-			--%>
+			$("input[name='arr_position']").val("");
+			$("input[name='arr_dept']").val("");
+			$("input[name='arr_status']").val("");
 			
 			viewEmpList(currentShowPageNo);
 			
@@ -673,8 +715,68 @@ arr_status = [];
 		})// end of $(document).on("click","button#registMember",function(){}-----------
 		
 		
+		// 구성원 정보 엑셀 파일로 다운로드 
+		$(document).on("click","button#btn_download",function(){
+			 const frm = document.searchFrm;
+			 frm.method = "POST"; // select 이기때문에 보안성과는 상관 없으므로 get 방식
+			 frm.action = "<%= ctxPath%>/downloadExcelFile.yolo"; 
+			 frm.submit();
+		});
+		
+		$(document).on("click","div#modal_registMember button.dropdown-item",function(){
+			
+		});
+		
+		
+		
+			
+		
 	});// end of $(document).ready(function(){}------------------------------------------------
 	
+			
+	/*************excel upload*************/
+    
+    function checkFileType(filePath) {
+        var fileFormat = filePath.split(".");
+
+        if (fileFormat.indexOf("xls") > -1 || fileFormat.indexOf("xlsx") > -1) {
+          return true;
+          } else {
+          return false;
+        }
+      }
+
+      function check() {
+
+        var file = $("#excelFile").val();
+
+        if (file == "" || file == null) {
+        alert("파일을 선택해주세요.");
+
+        return false;
+        } else if (!checkFileType(file)) {
+        alert("엑셀 파일만 업로드 가능합니다.");
+
+        return false;
+        }
+
+        if (confirm("업로드 하시겠습니까?")) {
+
+          var options = {
+
+            success : function(data) {
+                console.log(data);
+              alert("모든 데이터가 업로드 되었습니다.");
+
+            },
+            type : "POST"
+            };
+          
+          $("#excelUploadForm").ajaxSubmit(options);
+          
+        }
+      }
+
 			
 			
 	// 검색 조건 필터를 위해 상위부서 이름 조회하는 메소드
@@ -689,7 +791,7 @@ arr_status = [];
 			  success : function(json){
 				  let html ='';
 				  $.each(json,function(index,dept){
-					  html += '<li id=li_'+dept.deptno+'><a class="dropdown-item" href="javascript:void(0);" onmouseover="getTeam('+dept.deptno+');"><input type="hidden" value="부서" />'+dept.deptname+'</a></li>'
+					  html += '<li id=li_'+dept.deptno+'><input type="hidden" value="'+dept.deptno+'"/><a class="a_'+dept.deptno+' dropdown-item" href="javascript:void(0);" onmouseover="getTeam('+dept.deptno+');"><input type="hidden" value="부서" />'+dept.deptname+'</a></li>'
 					  
 			    });// end of $.each(json,function(index,emp){}----------------------------
 			    	
@@ -714,7 +816,8 @@ arr_status = [];
 				  let html ='<ul class="dropdown-menu dropdown-submenu">';
 				  
 				  $.each(json2,function(index,team){
-				  		html += '<li><a class="dropdown-item" href="#"><input type="hidden" value="부서" />'+team.deptname+'</a></li>';
+				  		html += '<li><a class=" a_'+deptno+' dropdown-item" href="#"><input type="hidden" value="부서" />'+team.deptname+'</a></li>';
+				  		
 			    	});// end of $.each(json,function(index,emp){}----------------------------
 			      html += '</ul>';
 			      
@@ -741,7 +844,7 @@ arr_status = [];
 		let keyword = $("input#searchWord").val();
 		
 		$.ajax({
-			url:"<%=request.getContextPath()%>/getTotalPage.yolo",
+			url:"<%=request.getContextPath()%>/getTotalEmpPage.yolo",
 			data:{"sizePerPage":"10"
 				 ,"keyword":keyword
 				 ,"arr_position":arr_position
@@ -751,7 +854,7 @@ arr_status = [];
 			dataType:"JSON", 
 			success:function(json){
 				// json ==>  {"totalPage":4} 또는 {"totalPage":0}
-				if(json.totalPage > 0){// 댓글이 있는 경우 
+				if(json.totalPage > 0){
 					
 					const totalPage = json.totalPage;
 					
@@ -796,7 +899,9 @@ arr_status = [];
 				
 					$("div#pageBar").html(pageBarHTML);
 				}// end of if(json.totalPage > 0){}----------------------------------
-				
+				else{
+					$("div#pageBar").empty();
+				}
 			},
 			error: function(request, status, error){
 	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -826,26 +931,35 @@ arr_status = [];
 						+'<thead>'
 							+'<tr>'
 								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
-								+'<th colspan=6>기본 정보</th>'
-								+'<th colspan=2>인사 정보</th>'
+								+'<th colspan=6>기본 정보</th>';
+								if(${sessionScope.loginuser.empno} == "9999"){
+								html+='<th colspan=2>인사 정보</th>'
 								+'<th colspan=3>개인 정보</th>'
-							+'</tr>'
+								}
+							html+='</tr>'
 							+'<tr>'
 								+'<th style="width:5%">상태</th>'
-								+'<th class="th_50">사번</th>'
-								+'<th style="width:7%">입사일</th>'
+								+'<th class="th_50">사번</th>';
+								
+							if(${sessionScope.loginuser.empno} == "9999"){
+								
+								html +='<th style="width:7%">입사일</th>'
 								+'<th style="width:7%">퇴직일</th>'
 								+'<th style="width:7%">근속기간</th>'
-								+'<th class="th_100">근무일수</th>'
+								+'<th class="th_100">근무일수</th>';
+							}	
 								
-								+'<th class="th_50">부서</th>'
+								html +='<th class="th_50">부서</th>'
 								+'<th class="th_50">직위</th>'
 								
 								+'<th class="th_150">이메일</th>'
-								+'<th style="width:5%">성별</th>'
-								+'<th class="th_150">휴대전화</th>'
+								+'<th style="width:5%">성별</th>';
 								
-							+'</tr>'
+							if(${sessionScope.loginuser.empno} == "9999"){	
+								html +='<th class="th_150">휴대전화</th>';
+							}
+								
+							html+='</tr>'
 						+'</thead>'
 						+'<tbody>';
 				  $.each(json,function(index,emp){
@@ -856,21 +970,56 @@ arr_status = [];
 										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
 										+'<div style="padding-top:3px;">'+emp.name+'</div>'
 									+'</div>'
-								+'</td>'
+								+'</td>';
+								
 								+'<td>'+emp.status+'</td>'
-								+'<td>'+emp.empno+'</td>'
-								+'<td>'+emp.hireDate+'</td>'
-								+'<td>'+emp.retireDate+'</td>'
-								+'<td>'+emp.continuousServiceMonth+'</td>'
-								+'<td>'+emp.workingDays+'</td>'
+									
+								if(emp.status=="재직"){		
+									html+="<td><span id='label_status' class='span_badge' style='background-color:#07B419; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else if(emp.status=="휴직"){
+									html+="<td><span id='label_status' class='span_badge' style='background-color:#8F40DE; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else if(emp.status=="퇴직"){
+									html+="<td><span id='label_status' class='span_badge' style='background-color:gray; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else{
+									html+="<td></td>";
+								}	
+									
+								html +='<td>'+emp.empno+'</td>';
+								
+								if(${sessionScope.loginuser.empno} == "9999"){
+									
+									html +='<td>'+emp.hireDate+'</td>'
+									+'<td>'+emp.retireDate+'</td>'
+									+'<td>'+emp.continuousServiceMonth+'</td>'
+									+'<td>'+emp.workingDays+'</td>';
+								}
 				
-								+'<td>'+emp.deptname+'</td>'
+								html +='<td>'+emp.deptname+'</td>'
 								+'<td>'+emp.position+'</td>'
-				
-								+'<td>'+emp.email+'</td>'
-								+'<td>'+isEmpty(emp.gender)+'</td>'
-								+'<td>'+isEmpty(emp.mobile)+'</td>'
-							+'</tr>'
+								+'<td>'+emp.email+'</td>';
+								// +'<td>'+isEmpty(emp.gender)+'</td>';
+								
+								if(emp.gender=="남"){		
+									html+="<td><span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>"+isEmpty(emp.gender)+"</span></td>";
+								}
+								else if(emp.gender=="여"){
+									html+="<td><span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>"+isEmpty(emp.gender)+"</span></td>";
+								}
+								else{
+									html+="<td></td>";
+								}
+								
+								
+								
+								
+								if(${sessionScope.loginuser.empno} == "9999"){
+									html+='<td>'+isEmpty(emp.mobile)+'</td>';
+								}
+								
+							+'</tr>';
 							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
 						
 				    });// end of $.each(json,function(index,emp){}----------------------------
@@ -898,165 +1047,6 @@ arr_status = [];
 	            return value;
 	     }
 	}	
-	
-	<%--
-	// 사원 목록 조회하는 메소드 
-	function func_getEmpList(){
-		let keyword = $("input#searchWord").val();
-		$.ajax({
-			  // 검색어가 있는 사원 조회 
-			  url : "<%= ctxPath%>/getEmpList.yolo",
-			  data:{"keyword":keyword
-				   ,"currentShowPageNo":currentShowPageNo},
-			  dataType : "JSON",
-			  success : function(json){
-				  
-				  $("div#search_result").empty();
-				  let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
-						+'<thead>'
-							+'<tr>'
-								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
-								+'<th colspan=6>기본 정보</th>'
-								+'<th colspan=2>인사 정보</th>'
-								+'<th colspan=3>개인 정보</th>'
-							+'</tr>'
-							+'<tr>'
-								+'<th style="width:5%">상태</th>'
-								+'<th class="th_50">사번</th>'
-								+'<th style="width:7%">입사일</th>'
-								+'<th style="width:7%">퇴직일</th>'
-								+'<th style="width:7%">근속기간</th>'
-								+'<th class="th_100">근무일수</th>'
-								
-								+'<th class="th_50">부서</th>'
-								+'<th class="th_50">직위</th>'
-								
-								+'<th class="th_150">이메일</th>'
-								+'<th style="width:5%">성별</th>'
-								+'<th class="th_150">휴대전화</th>'
-								
-							+'</tr>'
-						+'</thead>'
-						+'<tbody>';
-				  $.each(json,function(index,emp){
-					  $("span#result_cnt").text(emp.totalCount+" 명");
-					  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
-								+'<td class="th_150">'
-									+'<div class="profile">'
-										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
-										+'<div style="padding-top:3px;">'+emp.name+'</div>'
-									+'</div>'
-								+'</td>'
-								+'<td>'+emp.status+'</td>'
-								+'<td>'+emp.empno+'</td>'
-								+'<td>'+emp.hireDate+'</td>'
-								+'<td>'+emp.retireDate+'</td>'
-								+'<td>'+emp.continuousServiceMonth+'</td>'
-								+'<td>'+emp.workingDays+'</td>'
-				
-								+'<td>'+emp.deptname+'</td>'
-								+'<td>'+emp.position+'</td>'
-				
-								+'<td>'+emp.email+'</td>'
-								+'<td>'+emp.gender+'</td>'
-								+'<td>'+emp.mobile+'</td>'
-							+'</tr>'
-						
-				    });// end of $.each(json,function(index,emp){}----------------------------
-					
-				    html +='</tbody>'   	
-					+'</table>';
-					$("div#search_result").html(html);
-					  
-			  },// end of success
-			  error: function(request, status, error){
-				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			  }
-		
-		}); // end of ajax()----------------------------------------------------------------------
-		
-	}// end of function func_getEmpList(){}------------------------------
-	--%>
-	
-	<%--
-	// 전체 사원을 조회해오는 메소드 
-	function func_getEmpList(){
-		
-		$("div#search_result").empty();
-		let html ='<table class="table table-bordered table-hover" style="margin-top: 20px;">'
-						+'<thead>'
-							+'<tr>'
-								+'<th rowspan="2" class="th_100" style="vertical-align: middle; text-align:start;">이름</th>'
-								+'<th colspan=6>기본 정보</th>'
-								+'<th colspan=2>인사 정보</th>'
-								+'<th colspan=3>개인 정보</th>'
-							+'</tr>'
-							+'<tr>'
-								+'<th style="width:5%">상태</th>'
-								+'<th class="th_50">사번</th>'
-								+'<th style="width:7%">입사일</th>'
-								+'<th style="width:7%">퇴직일</th>'
-								+'<th style="width:7%">근속기간</th>'
-								+'<th class="th_100">근무일수</th>'
-								
-								+'<th class="th_50">부서</th>'
-								+'<th class="th_50">직위</th>'
-								
-								+'<th class="th_150">이메일</th>'
-								+'<th style="width:5%">성별</th>'
-								+'<th class="th_150">휴대전화</th>'
-								
-							+'</tr>'
-						+'</thead>'
-						+'<tbody>';
-		
-		$.ajax({
-			  url : "<%= request.getContextPath()%>/getEmpList.yolo",
-			  // data : {"email":email ,"pwd":pwd}, 나중에 필터값 전달
-			  // type : "POST",
-			  dataType : "JSON",
-			  success : function(json){
-			 
-				  
-				  $.each(json,function(index,emp){
-					  
-				  html += '<tr onclick="func_getEmpInfo('+emp.empno+');">'
-							+'<td class="th_150">'
-								+'<div class="profile">'
-									+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
-									+'<div style="padding-top:3px;">'+emp.name+'</div>'
-								+'</div>'
-							+'</td>'
-							+'<td>'+emp.status+'</td>'
-							+'<td>'+emp.empno+'</td>'
-							+'<td>'+emp.hireDate+'</td>'
-							+'<td>'+emp.retireDate+'</td>'
-							+'<td>'+emp.continuousServiceMonth+'</td>'
-							+'<td>'+emp.workingDays+'</td>'
-			
-							+'<td>'+emp.deptname+'</td>'
-							+'<td>'+emp.position+'</td>'
-			
-							+'<td>'+emp.email+'</td>'
-							+'<td>'+emp.gender+'</td>'
-							+'<td>'+emp.mobile+'</td>'
-						+'</tr>'
-					
-			    });// end of $.each(json,function(index,emp){}----------------------------
-				
-			    html +='</tbody>'   	
-				+'</table>';
-				$("div#search_result").html(html);
-				
-			  },
-			  error: function(request, status, error){
-				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			  }
-		  }); // end of ajax{}----------------------------------------------
-		
-	}// end of function func_getEmpList(){}--------------------------------------------
-	--%>
-	
 	
 	
 	// 신규 사원 등록하는 메소드 
@@ -1095,6 +1085,7 @@ arr_status = [];
 					  else{
 						  if(json.registResult == 1){
 							  alert('가입 성공!');
+							  window.location.reload();
 						  }
 					  }
 					  
@@ -1143,7 +1134,7 @@ arr_status = [];
 			  success : function(json2){
 				  let html ='';
 				  $.each(json2,function(index,team){
-				  		html += '<button class="btn_label dropdown-item" type="button"><input class="input_registValue" type="hidden" value='+team.deptno+'>'+team.deptname+'</button>';
+				  		html += '<button class="btn_label dropdown-item" type="button"><input class="input_registValue" type="text" value='+team.deptno+'>'+team.deptname+'</button>';
 			    	});// end of $.each(json,function(index,emp){}----------------------------
 			      
 			      $("div#div_team").html(html);
@@ -1156,8 +1147,6 @@ arr_status = [];
 	}
 	
 	
-	
-	
 </script>
 
 <div id="peopleContent">
@@ -1165,14 +1154,25 @@ arr_status = [];
 		<div id="header_title">
 			<a class="current" href="<%=ctxPath%>/people.yolo"><span class="title">구성원</span></a>
 			<a class="a_title" href="<%=ctxPath%>/organization_chart.yolo"><span class="title">조직도</span></a> 
-			<a class="a_title" href="<%=ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
+			<c:if test="${sessionScope.loginuser.empno == 9999}">
+				<a class="a_title" href="<%=ctxPath%>/change_history.yolo"><span class="title">인사 정보 관리</span></a>
+			</c:if>
 		</div>
 		<div id="button_title">
-			<button id="registMember" type="button" class="btn"
-				data-toggle="modal" data-target="#modal_registMember">
-				<span> <i class="fas fa-plus"
-					style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
+			<button id="registMember" data-toggle="dropdown" type="button" class="btn" >
+				<span> 
+					<i class="fas fa-plus" style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
 				</span>
+			</button>
+			<div class="dropdown-menu">
+				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_registMember">
+					<i class="fas fa-user-alt"></i>&nbsp;&nbsp;한명 추가하기 
+				</a> 
+				<a id = "delete_profileImg" class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_excelUpload">
+					<span><i class="fas fa-file-excel"></i>&nbsp;&nbsp;여러명 추가하기</span>
+				</a> 
+			</div>
+				
 			</button>
 		</div>
 	</div>
@@ -1221,10 +1221,10 @@ arr_status = [];
 							<%-- =========== 부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">부서 선택</div>
-								<input type="hidden" id="department" name="department" />
+								<input class="selected" type="text" id="department" name="department" />
 
 								<button id="btn" class=" btn choice_type" type="button" data-toggle="dropdown">
-									<div style="display: flex; justify-content: space-between;">
+									<div style="display: flex; justify-content: space-between;" onclick="getDeptNameModal();">
 										<div class="regist_value">부서 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
@@ -1238,9 +1238,9 @@ arr_status = [];
 							<%-- =========== 세부부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">세부부서 선택</div>
-								<input type="hidden" id="team" name="team" />
+								<input class="selected" type="text" id="team" name="team" />
 
-								<button id="btn" class=" btn choice_type" type="button"
+								<button id="btn_team" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;">
 										<div class="regist_value">세부부서 선택</div>
@@ -1258,30 +1258,31 @@ arr_status = [];
 							<%-- =========== 직위 선택 =========== --%>
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">직위 선택</div>
-								<input type="hidden" name="position" id="position" />
+								<input class="selected" type="text" name="position" id="position" />
 
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
-									<div style="display: flex; justify-content: space-between;">
+									<div id="title_position" style="display: flex; justify-content: space-between;">
 										<div class="regist_value">직위 선택</div>
 										<i class="fas fa-bars" style="padding: 5px;"></i>
 									</div>
 								</button>
 
 								<div id="div_position" class="dropdown-menu">
-									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="사장" />사장</button>
-									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="부서장" />부서장</button>
-									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="차장" />차장</button>
-									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="팀장" />팀장</button>
-									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="대리" />대리</button>
-									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="사원" />사원</button>
-									<button class="btn_label dropdown-item" type="button"><input type="hidden" class="input_registValue" value="관리자" />관리자</button>
+									<button class="btn_label dropdown-item selectedPosition" type="button"><input type="hidden" class="input_registValue" value="사장" />사장</button>
+									<button class="btn_label dropdown-item selectedPosition" type="button"><input type="hidden" class="input_registValue" value="부서장" />부서장</button>
+									<button class="btn_label dropdown-item selectedPosition" type="button"><input type="hidden" class="input_registValue" value="차장" />차장</button>
+									<button class="btn_label dropdown-item selectedPosition" type="button"><input type="hidden" class="input_registValue" value="팀장" />팀장</button>
+									<button class="btn_label dropdown-item selectedPosition" type="button"><input type="hidden" class="input_registValue" value="대리" />대리</button>
+									<button class="btn_label dropdown-item selectedPosition" type="button"><input type="hidden" class="input_registValue" value="사원" />사원</button>
+									<button class="btn_label dropdown-item selectedPosition" type="button"><input type="hidden" class="input_registValue" value="관리자" />관리자</button>
 								</div>
 							</div>
 							<%-- =========== 직위 선택 =========== --%>
 							
 							
 							<%-- =========== 직속상관 선택 =========== --%>
+							<%-- 
 							<div style="margin: 10px 0;">
 								<div class="regitst_title">직속 상관(삭제예정)</div>
 								<input type="hidden" name="managerid" id="managerid" />
@@ -1302,6 +1303,7 @@ arr_status = [];
 									<button class="btn_label dropdown-item" type="button">직속상관5</button>
 								</div>
 							</div>
+							--%>
 							<%-- =========== 직속상관 선택 =========== --%>
 							
 						</div>
@@ -1320,6 +1322,39 @@ arr_status = [];
 	</div>
 	<!-- ========================== 구성원 추가 모달 끝 ========================== -->
 	
+	<!-- ========================== 엑셀 파일 업로드 모달 시작 ========================== -->
+	<div class="modal fade" id="modal_excelUpload">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content" style="padding: 5px;">
+				<!-- Modal header -->
+				<div class="modal-header">
+					<h2>구성원 일괄 등록</h2>
+					<button id="btn_close_registModal" type="button" class="close" data-dismiss="modal">&times;</button>
+				</div>
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form id="excelUploadForm" name="excelUploadForm" enctype="multipart/form-data"  method="post" action= "excelUploadAjax.yolo">
+						<input style="display:none;" class="file" type="file" id="excelFile" name="excelFile" />
+						<div class="filebox">
+						    <input class="upload-name" name="excelFile" value="첨부파일" placeholder="첨부파일" readonly="readonly" style="flex-grow: 1;">
+						    <label for="excelFile">파일찾기</label>
+						</div>
+					</form>
+				</div>
+				<!-- Modal footer -->
+				<div class="modal-footer"
+					style="display: flex; justify-content: space-between;">
+					<%-- form 전송 --%>
+					<button type="button" class="btn" id="fileUpload" onclick="check();">
+						<i class="fas fa-check"></i>입력완료
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- ========================== 엑셀 파일 업로드 모달 끝 ========================== -->
+	
+	
 	<div id="search_buttons">
 		<%-- 검색어 입력 input 태그 --%>
 		<div id="div_search">
@@ -1337,23 +1372,19 @@ arr_status = [];
 			<i class="fas fa-download"></i>
 		</button>
 
-		<%-- 모든 정보 출력 or 이름,부서,직위만 출력 --%>
-		<div id="div_toggle_buttons">
-			<button type="button" id="view_table" class="btn btn_view_style">
-				<i class="fas fa-th-large"></i>
-			</button>
-
-			<button type="button" id="view_list" class="btn btn_view_style">
-				<i class="fas fa-th-list"></i>
-			</button>
-		</div>
 	</div>
 	
 	<%-- 검색필터 추가 시작  --%>
 	<div id="div_searchTag">
 		<div id="serchTag_content">
 			<div class="dropdown">
-			
+			<form name="searchFrm">
+				<input type="hidden" name="arr_position" />
+				<input type="hidden" name="arr_dept" />
+				<input type="hidden" name="arr_status" />
+				<input type="hidden" name="keyword"/>
+			</form>
+						
 			<span id="span_searchTag"></span>
 				
 				<button id="add_searchTag" data-toggle="dropdown" type="button"

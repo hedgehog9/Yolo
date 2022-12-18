@@ -14,6 +14,10 @@ public class ScheduleVO {
 	private String joinuser;
 	private String place;
 	
+	// select 용 field
+	private String birthday;
+	private String name;
+	
 	public String getSchedule_no() {
 		return schedule_no;
 	}
@@ -79,6 +83,18 @@ public class ScheduleVO {
 	}
 	public void setPlace(String place) {
 		this.place = place;
+	}
+	public String getBirthday() {
+		return birthday;
+	}
+	public void setBirthday(String birthday) {
+		this.birthday = birthday;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

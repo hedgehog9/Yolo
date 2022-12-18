@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
     
 <style type="text/css">
 
 	/* Model 시작 */
-	div.noticeEdit{
+	div.noticeEditModal{
 		min-height: 700px;
 		max-height: 850px;
 	}
@@ -117,11 +118,12 @@
 
 	$(document).ready(function() {
 		
+		// 공지리스트에서 수정하기 (완료) 버튼 클릭시
 		$("button.editNoticeBtn").click(function(){
 			
 			// 글제목 유효성 검사
-			const subject = $("input#editsubject").val().trim();
-			if(subject == "") {
+			const editsubject = $("input#editsubject").val().trim();
+			if(editsubject == "") {
 				toastr.options = {
 	                      closeButton: true,
 	                      progressBar: true,
@@ -134,8 +136,8 @@
 			}
 
 			// 글내용 유효성 검사
-			const content = $("textarea#editContent").val().trim();
-			if(content == "") {
+			const editContent = $("textarea#editContent").val().trim();
+			if(editContent == "") {
 				toastr.options = {
 	                      closeButton: true,
 	                      progressBar: true,
@@ -145,26 +147,38 @@
 	                  };
 	                  toastr.error('', '글내용을 입력하세요');
 				return;
+
 			}
-	
-		});	
+
+			// 공지 작성하기 (완료버튼) 폼 태그 전송
+			const frm = document.editNoticeFrm;
+			frm.method = "POST";
+			frm.action = "<%= request.getContextPath() %>/notice/editNoticeFrm.yolo";
+			frm.submit();	
+			
+		}); // end of $("button.editNoticeBtn").click
 		
-	});
+	}); // end of ready
 
 </script> 
  
 <!-- Modal --> 
-<div class="modal fade noticeEdit"  id="staticBackdrop" data-backdrop="static">
+<div class="modal fade noticeEditModal"  id="staticBackdrop" data-backdrop="static">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
     <div class="modal-content">
 
       <!-- Modal body -->
       <div class="modal-body">
       <button type="button" class="close my_close" data-dismiss="modal" aria-label="Close">&times;</button> 
-      <form id='my_editform'>
-      	<input id="editsubject" name="editsubject" placeholder="원래 공지제목 들어가는 곳" value=""/>
-      	<span style="width: 80%; margin: 0 10%;">받는 사람</span>
-        <textarea rows="" cols="" id="editContent" name="editContent">원래 공지 내용</textarea>
+     
+      <form id='editNoticeFrm' name="editNoticeFrm">
+      	<input type="text" id="editsubject" name="subject" />
+      	<!--  <span style="width: 80%; margin: 0 10%;">받는 사람</span>-->
+        
+        <textarea rows="" cols="" id="editContent" name="content"></textarea>
+		<input type="hidden" name="notino" id="hidden_notino" />
+        <input type="hidden" name="fk_deptno" />
+        
         <div id="attachFile">
         	<div class="fileEditbox">
 			    <input class="uploadName" value="첨부파일" placeholder="첨부파일">
@@ -172,11 +186,11 @@
 			    <input type="file" id="editfile" value="">
 			</div>
         </div>
-      </form>
-        
         <button type="button" class="editNoticeBtn" style="width: 80%; margin: 10px 10% 50px 10%;">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 수정하기
 		</button>
+      </form>
+        
       </div>
     </div>
   </div>

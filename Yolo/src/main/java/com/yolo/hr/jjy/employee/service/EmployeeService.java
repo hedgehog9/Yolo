@@ -1,5 +1,6 @@
 package com.yolo.hr.jjy.employee.service;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yolo.hr.common.ExcelRead;
+import com.yolo.hr.common.ExcelReadOption;
 import com.yolo.hr.jjy.employee.model.*;
 
 @Service
@@ -218,14 +221,25 @@ public class EmployeeService implements InterEmployeeService {
 	@Override
 	public int registEployee(Map<String, Object> paraMap) {
 		
+		String position = (String) paraMap.get("position");
+		
 		// 프로필 색상 랜덤 지정하기 
 		Random rand = new Random();
 		String[] arr_profile_color = {"#FFADC5","#CCD1FF","#A8C8F9","#B8F3B8","#FFDDA6","#FFA9B0","#FFCCCC","#C3C95E","#FC9EBD"};
 		
 		paraMap.put("profile_color", arr_profile_color[rand.nextInt(9)]);
-//		System.out.println("확인용 랜덤 프로필 색상 "+paraMap.get("profile_color"));
 		
 		int registResult = dao.registEployee(paraMap);
+		
+		if("팀장".equals("position") || "부서장".equals(position)) {
+			
+			Map<String,String> emailMap = dao.getEmpno(paraMap);
+			
+			paraMap.put("empno", emailMap.get("empno"));
+			
+			dao.updateManagerEmpnoRegist(paraMap);
+		}
+		
 		return registResult;
 	}
 
@@ -246,47 +260,56 @@ public class EmployeeService implements InterEmployeeService {
 	
 	
 	@Override
-	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int personnelAppointment(Map<String, Object> paraMap) {
 		
 		int insert_psa = 0 ,
+			update_dept_mapping =0,
 			update_emp = 0 ;  
 		
 		// 1. 인사발령 테이블에 insert
 		insert_psa = dao.insertPsa(paraMap);
 		
+		String position = (String) paraMap.get("position");
+		String deptno = (String) paraMap.get("deptno");
+		String teamno = (String) paraMap.get("teamno");
+		
 		// 2. 사원 테이블 update 
-		
-		// 2-1 사원 테이블 update 쿼리 만들기 
-		String updateQuery = "";
-		String position = (String)paraMap.get("position");
-		String teamno = (String)paraMap.get("teamno");
-		String deptno = (String)paraMap.get("deptno");
-		
+		String updateQuery = ""; 
 		if(insert_psa == 1) {
-		
-			// 1. 부서번호만 들어온 경우 (position == null) (O)
-			if(!"".equals(deptno) && "".equals(position) && "".equals(teamno) ) {
+			
+			// 1. 부서번호만 들어온 경우 (position == null)
+			if(deptno != "" && teamno == "" && position == "") {
 				updateQuery = "update tbl_employees set fk_deptno =  "+paraMap.get("deptno") +" where empno = " +paraMap.get("empno");
 			}
-			// 2. 부서번호,팀번호 들어온 경우 (position == null) (O)
-			else if(!"".equals(deptno) && "".equals(position) && !"".equals(teamno) ) {
+			// 2. 부서번호,팀번호 들어온 경우 (position == null)
+			else if(deptno != "" && teamno != "" && position == "") {
 				updateQuery = "update tbl_employees set fk_deptno =  "+paraMap.get("teamno") +" where empno = " +paraMap.get("empno");
 			}
-			// 3. 부서번호, 직위 들어온 경우 (O)
-			else if(!"".equals(deptno) && !"".equals(position) && "".equals(teamno) ) {
+			// 3. 부서번호, 직위 들어온 경우 
+			else if(deptno != "" && teamno == "" && position != "") {
 				updateQuery = "update tbl_employees set fk_deptno = "+paraMap.get("deptno")+" ,position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
 			}
 			// 4. 직위만  들어온 경우 (deptno == null && teamno == null) (O)
-			else if("".equals(deptno) && !"".equals(position) && "".equals(teamno) ) {
+			else if(deptno == "" && teamno == "" && position != "") {
 				updateQuery = "update tbl_employees set position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
 			}
 			// 5. 부서번호, 팀번호, 직위 모두 들어온 경우 (O)
-			else if(!"".equals(deptno) && !"".equals(position) && !"".equals(teamno) ) {
+			else if(deptno != "" && teamno != "" && position != "") {
 				updateQuery = "update tbl_employees set fk_deptno = "+paraMap.get("teamno")+" ,position = '"+paraMap.get("position") +"' where empno = " +paraMap.get("empno");
 			}
+
+				
+				
 			paraMap.put("updateQuery", updateQuery);
 			update_emp = dao.updatePsa(paraMap);
+		}
+		
+		if(update_emp == 1) {
+			// 3. 부서 매핑 테이블 update (팀장 또는 부서장인 경우)
+			if( (position != null || "".equals(position)) && ( "부서장".equals(position) || "팀장".equals(position) ) ) {
+				update_dept_mapping = dao.updateManagerEmpno(paraMap);
+				return update_dept_mapping;
+			}
 		}
 		
 		// 4. 공지 작성 
@@ -295,6 +318,194 @@ public class EmployeeService implements InterEmployeeService {
 	
 	}
 
+	@Override
+	public int changePsInfo(Map<String, Object> psInfoMap) {
 
+		StringBuilder sql =  new StringBuilder();
+		String address = (String) psInfoMap.get("address");
+		String detailAddress = (String) psInfoMap.get("detailAddress");
+		
+		if(!"".equals(detailAddress)) {
+			address += " "+detailAddress;
+			psInfoMap.put("address", address);
+		}
+		sql.append(" update tbl_employees set ");
+		
+		for(String key : psInfoMap.keySet()){
+            if(!"".equals(psInfoMap.get(key)) && !"detailAddress".equals(key) && !key.contains("attach")) {
+    			sql.append(key + " = '" +psInfoMap.get(key)+"',");
+    		}
+        }
+		
+		String str_sql = sql.substring(0, sql.length()-1).toString();
+		sql.setLength(0);
+		sql.append(str_sql);
+		
+		sql.append(" where empno = "+psInfoMap.get("empno"));
+		
+//		System.out.println("확인용 sql : "+ sql.toString());
+		psInfoMap.put("sql", sql);
+		
+		int result = dao.changePsInfo(psInfoMap);
+		return result;
+	}
+
+	@Override
+	public int getTotalPsaPage(Map<String, Object> pageMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) pageMap.get("keyword"); 
+		boolean result = false;
+		if(str != null) {
+			result = Pattern.matches(pattern, str);
+		}
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		pageMap.put("searchType", searchType);
+		
+		int totalCount = dao.getTotalPsaPage(pageMap);
+		return totalCount;
+	}
+
+	@Override
+	public List<Map<String, String>> psaListSearchWithPaging(Map<String, Object> pageMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) pageMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		pageMap.put("searchType", searchType);
+		List<Map<String, String>> psaListPaging = dao.psaListSearchWithPaging(pageMap);
+		return psaListPaging;
+	}
+
+	@Override
+	public List<Map<String, String>> empListDownloadExcel(Map<String, Object> searchMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) searchMap.get("keyword"); 
+		
+		boolean result = Pattern.matches(pattern, str);
+		
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		searchMap.put("searchType", searchType);
+		List<Map<String, String>> empListPaging = dao.empListDownloadExcel(searchMap);
+		return empListPaging;
+	}
+
+	/*******excel upload*********/
+    @Override
+    public void excelUpload(File destFile) {
+        
+        ExcelReadOption excelReadOption = new ExcelReadOption();
+        
+        //파일경로 추가
+        excelReadOption.setFilePath(destFile.getAbsolutePath());
+        
+        //추출할 컬럼명 추가
+        excelReadOption.setOutputColumns("A", "B", "C", "D", "E","F");
+        
+        //시작행
+        excelReadOption.setStartRow(2);
+        
+        List<Map<String, String>>excelContent  = ExcelRead.read(excelReadOption);
+        
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("excelContent", excelContent);
+        
+        System.out.println("확인용 : "+excelContent);
+        
+        try {
+            dao.insertExcel(paramMap);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+	@Override
+	public int updateLeave(Map<String, String> leaveMap) {
+		
+		StringBuilder sql =  new StringBuilder();
+		
+		sql.append(" update tbl_leave_absence set ");
+		
+		for(String key : leaveMap.keySet()){
+            if(!"".equals(leaveMap.get(key)) && !"empno".equals(key) && !"leaveno".equals(key)) {
+    			sql.append(key + " = '" +leaveMap.get(key)+"',");
+    		}
+        }
+		
+		String str_sql = sql.substring(0, sql.length()-1).toString();
+		sql.setLength(0);
+		sql.append(str_sql);
+		
+		sql.append(" where leaveno = "+leaveMap.get("leaveno"));
+		leaveMap.put("sql", sql.toString());
+		
+		int leaveUpdateResult = dao.updateLeaveDate(leaveMap);
+		
+		// 현재 날짜와 휴직 시작일 비교, 휴직 시작일이 작은 경우 휴직처리 
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formatedNow = now.format(formatter);
+        
+        int dateResult = leaveMap.get("startdate").compareTo(formatedNow);
+		
+        if(dateResult == 0 || dateResult < 0) {// 휴직 신청 날짜가 같은 경우  또는 이후 날짜인 경우 
+			if(leaveUpdateResult == 1) {
+				
+				leaveUpdateResult = dao.updateLeave(leaveMap);
+			}
+        }
+        else {
+        	dao.updateLeavejae(leaveMap);
+        }
+        
+		return leaveUpdateResult;
+	}
+
+	@Override
+	public int cancelLeave(Map<String, Object> paraMap) {
+		
+		int result = dao.cancelLeave(paraMap);
+		
+		if(result == 1) {
+			result = dao.updateLeaveStatus(paraMap);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public int registCheckManager(Map<String, Object> paraMap) {
+		int manager_yn = 0;// 팀장 부서장 여부  1:있음  0:없음
+		
+		manager_yn = dao.getManagerEmpnoRegist(paraMap);
+		
+		return manager_yn;
+	}
+		
 
 }

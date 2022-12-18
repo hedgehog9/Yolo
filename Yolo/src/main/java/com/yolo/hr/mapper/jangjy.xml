@@ -111,25 +111,6 @@
 	
 	<!-- 사원 번호를 전달받아 사원 정보 조회하기  -->
 	<select id="getEmpOne" resultMap="EmployeeMap" parameterType="HashMap">
-		<!-- select empno , name , firstname ||' '|| lastname as englishName
-			 , substr(name,2) as profileName
-		     , email , substr(mobile,1,3) || '-' || substr(mobile,4,4)|| '-' || substr(mobile,8,4) as mobile
-		     , to_char(hiredate,'yyyy.mm.dd') as hiredate
-		     , nvl(to_char(retiredate,'yyyy.mm.dd'),' ') as retiredate
-		     , fk_deptno , time_salary , position
-		     , substr(rrn,1,6) || '-' ||substr(rrn,7) as rrn
-		     , trunc(MONTHS_BETWEEN(sysdate, hiredate),0)|| '개월' as continuousServiceMonth
-		     , trunc(sysdate - hiredate,0) as workingDays
-		     , address , account , introduce , status , profile_color
-		     ,func_gender(rrn) as gender
-		     ,func_birthday(rrn) as birthday
-		     ,D1.deptname as teamname
-		     ,D2.deptname as deptname
-		from tbl_employees E left join TBL_DEPT D1
-		on E.fk_deptno = D1.deptno
-		left join tbl_dept D2
-		on D1.upper_deptno = D2.deptno
-		where empno = #{empno} -->
 		select empno , name , nvl2( lastname , firstname ||' '|| lastname,'정보 미입력') as englishName
 			 , substr(name,2) as profileName
 		     , email 
@@ -155,7 +136,7 @@
 	
 	<!-- 시작일, 종료일, 사원번호, 메모, 사원번호를 Map 으로 전달받아 휴직테이블에 insert  -->
 	<insert id="insertLeave" parameterType="HashMap" >
-		insert into tbl_leave(leaveno,fk_empno, leavetype, startdate, enddate, memo)
+		insert into tbl_leave_absence(leaveno,fk_empno, leavetype, startdate, enddate, memo)
 		values(seq_leaveno.nextval, #{empno}, #{leavetype}, #{startdate}, #{enddate}, #{memo})
 	</insert>
 	
@@ -165,6 +146,10 @@
 		where empno  = #{empno}
 	</update>
 	
+	<update id="updateLeavejae" parameterType="HashMap">
+		update tbl_employees set status  = '재직'
+		where empno  = #{empno}
+	</update>
 	
 	<!-- 재직 처리해야하는 사원 목록 조회하기  -->
 	<resultMap type="HashMap" id="leaveEmpMap">
@@ -174,7 +159,7 @@
 	<!-- 재직처리해야하는 회원 조회하기 -->
 	<select id="getLeaveEmpList" resultMap="leaveEmpMap">
 		select empno
-		from tbl_employees E join tbl_leave L
+		from tbl_employees E join tbl_leave_absence L
 		on E.empno = L.fk_empno
 		where E.status ='휴직'
 		and to_char(sysdate, 'yyyy-mm-dd') >= to_char(enddate,'yyyy-mm-dd')
@@ -183,12 +168,16 @@
 	<!-- 휴직 처리해야하는 회원 조회하기  -->
 	<select id="getLeaveStartEmpList" resultMap="leaveEmpMap">
 		select empno
-		from tbl_employees E join tbl_leave L
+		from tbl_employees E join tbl_leave_absence L
 		on E.empno = L.fk_empno
 		where E.status ='재직'
 		and to_char(sysdate, 'yyyy-mm-dd') >= to_char(startdate,'yyyy-mm-dd')
 	</select>
 	
+	<!-- 휴직 내용 변경하기  -->
+	<update id="updateLeaveDate" parameterType="HashMap">
+		${sql}
+	</update>
 	
 	
 	<!-- 휴직이 끝난 사원 재직 처리하기 (update) -->
@@ -209,18 +198,35 @@
 		</foreach>	
 	</update>
 	
+	<!-- 휴직 -> 재직 -->
+	<update id="updateLeaveStatus" parameterType="HashMap">
+		update tbl_employees set status  = '재직'
+	    where empno = #{empno}
+	</update>
+	
+	<!-- 휴직 내역 삭제  -->
+	<update id="cancelLeave" parameterType="HashMap">
+		delete from tbl_leave_absence
+		where leaveno = #{leaveno}
+	</update>
 	
 	<!-- 휴직 신청이 가능한 날짜인지 조회(select) -->
 	<select id="leaveCheck" parameterType="HashMap"  resultType="int">
-		select count(*)
+		<!-- select count(*)
 		from
 		(
 			select fk_empno, startdate, enddate
-			from tbl_leave
-			where #{startdate} between to_char(startdate,'yyyy-mm-dd') and to_char(enddate,'yyyy-mm-dd') 
-			or #{enddate} between to_char(startdate,'yyyy-mm-dd') and to_char(enddate,'yyyy-mm-dd') 
+			from tbl_leave_absence
+			where to_date(#{startdate},'yyyy-mm-dd') between to_date(startdate,'yyyy-mm-dd') and to_date(enddate,'yyyy-mm-dd') 
+			or to_date(#{enddate},'yyyy-mm-dd') between to_date(startdate,'yyyy-mm-dd') and to_date(enddate,'yyyy-mm-dd') 
 		)
-		where fk_empno = #{empno}
+		where fk_empno = #{empno} -->
+		
+		SELECT count(*)
+		FROM tbl_leave_absence
+		 where fk_empno = #{empno}
+		 AND startdate <![CDATA[>=]]> to_date(#{startdate},'yyyy-mm-dd')
+		 AND enddate <![CDATA[<=]]> to_date(#{enddate},'yyyy-mm-dd')
 	</select>
 	
 	
@@ -433,25 +439,7 @@
 	
 		select count(fk_empno)
 		from tbl_dept_mapping
-		<!--  
-		<choose>
-
-	    	<when test="deptno==null and deptno.equals('') and teamno== null and teamno.equals('')">
-	    	   where fk_deptno = #{before_deptno}
-	    	</when>
-
-	    	<when test="deptno!=null and !deptno.equals('') and teamno == null or teamno.equals('') ">
-	    	   where fk_deptno = #{deptno}
-	    	</when>
-
-	    	<when test="deptno!=null and !deptno.equals('') and teamno!=null and !teamno.equals('')">
-	    	   where fk_deptno = #{teamno}
-	    	</when>
-	    	
-	    </choose>
-	    -->
 	    <choose>
-
 	    	<when test="(deptno == null or deptno.equals('')) and (teamno== null or teamno.equals(''))">
 	    	   where fk_deptno = #{before_deptno}
 	    	</when>
@@ -463,7 +451,21 @@
 	    	<when test="(deptno!= null or !deptno.equals('')) and ( teamno!= null or !teamno.equals('') )">
 	    	   where fk_deptno = #{teamno}
 	    	</when>
-	    	
+	    </choose>
+	</select>
+	
+	<select id="getManagerEmpnoRegist" parameterType="HashMap" resultType="int">
+	
+		select count(fk_empno)
+		from tbl_dept_mapping
+	    <choose>
+	    	<when test="!department.equals('') and team.equals('')">
+	    	   where fk_deptno = #{department}
+	    	</when>
+
+	    	<when test="!department.equals('') and !team.equals('')">
+	    	   where fk_deptno = #{team}
+	    	</when>
 	    </choose>
 	</select>
 	
@@ -502,6 +504,374 @@
 	<update id="updatePsa" parameterType="HashMap">
 		${updateQuery}
 	</update>
+	
+	<!-- 인사발령시 부서장 또는 팀장이 변경되는 경우 업데이트 -->
+	<update id="updateManagerEmpno" parameterType="HashMap">
+		update tbl_dept_mapping set fk_empno = #{empno}
+		<choose>
+			<!-- 1. 부서 번호로 들어온 경우  -->
+	    	<when test="(deptno == null or deptno.equals('')) and (teamno== null or teamno.equals(''))">
+	    	   where fk_deptno = #{before_deptno}
+	    	</when>
+			<!-- 3. 기존 번호로 들어온 경우  -->
+	    	<when test="(deptno!= null or !deptno.equals('')) and( teamno == null or teamno.equals('') )">
+	    	   where fk_deptno = #{deptno}
+	    	</when>
+
+			<!-- 2. 팀 번호로 들어온 경우  -->
+	    	<when test="(deptno!= null or !deptno.equals('')) and ( teamno!= null or !teamno.equals('') )">
+	    	   where fk_deptno = #{teamno}
+	    	</when>
+	    </choose>
+	</update>
+	
+	<!-- 구성원 등록시 팀장 또는 부서장이 변경되는 경우 업데이트 -->
+		<update id="updateManagerEmpnoRegist" parameterType="HashMap">
+		update tbl_dept_mapping set fk_empno = #{empno}
+		<choose>
+	    	<when test="(!department.equals('')) and ( team.equals(''))">
+	    	   where fk_deptno = #{department}
+	    	</when>
+	    	
+	    	<when test="(!department.equals('')) and ( !team.equals(''))">
+	    	   where fk_deptno = #{team}
+	    	</when>
+
+	    </choose>
+	</update>
+	
+	
+	<!-- 사원번호를 전달받아 해당 사원의 인사발령 기록 조회  -->
+	<resultMap type="HashMap" id="psaHistoryMap">
+		<result property="fk_empno"     	column="fk_empno"    		javaType="String"/>
+		<result property="fk_before_deptno"     	column="fk_before_deptno"   javaType="String"/>
+		<result property="fk_after_deptno"     	column="fk_after_deptno"    javaType="String"/>
+		<result property="before_position"     	column="before_position"    javaType="String"/>
+		<result property="after_position"     	column="after_position"    	javaType="String"/>
+		<result property="memo"     	column="memo"    		    javaType="String"/>
+		<result property="psa_date"     	column="psa_date"    	    javaType="String"/>
+		<result property="psa_label"     	column="psa_label"    		javaType="String"/>
+		<result property="before_deptname"     	column="before_deptname"    		javaType="String"/>
+		<result property="after_deptname"     	column="after_deptname"    		javaType="String"/>
+	</resultMap>
+	
+	<select id="getPsaHistory" resultMap="psaHistoryMap" parameterType="HashMap">
+		select fk_empno, nvl(fk_before_deptno,'') as fk_before_deptno  , nvl(fk_after_deptno,'') as fk_after_deptno,  nvl(before_position,'') as before_position
+            ,  nvl(after_position,'')as after_position ,nvl(memo,'')as memo , to_char(psa_date,'yyyy-mm-dd')as psa_date, psa_label
+            , nvl(D1.deptname,'') as before_deptname
+            , nvl(D2.deptname,'') as after_deptname
+		    from 
+		    tbl_dept D1 join tbl_personnel_appointment P1
+		    on D1.deptno = P1.fk_before_deptno
+		    join tbl_dept D2 
+		    on P1.fk_after_deptno = d2.deptno
+		    where fk_empno = #{empno}
+		    order by pk_psano desc
+	</select>
+	
+	
+	<!-- 사원번호를 전달받아 해당 사원의 휴직 내역 조회  -->
+	<resultMap type="HashMap" id="leaveAbsenceMap">
+		<result property="leaveno"     	column="leaveno"    		javaType="String"/>
+		<result property="fk_empno"     	column="fk_empno"   javaType="String"/>
+		<result property="leavetype"     	column="leavetype"    javaType="String"/>
+		<result property="startdate"     	column="startdate"    javaType="String"/>
+		<result property="enddate"     	column="enddate"    	javaType="String"/>
+		<result property="memo"     	column="memo"    		    javaType="String"/>
+	</resultMap>
+	
+	<select id="getLeaveAbsence" resultMap="leaveAbsenceMap" parameterType="HashMap">
+		select leaveno, fk_empno, leavetype, to_char(startdate,'yyyy-mm-dd') as startdate, to_char(enddate,'yyyy-mm-dd') as enddate , memo
+		from tbl_leave_absence
+		where fk_empno = #{empno}
+		order by leaveno desc
+	</select>
+	
+	<!-- 사원 개인정보 변경하기 -->
+	<update id="changePsInfo" parameterType="HashMap">
+		${sql}
+	</update>
+	
+	<!-- 인사발령 페이징처리 총 페이지 구해오기  -->
+	<select id="getTotalPsaPage" parameterType="HashMap" resultType="int">
+		
+		select ceil (count(*)/10)
+		from tbl_personnel_appointment PSA join tbl_employees E
+		on PSA.fk_empno = E.empno
+		join tbl_dept D
+		on E.fk_deptno = D.deptno
+		where 1 = 1
+		<if test='keyword != "" '>
+		
+		    	<if test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</if>
+		    	
+		    	<if test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</if>
+		    	
+	    	</if>
+		    	
+	    	<if test="arr_position != null">
+	    		and E.position in
+		    	<foreach collection="arr_position" index="i" open="(" separator="," close=")">
+					'${arr_position[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_dept != null">
+	    		and D.deptname in
+		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
+					'${arr_dept[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_status != null">
+	    		and E.status in
+		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
+					'${arr_status[i]}'
+				</foreach>	
+	    	</if>
+	</select>
+	
+	<!-- 인사발령 내역 페이징 처리  -->
+	<resultMap type="HashMap" id="PsaPagingList_Map">
+		<result property="before_deptname"     				column="before_deptname"    				 javaType="String"/>
+		<result property="after_deptname"          			column="after_deptname"         			 javaType="String"/>
+		<result property="before_position" 				column="before_position"   			 javaType="String"/>
+		<result property="after_position"           		column="after_position"             	 javaType="String"/>
+		<result property="psa_date" 		   			column="psa_date"              	 javaType="String"/>
+		<result property="psa_label" 		   				column="psa_label"              		 javaType="String"/>
+		<result property="memo" 		   			column="memo"                  javaType="String"/>
+		<result property="name" 		   		column="name"                javaType="String"/>
+		<result property="pk_psano" 		   	column="pk_psano"                javaType="String"/>
+	</resultMap>
+	<select id="psaListSearchWithPaging" parameterType="HashMap" resultMap="PsaPagingList_Map">
+			select before_deptname, after_deptname, before_position , after_position, psa_date, psa_label, memo, name, rno ,pk_psano
+			from
+			(
+			select D1.deptname as before_deptname
+			    , D2.deptname as after_deptname
+			    , before_position, after_position
+			    , psa_date
+			    , psa_label
+			    , memo
+			    , name
+			    , pk_psano
+			    , rownum as rno
+			from 
+			tbl_dept D1 right join tbl_personnel_appointment PA
+			on D1.deptno = PA.fk_before_deptno
+			left join tbl_dept D2 
+			on PA.fk_after_deptno = D2.deptno
+			join tbl_employees E
+			on E.empno = PA.fk_empno
+			where 1 = 1
+			<if test='keyword != "" '>
+		
+		    	<if test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</if>
+		    	
+		    	<if test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</if>
+		    	
+	    	</if>
+		    	
+	    	<if test="arr_position != null">
+	    		and E.position in
+		    	<foreach collection="arr_position" index="i" open="(" separator="," close=")">
+					'${arr_position[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_dept != null">
+	    		and D2.deptname in
+		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
+					'${arr_dept[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_status != null">
+	    		and E.status in
+		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
+					'${arr_status[i]}'
+				</foreach>	
+	    	</if>
+		)V
+		where rno between #{startRno} and #{endRno}	
+	</select>
+	
+	<!-- 사원 첨부파일 등록  -->
+	<insert id="addFile" parameterType="HashMap">
+		insert into tbl_emp_file (fileno, fk_empno, org_filename, fileSize, filename)
+		values (seq_fileno.nextval, #{fk_empno}, #{org_filename}, #{fileSize}, #{filename})
+	</insert>
+	
+	
+	
+	<!-- 첨부파일 조회  -->
+	<resultMap type="HashMap" id="FileMap">
+		<result property="fileno"     			column="fileno"    				 javaType="String"/>
+		<result property="fk_empno"          	column="fk_empno"         			 javaType="String"/>
+		<result property="org_filename" 		column="org_filename"   			 javaType="String"/>
+		<result property="fileSize"           	column="fileSize"             	 javaType="String"/>
+		<result property="filename" 		   column="filename"              	 javaType="String"/>
+	</resultMap>
+	
+	<select id="getFile" parameterType="HashMap" resultMap="FileMap">
+		select *
+		from tbl_emp_file
+		where fk_empno = #{empno}
+	</select>
+	
+	<!-- 엑셀 다운로드 위한 사원목록 조회 -->
+	<resultMap type="HashMap" id="empListDownloadExcel_Map">
+		<result property="empno"     				column="empno"    				 javaType="String"/>
+		<result property="name"          			column="name"         			 javaType="String"/>
+		<result property="lastname" 				column="lastname"   			 javaType="String"/>
+		<result property="firstname"           		column="firstname"             	 javaType="String"/>
+		<result property="email" 		   			column="email"              	 javaType="String"/>
+		<result property="pwd" 		   				column="pwd"              		 javaType="String"/>
+		<result property="mobile" 		   			column="mobile"                  javaType="String"/>
+		<result property="hiredate" 		   		column="hiredate"                javaType="String"/>
+		<result property="retiredate" 		 	    column="retiredate"              javaType="String"/>
+		<result property="fk_deptno" 		   		column="fk_deptno"               javaType="String"/>
+		<result property="time_salary" 		   		column="time_salary"             javaType="String"/>
+		<result property="rrn" 		     			column="rrn"              		 javaType="String"/>
+		<result property="position" 		        column="position"              	 javaType="String"/>
+		<result property="continuousServiceMonth"   column="continuousServiceMonth"  javaType="String"/>
+		<result property="workingDays" 		        column="workingDays"             javaType="String"/>
+		<result property="address" 		   			column="address"              	 javaType="String"/>
+		<result property="account" 		   			column="account"              	 javaType="String"/>
+		<result property="introduce" 		   		column="introduce"               javaType="String"/>
+		<result property="status" 		   			column="status"              	 javaType="String"/>
+		<result property="profile_color" 		   	column="profile_color"           javaType="String"/>
+		<result property="gender" 		   			column="gender"              	 javaType="String"/>
+		<result property="deptname" 		   		column="deptname"                javaType="String"/>
+	</resultMap>
+	
+	<select id="empListDownloadExcel" parameterType="HashMap" resultMap="empListDownloadExcel_Map">
+		select rno, empno, name, lastname, firstname, email
+		      ,pwd, mobile,hiredate ,retiredate
+		      ,fk_deptno,time_salary, rrn, position
+		      ,continuousServiceMonth ,workingDays
+		      ,address, account, introduce
+		      ,status, profile_color ,gender ,deptname
+		from 
+		(
+		select rownum as rno, empno, name, lastname, firstname, email
+		      ,pwd, mobile, to_char(hiredate,'yyyy.mm.dd') as hiredate
+		      , nvl(to_char(retiredate,'yyyy.mm.dd'),' ') as retiredate
+		      ,fk_deptno,time_salary, rrn, position
+		      , trunc(MONTHS_BETWEEN(sysdate, hiredate),0)|| '개월' as continuousServiceMonth
+		      , trunc(sysdate - hiredate,0) as workingDays
+		      ,address, account, introduce
+		      ,status, profile_color
+		      ,func_gender(rrn) as gender
+		      ,deptname
+		from tbl_employees E left join TBL_DEPT D
+		on E.fk_deptno = d.deptno
+		where 1 = 1 
+			<if test='keyword != "" '>
+		
+		    	<if test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</if>
+		    	
+		    	<if test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</if>
+		    	
+	    	</if>
+		    	
+	    	<if test="arr_position != null">
+	    		and E.position in
+		    	<foreach collection="arr_position" index="i" open="(" separator="," close=")">
+					'${arr_position[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_dept != null">
+	    		and D.deptname in
+		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
+					'${arr_dept[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_status != null">
+	    		and E.status in
+		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
+					'${arr_status[i]}'
+				</foreach>	
+	    	</if>
+		)V
+	</select>
+	
+	<!-- 사원 일괄 등록 (Excel) -->
+	<insert id="registEmpExcel" parameterType="com.yolo.hr.jjy.employee.model.insertVO">
+		<foreach collection="excelContent" item="item" index="index" separator=" " open="INSERT ALL" close="SELECT * FROM DUAL">
+			INTO tbl_employees(empno,profile_color,pwd,name,email,hiredate,time_salary,fk_deptno,position) 
+			VALUES(get_seq_empno(),'#FFA9B0','qwer1234','${item.A}','${item.B}','${item.C}','${item.D}','${item.E}','${item.F}')
+		</foreach>
+	</insert>
+	
+	<update id="changePsaMemo" parameterType="HashMap">
+		update tbl_personnel_appointment set memo= #{memo}
+		where pk_psano = #{pk_psano}
+	</update>
+	
+	<!-- 현재 휴직중인 정보 조회  -->
+	<resultMap type="HashMap" id="leaveInfoMap">
+		<result property="leaveno"     			column="leaveno"    			 javaType="String"/>
+		<result property="fk_empno"          	column="fk_empno"         	     javaType="String"/>
+		<result property="leavetype" 			column="leavetype"   			 javaType="String"/>
+		<result property="startdate"           	column="startdate"             	 javaType="String"/>
+		<result property="enddate" 		   		column="enddate"              	 javaType="String"/>
+		<result property="memo" 		   		column="memo"              		 javaType="String"/>
+	</resultMap>
+	<select id="getLeaveInfo" parameterType="HashMap" resultMap="leaveInfoMap">
+		select leaveno,fk_empno,leavetype,memo
+		,to_char(startdate,'yyyy-mm-dd') as startdate
+		,to_char(enddate,'yyyy-mm-dd') as enddate
+		from tbl_leave_absence
+		where to_date(sysdate,'yyyy-mm-dd') between to_date(startdate,'yyyy-mm-dd') and to_date(enddate,'yyyy-mm-dd')
+		and fk_empno = #{empno}
+	</select>
+	
+	<!-- 휴직/퇴직처리 전 결재 문서 검색  -->
+	<select id="checkApproval" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_approval
+		where fk_senior_empno = #{empno}
+		and approval='0'
+	</select>
+	
+	<!-- 퇴직 처리 (update) -->
+	<update id="updateRetirement" parameterType="HashMap">
+		update tbl_employees
+		set status = '퇴직'
+		where empno = #{empno}
+	</update>
+	
+	<!-- 퇴직 처리 (delete) -->
+	<!-- <update id="updateRetirement" parameterType="HashMap">
+		update tbl_employees
+		set status = '퇴직'
+		where empno = #{empno}
+	</update> -->
+
+	<!-- 이메일로 사원번호 구해오기  -->
+	<resultMap type="HashMap" id="empEmailMap">
+		<result property="empno"    	column="empno"   	 javaType="String"/>
+	</resultMap>
+	<select id="getEmpno" parameterType="HashMap" resultMap="empEmailMap">
+		select empno
+		from tbl_employees
+		where email = #{email}
+	</select>
 	
 	<!-- ====================== 조직도 =================== -->
 	<!-- 모든 부서 정보 조회하기 -->
@@ -543,8 +913,43 @@
 		from tbl_employees E JOIN tbl_dept D
 		on E.fk_deptno = D.deptno
 		where fk_deptno = #{teamno}
+		and status in('재직','휴직')
 	</select>
 	<!-- ====================== 조직도 =================== -->
+
+
+	<!-- 인사이트 성별 -->
+	<resultMap type="HashMap" id="genderMap">
+		<result property="gender"   column="gender"  javaType="String"/>
+		<result property="rate"     column="rate"    	 javaType="String"/>
+	</resultMap>
+	<select id="genderRate" resultMap="genderMap">
+		select gender,
+       count(*) as rate
+		from
+		(
+		    select func_gender(rrn) as gender 
+		    from tbl_employees
+		)V
+		group by v.gender
+	</select>
+	<!-- 인사이트 부서별 인원수 -->
+	<resultMap type="HashMap" id="empCntMap">
+		<result property="empCnt"   column="empCnt"  javaType="String"/>
+		<result property="deptname"     column="deptname"    	 javaType="String"/>
+	</resultMap>
+	<select id="empCntDept" resultMap="empCntMap">
+		select count(*) as empCnt , deptname
+		from
+		(
+			select deptname, empno
+			from tbl_dept D join tbl_employees E
+			on D.deptno = E.fk_deptno
+			where D.deptno >= 100 and  D.deptno != 9999
+		)V
+		group by deptname
+	</select>
+	
 
 
 </mapper>

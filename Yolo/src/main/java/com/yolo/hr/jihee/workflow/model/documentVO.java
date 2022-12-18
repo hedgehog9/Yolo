@@ -18,6 +18,8 @@ public class documentVO {
 	private String D_day;        //희망 마감날짜
 	
 	private String deptno; // 부서 번호
+	private String name; //작성자 이름
+	private String contents; // 히스토리 테이블 내용
 	
 	/*
 	=== #152. 파일을 첨부하도록 VO 수정하기
@@ -110,6 +112,19 @@ public class documentVO {
 	public void setDeptno(String deptno) {
 		this.deptno = deptno;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getContents() {
+		return contents;
+	}
+	public void setContents(String contents) {
+		this.contents = contents;
+	}
+	
 	
 	
 	

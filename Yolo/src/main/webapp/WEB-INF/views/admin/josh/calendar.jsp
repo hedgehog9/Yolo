@@ -97,6 +97,25 @@
 	
 	
 	/* ========== full calendar css 끝 ========== */
+	
+    
+    input:focus{
+      outline-color: #07B419;
+    }	
+    
+    .form-control:focus {
+	   box-shadow:none;
+	   border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4.select2-container--focus .select2-selection {
+		box-shadow: none;
+		border: 2px solid #07B419;
+	}
+	
+	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
+		width: 80% !important;
+	}
 
 </style>
     
@@ -108,14 +127,22 @@
 	  var calendarEl = document.getElementById('calendar');
 
       var calendar = new FullCalendar.Calendar(calendarEl, {
+    	  	  googleCalendarApiKey : 'AIzaSyANToAe7HYMrFxgI4_lakop2Bgj_JWiqzE',
           selectable: true,
           themeSystem: 'Litera',
+          dayMaxEventRows: true,
           headerToolbar: {
               left: 'prev,next today',
               center: 'title',
               right: 'dayGridMonth,timeGridWeek'
           },
           locale : 'ko',
+          eventSources : // 한국 기념일 ko.south_korea 추가
+              [ { googleCalendarId : 'tkddns6007@gmail.com' }
+                  , { googleCalendarId : 'ko.south_korea#holiday@group.v.calendar.google.com'
+                  , className : 'ko_event'
+                	  , color: 'white'
+                  , textColor: 'red' } ],
           dateClick: function(info) {
             //alert('clicked ' + info.dateStr);
             $('#scheduleModal').modal('show');
@@ -193,31 +220,62 @@
 					  if(json.length > 0) {
 						  $.each(json, function(index, item){
 							  
-							  if(item.fk_deptno == deptno) { // 내가 속한 조직 캘린더 보기
-								  events.push({
-                         	            id: item.schedule_no,
-                                         title: item.subject,
-                                         start: item.start_date,
-                                         end: item.end_date,
-                                         color: item.color,
-                                         cid: 1,  // 사내캘린더 내의 서브캘린더 체크박스의 value값과 일치하도록 만들어야 한다. 그래야만 서브캘린더의 체크박스와 cid 값이 연결되어 체크시 풀캘린더에서 일정이 보여지고 체크해제시 풀캘린더에서 일정이 숨겨져 안보이게 된다. 
-                                         mycontent: item.content,
-                                         category: item.category,
-                                         place: item.place
-								  }); // end of events.push({})---------
+							  //console.log("item.schedule_no =>"+ item.schedule_no)
+							  
+							  if(item.schedule_no != undefined) {
+								  if(item.fk_deptno == deptno) { // 내가 속한 조직 캘린더 보기
+									  events.push({
+	                         	            id: item.schedule_no,
+	                                         title: item.subject,
+	                                         start: item.start_date,
+	                                         end: item.end_date,
+	                                         color: item.color,
+	                                         cid: 1,   
+	                                         mycontent: item.content,
+	                                         category: item.category,
+	                                         place: item.place
+									  }); // end of events.push({})---------
+								  }
+								  else { // 전체 조직 캘린더 보기
+									  events.push({
+	                       	              id: item.schedule_no,
+	                                       title: item.subject,
+	                                       start: item.start_date,
+	                                       end: item.end_date,
+	                                       color: item.color,
+	                                       cid: 0, 
+	                                       mycontent: item.content,
+	                                       category: item.category,
+	                                       place: item.place
+	                          		  }); // end of events.push({})---------
+								  }
 							  }
-							  else { // 전체 조직 캘린더 보기
-								  events.push({
-                       	              id: item.schedule_no,
-                                       title: item.subject,
-                                       start: item.start_date,
-                                       end: item.end_date,
-                                       color: item.color,
-                                       cid: 0, 
-                                       mycontent: item.content,
-                                       category: item.category,
-                                       place: item.place
-                          		  }); // end of events.push({})---------
+							  
+							  else {
+								  if(item.fk_deptno == deptno) {
+									  events.push({
+										  title : item.name+"님 생일", 
+	                                       color: "#f2f2f2",
+	                                       textColor: "#404040",
+	                                       start: item.birthday,
+	                                       end: item.birthday,
+	                                       icon:"birthday",
+	                                       cid: 1
+	                          		  }); // end of events.push({})---------
+									  
+								  }
+								  else {
+									  events.push({
+										  title : item.name+"님 생일", 
+	                                       color: "#f2f2f2",
+	                                       textColor: "#404040",
+	                                       start: item.birthday,
+	                                       end: item.birthday,
+	                                       icon:"birthday",
+	                                       cid: 0
+	                          		  }); // end of events.push({})---------
+								  }
+								  
 							  }
 							  
 						  })// end of $.each(json, function(index, item){})
@@ -233,6 +291,13 @@
       		  
       	  },// end of  events:function(info, successCallback, failureCallback) {} ---------
       	  eventDidMount: function (arg) {
+      		  
+      		calendarSet(arg)
+      		  
+      		if(arg.event.extendedProps.icon == "birthday") {
+		    		//console.log("들어오시나요?")
+		    		$(arg.el).find('.fc-event-title').prepend("<span style='font-size:10px;'>&#127881;</span>");
+	    		}
       		
       		$("select#kind-calendar").change(function() {
       			const kind_calendar = $("select#kind-calendar").val();
@@ -244,107 +309,105 @@
         				  if(arg.event.extendedProps.cid == 1) {
         				      arg.el.style.display = "block"; // 풀캘린더에서 내가속한 조직 캘린더만 보여줌
         				  }
-        				  else if(arg.event.extendedProps.cid != 1){
+        				  else if(arg.event.extendedProps.cid == 0){
         					  arg.el.style.display = "none"; // 풀캘린더에서 다른 부서들의 캘린더 일정은 숨긴다.
         				  }
         		    }	
+        		    
         		  
       		})// end of $("select#kind-calendar").change
       		  
       		  
       	  },
       	  eventClick: function(info) {
+      		 
+	    			$('#modify_scheduleModal').modal('show');
+	        		const schedule_no = info.event.id;
+	        		
+	        		$.ajax({
+	        			url:"<%= ctxPath %>/schedule/selectDetailSchedule.yolo",
+	        			data:{"schedule_no" :schedule_no},
+	        			dataType:"JSON",
+	        			success:function(json) {
+	        				
+	        				if (json.redirect == "true") {
+	  		                		window.location.href = "<%= ctxPath %>/schedule/calendar.yolo";
+	  		            		}
+	        				else {
+	        					const start_date = json.start_date
+	            				const end_date = json.end_date
+	            				$("form[name='schedule_modify_delete'] input[name='start_date']").val(start_date)
+	            				$("form[name='schedule_modify_delete'] input[name='end_date']").val(end_date)
+	            				
+	            				$('input#daterange').daterangepicker({
+	            	                timePicker: true,
+	            	                timePicker24Hour: true,
+	            	                startDate: start_date,
+	            	                endDate: end_date,
+	            	                locale: {
+	            	                  "format": 'YYYY-MM-DD HH:mm',
+	            	                  "separator": " ~ ",
+	            	                  "applyLabel": "확인",
+	            	                  "cancelLabel": "취소",
+	            	                  "fromLabel": "From",
+	            	                  "toLabel": "To",
+	            	                  "customRangeLabel": "Custom",
+	            	                  "weekLabel": "W",
+	            	                  "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
+	            	                  "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+	            	                  
+	            	                }
+	            	              },function(start, end, label) {
+	            	                $("form[name='schedule_modify_delete'] input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
+	            	                $("form[name='schedule_modify_delete'] input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
+	            	            });
+	            	      		
+	            				
+	            				$("form[name='schedule_modify_delete'] input[name='subject']").val(json.subject)
+	            				$("form[name='schedule_modify_delete'] select[name='category']").val(json.category)
+	            				
+	            				if(json.joinuser != undefined) {
+	            					const joinuser = json.joinuser.split(",")
+	            					for(var i=0; i<joinuser.length; i++) {
+	            						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
+	            						
+	            					}
+	            				}
+	            				
+	            				$("form[name='schedule_modify_delete'] input[name='place']").val(json.place)
+	            				$("form[name='schedule_modify_delete'] textarea[name='content']").val(json.content)
+	            				$("form[name='schedule_modify_delete'] input[name='schedule_no']").val(schedule_no)
+	            				
+	            				let loginuser = ${sessionScope.loginuser.empno} 
+	            				
+	            				if(json.fk_empno == '${sessionScope.loginuser.empno}' || ${sessionScope.loginuser.empno} == 9999) { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
+	            					$("button#schedule_modify").show();
+	            					$("button#schedule_delete").show();
+	            					$("i#x-button").show();
+	            					
+	            					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
+	            					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
+	            					$("form[name='schedule_modify_delete'] textarea").attr("readonly",false);
+	            				}
+	            				else {
+	            					$("button#schedule_modify").hide();
+	            					$("button#schedule_delete").hide();
+	            					$("i#x-button").hide();
+	            					
+	            					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
+	            					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
+	            					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
+	            				}
+	        				}
+	        				
+	        			},
+	        			error: function(request, status, error){
+	  		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	  		        }	
+	        		})// end of $.ajax ----------------------------------------------------------------------------------------------
       		
-      		$('#modify_scheduleModal').modal('show');
-      		const schedule_no = info.event.id;
-      		
-      		$.ajax({
-      			url:"<%= ctxPath %>/schedule/selectDetailSchedule.yolo",
-      			data:{"schedule_no" :schedule_no},
-      			dataType:"JSON",
-      			success:function(json) {
-      				
-      				if (json.redirect == "true") {
-		                window.location.href = "<%= ctxPath %>/schedule/calendar.yolo";
-		            }
-      				else {
-      					const start_date = json.start_date
-          				const end_date = json.end_date
-          				$("form[name='schedule_modify_delete'] input[name='start_date']").val(start_date)
-          				$("form[name='schedule_modify_delete'] input[name='end_date']").val(end_date)
-          				
-          				$('input#daterange').daterangepicker({
-          	                timePicker: true,
-          	                timePicker24Hour: true,
-          	                startDate: start_date,
-          	                endDate: end_date,
-          	                locale: {
-          	                  "format": 'YYYY-MM-DD HH:mm',
-          	                  "separator": " ~ ",
-          	                  "applyLabel": "확인",
-          	                  "cancelLabel": "취소",
-          	                  "fromLabel": "From",
-          	                  "toLabel": "To",
-          	                  "customRangeLabel": "Custom",
-          	                  "weekLabel": "W",
-          	                  "daysOfWeek": ["일", "월", "화", "수", "목", "금", "토"],
-          	                  "monthNames": ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
-          	                  
-          	                }
-          	              },function(start, end, label) {
-          	                $("form[name='schedule_modify_delete'] input[name='start_date']").val(start.format('YYYY-MM-DD HH:mm'))
-          	                $("form[name='schedule_modify_delete'] input[name='end_date']").val(end.format('YYYY-MM-DD HH:mm'))
-          	            });
-          	      		
-          				
-          				$("form[name='schedule_modify_delete'] input[name='subject']").val(json.subject)
-          				$("form[name='schedule_modify_delete'] select[name='category']").val(json.category)
-          				
-          				if(json.joinuser != undefined) {
-          					const joinuser = json.joinuser.split(",")
-          					for(var i=0; i<joinuser.length; i++) {
-          						$("div.displayUserList").append("<div class='plusUser'>"+joinuser[i]+"&nbsp;<i class='fas fa-times-circle' id='x-button'></i></div>");
-          						
-          					}
-          				}
-          				
-          				$("form[name='schedule_modify_delete'] input[name='place']").val(json.place)
-          				$("form[name='schedule_modify_delete'] textarea[name='content']").val(json.content)
-          				$("form[name='schedule_modify_delete'] input[name='schedule_no']").val(schedule_no)
-          				
-          				if(json.	fk_empno != '${sessionScope.loginuser.empno}') {
-          					$("button#schedule_modify").hide();
-          					$("button#schedule_delete").hide();
-          					$("i#x-button").hide();
-          					
-          					$("form[name='schedule_modify_delete'] input").attr("readonly",true);
-          					$("form[name='schedule_modify_delete'] select").attr("disabled",true);
-          					$("form[name='schedule_modify_delete'] textarea").attr("readonly",true);
-          				}
-          				
-          				else { // 자기가 작성한 글이 맞다면 위에 막아놓은것들을 다풀어준다.
-          					$("button#schedule_modify").show();
-          					$("button#schedule_delete").show();
-          					$("i#x-button").show();
-          					
-          					$("form[name='schedule_modify_delete'] input").attr("readonly",false);
-          					$("form[name='schedule_modify_delete'] select").attr("disabled",false);
-          					$("form[name='schedule_modify_delete'] textarea").attr("readonly",false);
-          				}
-      				}
-      				
-      				
-      				
-      				
-      			},
-      			error: function(request, status, error){
-		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		        }	
-      			
-      			
-      		})// end of $.ajax ----------------------------------------------------------------------------------------------
-      		
-      	  }
+      	  }// end of eventClick: function(info) --------------------------------
+      	  
       });
   
       calendar.render();
@@ -369,9 +432,10 @@
 							
 							$.each(json, function(index,item){
 								var name = item.name;
+								let empno = item.empno;
 								if(name.includes(joinuser)){ // name 이라는 문자열에 joinUserName 라는 문자열이 포함된 경우라면 true , 
 									                             // name 이라는 문자열에 joinUserName 라는 문자열이 포함되지 않은 경우라면 false 
-								   joinUserArr.push(name+"("+item.email+")");
+								   joinUserArr.push(name+"("+empno+")");
 								}
 							});
 							//console.log(joinUserArr);
@@ -449,13 +513,24 @@
     	  		
     	  		let plusUser_elm = document.querySelectorAll("form[name='schedule_register'] div.plusUser");
     			let joinUserArr = [];
+    			let joinUserEmpnoArr = [];
     			
     			plusUser_elm.forEach(function(item,index,array){
+    				
+    				let str = item.innerText.trim();
+    				let str_empno = str.substring(str.indexOf("(")+1,str.length-1);
+    				
     				joinUserArr.push(item.innerText.trim());
+    				joinUserEmpnoArr.push(str_empno);
     			});
     			
+    		    //console.log(joinUserArr)
+    				
     			let joinuser = joinUserArr.join(",");
     			$("form[name='schedule_register'] input[name=joinuser]").val(joinuser);
+    			
+    			let joinuser_empno = joinUserEmpnoArr.join(",");
+    			$("form[name='schedule_register'] input[name=joinuser_empno]").val(joinuser_empno);
     			
     			const place = $("form[name='schedule_register'] input[name='place']").val().trim()
     			if("" == place) {
@@ -527,13 +602,27 @@
 			  		
 			  		let plusUser_elm = document.querySelectorAll("form[name='schedule_modify_delete'] div.plusUser");
 					let joinUserArr = [];
+					let joinUserEmpnoArr = [];
 					
 					plusUser_elm.forEach(function(item,index,array){
-						joinUserArr.push(item.innerText.trim());
-					});
-					
-					let joinuser = joinUserArr.join(",");
-					$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
+	    				
+		    				let str = item.innerText.trim();
+		    				let str_empno = str.substring(str.indexOf("(")+1,str.length-1);
+		    				
+		    				joinUserArr.push(item.innerText.trim());
+		    				joinUserEmpnoArr.push(str_empno);
+		    				
+		    				console.log(joinUserArr)
+		    				console.log(joinUserEmpnoArr)
+	    				});
+	    			
+	    		    //console.log(joinUserArr)
+	    				
+		    			let joinuser = joinUserArr.join(",");
+		    			$("form[name='schedule_modify_delete'] input[name=joinuser]").val(joinuser);
+		    			
+		    			let joinuser_empno = joinUserEmpnoArr.join(",");
+		    			$("form[name='schedule_modify_delete'] input[name=joinuser_empno]").val(joinuser_empno);
 					
 					const place = $("form[name='schedule_modify_delete'] input[name='place']").val().trim()
 					if("" == place) {
@@ -651,7 +740,29 @@
 		
 	}// end of function add_joinUser(value){}----------------------------	
 
+	
+	function calendarSet(arg) {
 		
+		
+		const val = $("select#kind-calendar").val();
+  			
+				
+		const kind_calendar = $("select#kind-calendar").val();
+      		  
+	    if(kind_calendar == 0) { // 모든부서 캘린더보기 선택시
+			  arg.el.style.display = "block"; // 풀캘린더에서 모든 일정을 보여준다.
+	    }
+	    else {// 내가속한 조직 캘린더만 볼때
+			  if(arg.event.extendedProps.cid == 1) {
+			      arg.el.style.display = "block"; // 풀캘린더에서 내가속한 조직 캘린더만 보여줌
+			  }
+			  else if(arg.event.extendedProps.cid == 0){
+				  arg.el.style.display = "none"; // 풀캘린더에서 다른 부서들의 캘린더 일정은 숨긴다.
+			  }
+	    }	
+    		    
+  		
+	}
 		   
 			
 		
@@ -708,7 +819,7 @@
 	                   </div>
 	                   <div class="form-group" id="daterange-group">
 	                     <label for="subject">제목<span style="color: red;">＊</span></label><br>
-	                     <input type="text" name="subject" class="form-control">
+	                     <input type="text" name="subject" class="form-control btn-custom">
 	                   </div>
 	                   <div class="form-group">
 	                       <label for="category">분류<span style="color: red;">＊</span></label>
@@ -723,6 +834,7 @@
 	                     <input type="text" class="form-control" id="joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
 	                     <div class="displayUserList mt-1"></div>
 				   		<input type="hidden" name="joinuser"/>
+				   		<input type="hidden" name="joinuser_empno"/>
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">장소<span style="color: red;">＊</span></label>
@@ -773,7 +885,7 @@
 	                   </div>
 	                   <div class="form-group">
 	                       <label for="category">분류<span style="color: red;">＊</span></label>
-	                       <select name="category" id="category" name="category" class="custom-select" id="modify_category">
+	                       <select name="category" name="category" class="custom-select" id="modify_category">
 	                           <option>출장</option>
 	                           <option>회의</option>
 	                           <option>미팅</option>
@@ -781,9 +893,10 @@
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">공유자:</label>
-	                     <input type="text" class="form-control" id="modify_joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
+	                     <input type="text" class="form-control" id="joinuser" placeholder="일정을 공유할 회원명을 입력하세요">
 	                     <div class="displayUserList mt-1"></div>
 				   		<input type="hidden" name="joinuser"/>
+				   		<input type="hidden" name="joinuser_empno"/>
 	                   </div>
 	                   <div class="form-group">
 	                     <label for="category">장소<span style="color: red;">＊</span></label>

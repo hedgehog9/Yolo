@@ -295,5 +295,16 @@ public class CommuteController {
         //Print the content
         System.out.println("content = " + content);
     }
+	
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(value="/insight/sumWorktimeByDept.yolo", method = {RequestMethod.GET})
+	public List<Map<String,Object>> sumWorktimeByDept(HttpServletRequest request) {
+		
+		
+		return service.sumWorktimeByDept();
+	}
 		
 }
