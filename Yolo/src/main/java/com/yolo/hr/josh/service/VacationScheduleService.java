@@ -37,5 +37,13 @@ public class VacationScheduleService implements InterVacationScheduleService {
 	}
 
 	
+	@Override
+	public void delSchedule(Map<String, String> paraMap) {
+		
+		scheduledao.deleteVactionSchedule(paraMap);
+		
+	}
+
+	
 	
 }
