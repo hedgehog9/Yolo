@@ -89,7 +89,7 @@
 	
 	
 	<select id="mycommute" parameterType="HashMap" resultType="com.yolo.hr.josh.model.CommuteVO">
-		select dt, nvl(fk_empno,'${fk_empno}') AS fk_empno 
+		select dt, fk_empno 
 		       , nvl2(start_work_time,to_char(start_work_time,'yyyy-mm-dd hh24:mi'),'X') as start_work_time
 		       , nvl2(end_work_time,to_char(end_work_time,'yyyy-mm-dd hh24:mi'),'X') as end_work_time
 		       , nvl(worktime,0) AS worktime
@@ -150,7 +150,7 @@
 		       sum(nvl(C.overtime,0)) AS total_overtime, E.fk_deptno, E.profile_color
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
-		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd')-1 and to_date('${enddate}','yyyy-mm-dd')+1
+		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')+1
 		      <if test=' arrDept != null '>
 		      	and fk_deptno in
 		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
@@ -174,7 +174,7 @@
 		select ceil(count(distinct(fk_empno))/10) AS totalpage
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
-		where start_work_time between to_date('${startdate}','yyyy-mm-dd')-1 and to_date('${enddate}','yyyy-mm-dd')+1
+		where start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')+1
 		<if test="arrDept!=null">
 	      	and fk_deptno in
 	      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
@@ -211,7 +211,7 @@
 		       E.time_salary*sum(nvl(C.overtime,0))/60 AS overtime_salary, E.fk_deptno, E.profile_color
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
-		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd')-1 and to_date('${enddate}','yyyy-mm-dd')+1
+		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')+1
 		      <if test="arrDept!=null">
 		      	and fk_deptno in
 		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
@@ -257,7 +257,7 @@
 		       E.time_salary*sum(nvl(C.overtime,0))/60 AS overtime_salary, E.fk_deptno, E.profile_color
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
-		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd')-1 and to_date('${enddate}','yyyy-mm-dd')+1
+		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')+1
 		      <if test="arrDept!=null">
 		      	and fk_deptno in
 		      	<foreach collection="arrDept" index="i" open="(" separator="," close=")">
@@ -568,6 +568,21 @@
 		and start_work_time between add_months(sysdate, -1) and sysdate
 		group by D.deptno, deptname
 		order by avg_worktime desc
+	</select>
+	
+	<resultMap type="HashMap" id="avgSalaryByDeptMap">
+		<result property="deptname"     			column="deptname"    				javaType="String"/>
+		<result property="avg_salary"          	column="avg_salary"         			javaType="String"/>
+	</resultMap>
+	
+	
+	<select id="avgSalaryByDept" resultMap="avgSalaryByDeptMap">
+		select deptname, ceil(avg(E.time_salary*192)*12) AS avg_salary
+		from tbl_employees E join tbl_dept D
+		on E.fk_deptno = D.deptno
+		where D.deptno >= 100 and  D.deptno != 9999
+		group by deptname 
+		order by avg_salary desc
 	</select>
 	
 </mapper>
