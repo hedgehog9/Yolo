@@ -311,8 +311,7 @@ public class EmployeeController {
 	@RequestMapping(value = "/getLeaveInfo.yolo", produces = "text/plain;charset=UTF-8")
 	public String getLeaveInfo(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
 		
-		System.out.println(leaveMap.get("empno"));
-		
+//		System.out.println(leaveMap.get("empno"));
 		Map<String,String> leaveInfoMap = dao.getLeaveInfo(leaveMap);
 //		System.out.println("leaveInfoMap :"+leaveInfoMap);
 		

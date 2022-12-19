@@ -562,7 +562,7 @@
 	 	// 휴직처리에서 날짜 선택 클릭시 이미 신청되어있는 휴직이 있는지 조회, 경고창 출력
 //		$(document).on("change","input#between_date",function(){
 		$("input#between_date").change(function(){
-		  
+		  console.log($("input#between_date").val()+" 값");	
 	      let empno = $("input#empno").val();
 		  let startdate = $("input#start_date").val();
 	  	  let enddate = $("input#end_date").val();
@@ -594,7 +594,19 @@
 		})// end of$(document).on("input","change",function(){}--------------
 		
 		$(document).on("click",".noCheckDate",function(){
+						
 			changeLeaveFalg = true;
+			
+			let empno = $("input#empno").val();
+			
+			$.ajax({
+				  url : "<%= ctxPath%>/getLeaveInfo.yolo",
+				  data: {"empno":empno},
+				  dataType : "JSON",
+				  success : function(json){
+					  $("textarea#memo_leave").text(json.leaveInfoMap.memo);
+				  }
+			});
 		});
 		
 		<%-- ===== 달력 하나만 출력 시작 =====  --%>
@@ -1289,6 +1301,12 @@
 			
 		}); 
 		
+		$(document).on("click","button#btn_leave_absence",function(){
+			 $("textarea#memo_leave").text("");
+		});
+		
+		
+		
 	});// end of $(document).ready-----------------------------
 	
 	function spinner(){
@@ -1885,7 +1903,7 @@
 						</button>
 						<c:if test="${sessionScope.loginuser.empno == 9999}">
 						<div class="dropdown-menu">
-							<button class="dropdown-item" type="button" data-toggle="modal" data-target="#modal_leave"><i class="fas fa-user-slash" ></i>&nbsp;&nbsp;휴직 처리하기</button>
+							<button id="btn_leave_absence" class="dropdown-item" type="button" data-toggle="modal" data-target="#modal_leave"><i class="fas fa-user-slash" ></i>&nbsp;&nbsp;휴직 처리하기</button>
 							<button class="dropdown-item" type="button" data-toggle="modal" data-target="#modal_retirement"><i class="fas fa-leaf"></i>&nbsp;&nbsp;퇴직 처리하기</button>
 						</div>
 						</c:if>
