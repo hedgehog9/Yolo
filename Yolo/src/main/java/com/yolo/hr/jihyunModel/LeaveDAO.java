@@ -143,8 +143,8 @@ public class LeaveDAO implements InterLeaveDAO {
 
 	// 승인 / 반려하기 함수 
 	@Override
-	public void approvalRequestLevae(Map<String, String> parameterMap) {
-		sqlsession.update("kimjh.approvalRequestLevae", parameterMap);
+	public void approvalRequestLevae(Map<String, String> leaveRequestDetail) {
+		sqlsession.update("kimjh.approvalRequestLevae", leaveRequestDetail);
 	}
 
 }

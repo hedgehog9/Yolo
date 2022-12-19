@@ -488,7 +488,7 @@
 	<!-- 휴가 승인 / 반려하기 함수  -->
 	<update id="approvalRequestLevae" parameterType="HashMap">
 		update tbl_request_leave set opproval_status = #{approval_status}
-		where pk_request_leaveno = #{request_leaveno}
+		where pk_request_leaveno = #{pk_request_leaveno}
 	</update>
 	
 	<!-- 하위 부서 번호 전부 알아오기 -->

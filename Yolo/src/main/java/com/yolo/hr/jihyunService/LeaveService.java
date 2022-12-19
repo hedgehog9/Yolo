@@ -127,8 +127,23 @@ public class LeaveService implements InterLeaveService {
 	
 	// 승인 / 반려하기 함수 
 	@Override
-	public void approvalRequestLevae(Map<String, String> parameterMap) {
-		ldao.approvalRequestLevae(parameterMap);
+	public void approvalRequestLevae(Map<String, String> leaveRequestDetail) {
+		
+		ldao.approvalRequestLevae(leaveRequestDetail);
+		
+		// 반려라면, 휴가 사용 내역 고쳐줘야 함
+		if("2".equals(leaveRequestDetail.get("approval_status"))) {
+			// 휴가 신청하면서 휴가 사용내역 같이 업데이트 해주는건데, 연차나 반차일때는 따로 식써야 함
+			if(leaveRequestDetail.get("fk_leave_type").equals("annual")) {
+				ldao.minusUsedLeaveAnnual(leaveRequestDetail);
+			} else if (leaveRequestDetail.get("fk_leave_type").equals("half_annual")) {
+				ldao.minusUsedLeaveHalf_annual(leaveRequestDetail);
+			} else {
+				ldao.minusUsedLeave(leaveRequestDetail);
+			}
+		}
+		
+		
 	}
 	
 }

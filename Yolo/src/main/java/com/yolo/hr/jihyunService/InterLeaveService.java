@@ -42,6 +42,6 @@ public interface InterLeaveService {
 	void deleteRequestLeave(Map<String, String> leaveRequestDetail);
 
 	// 승인 / 반려하기 함수 
-	void approvalRequestLevae(Map<String, String> parameterMap);
+	void approvalRequestLevae(Map<String, String> leaveRequestDetail);
 
 }

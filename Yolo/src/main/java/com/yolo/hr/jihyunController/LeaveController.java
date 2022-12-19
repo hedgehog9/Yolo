@@ -472,11 +472,10 @@ public class LeaveController {
 	@RequestMapping(value = "/leave/approvalRequestLevae.yolo", produces = "text/plain;charset=UTF-8")
 	public void addAlarm_approvalRequestLevae(Map<String, String> paraMap, HttpServletRequest request) {
 
-		Map<String, String> parameterMap = new HashMap<>();
-		parameterMap.put("request_leaveno", request.getParameter("request_leaveno"));
-		parameterMap.put("approval_status", request.getParameter("approval_status"));
+		Map<String, String> leaveRequestDetail = service.getLeaveRequestDetail(request.getParameter("request_leaveno"));
+		leaveRequestDetail.put("approval_status", request.getParameter("approval_status"));
 		
-		service.approvalRequestLevae(parameterMap); 
+		service.approvalRequestLevae(leaveRequestDetail); 
 		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");

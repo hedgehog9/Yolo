@@ -111,7 +111,7 @@ function openLeaveDetail(request_leaveno) {
 				      '<div class="modal-body">'+
 				      	'<div class="modal-middle">'+
 					      	'<span style="display: block; margin-top: 5px;">'+
-					      		'<span style="font-weight: bold; margin-left:6px;"></span>';
+					      		'<span style="font-weight: bold; margin-left:6px;">요청내역</span>';
 					      		
 					      		if(json.opproval_status==0){
 					      			html+='<span class="badge badge-light rounded-pill ml-2">미승인</span>';
