@@ -29,4 +29,7 @@ public interface InterScheduleDAO {
 	// 휴가신청후 스케줄테이블에 등록하는 메소드
 	void insertVactionSchedule(Map<String, String> paraMap);
 
+	// 휴가취소후 스케줄테이블에서 삭제하는 메소드
+	void deleteVactionSchedule(Map<String, String> paraMap);
+
 }

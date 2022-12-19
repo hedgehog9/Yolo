@@ -543,10 +543,14 @@
 		select seq_scheduleno.nextval from dual
 	</select>
 	
-	<insert id="insertVactionSchedule">
+	<insert id="insertVactionSchedule" parameterType="HashMap">
 		insert into tbl_schedule(schedule_no, fk_empno, start_date, end_date, subject, color, category, fk_deptno)
 		values(#{schedule_no}, #{fk_empno}, to_date(#{start_date},'YYYY-MM-DD HH24:MI:SS'), to_date(#{end_date},'YYYY-MM-DD HH24:MI:SS'), #{subject}, #{color}, #{category}, #{fk_deptno})
 	</insert>
+	
+	<delete id="deleteVactionSchedule" parameterType="HashMap">
+		delete from tbl_schedule where schedule_no = #{schedule_no}
+	</delete>
 	
 	
 	<resultMap type="HashMap" id="sumWorktimeByDeptMap">
