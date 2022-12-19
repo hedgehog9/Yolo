@@ -1195,13 +1195,13 @@ arr_status = [];
 								<div>
 									<div class="regitst_title"> 이름<span style="color: red;">*</span>
 									</div>
-									<input name="name" class="input_modal" type="text" autocomplete="off" placeholder="이름 입력" />
+									<input name="name" class="input_modal" type="text" autocomplete="off" placeholder="이름 입력" maxlength="15" />
 								</div>
 								<div>
 									<div class="regitst_title">
 										이메일<span style="color: red;">*</span>
 									</div>
-									<input name="email" class="input_modal" type="text" autocomplete="off" placeholder="이메일 입력" />
+									<input name="email" class="input_modal" type="text" autocomplete="off" placeholder="이메일 입력" maxlength="50" />
 								</div>
 							</div>
 

@@ -1657,10 +1657,12 @@
 								+'<input name="lastname" type="text" value="" style="width: 100%; height: 30px; border: solid 1px #d9d9d9; border-radius: 5px;" placeholder="성(Last Name)"/>'
 							+'</div>'
 						+'</div>'
+						<%--
 						+'<div style="margin: 20px 0;">'
 							+'<div>내 소개</div>'
 							+'<textarea name="introduce" id="introduce" rows="1" cols="" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>'
 						+'</div>'
+						--%>
 						+'<div>'
 							+'<div>주민등록번호</div>'
 							+'<input class="input_edit_info" name="rrn" type="text" id="registeration_no" onkeydown="OnlyNumericInput();" maxlength="14" placeholder="주민등록번호 입력" />'
