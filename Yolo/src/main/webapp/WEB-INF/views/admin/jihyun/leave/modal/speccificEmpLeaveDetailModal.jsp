@@ -111,7 +111,7 @@ function openLeaveDetail(request_leaveno) {
 				      '<div class="modal-body">'+
 				      	'<div class="modal-middle">'+
 					      	'<span style="display: block; margin-top: 5px;">'+
-					      		'<span style="font-weight: bold; margin-left:6px;">요청내역</span>';
+					      		'<span style="font-weight: bold; margin-left:6px;"></span>';
 					      		
 					      		if(json.opproval_status==0){
 					      			html+='<span class="badge badge-light rounded-pill ml-2">미승인</span>';
@@ -142,29 +142,16 @@ function openLeaveDetail(request_leaveno) {
 					      			
 					    html+='</div>';
 					    
-						if(json.add_file ==1 && json.filename==null){
-				  			html+='<span style="display: block; margin-top: 25px; margin-left:25px;">&#128193; 자료첨부</span>'+
-			    					'<form id="addFile">'+
-			    					'<div class="filebox" style="width:90%; margin : 5px auto 15px auto;" >'+
-								    '<input class="upload-name" value="첨부파일" placeholder="첨부파일" readonly="readonly">'+
-								    '<label for="file">파일찾기</label>'+
-								    '<input type="file" id="file" name="attach">'+
-								    '<input type="hidden" name="pk_request_leaveno" value="'+ json.pk_request_leaveno +'">'+
-									'</div>'+
-								    '</form>';
-				  		}
-							    
 						html+='</div>';
 					      	
-					      	if(now<start){
-					      		html+= '<div style="display: flex; align-items: center;">';
+					      	
 					      		
-					      		if(json.add_file ==1 && json.filename==null && json.opproval_status!=2){
-						  			html+='<button type="button" onclick="addLeavFile();" class="btn btn-outline-secondary submitCancle" style="margin: 2px 3px 10px auto; height: 35px; font-weight: bold;">파일등록</button>'+
-						      			'<button type="button" onclick="deleteRequestLeave(\''+ json.pk_request_leaveno +'\');" class="btn btn-outline-secondary submitCancle" style="margin: 2px auto 10px 3px; height: 35px; font-weight: bold;">휴가신청 취소</button>';
-						  		} else if(json.opproval_status!=2){
-						  			html+='<button type="button" onclick="deleteRequestLeave(\''+ json.pk_request_leaveno +'\');" class="btn btn-outline-secondary submitCancle" style="margin: 2px auto 10px auto; height: 35px; font-weight: bold;">휴가신청 취소</button>';
-						  		}
+					      		
+					      		if(json.opproval_status == 0){
+					      			html+= '<div style="display: flex; align-items: center;">';
+						  			html+='<button type="button" onclick="approvalRequestLevae( \'1\' ,\''+ json.pk_request_leaveno +'\', \''+ json.fk_empno +'\')" class="btn btn-outline-secondary submitCancle" style="margin: 2px 3px 10px auto; height: 35px; font-weight: bold;">승인하기</button>'+
+						      			'<button type="button" onclick="approvalRequestLevae( \'2\' ,\''+ json.pk_request_leaveno +'\', \''+ json.fk_empno +'\')" class="btn btn-outline-secondary submitCancle" style="margin: 2px auto 10px 3px; height: 35px; font-weight: bold;">반려하기</button>';
+						  		 
 					      		
 					      		html+= '</div>';
 					      	}
@@ -185,51 +172,23 @@ function openLeaveDetail(request_leaveno) {
 }
 
 
-// 휴가상세에서 파일 추가하기 함수
-function addLeavFile(){
-	var form = $("form#addFile")[0];        
-    var queryString = new FormData(form);
-	
+//승인 / 반려하기 함수 
+function approvalRequestLevae( approval_status ,request_leaveno, empno){
 	$.ajax({
-    	url : "<%=request.getContextPath()%>/leave/addLeavFile.yolo",
-    	data : queryString,
-    	type: 'POST',
-    	enctype: 'multipart/form-data',
-    	processData: false,
-        contentType: false,
+    	url : "<%=request.getContextPath()%>/leave/approvalRequestLevae.yolo",
+    	data : {"request_leaveno" : request_leaveno,
+    			"approval_status" : approval_status,
+    			"empno" : empno},
+    			
 		success: function(){
 			
-			// $(".sendMail").modal('hide');
 			window.location.reload();
-			toastr.success('파일을 추가하였습니다.');
 			
 		},
 		error: function(request, status, error){
             alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
         }
 	}); // end of ajax
-}
-
-
-
-// 휴가 신청 취소하기 
-function deleteRequestLeave(request_leaveno) {
-	// console.log(request_leaveno);
-	
-	$.ajax({
-    	url : "<%=request.getContextPath()%>/leave/deleteRequestLeave.yolo",
-    	data : {"request_leaveno" : request_leaveno},
-		success: function(){
-			
-			window.location.reload();
-			toastr.success('휴가를 취소하셨습니다.');
-			
-		},
-		error: function(request, status, error){
-            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-        }
-	}); // end of ajax
-	
 }
 
 </script>

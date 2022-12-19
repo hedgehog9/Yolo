@@ -3,7 +3,7 @@
 
 <style>
 
-	div.tableProf {
+	/* div.tableProf {
 		display : flex;
 		width: 45px; 
 		height: 45px; 
@@ -16,7 +16,7 @@
 		font-weight: bold;
 		font-size: 14px;
 		margin: auto 10px auto 5px;;
-	}
+	} */
 	
 	span.spanName {
 		display: block;
@@ -113,7 +113,7 @@ function openLeaveDetail(request_leaveno) {
 					      	'<span style="display: block; margin-top: 5px;">'+
 					      		'<span style="font-weight: bold; margin-left:6px;">요청내역</span>';
 					      		
-					      		if(json.opproval_status==0){
+					      		if(json.opproval_status==0) {
 					      			html+='<span class="badge badge-light rounded-pill ml-2">미승인</span>';
 					      		} else if(json.opproval_status==2) {
 					      			html+='<span class="badge badge-danger rounded-pill ml-2">반려</span>';
@@ -141,34 +141,18 @@ function openLeaveDetail(request_leaveno) {
 						      		}
 					      			
 					    html+='</div>';
-					    
-						if(json.add_file ==1 && json.filename==null){
-				  			html+='<span style="display: block; margin-top: 25px; margin-left:25px;">&#128193; 자료첨부</span>'+
-			    					'<form id="addFile">'+
-			    					'<div class="filebox" style="width:90%; margin : 5px auto 15px auto;" >'+
-								    '<input class="upload-name" value="첨부파일" placeholder="첨부파일" readonly="readonly">'+
-								    '<label for="file">파일찾기</label>'+
-								    '<input type="file" id="file" name="attach">'+
-								    '<input type="hidden" name="pk_request_leaveno" value="'+ json.pk_request_leaveno +'">'+
-									'</div>'+
-								    '</form>';
-				  		}
 							    
 						html+='</div>';
+						if(json.opproval_status==0) {
+							html+= '<div style="display: flex; align-items: center;">';
 					      	
-					      	if(now<start){
-					      		html+= '<div style="display: flex; align-items: center;">';
-					      		
-					      		if(json.add_file ==1 && json.filename==null && json.opproval_status!=2){
-						  			html+='<button type="button" onclick="addLeavFile();" class="btn btn-outline-secondary submitCancle" style="margin: 2px 3px 10px auto; height: 35px; font-weight: bold;">파일등록</button>'+
-						      			'<button type="button" onclick="deleteRequestLeave(\''+ json.pk_request_leaveno +'\');" class="btn btn-outline-secondary submitCancle" style="margin: 2px auto 10px 3px; height: 35px; font-weight: bold;">휴가신청 취소</button>';
-						  		} else if(json.opproval_status!=2){
-						  			html+='<button type="button" onclick="deleteRequestLeave(\''+ json.pk_request_leaveno +'\');" class="btn btn-outline-secondary submitCancle" style="margin: 2px auto 10px auto; height: 35px; font-weight: bold;">휴가신청 취소</button>';
-						  		}
-					      		
-					      		html+= '</div>';
-					      	}
-					      	
+							html+='<button type="button" onclick="approvalRequestLevae(\'1\', \''+ json.pk_request_leaveno +'\', \''+ json.fk_empno +'\');" class="btn btn-outline-secondary approve" style="margin: 2px 4px 10px auto; height: 35px; font-weight: bold;">승인하기</button>'+
+							      '<button type="button" onclick="approvalRequestLevae(\'2\', \''+ json.pk_request_leaveno +'\', \''+ json.fk_empno +'\');" class="btn btn-outline-secondary approve" style="margin: 2px auto 10px 4px; height: 35px; font-weight: bold;">반려하기</button>';
+							  		
+						      		
+						   html+= '</div>';
+			      		}
+						
 					 	html +='</div>'+
 				 	 '</div>';
 			
@@ -176,6 +160,27 @@ function openLeaveDetail(request_leaveno) {
 			
 			$("div.modal-content").html(html);
 			
+			
+		},
+		error: function(request, status, error){
+            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+        }
+	}); // end of ajax
+}
+
+
+
+// 승인 / 반려하기 함수 
+function approvalRequestLevae( approval_status ,request_leaveno, empno){
+	$.ajax({
+    	url : "<%=request.getContextPath()%>/leave/approvalRequestLevae.yolo",
+    	data : {"request_leaveno" : request_leaveno,
+    			"approval_status" : approval_status,
+    			"empno" : empno},
+    			
+		success: function(){
+			
+			window.location.reload();
 			
 		},
 		error: function(request, status, error){

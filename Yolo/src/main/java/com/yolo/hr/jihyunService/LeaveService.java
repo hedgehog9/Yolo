@@ -71,8 +71,8 @@ public class LeaveService implements InterLeaveService {
 	
 	// 조회한 부서에 해당하는 사원들의 휴가 신청내역을 불러온다
 	@Override
-	public List<Map<String, String>> getRequestLeaveList(String deptJoin) {
-		List<Map<String,String>> requestLeaveList = ldao.getRequestLeaveList(deptJoin);
+	public List<Map<String, String>> getRequestLeaveList(Map<String, String> paraMap) {
+		List<Map<String,String>> requestLeaveList = ldao.getRequestLeaveList(paraMap);
 		return requestLeaveList;
 	}
 	
@@ -90,6 +90,45 @@ public class LeaveService implements InterLeaveService {
 	public List<String> getAdminEmpnoList() {
 		List<String> adminEmpnoList = ldao.getAdminEmpnoList();
 		return adminEmpnoList;
+	}
+
+	
+	// 휴가신청 번호로 휴가신청 상세 조회
+	@Override
+	public Map<String, String> getLeaveRequestDetail(String request_leaveno) {
+		Map<String, String> leaveRequestDetail = ldao.getLeaveRequestDetail(request_leaveno);
+		return leaveRequestDetail;
+	}
+
+	
+	// 휴가신청에 파일 추가 하기
+	@Override
+	public void addFileToRequestLeave(Map<String, String> paraMap) {
+		ldao.addFileToRequestLeave(paraMap);
+	}
+
+	
+	// 휴가신청 삭제하기
+	@Override
+	public void deleteRequestLeave(Map<String, String> leaveRequestDetail) {
+		
+		ldao.deleteRequestLeave(leaveRequestDetail); 
+		
+		// 휴가 신청하면서 휴가 사용내역 같이 업데이트 해주는건데, 연차나 반차일때는 따로 식써야 함
+		if(leaveRequestDetail.get("fk_leave_type").equals("annual")) {
+			ldao.minusUsedLeaveAnnual(leaveRequestDetail);
+		} else if (leaveRequestDetail.get("fk_leave_type").equals("half_annual")) {
+			ldao.minusUsedLeaveHalf_annual(leaveRequestDetail);
+		} else {
+			ldao.minusUsedLeave(leaveRequestDetail);
+		}
+	}
+
+	
+	// 승인 / 반려하기 함수 
+	@Override
+	public void approvalRequestLevae(Map<String, String> parameterMap) {
+		ldao.approvalRequestLevae(parameterMap);
 	}
 	
 }

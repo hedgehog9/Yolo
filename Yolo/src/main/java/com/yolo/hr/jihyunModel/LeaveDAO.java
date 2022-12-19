@@ -83,8 +83,8 @@ public class LeaveDAO implements InterLeaveDAO {
 
 	// 조회한 부서에 해당하는 사원들의 휴가 신청내역을 불러온다
 	@Override
-	public List<Map<String, String>> getRequestLeaveList(String deptJoin) {
-		List<Map<String,String>> requestLeaveList = sqlsession.selectList("kimjh.getRequestLeaveList", deptJoin);
+	public List<Map<String, String>> getRequestLeaveList(Map<String, String> paraMap) {
+		List<Map<String,String>> requestLeaveList = sqlsession.selectList("kimjh.getRequestLeaveList", paraMap);
 		return requestLeaveList;
 	}
 
@@ -102,6 +102,49 @@ public class LeaveDAO implements InterLeaveDAO {
 	public List<String> getAdminEmpnoList() {
 		List<String> adminEmpnoList = sqlsession.selectList("kimjh.getAdminEmpnoList");
 		return adminEmpnoList;
+	}
+
+
+	// 휴가신청 번호로 휴가신청 상세 조회
+	@Override
+	public Map<String, String> getLeaveRequestDetail(String request_leaveno) {
+		Map<String, String> leaveRequestDetail = sqlsession.selectOne("kimjh.getLeaveRequestDetail", request_leaveno);
+		return leaveRequestDetail;
+	}
+
+
+	// 휴가신청에 파일 추가 하기
+	@Override
+	public void addFileToRequestLeave(Map<String, String> paraMap) {
+		sqlsession.update("kimjh.addFileToRequestLeave", paraMap);
+	}
+
+
+	//휴가신청 삭제하기
+	@Override
+	public void deleteRequestLeave(Map<String, String> leaveRequestDetail) {
+		sqlsession.delete("kimjh.deleteRequestLeave", leaveRequestDetail);
+	}
+
+	// 휴가 신청 삭제하면서 사용 내역들도 같이 줄여주기
+	@Override
+	public void minusUsedLeaveAnnual(Map<String, String> leaveRequestDetail) {
+		sqlsession.update("kimjh.minusUsedLeaveAnnual", leaveRequestDetail);
+	}
+	@Override
+	public void minusUsedLeaveHalf_annual(Map<String, String> leaveRequestDetail) {
+		sqlsession.update("kimjh.minusUsedLeaveHalf_annual", leaveRequestDetail);
+	}
+	@Override
+	public void minusUsedLeave(Map<String, String> leaveRequestDetail) {
+		sqlsession.update("kimjh.minusUsedLeave", leaveRequestDetail);
+	}
+
+
+	// 승인 / 반려하기 함수 
+	@Override
+	public void approvalRequestLevae(Map<String, String> parameterMap) {
+		sqlsession.update("kimjh.approvalRequestLevae", parameterMap);
 	}
 
 }
