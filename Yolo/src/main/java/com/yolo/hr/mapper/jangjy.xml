@@ -428,10 +428,19 @@
 	
 	<!-- 사원번호, 월요일(날짜), 금요일(날짜) 를 전달받아 한 주의 총 근무시간 구해오기  -->
 	<select id="getWorkTime" resultType="String"  parameterType="HashMap">
-		select nvl(SUM((overtime + worktime)),0) as time
+		<!-- select nvl(SUM((overtime + worktime)),0) as time
 		from tbl_commute
 		where fk_empno = #{empno}
-		and start_work_time between #{start_date} and #{end_date}
+		and start_work_time between #{start_date} and #{end_date} -->
+		
+		
+		select sum(nvl(C.worktime,0)) AS time,E.name, E.empno,  
+        sum(nvl(C.overtime,0)) AS total_overtime, E.fk_deptno, E.profile_color
+		from tbl_employees E join tbl_commute C
+		on E.empno = C.fk_empno
+		where C.start_work_time between to_date('${start_date}','yyyy-mm-dd')-1 and to_date('${end_date}','yyyy-mm-dd')+1
+		and empno = #{empno}
+		group by E.name, E.empno, E.fk_deptno, E.profile_color
 	</select>
 	
 	<!-- 부서번호를 전달받아 해당 부서에 부서장/팀장이 존재하는지 구해오기 -->
@@ -654,7 +663,7 @@
 			select D1.deptname as before_deptname
 			    , D2.deptname as after_deptname
 			    , before_position, after_position
-			    , psa_date
+			    , to_char(psa_date,'yyyy-mm-dd') as psa_date
 			    , psa_label
 			    , memo
 			    , name
@@ -901,6 +910,17 @@
 		where upper_deptno = #{deptno}
 	</select>
 	
+	<!-- 구성원 잔여 연차 구하기  -->
+	<resultMap type="HashMap" id="annualLeaveMap">
+		<result property="pk_fk_empno"   column="pk_fk_empno"  javaType="String"/>
+		<result property="annual"     column="annual"    	 javaType="String"/>
+	</resultMap>
+	<select id="getAnnualLeaveCnt" resultMap="annualLeaveMap">
+		select 15-annual as annual,pk_fk_empno
+		from tbl_used_leave
+		where pk_fk_empno = #{empno}
+	</select>
+	
 	
 	<!-- 팀 번호를 전달받아 해당 팀에 속하는 사원 조회하기  -->
 	<resultMap type="HashMap" id="employeeList_Map">
@@ -915,6 +935,13 @@
 		where fk_deptno = #{teamno}
 		and status in('재직','휴직')
 	</select>
+	
+	<!-- 구성원 등록시 연차 등록  -->
+	<insert id="insertAnnualLeave" parameterType="HashMap">
+		insert into tbl_used_leave (pk_fk_empno, pk_used_year) 
+		values(#{empno},2022)
+	</insert>
+	
 	<!-- ====================== 조직도 =================== -->
 
 

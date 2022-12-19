@@ -50,4 +50,6 @@ public interface InterCommuteDAO {
 
 	List<Map<String, Object>> sumWorktimeByDept();
 
+	List<Map<String, Object>> avgSalaryByDept();
+
 }
