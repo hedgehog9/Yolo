@@ -998,6 +998,7 @@ li.li_moveAll > a{
 						
 					    html +='</tbody>'   	
 							 +'</table>';
+							 
 						 $("div#search_result").html(html);
 					
 					// 페이지바 함수 호출

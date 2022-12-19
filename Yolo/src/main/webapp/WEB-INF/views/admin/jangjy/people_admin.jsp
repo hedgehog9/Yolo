@@ -1159,11 +1159,13 @@ arr_status = [];
 			</c:if>
 		</div>
 		<div id="button_title">
-			<button id="registMember" data-toggle="dropdown" type="button" class="btn" >
-				<span> 
-					<i class="fas fa-plus" style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
-				</span>
-			</button>
+			<c:if test="${sessionScope.loginuser.empno == 9999}">
+				<button id="registMember" data-toggle="dropdown" type="button" class="btn" >
+					<span> 
+						<i class="fas fa-plus" style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
+					</span>
+				</button>
+			</c:if>
 			<div class="dropdown-menu">
 				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_registMember">
 					<i class="fas fa-user-alt"></i>&nbsp;&nbsp;한명 추가하기 
@@ -1220,8 +1222,8 @@ arr_status = [];
 
 							<%-- =========== 부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">부서 선택</div>
-								<input class="selected" type="text" id="department" name="department" />
+								<div class="regitst_title">부서 선택<span style="color: red;">*</span></div>
+								<input class="selected" type="hidden" id="department" name="department" />
 
 								<button id="btn" class=" btn choice_type" type="button" data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;" onclick="getDeptNameModal();">
@@ -1237,8 +1239,8 @@ arr_status = [];
 
 							<%-- =========== 세부부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">세부부서 선택</div>
-								<input class="selected" type="text" id="team" name="team" />
+								<div class="regitst_title">세부부서 선택<span style="color: red;">*</span></div>
+								<input class="selected" type="hidden" id="team" name="team" />
 
 								<button id="btn_team" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
@@ -1257,8 +1259,8 @@ arr_status = [];
 
 							<%-- =========== 직위 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">직위 선택</div>
-								<input class="selected" type="text" name="position" id="position" />
+								<div class="regitst_title">직위 선택<span style="color: red;">*</span></div>
+								<input class="selected" type="hidden" name="position" id="position" />
 
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">

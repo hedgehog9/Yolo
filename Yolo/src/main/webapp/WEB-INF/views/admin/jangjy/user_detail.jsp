@@ -498,6 +498,41 @@
 		background-color: white;
 	}
 	
+	.filebox .upload-name {
+	    display: inline-block;
+	    height: 35px;
+	    padding: 0 10px;
+	    vertical-align: middle;
+	    border: 1px solid #dddddd;
+	    width: 70%;
+	    border-radius: 0.4rem;
+	    color: #999999;
+	}
+	
+	.filebox label {
+	    display: inline-block;
+	    padding: 7px 20px;
+	    color: #fff;
+	    vertical-align: middle;
+	    text-align: center;
+	    background-color: #88eb1e;
+	    cursor: pointer;
+	    width : 25%;
+	    height: 35px;
+	    margin-left: 10px;
+	    margin-top: 6px;
+	    border-radius: 0.4rem;
+	}
+	
+	.filebox input[type="file"] {
+	    position: absolute;
+	    width: 0;
+	    height: 0;
+	    padding: 0;
+	    overflow: hidden;
+	    border: 0;
+	}
+	
 </style>
 <%-- 말풍선 --%>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
@@ -520,6 +555,9 @@
 	       $(this).find('form')[0].reset();
 	       $("div#retirement_type").text("고용보험 퇴직사유 선택");
 	    });
+		
+	    v_empno = ${requestScope.employeeMap.empno};
+	    getAnnualLeave(v_empno);
 		
 	 	// 휴직처리에서 날짜 선택 클릭시 이미 신청되어있는 휴직이 있는지 조회, 경고창 출력
 //		$(document).on("change","input#between_date",function(){
@@ -610,8 +648,8 @@
 	  		$("div.info_title").css("border-bottom","");
 	  		$(e.target).css("border-bottom","solid 3px green");
 	  		$("div#div_info").empty();
-	  		v_empno = ${requestScope.employeeMap.empno};
-	  		// console.log("v_empno+ "+ v_empno);
+	  		
+	  		console.log("v_empno+ "+ v_empno);
 	  		html ="";
 	  		html += "<div style='display:flex; justify-content: space-between; margin-top: 30px;'>"
 						+"<div id='div_hr_title' style=' margin-bottom:20px;'>인사 정보</div>"
@@ -765,17 +803,18 @@
 									html+="<th class='th_content'>"+`${requestScope.employeeMap.birthday}`+"&nbsp;&nbsp;</th>";
 								}
 								
-							+"</tr>"
+							html+="</tr>"
 										
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>집주소</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.address}`+"</th>"			
-							+"</tr>"			
+							+"</tr>"
 							+"<tr style='height:40px;'>"
 								+"<th class='th_title'>급여계좌</th>"				
 								+"<th class='th_content'>"+`${requestScope.employeeMap.account}`+"</th>"			
 							+"</tr>"
 							+"<tr class='file' style='height:40px;'>"
+								+"<th class='th_title'>첨부파일</th>"		
 							+"</tr>";
 						}	
 							
@@ -862,7 +901,7 @@
 		let month = now.getMonth(); // 월
 		$("div#month").text(month+1+"월 급여명세서");
 		
-		$("div#div_annual").text("DB에서 조회한 값");
+		
 		
 		
 		$('#record_outside').on('click', function () {
@@ -954,18 +993,17 @@
 			let empno = $("input#empno").val();
 			
 			$.ajax({
-				 // 부서 이름 구해오기 
 				  url : "<%= ctxPath%>/getLeaveAbsence.yolo",
 				  data: {"empno":empno},
 				  dataType : "JSON",
 				  success : function(json){
-				  		$("div#div_result").html(""); 
+				  		$("div#div_result").empty(); 
 						let html ="";
 						
 						html += "<table class='table table-hover'>"
 								+"<thead>"
 									+"<tr>"
-										+"<th style='width:150px;'>수정,삭제</th>"
+										//+"<th style='width:150px;'>수정,삭제</th>"
 										+"<th>휴직기간</th>"
 										+"<th>휴직종류</th>"
 										+"<th>메모</th>"
@@ -975,10 +1013,10 @@
 								+"<tbody>";
 							  $.each(json,function(index,leaveMap){
 								  html += +"<tr>"
-											  +"<td>"
-												  +"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
-												  +"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
-											  +"</td>"
+											 // +"<td>"
+												  //+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
+												  //+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
+											 // +"</td>"
 											  +"<td>"+leaveMap.startdate+" ~ "+leaveMap.enddate+"</td>"
 											  +"<td>"+isEmptyPsa(leaveMap.leavetype)+"</td>"
 											  +"<td>"+isEmptyPsa(leaveMap.memo)+"</td>"
@@ -1268,6 +1306,11 @@
 	         }
 		});
 		
+		$(document).on("change", ".file", function(){
+			  var fileName = $(this).val();
+			  $(this).parent().find($(".upload-name")).val(fileName.slice(fileName.lastIndexOf("\\")+1));
+		});
+		
 		// ### 스피너의 이벤트는 클릭이 아니고 change도 아니고 "spinstop" 이다 ### //
 		// 첨부파일 개수만큼 늘고 줄어들게 만들기
 		$("input#spinnerImgQty").bind("spinstop", function(){
@@ -1424,7 +1467,23 @@
 		
 	}
 	
+	function getAnnualLeave(empno){
+		$.ajax({
+			 //  구성원 남은 연차 구해오기
+			  url : "<%= ctxPath%>/getAnnualLeave.yolo",
+			  dataType : "JSON",
+			  data:{"empno":empno},
+			  success : function(json){
+				  $("div#div_annual").text(json.annual+" 일");
+				
+			  },// end of success
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		
+		}); // end of ajax()----------------------------------------------------------------------
 	
+	}
 	
 	//인사정보 페이지에서 인사 정보 변경 버튼 클릭시
 	function edit_hrInfo(empno){
@@ -1755,13 +1814,13 @@
 			  dataType : "JSON",
 			  success : function(json){
 				  if(json.length>0){
-						let html = '<span style="display: block; margin-bottom:5px; font-weight: bold">첨부파일</span>';
+						let html = '';
 						$.each(json, function(index, item){
 							html+='<span style="font-size: 10pt; color: gray;"><i class="fas fa-solid fa-paperclip ml-3 mr-1"></i></span>'+
 					        	'<span class="mailFiles" onclick="javascript:location.href=\'<%=ctxPath%>/downloadFile.yolo?filename='+item.filename+'&org_filename='+item.org_filename+'\'" >'+item.org_filename+'</span><br>';
 						});
 						
-						$("tr.file").html(html);
+						$("tr.file").append(html);
 					}
 			  },
 			  error: function(request, status, error){
@@ -2024,12 +2083,12 @@
 							<div style="font-size: 12px; font-weight:600; color:#556372;">남은연차</div>
 							<div id="div_annual" style="font-size: 20px; color: gray; font-weight:700;"></div>
 						</div>
-					</div>
+					</d{iv>
 				</div>
 			</a>
 			
 			<a class="a_side" href="<%= ctxPath%>/admin/payStub.yolo">
-				<div class="div_rightside" id="pay_stub">
+				<div class="div_rightside" id="pay_stub" style="margin-top:25px;">
 					<i class="fas fa-won-sign fa-lg i_sideIcon"></i>
 					<div style="display: flex; justify-content: space-between; margin-top: 5px;">
 						<div style="margin:15px 0 0 20px;">

@@ -382,12 +382,16 @@ public class EmployeeController {
 		int duplicateEmail = dao.checkDuplicateEmail(paraMap);
 		
 		jsonObj.put("duplicateEmail", duplicateEmail );
-//		System.out.println("확인용 이메일 중복 여부 "+ duplicateEmail);
 		
 		if(duplicateEmail != 1) { // 중복이 아닌 경우 
 			int registResult = service.registEployee(paraMap);
 			jsonObj.put("registResult", registResult);
-//			System.out.println("신규사원 등록 여부 "+registResult);
+			
+			Map<String,String> emailMap = dao.getEmpno(paraMap);
+			paraMap.put("empno", emailMap.get("empno"));
+			System.out.println("+paraMap+"+paraMap);
+			dao.insertAnnualLeave(paraMap);
+			
 		}
 		
 		return jsonObj.toString() ;
@@ -540,7 +544,8 @@ public class EmployeeController {
 					// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 					
 //					String path = root + "resources"+File.separator+"files";
-					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\image"+"resources"+File.separator+"files";
+					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile\\";
+//					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\image"+"resources"+File.separator+"files";
 //					System.out.println("확인용 path : "+ path);
 					// C:\NCS\workspace(final)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Yolo\resources\files
 					/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
@@ -672,7 +677,7 @@ public class EmployeeController {
 		// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
 	    List<Map<String,String>> psaListPaging = service.psaListSearchWithPaging(pageMap);
 	    
-//	    System.out.println("확인용 psaListPaging : "+psaListPaging);
+	    System.out.println("확인용 psaListPaging : "+psaListPaging);
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -706,7 +711,7 @@ public class EmployeeController {
 	@RequestMapping(value = "/getFile.yolo", produces="text/plain;charset=UTF-8")
 	public String getFile( @RequestParam Map<String,Object>paraMap ) {
 		
-//		System.out.println(paraMap);
+//		System.out.println("확인용 paraMap"+paraMap);
 		
 		List<Map<String,String>> fileList = dao.getFile(paraMap);
 		
@@ -753,8 +758,7 @@ public class EmployeeController {
 				// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 				
 //				String path = root + "resources"+File.separator+"files";
-				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile";
-//				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files";
+				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile\\";
 				
 				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
 			            운영체제가 Windows 이라면 File.separator 는  "\" 이고,
@@ -1193,6 +1197,14 @@ public class EmployeeController {
 		return dao.empCntDept();
 	}
 	
+	// 구성원 연차 구하기 
+	@ResponseBody
+	@RequestMapping(value="/getAnnualLeave.yolo", method = {RequestMethod.GET})
+	public Map<String,String> getAnnualLeave(HttpServletRequest request,@RequestParam Map<String,String>paraMap ) {
+		
+		
+		return dao.getAnnualLeaveCnt(paraMap);
+	}
 
 	
 	
