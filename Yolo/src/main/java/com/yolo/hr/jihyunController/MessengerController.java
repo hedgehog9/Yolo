@@ -298,7 +298,7 @@ public class MessengerController {
 		// 먼저 총 게시물 건수 (total Count를 구해와야 한다 )
 		// 1. 검색조건이 있을때    2. 검색조건이 없을때
 		int totalCount = 0;        // 총 게시물 건수
-		int sizePerPage = 2;       // 한 페이지당 보여줄 게시물 건수 
+		int sizePerPage = 10;       // 한 페이지당 보여줄 게시물 건수 
 		int currentShowPageNo = 0; // 현재 보여주는 페이지번호로서, 초기치로는 1페이지로 설정함.
 		int totalPage = 0;         // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
       
