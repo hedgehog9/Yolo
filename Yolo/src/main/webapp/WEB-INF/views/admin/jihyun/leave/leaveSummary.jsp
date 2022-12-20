@@ -359,8 +359,8 @@
 					      	
 					htmlMiddle +='<span style="display: block; margin-top: 30px; margin-bottom: 10px;">&#128221; 휴가 일정 · 필요 정보 입력</span>'+
 					      	'<input type="text" id="daterange" class="form-control text-center" placeholder="클릭하여 날짜를 지정해주세요" readonly="readonly">'+
-					        '<input type="text" name="start_date" class="form-control text-center">'+
-					        '<input type="text" name="end_date" class="form-control text-center">'+
+					        '<input type="hidden" name="start_date" class="form-control text-center">'+
+					        '<input type="hidden" name="end_date" class="form-control text-center">'+
 					        '<textarea rows="4" name="leave_content" style="padding:5px;" placeholder="휴가 등록 메세지 입력"></textarea>';
 					        
 			        if(json.add_file == 1){
@@ -384,7 +384,6 @@
 			        
 			        
 					htmlMiddle += '<input type="hidden" name="pk_leave_type" value="'+json.pk_leave_type+'">'+
-									'<input type="hidden" name="add_file" value="'+json.add_file+'">'+
 									'</form>';
 					 
 				$("div.modalMiddle").html(htmlMiddle);
@@ -533,7 +532,7 @@
 							
 					$.each(json, function(index, item){	
 						
-						html += '<tr>'+
+						html += '<tr onclick="openLeaveDetail(\''+item.pk_request_leaveno+'\')"  data-toggle="modal" data-target="#leaveDetail">'+
 							      '<td class="head"><div class="leaveProf"><span style="display:block; margin: auto;">'+item.emoji+'</span></div></td>'+
 							      '<td class="patop">'+item.leave_name+'</td>'+
 							      '<td class="patop">'+item.start_day + " " + item.start_name+' ~ '+item.end_day + " " + item.end_name+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
@@ -548,6 +547,10 @@
 						if(item.opproval_status == 0){
 							html += '</td>'+
 									'<td class="patop"><span class="badge badge-light rounded-pill">미승인</span></td>';
+						} else if(item.opproval_status == 2) {
+							html += '</td>'+
+							'<td class="patop"><span class="badge badge-danger rounded-pill">반려</span></td>';
+							
 						} else {
 							html += '</td>'+
 									'<td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>';
@@ -587,7 +590,7 @@
 						'<table class="table table-borderless table table-hover ">';
 						
 					$.each(json, function(index, item){	
-						html += '<tr data-toggle="modal" data-target="#leaveDetail">'+
+						html += '<tr onclick="openLeaveDetail(\''+item.pk_request_leaveno+'\')"  data-toggle="modal" data-target="#leaveDetail">'+
 						      '<td class="head"><div class="leaveProf"><span style="display:block; margin: auto;">'+item.emoji+'</span></div></td>'+
 						      '<td class="patop">'+item.leave_name+'</td>'+
 						      '<td class="patop">'+item.start_day + " " + item.start_name+' ~ '+item.end_day + " " + item.end_name+'<span class="badge badge-light rounded-pill ml-4">'+item.use_days+'일</span></td>'+
@@ -602,13 +605,20 @@
 						if(item.opproval_status == 0){
 							html += '</td>'+
 									'<td class="patop"><span class="badge badge-light rounded-pill">미승인</span></td>';
+						} else if(item.opproval_status == 2) {
+							html += '</td>'+
+									'<td class="patop"><span class="badge badge-danger rounded-pill">반려</span></td>';
 						} else {
 							html += '</td>'+
-									'<td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>';
+							'<td class="patop"><span class="badge badge-dark rounded-pill">승인</span></td>';
+						}
+						
+						if(item.opproval_status != 2){
+							html += '<td class="tail"><button type="button" onclick="deleteRequestLeave(\''+ item.pk_request_leaveno +'\');" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>';
 						}
 						      
-						html += '<td class="tail"><button type="button" class="btn btn-outline-secondary btn-sm submitCancle">신청 취소</button></td>'+
-						    '</tr>';
+						html +='</tr>';
+						
 					}); // end of each
 					
 					html += '</table>';
@@ -622,6 +632,9 @@
             }
 		}); // end of ajax
 	}
+	
+	
+	
 	
 </script>
 

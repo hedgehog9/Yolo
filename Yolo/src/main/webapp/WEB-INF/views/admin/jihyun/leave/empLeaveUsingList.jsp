@@ -110,7 +110,7 @@
 		</thead>
 		<tbody>
 			<c:forEach items="${requestLeaveList }" var="requestLeave">
-				<tr>
+				<tr onclick="openLeaveDetail('${requestLeave.pk_request_leaveno }')"  data-toggle="modal" data-target="#leaveDetail">
 			      <td><div class="tableProf" style="background-color: ${requestLeave.profile_color }">${requestLeave.nickname }</div>${requestLeave.name }</td>
 			      <td class="patop">${requestLeave.fk_empno }</td>
 			      <td class="patop">${requestLeave.position }</td>
@@ -128,13 +128,13 @@
 			      </c:if>
 			      
 			      <c:if test="${requestLeave.opproval_status eq 0}">
-			      	<td><button type="button" class="btn btn-outline-secondary btn-sm approve">승인 / 취소</button></td>
+			      	<td><button type="button" class="btn btn-outline-secondary btn-sm approve">승인 / 반려</button></td>
 			      </c:if>
 			      <c:if test="${requestLeave.opproval_status eq 1}">
-			      	<td>승인 완료</td>
+			      	<td class="patop" style="font-weight: bold; color: blue;">승인 완료</td>
 			      </c:if>
 			      <c:if test="${requestLeave.opproval_status eq 2}">
-			      	<td>취소</td>
+			      	<td class="patop" style="font-weight: bold; color: red;">취소</td>
 			      </c:if>
 			      
 			    </tr>
@@ -152,4 +152,7 @@
 		    
 	    </tbody>
 	</table>
+	
+	<!-- 휴가 상세 모달 -->
+	<%@ include file="modal/requestLeaveDetailModal.jsp" %>
 </div>

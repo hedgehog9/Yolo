@@ -59,6 +59,8 @@
 	
 	td.head:hover {
 		cursor: pointer;
+		font-weight: bold;
+		color: red;
 	}
 	
 	span.tableTitle {
@@ -134,13 +136,15 @@
 		<tbody>
 			<c:forEach items="${leaveStatusList }" var="leaveStatus">
 				<tr>
-			      <td class="head"><div class="tableProf"  style="background-color: ${leaveStatus.profile_color }">${leaveStatus.nickname }</div>${leaveStatus.name }</td>
+			      <td class="head" data-toggle="tooltip" data-placement="top" title="해당 사원 휴가보기" onclick="javascript:location.href='<%= ctxPath%>/leave/specificEmpLeave.yolo?empno=${leaveStatus.empno }&name=${leaveStatus.name }'" >
+			      		<div class="tableProf"  style="background-color: ${leaveStatus.profile_color }">${leaveStatus.nickname }</div>${leaveStatus.name }
+			      </td>
 			      <td class="patop">${leaveStatus.empno }</td>
 			      <td class="patop">${leaveStatus.deptname }</td>
 			      <td class="patop">${leaveStatus.position }</td>
 			      <td class="promotionLeave patop" data-toggle="tooltip" data-placement="top" title="연차촉진하기" onclick="promotionLeave('${leaveStatus.empno }', '${leaveStatus.name }')">${leaveStatus.annual }</td>
 			      <td class="patop">${leaveStatus.half_annual }</td>
-			      <td class="patop">${leaveStatus.emergency }</td>
+			      <td class="patop">${leaveStatus.sick }</td>
 			      <td class="patop">${leaveStatus.summer }</td>
 			      <td class="patop">${leaveStatus.condolence }</td>
 			      <td class="patop">${leaveStatus.marrige }</td>

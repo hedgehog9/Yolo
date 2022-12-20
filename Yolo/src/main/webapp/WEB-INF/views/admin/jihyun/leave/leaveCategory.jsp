@@ -66,33 +66,8 @@
 	$(document).ready(function() {
 		$("span.headerTitle2").hide();
 		
-		// checkAuthority();
 	});
 	
-	
-	function checkAuthority(){
-		$.ajax({
-	    	url : "<%=ctxPath%>/leave/checkAuthority.yolo",
-	    	dataType: "Text",
-			success: function(text){
-				
-				html = '';
-				
-				if(text ==1 ){
-					
-				} else {
-					
-				}
-				
-				$("div#").html(html);
-				
-			},
-			error: function(request, status, error){
-                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-            }
-		}); // end of ajax
-	}
-
 
 </script>
 

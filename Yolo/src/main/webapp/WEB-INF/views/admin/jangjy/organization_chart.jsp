@@ -250,10 +250,9 @@ function func_networkgraph(){
 					        height: '100%'
 					    },
 					    title: {
-					        text: '우리회사 조직도;'
+					        text: '조직도'
 					    },
 					    subtitle: {
-					        text: '조직도'
 					    },
 					    plotOptions: {
 					        networkgraph: {

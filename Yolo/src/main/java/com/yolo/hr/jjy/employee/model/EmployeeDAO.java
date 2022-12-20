@@ -307,6 +307,17 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		return empCntList;
 	}
 
+	@Override
+	public Map<String, String> getAnnualLeaveCnt(Map<String,String> paraMap) {
+		Map<String,String> AnnualLeaveCntMap = sqlsession.selectOne("jangjy.getAnnualLeaveCnt",paraMap);
+		return AnnualLeaveCntMap;
+	}
+
+	@Override
+	public void insertAnnualLeave(Map<String, Object> paraMap) {
+		sqlsession.insert("jangjy.insertAnnualLeave", paraMap);
+	}
+
 	
 	
 	
