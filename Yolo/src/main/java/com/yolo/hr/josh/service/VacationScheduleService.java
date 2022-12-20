@@ -37,5 +37,20 @@ public class VacationScheduleService implements InterVacationScheduleService {
 	}
 
 	
+	@Override
+	public void delSchedule(Map<String, String> paraMap) {
+		
+		String approval = paraMap.get("approval");
+		
+		// 반려일때만 삭제해주면 된다
+		if("2".equals(approval)) {
+			scheduledao.deleteVactionSchedule(paraMap);
+		}
+		
+		
+		
+	}
+
+	
 	
 }

@@ -99,14 +99,28 @@ public class AlarmController {
 	@RequestMapping(value = "/alarm/readAllAlarm.yolo" , produces="text/plain;charset=UTF-8")
 	public void readAllAlarm(HttpServletRequest request) {
 		
-		// 가라 세션
-		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmpno("1050");
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
-		// 가라세션 끝
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		service.readAllAlarm(loginuser.getEmpno());
+		
+	}
+	
+	
+	// 안 읽은 소식 개수 알아오기
+	@ResponseBody
+	@RequestMapping(value = "/alarm/getUnreadAlarmCnt.yolo" , produces="text/plain;charset=UTF-8")
+	public String getUnreadAlarmCnt(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String n = service.getUnreadAlarmCnt(loginuser.getEmpno());
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
 		
 	}
 	

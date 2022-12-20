@@ -426,7 +426,7 @@
 <div id="sendedMessenger">
 	<div id="messengertop">
 		<input type="checkbox" class="ml-2" id="checkAllMsg"/>
-		<span class="ml-2" style="flex-grow: 1;">안 읽은 메신저(4)</span>
+		<span class="ml-2" style="flex-grow: 1;">안 읽은 메신저(${n })</span>
 		<button type="button" class="mailTopBtn" onclick="readCheckedMsg()">선택 메신저 읽기</button>
 		<button type="button"  class="mailTopBtn" onclick="readAllMsg()">안 읽은 메신저 모두 읽기</button>
 		<button class="btn" id="advanced-search-button" onclick="goSearch()" type="button" style="border:none; background-color: gray; height: 35px; color: white;">

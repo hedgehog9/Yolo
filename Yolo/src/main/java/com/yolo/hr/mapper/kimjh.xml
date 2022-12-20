@@ -73,6 +73,14 @@
 	
 	
 	
+	<!-- 안읽은 메신저 개수 알아오기 -->
+	<select id="getUnreadMsgCnt" parameterType="String" resultType="String">
+		select count(PK_MSGNO)
+	    from tbl_messenger
+	    where FK_RECIPIENTNO = #{empno} and view_status = 0
+	</select>
+	
+	
 	<!-- 보낸 메일 리스트 가져오기 -->
 	<resultMap type="HashMap" id="MsgMap">
 		<result property="name" column="name" javaType="String"/>
@@ -334,5 +342,260 @@
 	</update>
 	
 	
+	<!-- 안 읽은 소식 개수 알아오기 -->
+	<select id="getUnreadAlarmCnt" parameterType="String" resultType="String">
+		select count(PK_ALARMNO)
+		from tbl_alarm
+		where FK_RECIPIENTNO = #{empno} and view_status = 0
+		order by WRITEDATE desc
+	</select>
+	
+	
+	
+	
+	
+	<!-- 휴가 종류와 남은 일수 얻어오기 (홈화면용)-->
+	<resultMap type="HashMap" id="homeLeaveTypeMap">
+		<result property="pk_leave_type" column="pk_leave_type" javaType="String"/>
+		<result property="leave_name" column="leave_name" javaType="String"/>
+		<result property="limit_info" column="limit_info" javaType="String"/>
+		<result property="add_file" column="add_file" javaType="String"/>
+		<result property="emoji" column="emoji" javaType="String"/>
+		<result property="limit_days" column="limit_days" javaType="String"/>
+		<result property="remaining_leave" column="remaining_leave" javaType="String"/>
+		<result property="info1" column="info1" javaType="String"/>
+		<result property="info2" column="info2" javaType="String"/>
+		<result property="info3" column="info3" javaType="String"/>
+	</resultMap>
+	<select id="selectLeaveType" parameterType="HashMap" resultMap="homeLeaveTypeMap">
+		select pk_leave_type, leave_name, limit_info, add_file, emoji, limit_days
+		        ,case when LIMIT_DAYS>0 then LIMIT_DAYS - (select func_get_used_leave( PK_LEAVE_TYPE , ${empno}, ${year}) from dual) end as remaining_leave
+		from tbl_leave
+	</select>
+	
+	
+	<!-- 모달에 들어갈 해당 휴가에 대한 상세 내용 알아오기 -->
+	<select id="selectLeaveData" parameterType="HashMap" resultMap="homeLeaveTypeMap">
+		select PK_LEAVE_TYPE, LEAVE_NAME, LIMIT_INFO, ADD_FILE, EMOJI, info1, info2, info3, LIMIT_DAYS
+		        ,case when LIMIT_DAYS>0 then LIMIT_DAYS - (select func_get_used_leave( PK_LEAVE_TYPE , ${empno}, to_char(sysdate, 'yyyy')) from dual) end as remaining_leave
+		from tbl_leave
+		where PK_LEAVE_TYPE = #{pk_leave_type}
+	</select>
+	
+	
+	<!-- 휴가 신청하기 -->
+	<insert id="insertRequestLeave" parameterType="HashMap">
+		insert into tbl_request_leave (pk_request_leaveno, fk_empno, fk_leave_type, start_day, end_day, use_days, use_reason, fileName, orgFilename, FK_SCHEDULE_NO)
+		values (seq_tbl_request_leave.nextval, #{empno}, #{pk_leave_type}, to_date('${start_day}','yyyy-mm-dd'), to_date('${end_day}','yyyy-mm-dd'), (to_date('${end_day}','yyyy-mm-dd')-to_date('${start_day}','yyyy-mm-dd')+1), #{use_reason}, '${fileName}', '${originalFilename}', #{schedulNo} )
+	</insert>
+	
+	
+	<!-- 휴가 신청하면서 사용내역 업데이트 하기 -->
+	<update id="plusUsedLeave" parameterType="HashMap">
+		update tbl_used_leave set ${pk_leave_type} = ${pk_leave_type} + (to_date('${end_day}','yyyy-mm-dd')-to_date('${start_day}','yyyy-mm-dd')+1)
+		where pk_fk_empno = #{empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	<!-- 연차 사용내역 업데이트 -->
+	<update id="plusUsedLeaveAnnual" parameterType="HashMap">
+		update tbl_used_leave set ${pk_leave_type} = ${pk_leave_type} + (to_date('${end_day}','yyyy-mm-dd')-to_date('${start_day}','yyyy-mm-dd')+1) , half_annual = half_annual + ((to_date('${end_day}','yyyy-mm-dd')-to_date('${start_day}','yyyy-mm-dd')+1)*2)
+		where pk_fk_empno = #{empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	<!-- 반차 사용 내역 업데이트 -->
+	<update id="plusUsedLeaveHalf_annual" parameterType="HashMap">
+		update tbl_used_leave set annual = annual + 0.5 , half_annual = half_annual + 1
+		where pk_fk_empno = #{empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	
+	<!-- 휴가 사용 내역 조회하기 -->
+	<resultMap type="HashMap" id="leaveListMap">
+		<result property="pk_request_leaveno" column="pk_request_leaveno" javaType="String"/>
+		<result property="fk_leave_type" column="fk_leave_type" javaType="String"/>
+		<result property="start_day" column="start_day2" javaType="String"/>
+		<result property="end_day" column="end_day2" javaType="String"/>
+		<result property="use_days" column="use_days" javaType="String"/>
+		<result property="start_name" column="start_name" javaType="String"/>
+		<result property="end_name" column="end_name" javaType="String"/>
+		<result property="use_reason" column="use_reason" javaType="String"/>
+		<result property="opproval_status" column="opproval_status" javaType="String"/>
+		<result property="add_file" column="add_file" javaType="String"/>
+		<result property="filename" column="filename" javaType="String"/>
+		<result property="orgfilename" column="orgfilename" javaType="String"/>
+		<result property="emoji" column="emoji" javaType="String"/>
+		<result property="leave_name" column="leave_name" javaType="String"/>
+	</resultMap>
+	<select id="getLeaveRecode"  parameterType="HashMap" resultMap="leaveListMap">
+		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
+				func_get_day(start_day) as start_name , func_get_day(end_day) as end_name ,
+				use_days, use_reason, opproval_status, add_file, filename, orgfilename, emoji, leave_name
+		from tbl_request_leave R join tbl_leave L
+		on FK_LEAVE_TYPE = PK_LEAVE_TYPE
+		<![CDATA[where fk_empno = #{empno} and to_char(START_DAY, 'yyyy')= #{year}  and START_DAY < sysdate]]>
+		order by start_day desc
+	</select>
+	
+	
+	<!-- 예정 휴가 내역 조회하기 -->
+	<select id="getLeavePlan"  parameterType="HashMap" resultMap="leaveListMap">
+		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
+				func_get_day(start_day) as start_name , func_get_day(end_day) as end_name ,
+				use_days, use_reason, opproval_status, add_file, filename, orgfilename, emoji, leave_name
+		from tbl_request_leave R join tbl_leave L
+		on FK_LEAVE_TYPE = PK_LEAVE_TYPE
+		<![CDATA[where fk_empno = #{empno} and to_char(START_DAY, 'yyyy')= #{year}  and START_DAY > sysdate]]>
+		order by start_day asc
+	</select>
+	
+	
+	<!-- 휴가신청 번호로 휴가신청 상세 조회 -->
+	<select id="getLeaveRequestDetail" parameterType="String" resultMap="deptRequestMap">
+		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
+        func_get_day(start_day) as start_name , func_get_day(end_day) as end_name ,
+        use_days, use_reason, opproval_status, add_file, filename, leave_name, orgfilename, fk_schedule_no
+        , fk_empno, name,substr(name, -2, 2) as nickname, position, profile_color
+		from (select *
+		    from tbl_request_leave 
+		    join TBL_EMPLOYEES
+		    on fk_empno = empno 
+		    where pk_request_leaveno = #{request_leaveno} )R 
+		join tbl_leave L
+		on FK_LEAVE_TYPE = PK_LEAVE_TYPE
+	</select>
+	
+	
+	<!-- 휴가신청에 파일 추가 하기 -->
+	<update id="addFileToRequestLeave">
+		update tbl_request_leave set filename = '${fileName}', orgFilename = '${originalFilename}'
+		where pk_request_leaveno = #{pk_request_leaveno}
+	</update>
+	
+	
+	<!-- 휴가신청 삭제하기 -->
+	<delete id="deleteRequestLeave" parameterType="HashMap">
+		delete from tbl_request_leave
+		where pk_request_leaveno = #{pk_request_leaveno}
+	</delete>
+	
+	<!-- 휴가 삭제하면서 사용내역 업데이트 하기 -->
+	<update id="minusUsedLeave" parameterType="HashMap">
+		update tbl_used_leave set ${fk_leave_type} = ${fk_leave_type} - ${use_days}
+		where pk_fk_empno = #{fk_empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	<!-- 휴가 삭제하면서  연차 사용내역 업데이트 -->
+	<update id="minusUsedLeaveAnnual" parameterType="HashMap">
+		update tbl_used_leave set ${fk_leave_type} = ${fk_leave_type} - ${use_days} , half_annual = half_annual - (${use_days}*2)
+		where pk_fk_empno = #{fk_empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	<!-- 휴가 삭제하면서  반차 사용 내역 업데이트 -->
+	<update id="minusUsedLeaveHalf_annual" parameterType="HashMap">
+		update tbl_used_leave set annual = annual - 0.5 , half_annual = half_annual - 1
+		where pk_fk_empno = #{fk_empno} and pk_used_year = SUBSTR('${start_day}', 1, 4)
+	</update>
+	
+	
+	<!-- 휴가 승인 / 반려하기 함수  -->
+	<update id="approvalRequestLevae" parameterType="HashMap">
+		update tbl_request_leave set opproval_status = #{approval_status}
+		where pk_request_leaveno = #{pk_request_leaveno}
+	</update>
+	
+	<!-- 하위 부서 번호 전부 알아오기 -->
+	<select id="getLowerDeptnoList" parameterType="String" resultType="String">
+		select V.deptno
+		from 
+		(select  deptno
+		from TBL_DEPT 
+		start with deptno = #{fk_deptno}
+		connect by NOCYCLE prior deptno =  upper_deptno) V
+		join TBL_DEPT_MAPPING M
+		on V.deptno = M.fk_deptno
+	</select>
+	
+	
+	
+	<!-- 조회한 부서에 해당하는 사원들의 휴가 신청내역을 불러온다 -->
+	<resultMap type="HashMap" id="deptRequestMap">
+		<result property="pk_request_leaveno" column="pk_request_leaveno" javaType="String"/>
+		<result property="fk_leave_type" column="fk_leave_type" javaType="String"/>
+		<result property="start_day" column="start_day2" javaType="String"/>
+		<result property="end_day" column="end_day2" javaType="String"/>
+		<result property="start_name" column="start_name" javaType="String"/>
+		<result property="end_name" column="end_name" javaType="String"/>
+		<result property="use_days" column="use_days" javaType="String"/>
+		<result property="use_reason" column="use_reason" javaType="String"/>
+		<result property="opproval_status" column="opproval_status" javaType="String"/>
+		<result property="add_file" column="add_file" javaType="String"/>
+		<result property="filename" column="filename" javaType="String"/>
+		<result property="orgfilename" column="orgfilename" javaType="String"/>
+		<result property="leave_name" column="leave_name" javaType="String"/>
+		<result property="fk_empno" column="fk_empno" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+		<result property="fk_schedule_no" column="fk_schedule_no" javaType="String"/>
+	</resultMap>
+	<select id="getRequestLeaveList" parameterType="HashMap" resultMap="deptRequestMap">
+		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
+        func_get_day(start_day) as start_name , func_get_day(end_day) as end_name ,
+        use_days, use_reason, opproval_status, add_file, filename, leave_name, orgfilename
+        , fk_empno, name,substr(name, -2, 2) as nickname, position, profile_color
+		from (select *
+		    from tbl_request_leave 
+		    join TBL_EMPLOYEES
+		    on fk_empno = empno )R 
+		join tbl_leave L
+		on FK_LEAVE_TYPE = PK_LEAVE_TYPE
+		<![CDATA[where fk_deptno in (${deptJoin}) and ABS(sysdate-start_day) < 100 and fk_empno != #{empno}]]>
+		order by opproval_status asc , pk_request_leaveno desc
+	</select>
+	
+	
+	
+	<!-- 조회한 부서에 해당하는 사원들의 휴가 사용/잔여 내역을 불러온다 -->
+	<resultMap type="HashMap" id="leavetStatusMap">
+		<result property="annual" column="annual" javaType="String"/>
+		<result property="half_annual" column="half_annual" javaType="String"/>
+		<result property="condolence" column="condolence" javaType="String"/>
+		<result property="sick" column="sick" javaType="String"/>
+		<result property="summer" column="summer" javaType="String"/>
+		<result property="marrige" column="marrige" javaType="String"/>
+		<result property="emergency" column="emergency" javaType="String"/>
+		<result property="etc" column="etc" javaType="String"/>
+		<result property="empno" column="empno" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="nickname" column="nickname" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="profile_color" column="profile_color" javaType="String"/>
+		<result property="deptname" column="deptname" javaType="String"/>
+	</resultMap>
+	<select id="getLeaveStatusList" parameterType="String" resultMap="leavetStatusMap">
+		select 15-annual as annual, 30 - half_annual as half_annual, condolence, 90 - sick as sick, 4- summer as summer, marrige, emergency, etc, 
+        		empno, name, substr(name, -2, 2) as nickname, position, profile_color, deptname
+		from tbl_used_leave 
+		join (  select *
+		        from tbl_employees
+		        join tbl_dept
+		        on fk_deptno = deptno)
+		on PK_FK_EMPNO = empno
+		where PK_USED_YEAR = to_char(sysdate, 'yyyy') and deptno in (${deptJoin})
+		order by deptno , empno
+	</select> 
+	
+	
+	<!-- 관리자 사원번호 리스트 가져오기 -->
+	<select id="getAdminEmpnoList" resultType="String">
+		select FK_EMPNO
+		from TBL_DEPT_MAPPING
+	</select>
 	
 </mapper>

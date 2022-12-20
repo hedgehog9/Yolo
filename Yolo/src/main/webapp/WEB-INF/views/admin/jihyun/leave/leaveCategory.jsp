@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath=request.getContextPath(); %>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <style type="text/css">
 	
 	div#category {
@@ -65,8 +65,9 @@
 	
 	$(document).ready(function() {
 		$("span.headerTitle2").hide();
+		
 	});
-
+	
 
 </script>
 
@@ -75,14 +76,18 @@
 
 	<div id="category">
 		<span class="headerTitle ml-5" id="myLeave" onclick="javascript:location.href='<%= ctxPath%>/leaveSummary.yolo'">내 휴가</span>
-		<span class="headerTitle" id="empLeave" onclick="javascript:location.href='<%= ctxPath%>/empLeaveUsingList.yolo'">구성원 휴가</span>
+		<c:if test="${not empty requestScope.isAdmin }">
+			<span class="headerTitle" id="empLeave" onclick="javascript:location.href='<%= ctxPath%>/empLeaveUsingList.yolo'">구성원 휴가</span>
+		</c:if>
 	</div>
 	
 	<div id="bottomcate" class="border-bottom pb-3">
-		<span class="headerTitle2 ml-5" id="empLeaveSubmit" onclick="javascript:location.href='<%= ctxPath%>/empLeaveUsingList.yolo'">휴가 신청내역</span>
-		<span class="headerTitle2" id="empLeaveStatus" onclick="javascript:location.href='<%= ctxPath%>/empLeaveStatus.yolo'">휴가 보유/사용현황</span>
-		<div id="underBar1"></div>
-		<div id="underBar2"></div>
+		<c:if test="${not empty requestScope.isAdmin }">
+			<span class="headerTitle2 ml-5" id="empLeaveSubmit" onclick="javascript:location.href='<%= ctxPath%>/empLeaveUsingList.yolo'">휴가 신청내역</span>
+			<span class="headerTitle2" id="empLeaveStatus" onclick="javascript:location.href='<%= ctxPath%>/empLeaveStatus.yolo'">휴가 보유/사용현황</span>
+			<div id="underBar1"></div>
+			<div id="underBar2"></div>
+		</c:if>
 	</div>
 	
 <%-- 관리인 연차 상세 페이지 끝 --%>

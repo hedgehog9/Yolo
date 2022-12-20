@@ -271,8 +271,8 @@ public class EmployeeController {
 	// 휴직 처리 
 	@ResponseBody
 	@RequestMapping(value = "/leaveAbsence.yolo", produces = "text/plain;charset=UTF-8")
-//	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
-	public String leaveabsence(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
+	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
+//	public String leaveabsence(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
 		
 		System.out.println(leaveMap.get("leavetype"));
 		System.out.println(leaveMap.get("startdate"));
@@ -309,11 +309,9 @@ public class EmployeeController {
 	
 	@ResponseBody
 	@RequestMapping(value = "/getLeaveInfo.yolo", produces = "text/plain;charset=UTF-8")
-//	public String addAlarm_leaveabsence(Map<String, String> paraMap,  @RequestParam Map<String,String> leaveMap) {
 	public String getLeaveInfo(Map<String, String> paraMap, @RequestParam Map<String,String> leaveMap) {
 		
-		System.out.println(leaveMap.get("empno"));
-		
+//		System.out.println(leaveMap.get("empno"));
 		Map<String,String> leaveInfoMap = dao.getLeaveInfo(leaveMap);
 //		System.out.println("leaveInfoMap :"+leaveInfoMap);
 		
@@ -382,12 +380,16 @@ public class EmployeeController {
 		int duplicateEmail = dao.checkDuplicateEmail(paraMap);
 		
 		jsonObj.put("duplicateEmail", duplicateEmail );
-//		System.out.println("확인용 이메일 중복 여부 "+ duplicateEmail);
 		
 		if(duplicateEmail != 1) { // 중복이 아닌 경우 
 			int registResult = service.registEployee(paraMap);
 			jsonObj.put("registResult", registResult);
-//			System.out.println("신규사원 등록 여부 "+registResult);
+			
+			Map<String,String> emailMap = dao.getEmpno(paraMap);
+			paraMap.put("empno", emailMap.get("empno"));
+			System.out.println("+paraMap+"+paraMap);
+			dao.insertAnnualLeave(paraMap);
+			
 		}
 		
 		return jsonObj.toString() ;
@@ -540,7 +542,8 @@ public class EmployeeController {
 					// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 					
 //					String path = root + "resources"+File.separator+"files";
-					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\image"+"resources"+File.separator+"files";
+					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile\\";
+//					String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\image"+"resources"+File.separator+"files";
 //					System.out.println("확인용 path : "+ path);
 					// C:\NCS\workspace(final)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Yolo\resources\files
 					/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
@@ -657,6 +660,11 @@ public class EmployeeController {
 		// 총 페이지수 구해오기 
 		int totalCount = service.getTotalPsaPage(pageMap); 
 		
+		int cnt = service.getTotalCnt(pageMap);
+		
+//		System.out.println("확인용 totalCount : "+totalCount);
+//		System.out.println("확인용 cnt : "+cnt);
+		
 		if(currentShowPageNo == null) {
 			currentShowPageNo ="1";
 		}
@@ -669,7 +677,7 @@ public class EmployeeController {
 	    pageMap.put("startRno", String.valueOf(startRno));
 	    pageMap.put("endRno", String.valueOf(endRno));
 	    
-		// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+		// 페이징 처리한 글목록 가져오기 
 	    List<Map<String,String>> psaListPaging = service.psaListSearchWithPaging(pageMap);
 	    
 //	    System.out.println("확인용 psaListPaging : "+psaListPaging);
@@ -681,16 +689,17 @@ public class EmployeeController {
 				
 				JSONObject jsonObj = new JSONObject();
 				
-				jsonObj.put("after_deptname",psaMap.get("after_deptname")); // 발령 후 부서명 
-				jsonObj.put("before_deptname",psaMap.get("before_deptname")); // 발령 후 부서명 
-				jsonObj.put("before_position",psaMap.get("before_position")); // 프로필 아이콘 색상
-				jsonObj.put("after_position", psaMap.get("after_position")); // 이름 
-				jsonObj.put("psa_date", psaMap.get("psa_date")); // 재직상태
-				jsonObj.put("psa_label", psaMap.get("psa_label")); // 입사일
-				jsonObj.put("memo", psaMap.get("memo")); // 퇴사일
-				jsonObj.put("name", psaMap.get("name")); // 퇴사일
-				jsonObj.put("pk_psano", psaMap.get("pk_psano")); // 퇴사일
+				jsonObj.put("after_deptname",psaMap.get("after_deptname")); 
+				jsonObj.put("before_deptname",psaMap.get("before_deptname")); 
+				jsonObj.put("before_position",psaMap.get("before_position"));  
+				jsonObj.put("after_position", psaMap.get("after_position"));
+				jsonObj.put("psa_date", psaMap.get("psa_date")); 
+				jsonObj.put("psa_label", psaMap.get("psa_label")); 
+				jsonObj.put("memo", psaMap.get("memo")); 
+				jsonObj.put("name", psaMap.get("name")); 
+				jsonObj.put("pk_psano", psaMap.get("pk_psano"));
 				jsonObj.put("totalCount", totalCount);
+				jsonObj.put("cnt", cnt);
 				
 				jsonArr.put(jsonObj);
 				
@@ -706,7 +715,7 @@ public class EmployeeController {
 	@RequestMapping(value = "/getFile.yolo", produces="text/plain;charset=UTF-8")
 	public String getFile( @RequestParam Map<String,Object>paraMap ) {
 		
-//		System.out.println(paraMap);
+//		System.out.println("확인용 paraMap"+paraMap);
 		
 		List<Map<String,String>> fileList = dao.getFile(paraMap);
 		
@@ -753,8 +762,7 @@ public class EmployeeController {
 				// root 확인 :C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\
 				
 //				String path = root + "resources"+File.separator+"files";
-				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile";
-//				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files";
+				String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\empFile\\";
 				
 				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
 			            운영체제가 Windows 이라면 File.separator 는  "\" 이고,
@@ -1179,8 +1187,28 @@ public class EmployeeController {
 	}
 	
 	
+	@ResponseBody
+	@RequestMapping(value="/insight/genderRate.yolo", method = {RequestMethod.GET})
+	public List<Map<String,Object>> genderRate(HttpServletRequest request) {
+		
+		return dao.genderRate();
+	}
 	
+	@ResponseBody
+	@RequestMapping(value="/insight/empCntDept.yolo", method = {RequestMethod.GET})
+	public List<Map<String,Object>> empCntDept(HttpServletRequest request) {
+		
+		return dao.empCntDept();
+	}
 	
+	// 구성원 연차 구하기 
+	@ResponseBody
+	@RequestMapping(value="/getAnnualLeave.yolo", method = {RequestMethod.GET})
+	public Map<String,String> getAnnualLeave(HttpServletRequest request,@RequestParam Map<String,String>paraMap ) {
+		
+		
+		return dao.getAnnualLeaveCnt(paraMap);
+	}
 
 	
 	

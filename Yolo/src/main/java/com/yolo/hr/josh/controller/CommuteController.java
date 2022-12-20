@@ -180,7 +180,7 @@ public class CommuteController {
 			for(CommuteVO commutevo :commuteList) {
 				
 				String worktime = commutevo.getWorktime();
-				//System.out.println(worktime);
+				System.out.println(worktime);
 				
 				int integer_worktime = Integer.parseInt(worktime);
 				 
@@ -210,6 +210,10 @@ public class CommuteController {
 		String startdate = request.getParameter("startdate");
 		String enddate = request.getParameter("enddate");
 		
+		//System.out.println(fk_empno);
+		//System.out.println(startdate);
+		//System.out.println(enddate);
+		
 		Map<String,String> paraMap = new HashMap<>();
 		
 		paraMap.put("startdate",startdate);
@@ -224,6 +228,8 @@ public class CommuteController {
         		
         		for(CommuteVO commutevo : commuteList) {
         			JSONObject jsonObj = new JSONObject();
+        			
+        			System.out.println("확인 "+commutevo.getOvertime());
         			
         			jsonObj.put("dt", commutevo.getDt());
         			jsonObj.put("commuteno", commutevo.getCommuteno());
@@ -295,5 +301,26 @@ public class CommuteController {
         //Print the content
         System.out.println("content = " + content);
     }
+	
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(value="/insight/sumWorktimeByDept.yolo", method = {RequestMethod.GET})
+	public List<Map<String,Object>> sumWorktimeByDept(HttpServletRequest request) {
+		
+		
+		return service.sumWorktimeByDept();
+	}
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(value="/insight/avgSalaryByDept.yolo", method = {RequestMethod.GET})
+	public List<Map<String,Object>> avgSalaryByDept(HttpServletRequest request) {
+		
+		
+		return service.avgSalaryByDept();
+	}
 		
 }

@@ -93,8 +93,8 @@ public class ScheduleController {
 		
 		if(n > 0) {
 			paraMap.put("fk_recipientno", joinuser_empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
-		    paraMap.put("url", "/hr/schedule/calendar.yolo" );
-		    paraMap.put("url2", joinuser_empno ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+		    paraMap.put("url", "/schedule/" );
+		    paraMap.put("url2", "calendar.yolo" ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
 		    paraMap.put("alarm_content", name+"님이 일정을 공유하였습니다." );
 		    paraMap.put("alarm_type", "5" );
 		}
@@ -145,8 +145,8 @@ public class ScheduleController {
 		
 		if(n > 0) {
 			paraMap.put("fk_recipientno", joinuser_empno ); // 받는사람 (여러명일때는 ,으로 구분된 str)
-		    paraMap.put("url", "/hr/schedule/calendar.yolo" );
-		    paraMap.put("url2", joinuser_empno ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
+		    paraMap.put("url", "/schedule/" );
+		    paraMap.put("url2", "calendar.yolo" ); // 연결되는 pknum등...  (여러개일때는 ,으로 구분된 str)(대신 받는 사람 수랑 같아야됨)
 		    paraMap.put("alarm_content", name+"님이 일정을 공유하였습니다." );
 		    paraMap.put("alarm_type", "5" );
 		}

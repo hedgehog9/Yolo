@@ -68,4 +68,7 @@ public interface InterMessengerService {
 	// 메세지 발송을 위해 사람이름 알아오기
 	String getEmpName(String empno);
 
+	// 안 읽은 메신저 개수 알아오기
+	String getUnreadMsgCnt(String empno);
+
 }

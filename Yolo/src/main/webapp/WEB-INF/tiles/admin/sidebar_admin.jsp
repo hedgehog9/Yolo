@@ -313,6 +313,16 @@
 			
 		});// end of $(document).ready("click","#end_work", function(){}) ------------------
 		
+		
+		
+		// 안읽은 메신저 개수 알아오기
+		getUnreadMsgCnt();
+		
+		// 안읽은 소식 개수 알아오기
+		getUnreadAlarmCnt();
+		
+		
+		
 	}); // end of ready
 	
 	// Function Declation
@@ -445,6 +455,51 @@
     function logout(){
     	location.href='<%= ctxPath%>/logout.yolo';
     }
+    
+    
+ 	// 안읽은 메신저 개수 알아오기
+	function getUnreadMsgCnt(){
+ 		
+		$.ajax({
+	    	url : "<%=ctxPath%>/messenger/getUnreadMsgCnt.yolo",
+	    	dataType:"JSON",
+			success: function(json){
+				
+				if(json.n >0){
+					$("span#unreadMsgCnt").html('<span class="badge badge-danger rounded-pill mr-2">'+json.n+'</span>');
+				}
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of ajax
+ 	}
+	
+	// 안읽은 소식 개수 알아오기
+	function getUnreadAlarmCnt(){
+		
+		$.ajax({
+	    	url : "<%=ctxPath%>/alarm/getUnreadAlarmCnt.yolo",
+	    	dataType:"JSON",
+			success: function(json){
+				
+				if(json.n >0){
+					$("span#unreadAlarmCnt").html('<span class="badge badge-danger rounded-pill mr-2">'+json.n+'</span>');
+					$("button#allReadAlarm").show();
+				} else {
+					$("button#allReadAlarm").hide();
+				}
+				
+			},
+			error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            }
+		}); // end of ajax 
+ 		
+ 	}
+    
+    
 
 </script>
 
@@ -476,10 +531,10 @@
 				  </div>
 				</div>
 				<div class="sideTr" onclick="javascript:location.href='<%= ctxPath%>/messenger/receivedMessage.yolo'">
-					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span>메신저</span><span class="badge badge-danger rounded-pill" style="margin-left: 60%">5</span>
+					<i class="fas fa-regular fa-paper-plane sideIcon"></i><span style="flex-grow: 1;">메신저</span><span id="unreadMsgCnt"></span> 
 				</div>
 				<div class="sideTr" onclick="openAlarm()">
-					<i class="fas fa-regular fa-bell sideIcon"></i><span>새로운 소식</span><span class="badge badge-danger rounded-pill" style="margin-left: 50%">5</span>
+					<i class="fas fa-regular fa-bell sideIcon"></i><span style="flex-grow: 1;">새로운 소식</span><span id="unreadAlarmCnt"></span> 
 				</div>
 			</div>
 			

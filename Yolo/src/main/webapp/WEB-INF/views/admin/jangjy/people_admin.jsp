@@ -461,6 +461,12 @@ button#fileUpload{
 	background-color:#07B419;
 }
 
+span.span_badge {
+	background-color: #d9d9d9;
+	border-radius: 5px;
+	padding: 0 5px;
+}
+
 
 
 </style>
@@ -964,9 +970,24 @@ arr_status = [];
 										+'<div class="profile_icon" style="background-color:'+emp.profile_color+'"><div>'+emp.profileName+'</div></div>'
 										+'<div style="padding-top:3px;">'+emp.name+'</div>'
 									+'</div>'
-								+'</td>'
+								+'</td>';
+								
 								+'<td>'+emp.status+'</td>'
-								+'<td>'+emp.empno+'</td>'
+									
+								if(emp.status=="재직"){		
+									html+="<td><span id='label_status' class='span_badge' style='background-color:#07B419; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else if(emp.status=="휴직"){
+									html+="<td><span id='label_status' class='span_badge' style='background-color:#8F40DE; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else if(emp.status=="퇴직"){
+									html+="<td><span id='label_status' class='span_badge' style='background-color:gray; color:white'>"+isEmpty(emp.status)+"</span></td>";
+								}
+								else{
+									html+="<td></td>";
+								}	
+									
+								html +='<td>'+emp.empno+'</td>';
 								
 								if(${sessionScope.loginuser.empno} == "9999"){
 									
@@ -978,12 +999,26 @@ arr_status = [];
 				
 								html +='<td>'+emp.deptname+'</td>'
 								+'<td>'+emp.position+'</td>'
-				
-								+'<td>'+emp.email+'</td>'
-								+'<td>'+isEmpty(emp.gender)+'</td>';
-								if(${sessionScope.loginuser.empno} == "9999"){
-								html+='<td>'+isEmpty(emp.mobile)+'</td>';
+								+'<td>'+emp.email+'</td>';
+								// +'<td>'+isEmpty(emp.gender)+'</td>';
+								
+								if(emp.gender=="남"){		
+									html+="<td><span id='gender' class='span_badge' style='background-color:#b3d9ff; color:#00264d;'>"+isEmpty(emp.gender)+"</span></td>";
 								}
+								else if(emp.gender=="여"){
+									html+="<td><span id='gender' class='span_badge' style='background-color:#ffccd5; color:#4d000d;'>"+isEmpty(emp.gender)+"</span></td>";
+								}
+								else{
+									html+="<td></td>";
+								}
+								
+								
+								
+								
+								if(${sessionScope.loginuser.empno} == "9999"){
+									html+='<td>'+isEmpty(emp.mobile)+'</td>';
+								}
+								
 							+'</tr>';
 							<%-- ========================== 반복해서 출력할 부분 끝 ========== --%>
 						
@@ -1124,11 +1159,13 @@ arr_status = [];
 			</c:if>
 		</div>
 		<div id="button_title">
-			<button id="registMember" data-toggle="dropdown" type="button" class="btn" >
-				<span> 
-					<i class="fas fa-plus" style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
-				</span>
-			</button>
+			<c:if test="${sessionScope.loginuser.empno == 9999}">
+				<button id="registMember" data-toggle="dropdown" type="button" class="btn" >
+					<span> 
+						<i class="fas fa-plus" style="margin: 0px; width: 20px;"></i>&nbsp;&nbsp;구성원 추가하기
+					</span>
+				</button>
+			</c:if>
 			<div class="dropdown-menu">
 				<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_registMember">
 					<i class="fas fa-user-alt"></i>&nbsp;&nbsp;한명 추가하기 
@@ -1158,13 +1195,13 @@ arr_status = [];
 								<div>
 									<div class="regitst_title"> 이름<span style="color: red;">*</span>
 									</div>
-									<input name="name" class="input_modal" type="text" autocomplete="off" placeholder="이름 입력" />
+									<input name="name" class="input_modal" type="text" autocomplete="off" placeholder="이름 입력" maxlength="15" />
 								</div>
 								<div>
 									<div class="regitst_title">
 										이메일<span style="color: red;">*</span>
 									</div>
-									<input name="email" class="input_modal" type="text" autocomplete="off" placeholder="이메일 입력" />
+									<input name="email" class="input_modal" type="text" autocomplete="off" placeholder="이메일 입력" maxlength="50" />
 								</div>
 							</div>
 
@@ -1185,8 +1222,8 @@ arr_status = [];
 
 							<%-- =========== 부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">부서 선택</div>
-								<input class="selected" type="text" id="department" name="department" />
+								<div class="regitst_title">부서 선택<span style="color: red;">*</span></div>
+								<input class="selected" type="hidden" id="department" name="department" />
 
 								<button id="btn" class=" btn choice_type" type="button" data-toggle="dropdown">
 									<div style="display: flex; justify-content: space-between;" onclick="getDeptNameModal();">
@@ -1202,8 +1239,8 @@ arr_status = [];
 
 							<%-- =========== 세부부서 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">세부부서 선택</div>
-								<input class="selected" type="text" id="team" name="team" />
+								<div class="regitst_title">세부부서 선택<span style="color: red;">*</span></div>
+								<input class="selected" type="hidden" id="team" name="team" />
 
 								<button id="btn_team" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
@@ -1222,8 +1259,8 @@ arr_status = [];
 
 							<%-- =========== 직위 선택 =========== --%>
 							<div style="margin: 10px 0;">
-								<div class="regitst_title">직위 선택</div>
-								<input class="selected" type="text" name="position" id="position" />
+								<div class="regitst_title">직위 선택<span style="color: red;">*</span></div>
+								<input class="selected" type="hidden" name="position" id="position" />
 
 								<button id="btn" class=" btn choice_type" type="button"
 									data-toggle="dropdown">
