@@ -116,6 +116,7 @@
 	.select2-container--bootstrap4 .select2-selection--multiple .select2-search__field {
 		width: 80% !important;
 	}
+	
 
 </style>
     
@@ -297,7 +298,24 @@
       		if(arg.event.extendedProps.icon == "birthday") {
 		    		//console.log("들어오시나요?")
 		    		$(arg.el).find('.fc-event-title').prepend("<span style='font-size:10px;'>&#127881;</span>");
+		    		$(arg.el).on('click', function(e){
+		    				
+	      				e.preventDefault();
+	      				e.stopPropagation();
+
+	      			});
 	    		}
+      		
+      		//console.log($(arg.el).prop("class"));
+      		
+      		if($(arg.el).prop("class").includes("ko_event")) {
+      			$(arg.el).on('click', function(e){
+    				
+      				e.preventDefault();
+      				e.stopPropagation();
+
+      			});
+      		}
       		
       		$("select#kind-calendar").change(function() {
       			const kind_calendar = $("select#kind-calendar").val();
@@ -324,6 +342,18 @@
 	    			$('#modify_scheduleModal').modal('show');
 	        		const schedule_no = info.event.id;
 	        		
+	        		console.log(schedule_no)
+	        		/*
+	        		if(schedule_no == "") {
+	        			$(this).on('click', function(e){
+	          				e.preventDefault();
+	          				e.stopPropagation();
+	          				return;
+
+	          		});
+	        			
+	        		}
+	        		*/
 	        		$.ajax({
 	        			url:"<%= ctxPath %>/schedule/selectDetailSchedule.yolo",
 	        			data:{"schedule_no" :schedule_no},
@@ -455,6 +485,8 @@
 					}// end of success-----------------------------------
 				});
 		});
+      
+      // 휴무일 클릭막기
       
       
       
