@@ -660,6 +660,11 @@ public class EmployeeController {
 		// 총 페이지수 구해오기 
 		int totalCount = service.getTotalPsaPage(pageMap); 
 		
+		int cnt = service.getTotalCnt(pageMap);
+		
+//		System.out.println("확인용 totalCount : "+totalCount);
+//		System.out.println("확인용 cnt : "+cnt);
+		
 		if(currentShowPageNo == null) {
 			currentShowPageNo ="1";
 		}
@@ -672,10 +677,10 @@ public class EmployeeController {
 	    pageMap.put("startRno", String.valueOf(startRno));
 	    pageMap.put("endRno", String.valueOf(endRno));
 	    
-		// 페이징 처리한 글목록 가져오기 (검색이 있든지, 검색이 없든지 모두 다 포함한 것)
+		// 페이징 처리한 글목록 가져오기 
 	    List<Map<String,String>> psaListPaging = service.psaListSearchWithPaging(pageMap);
 	    
-	    System.out.println("확인용 psaListPaging : "+psaListPaging);
+//	    System.out.println("확인용 psaListPaging : "+psaListPaging);
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -684,16 +689,17 @@ public class EmployeeController {
 				
 				JSONObject jsonObj = new JSONObject();
 				
-				jsonObj.put("after_deptname",psaMap.get("after_deptname")); // 발령 후 부서명 
-				jsonObj.put("before_deptname",psaMap.get("before_deptname")); // 발령 후 부서명 
-				jsonObj.put("before_position",psaMap.get("before_position")); // 프로필 아이콘 색상
-				jsonObj.put("after_position", psaMap.get("after_position")); // 이름 
-				jsonObj.put("psa_date", psaMap.get("psa_date")); // 재직상태
-				jsonObj.put("psa_label", psaMap.get("psa_label")); // 입사일
-				jsonObj.put("memo", psaMap.get("memo")); // 퇴사일
-				jsonObj.put("name", psaMap.get("name")); // 퇴사일
-				jsonObj.put("pk_psano", psaMap.get("pk_psano")); // 퇴사일
+				jsonObj.put("after_deptname",psaMap.get("after_deptname")); 
+				jsonObj.put("before_deptname",psaMap.get("before_deptname")); 
+				jsonObj.put("before_position",psaMap.get("before_position"));  
+				jsonObj.put("after_position", psaMap.get("after_position"));
+				jsonObj.put("psa_date", psaMap.get("psa_date")); 
+				jsonObj.put("psa_label", psaMap.get("psa_label")); 
+				jsonObj.put("memo", psaMap.get("memo")); 
+				jsonObj.put("name", psaMap.get("name")); 
+				jsonObj.put("pk_psano", psaMap.get("pk_psano"));
 				jsonObj.put("totalCount", totalCount);
+				jsonObj.put("cnt", cnt);
 				
 				jsonArr.put(jsonObj);
 				

@@ -71,6 +71,9 @@ public interface InterEmployeeService {
 	/** 구성원 등록시 부서장 / 팀장 여부 확인  */
 	int registCheckManager(Map<String, Object> paraMap);
 
+	/** 인사발령 내역 조회 페이지 총 건수 구해오기 */
+	int getTotalCnt(Map<String, Object> pageMap);
+
 	
 
 
