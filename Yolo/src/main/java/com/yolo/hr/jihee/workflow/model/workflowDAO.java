@@ -193,6 +193,13 @@ public class workflowDAO implements InterWorkflowDAO {
 		List<Map<String, String>> HistoryList = sqlsession.selectList("choijh.getHistory",doc_no);
 		return HistoryList;
 	}
+
+	//내 레벨알아오기
+	@Override
+	public int getMylevelno(Map<String, String> paraMap) {
+		int myLevelno = sqlsession.selectOne("choijh.myLevelno", paraMap);
+		return myLevelno;
+	}
 	
 
 	
