@@ -65,6 +65,7 @@
 		join tbl_approval A
 		on F.fk_empno = A.fk_senior_empno
 		where fk_doc_no = #{doc_no}
+		order by levelno asc
 		</if>
 	</select>
 	
