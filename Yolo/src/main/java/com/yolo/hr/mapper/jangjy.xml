@@ -644,6 +644,47 @@
 	    	</if>
 	</select>
 	
+	<select id="getTotalCnt" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_personnel_appointment PSA join tbl_employees E
+		on PSA.fk_empno = E.empno
+		join tbl_dept D
+		on E.fk_deptno = D.deptno
+		where 1 = 1
+		<if test='keyword != "" '>
+		
+		    	<if test="searchType eq 'empno'">
+		    	    and empno = #{keyword}
+		    	</if>
+		    	
+		    	<if test="searchType eq 'name'">
+		    		and name like '%'||#{keyword}||'%'
+		    	</if>
+		    	
+	    	</if>
+		    	
+	    	<if test="arr_position != null">
+	    		and E.position in
+		    	<foreach collection="arr_position" index="i" open="(" separator="," close=")">
+					'${arr_position[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_dept != null">
+	    		and D.deptname in
+		    	<foreach collection="arr_dept" index="i" open="(" separator="," close=")">
+					'${arr_dept[i]}'
+				</foreach>	
+	    	</if>
+	    	
+	    	<if test="arr_status != null">
+	    		and psa_label in
+		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
+					'${arr_status[i]}'
+				</foreach>	
+	    	</if>
+	</select>
+	
 	<!-- 인사발령 내역 페이징 처리  -->
 	<resultMap type="HashMap" id="PsaPagingList_Map">
 		<result property="before_deptname"     				column="before_deptname"    				 javaType="String"/>
@@ -704,7 +745,7 @@
 	    	</if>
 	    	
 	    	<if test="arr_status != null">
-	    		and E.status in
+	    		and psa_label in
 		    	<foreach collection="arr_status" index="i" open="(" separator="," close=")">
 					'${arr_status[i]}'
 				</foreach>	

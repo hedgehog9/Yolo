@@ -506,6 +506,30 @@ public class EmployeeService implements InterEmployeeService {
 		
 		return manager_yn;
 	}
+
+	@Override
+	public int getTotalCnt(Map<String, Object> pageMap) {
+		String pattern = "^[0-9]*$"; // 숫자만 등장하는지
+		String str = (String) pageMap.get("keyword"); 
+		boolean result = false;
+		if(str != null) {
+			result = Pattern.matches(pattern, str);
+		}
+		String searchType = "";
+		if(str != "") {
+			if(result) {
+				searchType = "empno";
+			}
+			if(!result){
+				searchType = "name";
+			}
+		}
+		pageMap.put("searchType", searchType);
+		
+		int cnt = dao.getTotalCnt(pageMap);
+		return cnt;
+
+	}
 		
 
 }
