@@ -221,4 +221,12 @@ public class MessengerSevice implements InterMessengerService {
 		return name;
 	}
 
+	
+	// 안 읽은 메신저 개수 알아오기
+	@Override
+	public String getUnreadMsgCnt(String empno) {
+		String n = mdao.getUnreadMsgCnt(empno);
+		return n;
+	}
+
 }

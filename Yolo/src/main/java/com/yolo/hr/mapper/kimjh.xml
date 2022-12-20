@@ -73,6 +73,14 @@
 	
 	
 	
+	<!-- 안읽은 메신저 개수 알아오기 -->
+	<select id="getUnreadMsgCnt" parameterType="String" resultType="String">
+		select count(PK_MSGNO)
+	    from tbl_messenger
+	    where FK_RECIPIENTNO = #{empno} and view_status = 0
+	</select>
+	
+	
 	<!-- 보낸 메일 리스트 가져오기 -->
 	<resultMap type="HashMap" id="MsgMap">
 		<result property="name" column="name" javaType="String"/>
@@ -332,6 +340,15 @@
 		update tbl_alarm set view_status = 1
 		where FK_RECIPIENTNO = #{empno} and view_status = 0
 	</update>
+	
+	
+	<!-- 안 읽은 소식 개수 알아오기 -->
+	<select id="getUnreadAlarmCnt" parameterType="String" resultType="String">
+		select count(PK_ALARMNO)
+		from tbl_alarm
+		where FK_RECIPIENTNO = #{empno} and view_status = 0
+		order by WRITEDATE desc
+	</select>
 	
 	
 	

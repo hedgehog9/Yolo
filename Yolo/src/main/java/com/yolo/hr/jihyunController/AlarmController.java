@@ -106,4 +106,22 @@ public class AlarmController {
 		
 	}
 	
+	
+	// 안 읽은 소식 개수 알아오기
+	@ResponseBody
+	@RequestMapping(value = "/alarm/getUnreadAlarmCnt.yolo" , produces="text/plain;charset=UTF-8")
+	public String getUnreadAlarmCnt(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String n = service.getUnreadAlarmCnt(loginuser.getEmpno());
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+		
+	}
+	
 }

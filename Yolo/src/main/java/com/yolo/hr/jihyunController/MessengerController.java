@@ -43,6 +43,24 @@ public class MessengerController {
 	private FileManager fileManager; // bean으로 올라간 애를 쓰겠다
 	
 	
+	// 안 읽은 메신저 개수 알아오기
+	@ResponseBody
+	@RequestMapping(value = "/messenger/getUnreadMsgCnt.yolo" , produces="text/plain;charset=UTF-8")
+	public String getUnreadMsgCnt(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String n = service.getUnreadMsgCnt(loginuser.getEmpno());
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+		
+	}
+	
+		
 	// 보낸 메일함 열기
 	@RequestMapping(value = "/messenger/sentMessage.yolo")
 	public ModelAndView sentMessage( HttpServletRequest request, ModelAndView mav) {
@@ -430,6 +448,9 @@ public class MessengerController {
 		
 		mav.addObject("receivedMsgList", receivedMsgList);
 		mav.addObject("pageBar", pageBar);
+		
+		String n = service.getUnreadMsgCnt(loginuser.getEmpno());
+		mav.addObject("n", n);
 				
 		mav.setViewName("jihyun/messenger/receivedMessage.admin"); 
 		return mav;

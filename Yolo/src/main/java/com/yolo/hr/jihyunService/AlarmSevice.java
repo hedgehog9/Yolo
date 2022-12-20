@@ -106,4 +106,12 @@ public class AlarmSevice implements InterAlarmService {
 	public void readAllAlarm(String empno) {
 		adao.readAllAlarm(empno);
 	}
+
+
+	// 안 읽은 소식 개수 알아오기
+	@Override
+	public String getUnreadAlarmCnt(String empno) {
+		String n = adao.getUnreadAlarmCnt(empno);
+		return n;
+	}
 }
