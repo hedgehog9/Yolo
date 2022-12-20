@@ -207,10 +207,12 @@
 		select name, empno, row_number() over(order by empno desc) as rno, worktime_salary, overtime_salary, fk_deptno, deptname, upper_deptname,profile_color
 		from 
 		(
-		select E.name, E.empno, E.time_salary*sum(nvl(C.worktime,0))/60 AS worktime_salary, 
+		select E.name, E.empno, ceil(E.time_salary*(sum(nvl(C.worktime,0))+use_days*8)/60) AS worktime_salary, 
 		       E.time_salary*sum(nvl(C.overtime,0))/60 AS overtime_salary, E.fk_deptno, E.profile_color
 		from tbl_employees E join tbl_commute C
 		on E.empno = C.fk_empno
+        join tbl_request_leave L
+        on L.fk_empno = E.empno 
 		where C.start_work_time between to_date('${startdate}','yyyy-mm-dd') and to_date('${enddate}','yyyy-mm-dd')+1
 		      <if test="arrDept!=null">
 		      	and fk_deptno in
@@ -218,7 +220,8 @@
 					'${arrDept[i]}'
 				</foreach>
 		      </if>
-		group by E.name, E.empno, E.fk_deptno, E.profile_color, E.time_salary
+		and L.end_day between to_date('2022-11-25','yyyy-mm-dd') and to_date('2022-12-25','yyyy-mm-dd')+1
+		group by E.name, E.empno, E.fk_deptno, E.profile_color, E.time_salary, use_days      
 		)A join 
 		(
 		select D.deptno, D.deptname, Z.deptname AS upper_deptname
