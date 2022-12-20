@@ -1009,7 +1009,7 @@
 				  data: {"empno":empno},
 				  dataType : "JSON",
 				  success : function(json){
-				  		$("div#div_result").empty(); 
+				  		$("div#div_result").html(""); 
 						let html ="";
 						
 						html += "<table class='table table-hover'>"
@@ -1024,7 +1024,7 @@
 								+"</thead>"
 								+"<tbody>";
 							  $.each(json,function(index,leaveMap){
-								  html += +"<tr>"
+								  html += "<tr>"
 											 // +"<td>"
 												  //+"<button id='' class='btn_leave_edit_delete btn_leave_delete'><i class='fas fa-trash'></i></button>"
 												  //+"<button id='' class='btn_leave_edit_delete btn_leave_edit'> <i class='fas fa-pen'></i></button>"
@@ -1038,7 +1038,7 @@
 							
 						html +="</tbody></table>";
 			
-			$("div#div_result").html(html);
+				$("div#div_result").html(html);
 				
 				}
 			});
