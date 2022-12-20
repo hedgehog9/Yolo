@@ -1113,7 +1113,7 @@ arr_status = [];
 	<div id="search_buttons">
 	
 		
-		<div class="datepicker-cell" id="datepicker-year-ko"></div>
+		<div class="datepicker-cell" id="datepicker-year-ko" style="margin-top: 40px"></div>
 		<div class="tui-datepicker-input tui-datetime-input tui-has-focus">
              <input type="text" id="datepicker-input-ko" aria-label="Date-Time">
              <span class="tui-ico-date"></span>
