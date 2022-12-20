@@ -653,34 +653,7 @@ li.li_moveAll > a{
 				
 			})// end of $(document).on("keyup","input#searchWord",function(){}------
 			
-			// 사원 관련 부서, 이름 , 직위, 아이콘만 보여주는 버튼
-			$(document).on("click","button#view_list",function(){
-				$("div#search_result").empty();
-				let html ='<div style="display: flex; margin-top:20px;">'
-							+'<div class="div_personOne" style="width:100%; padding-top: 15px;">'
-								
-									<%-- 반복해서 출력할 div 묶음 시작  --%>
-									+'<div class="div_empInfo" style="display: flex; justify-content: space-between; margin: 10px; padding:10px;">'
-									+'<div class="profile2">'
-										+'<div class="profile_icon2">'
-											+'<div>길동</div>'
-										+'</div>'
-											+'<div class="div_name2" style="padding-top:3px;">홍길동</div>'
-									+'</div>'
-									+'<div class="dept_position">'
-										+'<span>직위&nbsp;&nbsp;</span>'
-										+'<span>|</span>'
-										+'<span>&nbsp;&nbsp;부서</span>'
-										+'</div>'
-									+'</div>'
-									<%-- 반복해서 출력할 div 묶음 끝  --%>
-								
-							+'</div>'<%-- end of <div style="width:75%; padding-top: 15px;"> --%>
-							
-						+'</div>';
-				$("div#search_result").html(html);
-			});
-			
+						
 			viewEmpList(1);
 			
 			// 필터에서 종류 선택시 (필터 카테고리별로 여러개 설정 가능, 중복값은 선택 x )
@@ -716,7 +689,7 @@ li.li_moveAll > a{
 					    	arr_dept.push(searchWord);
 					      break;  
 					      
-					    case "상태" :    
+					    case "라벨" :    
 					    	arr_status.push(searchWord);
 					      break;   
 					  }
@@ -746,7 +719,7 @@ li.li_moveAll > a{
 						// console.log(arr_dept);
 				      break;  
 				      
-				    case "상태" :    
+				    case "라벨" :    
 				    	arr_status.splice(arr_status.indexOf(searchWord),1);
 						// console.log(arr_status);
 				      break;   
@@ -955,6 +928,7 @@ li.li_moveAll > a{
 				success:function(json){
 					
 					$("div#search_result").empty();
+					
 					  let html ='<table id="tbl_history" class="table table-bordered table-hover" style="margin-top: 20px;">'
 									+'<thead>'
 									+'<tr>'
@@ -969,12 +943,13 @@ li.li_moveAll > a{
 								+'</thead>'
 							+'<tbody>';
 					  $.each(json,function(index,psa){
-						  $("span#result_cnt").text(psa.totalCount+" 명");
+						  $("span#result_cnt").text(psa.cnt+" 건");
 						  html += '<tr>'
 									  +'<td>'
 										  +'<div class="div_name">'
 										  +'<div class="div_label">'+isEmpty(psa.psa_label)+'</div>'							
-										  +'<div class="div_name">'+isEmpty(psa.name)+' ,<span class="span_time">'+psa.psa_date+'</span></div>'						
+										  +'<div class="div_label">'+isEmpty(psa.name)+'</div>'							
+										  +'<div class="div_name">'+psa.psa_date+'</span></div>'						
 										  +'</div>'
 									  +'</td>'
 									  +'<td>'+isEmpty(psa.before_deptname)+'</td>'
@@ -998,6 +973,7 @@ li.li_moveAll > a{
 						
 					    html +='</tbody>'   	
 							 +'</table>';
+							 
 						 $("div#search_result").html(html);
 					
 					// 페이지바 함수 호출
@@ -1179,10 +1155,11 @@ li.li_moveAll > a{
 				<li><a class="dropdown-item" href="javascript:void(0);" onmouseover="getDeptName();">부서</a>
 					<ul id="ul_dept" class="dropdown-menu dropdown-submenu"></ul>
 				</li>
-				<li><a class="dropdown-item" href="#">재직상태 </a>
+				<li><a class="dropdown-item" href="#">변경 라벨 </a>
 					<ul class="dropdown-menu dropdown-submenu">
-						<li><a class="dropdown-item" href="#"><input type="hidden" value="상태" />재직</a></li>
-						<li><a class="dropdown-item" href="#"><input type="hidden" value="상태" />휴직</a></li>
+						<li><a class="dropdown-item" href="#"><input type="hidden" value="라벨" />직무 변경</a></li>
+						<li><a class="dropdown-item" href="#"><input type="hidden" value="라벨" />부서 변경</a></li>
+						<li><a class="dropdown-item" href="#"><input type="hidden" value="라벨" />인사 변경</a></li>
 					</ul>
 				</li>
 			</ul>

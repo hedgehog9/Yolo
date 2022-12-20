@@ -138,4 +138,14 @@ public interface InterEmployeeDAO {
 	/** 부서별 구성원 인원수 */
 	List<Map<String, Object>> empCntDept();
 
+	/** 구성원 잔여 연차 구하기  
+	 * @param paraMap */
+	Map<String, String> getAnnualLeaveCnt(Map<String, String> paraMap);
+
+	/** 구성원 등록시 연차 등록 */
+	void insertAnnualLeave(Map<String, Object> paraMap);
+
+	/** 인사발령 내역 총 건수  */
+	int getTotalCnt(Map<String, Object> pageMap);
+
 }

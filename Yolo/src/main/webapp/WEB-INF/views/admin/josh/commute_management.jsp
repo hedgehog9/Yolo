@@ -426,7 +426,14 @@ let arrDept = [];
     		                    svgStyle: {width: '100%', height: '100%'}
     		                });
 
-    		                bar.animate(arr_worktime[i]/40);  // 게이지바 화면에 뿌리는 코드
+    		                
+    		                if(arr_worktime[i] > 40) {
+			        			bar.animate(40/40);
+				        }
+				        else {
+				        	 	bar.animate(arr_worktime[i]/40);  // 게이지바 화면에 뿌리는 코드
+				        }
+    		                
     		                
     		            }
     					

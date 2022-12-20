@@ -18,7 +18,7 @@ div.div_chart{
 	
 	width : 48%;
 	height: 400px;
-	border: solid 1px gray;
+	/* border: solid 1px gray; */
 	
 }
 
@@ -73,12 +73,7 @@ canvas#myChart{
 			
 			
 			<div id="chart4" class="div_chart">
-				<div>
-					<div>구성원 성비</div>
-					<div>기준 . 재직 구성원</div>
-				</div>
 				<canvas id="myChart4" width="600px" height="300px"></canvas>			
-			
 			</div>
 		</div>
 	</div>
@@ -89,6 +84,7 @@ canvas#myChart{
 <script>
 
 $(document).ready(function() {
+	let arr=[];
 	
 	let arr_rate=[];
 	let arr_gender=[];
@@ -218,20 +214,20 @@ $(document).ready(function() {
 
 	<%-- 부서별 최근한달간 평균근무시간  --%>
 	
+	let arr1=[];
+	let arr_deptname1=[];
+	let arr_sum_worktime=[];
+	
 	$.ajax({
 		url:"<%= ctxPath%>/insight/sumWorktimeByDept.yolo",
 		dataType:"JSON",
 		success:function(json) {
+			arr1.push(...json);
 			
-			let arr=[];
-			let arr_deptname=[];
-			let arr_sum_worktime=[];
-			
-			arr.push(...json);
 			//console.log(arr.length)
 			
-			$.each(arr, function(index, item){
-				arr_deptname.push(item.deptname)
+			$.each(arr1, function(index, item){
+				arr_deptname1.push(item.deptname)
 				arr_sum_worktime.push(item.avg_worktime)
 			})
 			
@@ -239,7 +235,7 @@ $(document).ready(function() {
 			var myChart3 = new Chart(context3, {
 			type: 'bar', // 차트의 형태
 			data: { // 차트에 들어갈 데이터
-			    labels: arr_deptname,
+			    labels: arr_deptname1,
 			    datasets: [
 			        { //데이터
 			            label: '부서별 최근한달간 평균근무시간', //차트 제목
@@ -309,54 +305,60 @@ $(document).ready(function() {
 	
 	
 	<%-- 부서별 평균연봉  --%>
+	
+	let arr2=[];
+	let arr_deptname2=[];
+	let arr_avg_salary=[];
+	
 	$.ajax({
 		url:"<%= ctxPath%>/insight/avgSalaryByDept.yolo",
 		dataType:"JSON",
 		success:function(json) {
-			arr.push(...json);
-			console.log(arr.length)
 			
-			let arr=[];
-			let arr_deptname=[];
-			let arr_avg_salary=[];
+			arr2.push(...json);
 			
-			$.each(arr, function(index, item){
-				arr_deptname.push(item.deptname)
-				arr_sum_worktime.push(item.avg_worktime)
+			$.each(arr2, function(index, item){
+				arr_deptname2.push(item.deptname)
+				arr_avg_salary.push(item.avg_salary)
 			})
 			
 			var context4 = document.getElementById('myChart4').getContext('2d');
 			var myChart4 = new Chart(context4, {
 			type: 'bar', // 차트의 형태
 			data: { // 차트에 들어갈 데이터
-			    labels: [
-			        //x 축
-			        '1','2','3','4','5','6','7'
-			    ],
+			    labels: arr_deptname2,
 			    datasets: [
 			        { //데이터
-			            label: 'test1', //차트 제목
+			            label: '부서별 평균연봉', //차트 제목
 			            fill: false, // line 형태일 때, 선 안쪽을 채우는지 안채우는지
-			            data: [
-			                21,19,25,20,23,26,25 //x축 label에 대응되는 데이터 값
-			            ],
+			            data: arr_avg_salary,
 			            backgroundColor: [
 			                //색상
-			                'rgba(255, 99, 132, 0.2)',
+			            		'rgba(255, 99, 132, 0.2)',
 			                'rgba(54, 162, 235, 0.2)',
 			                'rgba(255, 206, 86, 0.2)',
 			                'rgba(75, 192, 192, 0.2)',
 			                'rgba(153, 102, 255, 0.2)',
-			                'rgba(255, 159, 64, 0.2)'
+			                'rgba(255, 159, 64, 0.2)',
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)'
 			            ],
 			            borderColor: [
 			                //경계선 색상
-			                'rgba(255, 99, 132, 1)',
-			                'rgba(54, 162, 235, 1)',
-			                'rgba(255, 206, 86, 1)',
-			                'rgba(75, 192, 192, 1)',
-			                'rgba(153, 102, 255, 1)',
-			                'rgba(255, 159, 64, 1)'
+			            		'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)',
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)'
 			            ],
 			            borderWidth: 1 //경계선 굵기
 			        }/* ,

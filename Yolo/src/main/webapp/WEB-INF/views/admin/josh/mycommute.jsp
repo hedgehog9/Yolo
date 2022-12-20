@@ -106,8 +106,14 @@
             trailWidth: 1,
             svgStyle: {width: '100%', height: '100%'}
         });
-
-        bar.animate(hour/40);  // 게이지바 화면에 뿌리는 코드
+        
+        if(hour > 40) {
+        		bar.animate(40/40);
+        }
+        else {
+        	 	bar.animate(hour/40);  // 게이지바 화면에 뿌리는 코드
+        }
+       
         
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -206,7 +212,7 @@
 	            						overtime = overtime+" 시간" 
 	            					}
 	            					else {
-	            						hour = Math.floor(worktime/60);
+	            						hour = Math.floor(overtime/60);
 	            						minute = overtime%60;
 	            						overtime = hour+"시간 "+minute+"분"
 	            					}
@@ -217,6 +223,8 @@
 	            					if(item.end_work_time == 'X') {
 	            						item.end_work_time = "<i class='fas fa-times'></i>";
 	            					}
+	            					
+	            					
 	            					
 	            					html += "<tr>"+
 	            								"<td><span class='badge badge-dark rounded-pill'>"+item.dt+"</span></td>"+
@@ -232,7 +240,14 @@
                 				hour = Math.floor((plus_worktime/60));
 							
 							$("span#plus_worktime").text(hour+"시간");
-						    bar.animate(hour/40);
+							
+							if(hour > 40) {
+				        			bar.animate(40/40);
+					        }
+					        else {
+					        	 	bar.animate(hour/40);  // 게이지바 화면에 뿌리는 코드
+					        }
+							
                 			}
                 			
                 		}
