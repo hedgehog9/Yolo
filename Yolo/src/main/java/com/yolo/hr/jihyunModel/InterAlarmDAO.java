@@ -20,4 +20,7 @@ public interface InterAlarmDAO {
 	// 모든 알람 읽기
 	void readAllAlarm(String empno);
 
+	// 안 읽은 소식 개수 알아오기
+	String getUnreadAlarmCnt(String empno);
+
 }

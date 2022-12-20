@@ -242,7 +242,7 @@ public class WorkflowController {
 				if(finalCnt == Integer.parseInt(docDetailMap.get("levelno"))) {
 					for(int i=0; i<approvalCnt; i++) {
 						String approval = appList.get(i).get("approval");
-						System.out.println("approval :" +approval);
+					
 						if(approval.equals("2")) {
 							deny = true;
 						}
@@ -320,6 +320,19 @@ public class WorkflowController {
 			
 			request.setAttribute("json", jsonObj.toString());
 			
+			//히스토리 가져오기 
+			List<Map<String,String>> historyList = service.getHistory(docDetailMap.get("doc_no"));
+			
+			boolean historyFlag = false;
+			if(historyList != null) {
+				
+				historyFlag = true;
+				jsonObj.put("historyList", historyList);	
+			}
+			else {
+				historyFlag = false;
+			}
+			jsonObj.put("historyFlag", historyFlag);
 		
 		}
 		
@@ -327,18 +340,6 @@ public class WorkflowController {
 			
 			jsonObj.put("doc_no", doc_no);
 			System.out.println("doc_no :" + doc_no);
-		}
-		
-		//히스토리 가져오기 
-		List<Map<String,String>> historyList = service.getHistory(docDetailMap.get("doc_no"));
-		
-		boolean historyFlag = false;
-		if(historyList != null) {
-			
-			historyFlag = true;
-			jsonObj.put("historyList", historyList);
-			jsonObj.put("historyFlag", historyFlag);
-			
 		}
 		
 		
@@ -806,11 +807,13 @@ public class WorkflowController {
 			
 			docvo.setDoc_no(Integer.parseInt(docDetailMap.get("doc_no")));
 			
-			paraMap.put("contents", contents );
-			
-			
 			//줄바꿈 적용시키기
 			contents=contents.replace("<br>","\r\n");
+			docvo.setDoc_contents(contents);
+			paraMap.put("contents", contents );
+		
+			
+			System.out.println("contetns  수정 : "+ contents);
 			
 			request.setAttribute("appList", appList);
 			request.setAttribute("subject", subject);
@@ -854,8 +857,18 @@ public class WorkflowController {
 		@RequestMapping(value = "/workflow/modifyEnd.yolo")
 		public String modifyWorkflowEnd(HttpServletRequest request, documentVO docvo) {
 			
+			String contents = docvo.getDoc_contents();
+			
+			
+			//줄바꿈 적용시키기
+			contents=contents.replace("\r\n","<br>");
+			
+			
+			docvo.setDoc_contents(contents);
+			
 			//수정하기
-			int n = service.upateDoc(docvo);
+			int n = service.upateDoc(docvo);			
+			
 			
 			if( n == 1 ) {
 				return "redirect:/workflow.yolo";
@@ -944,7 +957,7 @@ public class WorkflowController {
 				}
 				
 				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
-				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
+				jsonObj.put("doc_contents", doc_contents);
 				jsonObj.put("writeday", docListmap.get("writeday"));
 				//jsonObj.put("modificationday", docListmap.get("modificationday"));
 				
@@ -1022,6 +1035,7 @@ public class WorkflowController {
 		paraMap.put("emp_no", empno);
 		paraMap.put("end_doc", "0");
 		
+		
 		// 진행중인  ,완료 구분법 : 문서 리스트뽑을때 마지막 level이 3이 아니면 아래거 실행 
 		
 		List<Map<String,String>> documentList = service.getdocumentList(paraMap);
@@ -1063,7 +1077,7 @@ public class WorkflowController {
 					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
 				}
 				
-				//System.out.println("doc_contents :" + doc_contents);
+				
 				
 				jsonObj.put("doc_contents", doc_contents);
 				jsonObj.put("writeday", docListmap.get("writeday"));
@@ -1238,8 +1252,13 @@ public class WorkflowController {
 				if(index != -1) {
 					doc_contents = doc_contents.substring(0,doc_contents.indexOf("<br>"));		
 				}
+				
+				System.out.println("doc_contents: " +doc_contents);
+				
 				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
-				jsonObj.put("doc_contents", docListmap.get("doc_contents"));
+				jsonObj.put("doc_contents", doc_contents);
+				
+				jsonObj.put("doc_subject", docListmap.get("doc_subject"));
 				jsonObj.put("writeday", docListmap.get("writeday"));
 				jsonObj.put("modificationday", docListmap.get("modificationday"));
 				
@@ -1253,6 +1272,7 @@ public class WorkflowController {
 				jsonObj.put("name", docListmap.get("name"));
 				jsonObj.put("doc_no", docListmap.get("doc_no"));
 				jsonObj.put("emp_no", empno);
+				jsonObj.put("end_Doc", docListmap.get("end_doc"));
 				
 				paraMap.put("empno", empno);
 				paraMap.put("doc_no", docListmap.get("doc_no"));

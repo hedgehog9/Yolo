@@ -73,6 +73,14 @@
 	
 	
 	
+	<!-- 안읽은 메신저 개수 알아오기 -->
+	<select id="getUnreadMsgCnt" parameterType="String" resultType="String">
+		select count(PK_MSGNO)
+	    from tbl_messenger
+	    where FK_RECIPIENTNO = #{empno} and view_status = 0
+	</select>
+	
+	
 	<!-- 보낸 메일 리스트 가져오기 -->
 	<resultMap type="HashMap" id="MsgMap">
 		<result property="name" column="name" javaType="String"/>
@@ -334,6 +342,15 @@
 	</update>
 	
 	
+	<!-- 안 읽은 소식 개수 알아오기 -->
+	<select id="getUnreadAlarmCnt" parameterType="String" resultType="String">
+		select count(PK_ALARMNO)
+		from tbl_alarm
+		where FK_RECIPIENTNO = #{empno} and view_status = 0
+		order by WRITEDATE desc
+	</select>
+	
+	
 	
 	
 	
@@ -368,8 +385,8 @@
 	
 	<!-- 휴가 신청하기 -->
 	<insert id="insertRequestLeave" parameterType="HashMap">
-		insert into tbl_request_leave (pk_request_leaveno, fk_empno, fk_leave_type, start_day, end_day, use_days, use_reason, fileName, orgFilename)
-		values (seq_tbl_request_leave.nextval, #{empno}, #{pk_leave_type}, to_date('${start_day}','yyyy-mm-dd'), to_date('${end_day}','yyyy-mm-dd'), (to_date('${end_day}','yyyy-mm-dd')-to_date('${start_day}','yyyy-mm-dd')+1), #{use_reason}, '${fileName}', '${originalFilename}')
+		insert into tbl_request_leave (pk_request_leaveno, fk_empno, fk_leave_type, start_day, end_day, use_days, use_reason, fileName, orgFilename, FK_SCHEDULE_NO)
+		values (seq_tbl_request_leave.nextval, #{empno}, #{pk_leave_type}, to_date('${start_day}','yyyy-mm-dd'), to_date('${end_day}','yyyy-mm-dd'), (to_date('${end_day}','yyyy-mm-dd')-to_date('${start_day}','yyyy-mm-dd')+1), #{use_reason}, '${fileName}', '${originalFilename}', #{schedulNo} )
 	</insert>
 	
 	
@@ -439,7 +456,7 @@
 	<select id="getLeaveRequestDetail" parameterType="String" resultMap="deptRequestMap">
 		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 
         func_get_day(start_day) as start_name , func_get_day(end_day) as end_name ,
-        use_days, use_reason, opproval_status, add_file, filename, leave_name, orgfilename
+        use_days, use_reason, opproval_status, add_file, filename, leave_name, orgfilename, fk_schedule_no
         , fk_empno, name,substr(name, -2, 2) as nickname, position, profile_color
 		from (select *
 		    from tbl_request_leave 
@@ -525,7 +542,7 @@
 		<result property="nickname" column="nickname" javaType="String"/>
 		<result property="position" column="position" javaType="String"/>
 		<result property="profile_color" column="profile_color" javaType="String"/>
-		
+		<result property="fk_schedule_no" column="fk_schedule_no" javaType="String"/>
 	</resultMap>
 	<select id="getRequestLeaveList" parameterType="HashMap" resultMap="deptRequestMap">
 		select pk_request_leaveno, fk_leave_type, to_char(start_day,'yyyy-mm-dd') as start_day2, to_char(end_day,'yyyy-mm-dd') as end_day2 , 

@@ -47,4 +47,11 @@ public class AlarmDAO implements InterAlarmDAO {
 		
 	}
 
+	// 안 읽은 소식 개수 알아오기
+	@Override
+	public String getUnreadAlarmCnt(String empno) {
+		String n = sqlsession.selectOne("kimjh.getUnreadAlarmCnt", empno);
+		return n;
+	}
+
 }

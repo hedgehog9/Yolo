@@ -168,6 +168,14 @@ public class MessengerDAO implements InterMessengerDAO {
 	public String getEmpName(String empno) {
 		String name = sqlsession.selectOne("kimjh.getEmpName", empno);
 		return name;
+	}
+
+
+	// 안 읽은 메신저 개수 알아오기
+	@Override
+	public String getUnreadMsgCnt(String empno) {
+		String n = sqlsession.selectOne("kimjh.getUnreadMsgCnt", empno);
+		return n;
 	} 
 
 }

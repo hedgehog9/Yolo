@@ -18,23 +18,25 @@
 	
 	div#boardList{
 		height: 100%;
-		width: 100%;
+		width: 99.9%;
 	}
 	
 	
 	div.listRow {
 		border: 1px solid #f9fafa; 
 		min-height: 110px;
+		width: 99.9%;
 	}
 	
 	
 	div.listRowInside {
 		/* border: 1px solid black; */
-		width: 97%;
+		width: 99.9%;
 		min-height: 90px;
 		margin: 10px auto;
 		display: flex;
   		align-items: center;
+  		padding-right: 10px;
 	}
 	
 	span.spanBlock {
@@ -186,8 +188,8 @@
 				// $('div.noticeEditModal').modal('hide');
 				// $('div.noticeEditModal').trigger('hide');
 				$(this).attr("disabled", true);
-				window.location.reload();
-				
+			//	window.location.reload();
+				top.document.location.reload(); 
 			}
 			
 		}); // end of 공지 수정하기 버튼 클릭 이벤트
@@ -390,8 +392,8 @@
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ &nbsp;</span><span id="cmtCount" style="color: green;"> <span style='font-size:25px;'>&#128172;</span> [${deptNoti.cmtCount}]  </span></span>
 					</div>
-					<button type="button" class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button>
-					<button type="button" class="listBnt DeleteBnt">삭제하기</button>
+					<button type="button" class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px; float: right;"  data-toggle="modal" data-target=".noticeEditModal">수정하기</button>
+					<button type="button" class="listBnt DeleteBnt" style="float: right;">삭제하기</button>
 					<form id="delFrm" name="delFrm">
 					<input type="hidden" id="notino" value="${deptNoti.notino}" name="notino">
 					<input type="hidden" id="fk_senderno" value="${deptNoti.fk_senderno}" name="fk_senderno">

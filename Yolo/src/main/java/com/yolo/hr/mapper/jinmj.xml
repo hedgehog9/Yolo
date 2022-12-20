@@ -43,11 +43,28 @@
 	
 	
 	
+	
 	<!-- 공지 작성하기 -->
+	<!--  
 	<insert id="insertSendNotice" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
 		insert into tbl_notice (notino, fk_senderno, fk_deptno, notiLevel, writedate, subject, content, readCount, cmtCount, status, fileName, orgFilename,fileSize)
  		values(seq_notino.nextval, #{fk_senderno}, #{fk_deptno}, default, default, #{subject}, #{content}, default, default, default, #{fileName}, #{orgFilename}, #{fileSize})
 	</insert>
+	-->
+	
+	<!--  첨부 파일 없는 경우 글쓰기 -->
+	<insert id="sendNotice_noFile" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		insert into tbl_notice (notino, fk_senderno, fk_deptno, notiLevel, writedate, subject, content, readCount, cmtCount, status)
+ 		values(seq_notino.nextval, #{fk_senderno}, #{fk_deptno}, default, default, #{subject}, #{content}, default, default, default)
+	</insert>
+	
+	<!--  첨부 파일 있는 경우 글쓰기 -->
+	<insert id="sendMotice_withFile" parameterType="com.yolo.hr.jinji.notice.model.NoticeVO">
+		insert into tbl_notice (notino, fk_senderno, fk_deptno, notiLevel, writedate, subject, content, readCount, cmtCount, status, fileName, orgFilename,fileSize)
+ 		values(seq_notino.nextval, #{fk_senderno}, #{fk_deptno}, default, default, #{subject}, #{content}, default, default, default, #{fileName}, #{orgFilename}, #{fileSize})
+	</insert>
+	
+	
 	
 	
 	
@@ -75,13 +92,13 @@
 	
 	
 	<!--  전체 공지 -->
-	<!--  전체 공지 리스트 -->	
+	<!--  전체 공지 리스트 	
 	<select id="allNoticeList" parameterType="String" resultMap="NoticeMap">
 	  	select notino, profile_color, subject, name, nickname, deptname, position, readCount, content, writedate , notiLevel, cmtCount, showDept, fk_deptno, fk_senderno, fileName, orgFilename, fileSize
 		 from 
 		 (
 		 select rownum as rno, notino, profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content, fileName, orgFilename, fileSize
-		     	  , to_char(WRITEDATE , 'yyyy-mm-dd hh24:mi:ss' ) as writedate
+		     	  , to_char(WRITEDATE , 'yyyy-mm-dd' ) as writedate
 		     	  , notiLevel, cmtCount, showDept, fk_deptno, fk_senderno
 		 from
 		 (  
@@ -89,21 +106,59 @@
 		       from tbl_notice N join tbl_dept D
 		       on N.fk_deptno = D.deptno
 		 	   where status = 1
+		 	   order by WRITEDATE desc
 		   
 		 )
 		 join 
 		 ( 
 			   select name, deptname, position, profile_color, empno
-		     from TBL_EMPLOYEES M join TBL_DEPT D
+		       from TBL_EMPLOYEES M join TBL_DEPT D
 		 	   on M.fk_deptno = D.deptno
 		
 		) 
 		on fk_senderno = empno
-		order by WRITEDATE desc
+		
 		 )
 		 where rno between #{startRno} and #{endRno}
-		 order by WRITEDATE desc
 	</select>
+	-->
+	
+	<select id="allNoticeList" parameterType="String" resultMap="NoticeMap">
+	  	select notino, profile_color, subject, name, nickname, deptname, position, readCount, content, writedate , notiLevel, cmtCount, showDept, fk_deptno, fk_senderno, fileName, orgFilename, fileSize
+		 from 
+		 (
+		 select rownum as rno, notino, profile_color, subject, name, substr(name, -2, 2) as nickname, deptname, position, readCount, content, fileName, orgFilename, fileSize
+		     	  , to_char(WRITEDATE , 'yyyy-mm-dd' ) as writedate
+		     	  , notiLevel, cmtCount, showDept, fk_deptno, fk_senderno
+		 from
+		 (  
+		 	   select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount, D.deptname as showDept, fileName, orgFilename, fileSize
+		       from tbl_notice N join tbl_dept D
+		       on N.fk_deptno = D.deptno
+		 	   where status = 1
+		 	   <if test='searchType != "" and searchWord != "" '>
+			    and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+			    </if>
+		 	   order by WRITEDATE desc
+		   
+		 )
+		 join 
+		 ( 
+			   select name, deptname, position, profile_color, empno
+		       from TBL_EMPLOYEES M join TBL_DEPT D
+		 	   on M.fk_deptno = D.deptno
+		
+		) 
+		on fk_senderno = empno
+		
+		 )
+		 where rno between #{startRno} and #{endRno}
+	</select>
+	
+	
+	
+	
+	
 	
 
 	
@@ -125,6 +180,7 @@
 		  on M.fk_deptno = D.deptno
 		)
 		on fk_senderno = empno
+
 	</select>
 
 	<!-- 공지 알림 보내기 -->
@@ -190,6 +246,11 @@
 	<update id="updateCommentCount" parameterType="String">
 		update tbl_notice set cmtCount = cmtCount + 1
 		where notino = #{fk_notino}
+	</update>
+	
+	<update id="delCount" parameterType="String">
+		update tbl_notice set cmtCount = cmtCount - 1
+		where notino = #{notino}
 	</update>
 	
 	
@@ -259,7 +320,7 @@
         
         ) 
         on fk_senderno = empno
-        order by WRITEDATE desc
+
 	</select>
 	
 	
@@ -270,6 +331,10 @@
 		from tbl_notice
 		where notino = #{notino}
 	</select>
+	
+	
+	
+	
 	
 	
 	
@@ -312,9 +377,9 @@
 		       select notino, fk_senderno, fk_deptno, subject, content, writedate, notiLevel, readCount, cmtCount ,D. deptname as showDept, fileName, orgFilename, fileSize
 		       from tbl_notice N join tbl_dept D
 		       on N.fk_deptno = D.deptno
-		       where status = 1  and fk_deptno = func_get_notice_deptno(#{deptno}) 
+		       where status = 1  and fk_deptno = func_get_notice_deptno(#{deptno})
+		       order by writedate desc
 		       
-		                       
 		    )
 		    join 
 		    ( 
@@ -323,10 +388,9 @@
 		       on M.fk_deptno = D.deptno
 		    ) 
 		    on fk_senderno = empno
-		    order by WRITEDATE desc
+		   
 		  ) 
 		  where rno between #{startRno} and #{endRno}
-		  order by WRITEDATE desc	
 	</select>
 	
 	
@@ -348,7 +412,6 @@
 		       on M.fk_deptno = D.deptno
 		    ) 
 		    on fk_senderno = empno
-			order by WRITEDATE desc
 
 	</select>
 	
@@ -462,6 +525,7 @@
 		    from tbl_notice N join tbl_dept D
 	       	on N.fk_deptno = D.deptno
 		    where status = 1 and fk_senderno = ${empno}
+		    order by writedate desc
 		)
 		join 
 		( 
@@ -470,11 +534,10 @@
 		    on M.fk_deptno = D.deptno
 		) 
 		on fk_senderno = empno
-		order by WRITEDATE desc
 		)
 		where rno between #{startRno} and #{endRno}
-		order by WRITEDATE desc
 	</select>
+	
 	
 	<!-- 내가 쓴 공지사항 공지글 1개 보여주기(ajax) -->
 	<!-- Map에서 넣어온 것 리저트맵으로 받기 -->
@@ -494,6 +557,7 @@
 		  on M.fk_deptno = D.deptno
 		)
 		on fk_senderno = empno
+		order by WRITEDATE desc
 	</select>
 	
 	<!-- 내가 쓴 공지글 1개 수정하기 위해 원글 가져오기 -->
@@ -575,8 +639,8 @@
 			on M.fk_deptno = D.deptno
 		) 
 		 on fk_senderno = empno
-		 order by WRITEDATE desc
 	</select>
+	
 	
 	<!--  첨부파일이 있다면 조회하기 -->
 	<select id="myFile" parameterType="String"  resultType="com.yolo.hr.jinji.notice.model.NoticeVO">

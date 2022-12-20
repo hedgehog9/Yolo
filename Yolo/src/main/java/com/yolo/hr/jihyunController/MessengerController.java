@@ -43,6 +43,24 @@ public class MessengerController {
 	private FileManager fileManager; // bean으로 올라간 애를 쓰겠다
 	
 	
+	// 안 읽은 메신저 개수 알아오기
+	@ResponseBody
+	@RequestMapping(value = "/messenger/getUnreadMsgCnt.yolo" , produces="text/plain;charset=UTF-8")
+	public String getUnreadMsgCnt(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String n = service.getUnreadMsgCnt(loginuser.getEmpno());
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString();
+		
+	}
+	
+		
 	// 보낸 메일함 열기
 	@RequestMapping(value = "/messenger/sentMessage.yolo")
 	public ModelAndView sentMessage( HttpServletRequest request, ModelAndView mav) {
@@ -280,7 +298,7 @@ public class MessengerController {
 		// 먼저 총 게시물 건수 (total Count를 구해와야 한다 )
 		// 1. 검색조건이 있을때    2. 검색조건이 없을때
 		int totalCount = 0;        // 총 게시물 건수
-		int sizePerPage = 2;       // 한 페이지당 보여줄 게시물 건수 
+		int sizePerPage = 10;       // 한 페이지당 보여줄 게시물 건수 
 		int currentShowPageNo = 0; // 현재 보여주는 페이지번호로서, 초기치로는 1페이지로 설정함.
 		int totalPage = 0;         // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
       
@@ -430,6 +448,9 @@ public class MessengerController {
 		
 		mav.addObject("receivedMsgList", receivedMsgList);
 		mav.addObject("pageBar", pageBar);
+		
+		String n = service.getUnreadMsgCnt(loginuser.getEmpno());
+		mav.addObject("n", n);
 				
 		mav.setViewName("jihyun/messenger/receivedMessage.admin"); 
 		return mav;

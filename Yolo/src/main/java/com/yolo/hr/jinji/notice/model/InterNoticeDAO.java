@@ -58,6 +58,9 @@ public interface InterNoticeDAO {
 	// 댓글 삭제
 	int delComment(Map<String, String> paraMap);
 	
+	// 댓글 삭제 카운터
+	void delCmtCount(Map<String, String> paraMap);
+	
 	// 총 게시물 건수(페이징바)
 	int getTotalCount(Map<String, String> paraMap);
 	
@@ -142,6 +145,14 @@ public interface InterNoticeDAO {
 
 	// 첨부 파일 조회
 	List<NoticeVO> getMyFile(String notino);
+
+	// 첨부파일 없는 글쓰기
+	void sendNotice_noFile(NoticeVO noticevo);
+
+	// 첨부파일 있는 글쓰기
+	void sendMotice_withFile(NoticeVO noticevo);
+
+	
 
 
 

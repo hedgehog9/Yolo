@@ -55,15 +55,16 @@ public class HRAOP {
 	}
 	
 	
-	@Pointcut("execution(public * com.yolo..*Controller.addSchedule_*(..) )")  
+	@Pointcut("execution(public * com.yolo..*Controller.addSchedule_*(..) )")
 	public void addSchedule() {}
+	
+	
 	
 	@SuppressWarnings("unchecked")
 	@After("addSchedule()") // 이 메소드를 실행 하기 전에 아래의 메소드를 실행해준다 
 	public void addSchedule(JoinPoint joinpoint) { 
 		
 		Map<String, String> paraMap = (Map<String, String>) joinpoint.getArgs()[0]; 
-		
 		VacationScheduleService.addSchedule(paraMap);
 		
 	}
@@ -77,7 +78,7 @@ public class HRAOP {
 	@After("delSchedule()") // 이 메소드를 실행 하기 전에 아래의 메소드를 실행해준다 
 	public void delSchedule(JoinPoint joinpoint) { 
 		
-		Map<String, String> paraMap = (Map<String, String>) joinpoint.getArgs()[0]; 
+		Map<String, String> paraMap = (Map<String, String>) joinpoint.getArgs()[1]; 
 		
 		VacationScheduleService.delSchedule(paraMap);
 		

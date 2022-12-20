@@ -318,6 +318,12 @@ public class EmployeeDAO implements InterEmployeeDAO {
 		sqlsession.insert("jangjy.insertAnnualLeave", paraMap);
 	}
 
+	@Override
+	public int getTotalCnt(Map<String, Object> pageMap) {
+		int cnt = sqlsession.selectOne("jangjy.getTotalCnt",pageMap);
+		return cnt;
+	}
+
 	
 	
 	

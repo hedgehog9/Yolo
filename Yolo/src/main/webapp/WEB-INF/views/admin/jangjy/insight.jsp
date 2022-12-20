@@ -18,7 +18,7 @@ div.div_chart{
 	
 	width : 48%;
 	height: 400px;
-	border: solid 1px gray;
+	/* border: solid 1px gray; */
 	
 }
 

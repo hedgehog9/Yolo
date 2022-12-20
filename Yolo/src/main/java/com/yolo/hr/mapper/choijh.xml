@@ -65,6 +65,7 @@
 		join tbl_approval A
 		on F.fk_empno = A.fk_senior_empno
 		where fk_doc_no = #{doc_no}
+		order by levelno asc
 		</if>
 	</select>
 	
@@ -303,7 +304,7 @@
 	<!--내 전단계 결제자 결제여부 알아오기  --> 
 	<select id="getPrestep" parameterType="String" resultType="String">
 		
-		select A.approval
+		select  distinct A.approval
 			from
 			(
 			    select V.gradeno AS levelno , M.fk_empno 
@@ -349,6 +350,16 @@
 		order by levelno desc)
 		where ROWNUM= 1
 	</select>
+	
+	<select id="myLevelno" parameterType="HashMap" resultType="int" >
+	  select levelno AS myLevelno
+		from
+		(select levelno
+		from tbl_approval
+		where fk_doc_no = #{doc_no} and fk_senior_empno=#{empno}
+		order by levelno desc)
+	</select>	
+	
 	
 
 	<!--결제라인 이름 가져오기  -->
