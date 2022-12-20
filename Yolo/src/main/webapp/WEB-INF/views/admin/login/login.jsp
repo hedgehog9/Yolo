@@ -239,14 +239,12 @@ div#findPW:hover {
  		
  		$.ajax({
 			  url : "<%= request.getContextPath()%>/loginContinue.yolo",
-			  data : {"email":email ,"pwd":pwd},
+			  data : {"email":email.trim() ,"pwd":pwd},
 			  type : "POST",
 			  dataType : "JSON",
 			  success : function(json){
 				  if(json.result){ // 아이디 비밀번호가 일치하는 경우 true
 					  location.href="<%= request.getContextPath()%>/notice/noticeList.yolo";
-					  console.log("세션에 저장된 사원번호 : " + "${sessionScope.empno}" );
-					  console.log("세션에 저장된 사원번호 : " + "${sessionScope.fk_deptno}" );
 				  }
 				  else{ // 아이디 비밀번호가 일치하지 않는 경우 
 					  toastr.error('아이디 또는 비밀번호가 틀립니다.');

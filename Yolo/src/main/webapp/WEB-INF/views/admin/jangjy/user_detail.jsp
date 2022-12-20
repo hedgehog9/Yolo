@@ -1009,7 +1009,7 @@
 				  data: {"empno":empno},
 				  dataType : "JSON",
 				  success : function(json){
-				  		$("div#div_result").empty(); 
+				  		$("div#div_result").html(""); 
 						let html ="";
 						
 						html += "<table class='table table-hover'>"
@@ -1038,7 +1038,7 @@
 							
 						html +="</tbody></table>";
 			
-			$("div#div_result").html(html);
+				$("div#div_result").html(html);
 				
 				}
 			});
