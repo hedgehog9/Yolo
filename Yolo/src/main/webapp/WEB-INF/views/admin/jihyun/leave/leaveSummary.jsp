@@ -446,6 +446,8 @@
             	  //$(this)[0].element[0].value = "클릭하여 날짜를 지정해주세요";
             	  //console.log($(this)[0].element[0]);
             	  $("input#daterange").css('background-color','red');
+            	  $("input[name='start_date']").val('');
+                  $("input[name='end_date']").val('');
             	  
               } else {
             	  // alert("2")
