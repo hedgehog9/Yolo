@@ -1,12 +1,10 @@
 package com.yolo.hr.jihyunController;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.yolo.hr.common.FileManager;
 import com.yolo.hr.jihyunService.InterLeaveService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
+import com.yolo.hr.josh.model.InterScheduleDAO;
 
 @Controller
 public class LeaveController {
@@ -133,11 +132,14 @@ public class LeaveController {
 
 	}
 
+	
+	@Autowired
+   private InterScheduleDAO scheduledao;
+   
 	// 휴가 신청하기
 	@ResponseBody
-	@RequestMapping(value = "/leave/requestLeave.yolo", produces = "text/plain;charset=UTF-8", method = {
-			RequestMethod.POST })
-	public void requestLeave(MultipartHttpServletRequest mrequest) throws ParseException {
+	@RequestMapping(value = "/leave/requestLeave.yolo", produces = "text/plain;charset=UTF-8", method = {RequestMethod.POST })
+	public void addSchedule_requestLeave( Map<String, String> paraMap, MultipartHttpServletRequest mrequest) throws ParseException {
 
 		HttpSession session = mrequest.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
@@ -147,6 +149,8 @@ public class LeaveController {
 		String end_date = mrequest.getParameter("end_date");
 		String leave_content = mrequest.getParameter("leave_content");
 		String leave_name = mrequest.getParameter("leave_name");
+		String schedulNo = scheduledao.getSequenceNo();
+		
 
 		Map<String, String> parameterMap = new HashMap<>();
 
@@ -202,9 +206,20 @@ public class LeaveController {
 		parameterMap.put("start_day", start_date);
 		parameterMap.put("end_day", end_date);
 		parameterMap.put("use_reason", leave_content);
+		parameterMap.put("schedulNo", schedulNo);
 
 		// System.out.println(loginuser.getEmpno()+pk_leave_type+start_date+end_date+String.valueOf((end.compareTo(start)+1))+leave_content+add_file+parameterMap.get("originalFilename")+parameterMap.get("fileName"));
 		service.requestLeave(parameterMap);
+		
+		//////////// AOP 영역 //////////////////
+		paraMap.put("schedule_no", schedulNo) ;
+		paraMap.put("fk_empno", loginuser.getEmpno());
+		paraMap.put("start_date", start_date);
+		paraMap.put("end_date", end_date);
+		paraMap.put("subject", loginuser.getName() + leave_name + "휴가");
+		paraMap.put("color", "#b380ff;");
+		paraMap.put("category", "휴가");
+		paraMap.put("fk_deptno", loginuser.getFk_deptno());
 
 	}
 
@@ -407,7 +422,7 @@ public class LeaveController {
 	// 휴가신청 삭제하기
 	@ResponseBody
 	@RequestMapping(value = "/leave/deleteRequestLeave.yolo", produces = "text/plain;charset=UTF-8")
-	public void deleteRequestLeave(HttpServletRequest request) {
+	public void deleteRequestLeave_delSchedule (HttpServletRequest request, Map<String, String> paraMap) {
 
 		String request_leaveno = request.getParameter("request_leaveno");
 		Map<String, String> leaveRequestDetail = service.getLeaveRequestDetail(request_leaveno);
@@ -418,6 +433,10 @@ public class LeaveController {
 			String path = "C:\\Users\\sist\\git\\Yolo\\Yolo\\src\\main\\webapp\\files\\leave\\";
 			fileManager.doFileDelete(fileName,  path);
 		} 
+		
+		/// AOP
+		paraMap.put("approval", "2" );
+		paraMap.put("schedule_no", leaveRequestDetail.get("fk_schedule_no"));
 		
 		service.deleteRequestLeave(leaveRequestDetail); // 휴가신청 삭제하기
 		
@@ -471,7 +490,7 @@ public class LeaveController {
 	// 승인 / 반려하기 함수 
 	@ResponseBody
 	@RequestMapping(value = "/leave/approvalRequestLevae.yolo", produces = "text/plain;charset=UTF-8")
-	public void addAlarm_approvalRequestLevae(Map<String, String> paraMap, HttpServletRequest request) {
+	public void addAlarm_approvalRequestLevae_delSchedule (Map<String, String> paraMap, Map<String, String> parameterMap, HttpServletRequest request) {
 
 		Map<String, String> leaveRequestDetail = service.getLeaveRequestDetail(request.getParameter("request_leaveno"));
 		leaveRequestDetail.put("approval_status", request.getParameter("approval_status"));
@@ -486,9 +505,15 @@ public class LeaveController {
 			paraMap.put("alarm_content", loginuser.getName()+"님이 휴가를 승인했습니다." );
 			paraMap.put("alarm_type", "3" );
 			
+			parameterMap.put("approval", "1" );
+			parameterMap.put("schedule_no", leaveRequestDetail.get("fk_schedule_no"));
+			
 		} else { // 반려일때 소식
 			paraMap.put("alarm_content", loginuser.getName()+"님이 휴가를 반려했습니다." );
 			paraMap.put("alarm_type", "2" );
+			
+			parameterMap.put("approval", "2" );
+			parameterMap.put("schedule_no", leaveRequestDetail.get("fk_schedule_no"));
 		}
 		
 		paraMap.put("fk_recipientno", request.getParameter("empno") ); // 받는사람 (여러명일때는 ,으로 구분된 str)
