@@ -70,7 +70,7 @@ public class HRAOP {
 	
 	
 	
-	@Pointcut("execution(public * com.yolo..*Controller.delSchedule_*(..) )")  
+	@Pointcut("execution(public * com.yolo..*Controller.*_delSchedule(..) )")  
 	public void delSchedule() {}
 	
 	@SuppressWarnings("unchecked")

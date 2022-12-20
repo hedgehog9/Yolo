@@ -146,6 +146,7 @@ public class LeaveController {
 		String start_date = mrequest.getParameter("start_date");
 		String end_date = mrequest.getParameter("end_date");
 		String leave_content = mrequest.getParameter("leave_content");
+		String leave_name = mrequest.getParameter("leave_name");
 
 		Map<String, String> parameterMap = new HashMap<>();
 

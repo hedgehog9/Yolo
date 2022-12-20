@@ -384,6 +384,7 @@
 			        
 			        
 					htmlMiddle += '<input type="hidden" name="pk_leave_type" value="'+json.pk_leave_type+'">'+
+								'<input type="hidden" name="leave_name" value="'+json.leave_name+'">'+
 									'</form>';
 					 
 				$("div.modalMiddle").html(htmlMiddle);
