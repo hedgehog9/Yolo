@@ -13,7 +13,7 @@
 		margin-left: 20px;
 		margin-top: 20px;
 		align-content: center;
-		width: 100%;
+		width: 98%;
 	}
 	
 	button.headerBtn,
@@ -290,19 +290,31 @@
 
 	$(document).ready(function() {
 		
-		// 파일
-      $("#file").on('change',function(){
-           var fileName = $("#file").val();
-           $(".upload-name").val(fileName);
-      });
-      
+		  // 파일
+	      $("#file").on('change',function(){
+	           var fileName = $("#file").val();
+	           $(".upload-name").val(fileName);
+	      });
+    
+		  
+		  
+		// 검색시 검색조건 및 검색어 값 유지시키기
+		// paraMap 있는지 없는지 까바야징
+		if( ${not empty requestScope.searchWord}) { // 있는지 없는지 확인해야 한다.
+					
+			$("input#searchWord").val("${requestScope.searchWord}");
+		} 
 		
+		// 검색어에 엔터를 햇을경우
+		$("input#searchWord").keyup(function(e){
+			if(e.keyCode==13){
+				goSearch();
+			}
+		});	
+	      
 		// 전체 선택
 		
-		
 		// 부서 선택 시 부서 선택되게
-		
-		
 		
 		
 		// 받는 사람 닫기
@@ -404,7 +416,7 @@
 	        var queryString = new FormData(form);
 			
 			$.ajax({
-		    	url : "<%=ctxPath%>/notice/sendNotice.yolo",
+		    	url : "<%= request.getContextPath() %>/notice/sendNotice.yolo",
 		    	data : queryString,
 		    	type: 'POST',
 		    	enctype: 'multipart/form-data',
@@ -461,7 +473,7 @@
 	// 받는 사람 목록 ajax로 불러오기
    function openAjax(){
       $.ajax({
-          url : "<%=ctxPath%>/notice/getDept.yolo", // http://localhost:9090/hr/notice/getDept.yolo
+          url : "<%= request.getContextPath() %>/notice/getDept.yolo", // http://localhost:9090/hr/notice/getDept.yolo
           dataType: "JSON",
           async:false,
          success: function(json){ 
@@ -487,7 +499,18 @@
        }); // end of ajax 
        
    }
-	    
+	
+	
+	<%--
+	// 검색 클릭 이벤트
+	function goSearch(){
+		const searchWord = $("input#searchWord").val()
+		location.href = "<%=ctxPath%>/notice/noticeList.yolo?searchWord="+searchWord;
+	}
+	--%>
+	
+	
+	
 	
 	
 </script>
@@ -495,20 +518,39 @@
 <div id="noticeNav">
 	<div id="category">
 		<span style="font-size: 20pt; font-weight: bold;">공지사항</span>
-		<button type="button" class="headerBtn" data-toggle="modal" data-target=".sendNotice">
+		<button type="button" class="headerBtn" data-toggle="modal" data-target=".sendNotice" style="margin-right: 7px;  float: right;">
 			<i class="fas fa-regular fa-paper-plane" id="icon"></i>공지 작성하기
 		</button>
 	</div>
 	<br>
-	<div id="bottomcate">
+	<div id="bottomcate" style="float: none;">
 		<span id="cate1" style="font-size: 13pt; font-weight: bold;" onclick="javascript:location.href='<%= ctxPath%>/notice/noticeList.yolo'">전체 공지</span>
 		&nbsp; &nbsp; 
 		<span id="cate2" style="font-size: 13pt; font-weight: bold;" onclick="javascript:location.href='<%= ctxPath%>/notice/depNoticeList.yolo'">부서 공지</span>
 		&nbsp; &nbsp; 
 		<span id="cate3" style="font-size: 13pt; font-weight: bold;" onclick="javascript:location.href='<%= ctxPath%>/notice/myNoticeList.yolo'">내가 쓴 공지</span>
+		
+	<div style="display: inline-block; float:right; margin: 0;">
+		<button class="btn" id="advanced-search-button" onclick="goSearch()" type="button" style="border:none; background-color: #66cc66; height: 30px; color: white;">
+		<i class="fa fa-search"></i>
+		</button> 
+		<input id="searchWord"  name="searchWord" style="padding-left:7px; height: 25px; width: 120px; margin-right: 5px; margin-left:2px; border: solid 1px #66cc66; border-radius: 0.4rem;" type="text" placeholder="검색" />
+		<input type="text" style="display: none;"/>
+	</div>	
+		
+	<%-- 	
+	<form name="searchFrm" style="display: inline-block; float:right; margin: 0;">	
+		<button class="btn" id="advanced-search-button" onclick="goSearch()" type="button" style="border:none; background-color: #66cc66; height: 30px; color: white;">
+		<i class="fa fa-search"></i>
+		</button> 
+		<input id="searchWord"  name="searchWord" style="padding-left:7px; height: 25px; width: 120px; margin-right: 5px; margin-left:2px; border: solid 1px #66cc66; border-radius: 0.4rem;" type="text" placeholder="검색" />
+		<input type="text" style="display: none;"/>
+	</form>
+	--%>
 	</div>
+	
 </div>
-<hr width = "100%;">
+<hr width = "100%;" style="margin: 7px 0 0 0; border-color: #d1d3d1;">
 
 
 <!-- sendNotice Modal --> 

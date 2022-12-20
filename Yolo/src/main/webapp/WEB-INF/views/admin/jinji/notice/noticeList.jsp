@@ -20,22 +20,24 @@
 	
 	div#boardList{
 		height: 100%;
-		width: 100%;
+		width: 99.9%;
 	}
 	
 	div.listRow {
 		border: 1px solid #f9fafa; 
 		min-height: 110px;
+		width: 99.9%;
 	}
 	
 	
 	div.listRowInside {
 		/* border: 1px solid black; */
-		width: 97%;
+		width: 99.9%;
 		min-height: 90px;
 		margin: 10px auto;
 		display: flex;
   		align-items: center;
+  		padding-right: 10px;
 	}
 	
 	span.spanBlock {
@@ -141,6 +143,7 @@
 
 	$(document).ready(function() {
 	
+		
 		$("div.listRow").hover(function(){
 			$(this).css("background-color","#f9fafa");
 			$(this).find("button").css("display","block")
@@ -188,7 +191,8 @@
 				// $('div.noticeEditModal').modal('hide');
 				// $('div.noticeEditModal').trigger('hide');
 				$(this).attr("disabled", true);
-				window.location.reload();
+	//			window.location.reload();
+				top.document.location.reload(); 
 				
 			}
 			
@@ -239,6 +243,12 @@
 			
 	// 전체 공지 리스트 상세 모달
 	function openmyListModal(notino){
+		
+	//	const searchType = $("select#searchType").val();
+	//	console.log(searchType);
+		
+	//	const searchWord = $("input#searchWord").val();
+	//	console.log(searchWord);
 		
 		// alert("notino:" + request.notino);
 		
@@ -331,6 +341,8 @@
 					
 					$("input#editsubject").val(json.subject);
 					// 추후에 + 파일 첨부 넣기
+					$("input.uploadName").val(json.orgFilename);
+					
 					$("textarea#editContent").text(json.content);               
 					$("input#hidden_notino").val(json.notino);
 				},
@@ -341,7 +353,17 @@
 
 	}
 	
-
+	
+	// 검색어 
+	function goSearch() {
+		const frm = document.searchFrm;
+		frm.method = "GET"; // GET 생략됩니다~
+		frm.action = "<%= request.getContextPath() %>/notice/noticeList.yolo"; 
+									// 자기 자신한테로 페이지 이동 
+		frm.submit();
+		
+	}//end of function goSearch()
+	
 	
 	
 </script>
@@ -388,9 +410,9 @@
 						&nbsp;&nbsp;
 						<span class="mt-2 mb-2" style="font-size: 10pt; color: gray; display: inline-block;"> <span> ┗ &nbsp;</span><span id="cmtCount" style="color: green;"> <span style='font-size:25px;'>&#128172;</span> [${noticevo.cmtCount}] </span></span>
 					</div>
-					<button class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px;"  data-toggle="modal" data-target=".noticeEditModal" >수정하기</button> 
+					<button class="listBnt EditBnt" style="background-color: white; color: #07b419; margin-left: 620px; float: right;"  data-toggle="modal" data-target=".noticeEditModal" >수정하기</button> 
 					
-					<button type="button" class="listBnt DeleteBnt" >삭제하기</button>
+					<button type="button" class="listBnt DeleteBnt" style="float: right;" >삭제하기</button>
 					<form name="delFrm" id="delFrm"> <%-- 값이 있을 때 폼태그.. --%>
 					<input type="hidden" id="notino" value="${noticevo.notino}" name="notino">
 					<input type="hidden" id="fk_senderno" value="${noticevo.fk_senderno}" name="fk_senderno">

@@ -375,8 +375,18 @@ public class NoticeService implements InterNoticeService {
 		return myFile;
 	}
 
+	// 첨부파일 없는 글쓰기
+	@Override
+	public void sendNotice_noFile(NoticeVO noticevo) {
+		dao.sendNotice_noFile(noticevo);
+	}
 
-	
+	// 첨부파일 있는 글쓰기
+	@Override
+	public void sendMotice_withFile(NoticeVO noticevo) {
+		dao.sendMotice_withFile(noticevo);
+	}
+
 	
 	
 }

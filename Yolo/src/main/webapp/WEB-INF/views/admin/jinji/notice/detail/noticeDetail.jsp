@@ -215,140 +215,139 @@
 	                      positionClass: 'toast-top-center'
 	                  };
 	                  toastr.error('', '글자수는 50자까지 입력 가능합니다.');
-		    }; // end of if
-			
+	                  $(".commentBnt").attr("disabled", true);
+		    } // end of if
+		    else{
+		    	$(".commentBnt").attr("disabled", false);
+		    }
+		   
     	}); // end of 댓글 제한 
 		
     	
 			
-    // 댓글 수정	
-	$(document).on("click",'button.MYcommentBnt', function(){
-		
-	//	console.log('ddd');
-		$(this).hide();
-		//const commentno = $(this).next().next().next().next().val();
-		//console.log(commentno)
-		let content = $(this).parent().next().find("#cmtContent").text();
-		content = content.substring(1); // ▶ 지우기
-		console.log(content);
-	//	 $(this).parent().next().find("#cmtContent").css({"display":"none"});
-		 $(this).parent().next().find("#cmtContent").html("<input type='text' value="+content+">'<button type='button' class='cmtEditBnt mr-0' style='float: right;'>확인</button>'");
-		
-	});
-    	
-    	
-    // 댓글 삭제
-	$(document).on("click",'button.MYcommentCancelBnt', function(){
-		
+	    // 댓글 수정	
+		$(document).on("click",'button.MYcommentBnt', function(){
+			
+		//	console.log('ddd');
 			$(this).hide();
-			const commentno = $(this).next().next().next().val();
-			console.log(commentno);
-			const notino = $(this).next().val();
-			console.log(notino);
+			//const commentno = $(this).next().next().next().next().val();
+			//console.log(commentno)
+			let content = $(this).parent().next().find("#cmtContent").text();
+			content = content.substring(1); // ▶ 지우기
+		//	console.log(content);
+		//	 $(this).parent().next().find("#cmtContent").css({"display":"none"});
+			 $(this).parent().next().find("#cmtContent").html("<input type='text' value="+content+">'<button type='button' class='cmtEditBnt mr-0' style='float: right;'>확인</button>'");
 			
-			Swal.fire({
-				   title: '삭제하시겠습니까?',
-				   icon: 'warning',
-				   
-				   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
-				   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
-				   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
-				   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
-				   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
-				   
-				   reverseButtons: true, // 버튼 순서 거꾸로
-				   
-				}).then(result => {
-				   // 만약 Promise리턴을 받으면,
-				   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
-				  
-					   $(this).hide();
-						const commentno = $(this).next().next().next().val();
-				//		console.log(commentno);
-						const notino = $(this).next().val();
-				//		console.log(notino);
-						
-						// 댓글 삭제 버튼 누를 경우
-						$.ajax({
-					    	url : "<%= request.getContextPath() %>/notice/delComment.yolo",
-					    	type: 'POST',
-					    	data : {"commentno" : commentno,
-						    		"notino" : notino},
-					    	dataType: "JSON",
-							success: function(json){
-								
-							//	console.log(json);
-								
-							//  json.result;
-							//  console.log(json.result);
-							 
-							 	// 삭제후 댓글 출력 함수 재호출
-							 	goReadComment(commentno); 
-							 	
-							},
-							error: function(request, status, error){
-				                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				            }
-			    
-			    		});  // end of $.ajax({
-						
-				      Swal.fire('댓글이 삭제됐습니다.', text+'삭제완료','success');
-				      
-				   } // end of if
-				   
-			    		
-				}); // end of .then(result => 
-			    		
-				
-				
-		}); // end of 댓글 삭제 $(document).on 
+		});
     	
+    	
+	  
 			
 			
-	// 댓글 수정 후 확인버튼 누를시		
-    $(document).on("click","button.cmtEditBnt", function(){
-    	//alert("asd")
-    	let content = $(this).prev().val();
-    	//console.log(content);
-    	let cmtno = $(this).parent().parent().prev().find("#cmtno").val();
-    	//console.log(cmtno)
-    	let notino = $(this).parent().parent().prev().find("#cmt_notino").val();
-    	
-    	
-    	
-    	if(content == ""){
-    		alert("댓글 내용을 입력하세요");
-    		return;
-    	}
-    	else{
-    		
-    		// 댓글 내용 수정 후 확인 누르면 
-    		$.ajax({
-		    	url : "<%= request.getContextPath() %>/notice/editComment.yolo",
-		    	type: 'POST',
-		    	data : {"content" : content,
-			    		"cmtno" : cmtno},
-		    	dataType: "JSON",
-				success: function(json){
-				//	console.log(json);
-				//  json.result;
-				//  console.log(json.result);
-				 
-				 	// 댓글 출력해줬던 함수 재호출
-				 	goReadComment(notino); 
-				 	
-				},
-				error: function(request, status, error){
-	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	            }
-    
-    		});  // end of $.ajax({
-    		
-    	}// end of else
-    	
-    	
-    }) // end of  $(document).on("click","button.cmtEditBnt", function()
+		// 댓글 수정 후 확인버튼 누를시		
+	    $(document).on("click","button.cmtEditBnt", function(){
+	    	//alert("asd")
+	    	let content = $(this).prev().val();
+	    	//console.log(content);
+	    	let cmtno = $(this).parent().parent().prev().find("#cmtno").val();
+	    	//console.log(cmtno)
+	    	let notino = $(this).parent().parent().prev().find("#cmt_notino").val();
+	    	
+		    	if(content == ""){
+		    		alert("댓글 내용을 입력하세요");
+		    		return;
+		    	}
+		    	else{
+		    		
+		    		// 댓글 내용 수정 후 확인 누르면 
+		    		$.ajax({
+				    	url : "<%= request.getContextPath() %>/notice/editComment.yolo",
+				    	type: 'POST',
+				    	data : {"content" : content,
+					    		"cmtno" : cmtno},
+				    	dataType: "JSON",
+						success: function(json){
+						//	console.log(json);
+						//  json.result;
+						//  console.log(json.result);
+						 
+						 	// 댓글 출력해줬던 함수 재호출
+						 	goReadComment(notino); 
+						 	
+						},
+						error: function(request, status, error){
+			                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			            }
+		    		});  // end of $.ajax({
+		    		
+		    	}// end of else
+	    	
+	    	
+	    }); // end of  $(document).on("click","button.cmtEditBnt", function()
 
+	    		
+	    // 댓글 삭제
+		$(document).on("click",'button.MYcommentCancelBnt', function(){
+			
+				$(this).hide();
+				const commentno = $(this).next().next().next().val();
+		//		console.log(commentno);
+				const notino = $(this).next().val();
+		//		console.log(notino);
+				
+				Swal.fire({
+					   title: '삭제하시겠습니까?',
+					   icon: 'warning',
+					   
+					   showCancelButton: true, // cancel버튼 보이기. 기본은 원래 없음
+					   confirmButtonColor: '#3085d6', // confrim 버튼 색깔 지정
+					   cancelButtonColor: '#d33', // cancel 버튼 색깔 지정
+					   confirmButtonText: '승인', // confirm 버튼 텍스트 지정
+					   cancelButtonText: '취소', // cancel 버튼 텍스트 지정
+					   
+					   reverseButtons: true, // 버튼 순서 거꾸로
+					   
+					}).then(result => {
+					   // 만약 Promise리턴을 받으면,
+					   if (result.isConfirmed) { // 만약 모달창에서 confirm 버튼을 눌렀다면
+					  
+						   $(this).hide();
+							const commentno = $(this).next().next().next().val();
+					//		console.log(commentno);
+							const notino = $(this).next().val();
+					//		console.log(notino);
+							
+							// 댓글 삭제 버튼 누를 경우
+							$.ajax({
+						    	url : "<%= request.getContextPath() %>/notice/delComment.yolo",
+						    	type: 'POST',
+						    	data : {"commentno" : commentno,
+							    		"notino" : notino},
+						    	dataType: "JSON",
+								success: function(json){
+									
+								//	console.log(json);
+									
+								//  json.result;
+								//  console.log(json.result);
+								 
+								 	// 삭제후 댓글 출력 함수 재호출
+								 	goReadComment(commentno); 
+								},
+								error: function(request, status, error){
+					                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					            }
+				    		});  // end of $.ajax({
+							
+					      Swal.fire('댓글이 삭제됐습니다.','삭제완료','success');
+					      location.reload();						   
+				    	} // end of if
+				    		
+					}); // end of .then(result => 
+					
+		}); // end of 댓글 삭제 $(document).on 
+    	 		
+	    		
 	
 	}); // end of ready-----------------------------------------
 
@@ -356,6 +355,7 @@
 	
 	// 댓글 쓰기 버튼 누를 경우
 	function goAddCmt() {
+		
 		
 		// 유효성 검사
 		const commentContent = $("textarea#commentContent").val().trim();	//공백은 제거 trim()
@@ -370,6 +370,7 @@
 		else{
 			alert("댓글쓰기가 완료되었습니다.");
 			goAddCmtReal();
+			location.reload();
 		}
 	} // end of function goAddWrite()
 	
@@ -385,7 +386,6 @@
 			  	,"fk_empno" : $("input#fk_empno").val()
 			  	,"fk_notino" : $("input#notino").val()},
 			  
-			
 			type: "POST",
 			dataType: "JSON",
 			success: function(json){
@@ -418,18 +418,21 @@
    			success: function(data){
    			
    				let html = "";
+   				
    				if(data.length > 0) {
+   			
    				$.each(data,function(index, item){
   				// 여러개의 댓글 존재할 수 있음 => for문으로  					
    				//	console.log(item.name);
    				//	console.log(item.fk_empno);
+   				//	console.log(item.fk_notino);
    				
    				const commentno = item.commentno;
    			
   				html +=
   						'<div class="mt-3 mb-2" >'+
    				      	'<div class="commentrow  px-2 py-3">'+
-   				       	'<span class="mt-2 mb-3" style="font-size: 12pt; color: gray;"> ┗ <span id="prof" class="py-2">'+item.nickname+'</span><span class="ml-1 mr-1" id="fk_empno" >'+item.name+'</span><span class="ml-3" id="cmtWritedate">'+item.writedate+'</span></span>';
+   				       	'<span class="mt-2 mb-3" style="font-size: 12pt; color: gray;"> ┗ <span id="prof" class="py-2" style= "background-color: '+item.profile_color+';">'+item.nickname+'</span><span class="ml-1 mr-1" id="fk_empno" >'+item.name+'</span><span class="ml-3" id="cmtWritedate">'+item.writedate+'</span></span>';
    				
    				  
    				     if( ${sessionScope.loginuser.empno} != item.fk_empno) {
@@ -525,7 +528,7 @@
 		        
 		     	<div>
 		     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
-		     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
+		     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray; overflow: auto;">작성된 공지 내용 들어가는 곳</span>
 		     	</div>
      			<input id="notino" type="hidden">
      			

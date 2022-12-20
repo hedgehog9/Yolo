@@ -205,10 +205,13 @@
 	                      showMethod: 'slideDown',
 	                      timeOut: 2000,
 	                      positionClass: 'toast-top-center'
-	                  };
-	                  toastr.error('', '글자수는 50자까지 입력 가능합니다.');
-		    }; // end of if
-			
+	            };
+		        toastr.error('', '글자수는 50자까지 입력 가능합니다.');
+		        $(".commentBnt").attr("disabled", true);
+		    } // end of if
+		    else{
+		    	$(".commentBnt").attr("disabled", false);
+		    }
     	}); // end of 댓글 제한 
     
     	
@@ -222,7 +225,7 @@
 			//console.log(commentno)
 			let content = $(this).parent().next().find("#cmtContent").text();
 			content = content.substring(1); // ▶ 지우기
-			console.log(content);
+		//	console.log(content);
 		//	 $(this).parent().next().find("#cmtContent").css({"display":"none"});
 			 $(this).parent().next().find("#cmtContent").html("<input type='text' value="+content+">'<button type='button' class='cmtEditBnt mr-0' style='float: right;'>확인</button>'");
 			
@@ -234,9 +237,9 @@
 			
 				$(this).hide();
 				const commentno = $(this).next().next().next().val();
-				console.log(commentno);
+		//		console.log(commentno);
 				const notino = $(this).next().val();
-				console.log(notino);
+		//		console.log(notino);
 				
 				Swal.fire({
 					   title: '삭제하시겠습니까?',
@@ -269,7 +272,7 @@
 						    	dataType: "JSON",
 								success: function(json){
 									
-									console.log(json);
+								//	console.log(json);
 									
 								//  json.result;
 								//  console.log(json.result);
@@ -284,15 +287,12 @@
 				    
 				    		});  // end of $.ajax({
 							
-					      Swal.fire('댓글이 삭제됐습니다.', text+'삭제완료','success');
-					     
+					      Swal.fire('댓글이 삭제됐습니다.', '삭제완료','success');
+					      location.reload();
 					   } // end of if
 					   
-				    		
 					}); // end of .then(result => 
 				    		
-					
-					
 			}); // end of 댓글 삭제 $(document).on 
 	    	
 				
@@ -323,8 +323,8 @@
 			    	dataType: "JSON",
 					success: function(json){
 					//	console.log(json);
-					 json.result;
-					 console.log(json.result);
+					//  json.result;
+					//  console.log(json.result);
 					 
 					 	// 댓글 출력해줬던 함수 재호출
 					 	goReadComment(notino); 
@@ -338,14 +338,7 @@
 	    		
 	    	}// end of else
 	    	
-	    	
 	  }) // end of  $(document).on("click","button.cmtEditBnt", function()
-	
-    	
-    	
-    	
-    	
-    	
     	
     	
     	
@@ -386,7 +379,6 @@
 			  	,"fk_empno" : $("input#fk_empno").val()
 			  	,"fk_notino" : $("input#notino").val()},
 			  
-			
 			type: "POST",
 			dataType: "JSON",
 			success: function(json){
@@ -430,7 +422,7 @@
   				html +=
   						'<div class="mt-3 mb-2" >'+
    				      	'<div class="commentrow  px-2 py-3">'+
-   				       	'<span class="mt-2 mb-3" style="font-size: 12pt; color: gray;"> ┗ <span id="prof" class="py-2">'+item.nickname+'</span><span class="ml-1 mr-1" id="fk_empno" >'+item.name+'</span><span class="ml-3" id="cmtWritedate">'+item.writedate+'</span></span>';
+   				       	'<span class="mt-2 mb-3" style="font-size: 12pt; color: gray;"> ┗ <span id="prof" class="py-2" style= "background-color: '+item.profile_color+';">'+item.nickname+'</span><span class="ml-1 mr-1" id="fk_empno" >'+item.name+'</span><span class="ml-3" id="cmtWritedate">'+item.writedate+'</span></span>';
    				
    				  
    				     if( ${sessionScope.loginuser.empno} != item.fk_empno) {
@@ -529,7 +521,7 @@
        
 	     	<div>
 	     		<span style="display: block; margin-top: 20px; margin-bottom: 10px;"> <span style='font-size:20px;'>&#128312;</span> 공지 내용 </span>
-	     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray;">작성된 공지 내용 들어가는 곳</span>
+	     		<span id="content" style="display: block; height: 200px; width: 100%; border: 1px solid #e0e0e0; color:gray; overflow: auto;">작성된 공지 내용 들어가는 곳</span>
 	     	</div>
     		<input id="notino" type="hidden">
 	     	

@@ -331,8 +331,18 @@ public class NoticeDAO implements InterNoticeDAO {
 		return myFile;
 	}
 
+	
+	// 첨부파일 없는 글쓰기
+	@Override
+	public void sendNotice_noFile(NoticeVO noticevo) {
+		sqlsession.insert("jinmj.sendNotice_noFile", noticevo);
+	}
 
-
+	// 첨부파일 있는 글쓰기
+	@Override
+	public void sendMotice_withFile(NoticeVO noticevo) {
+		 sqlsession.insert("jinmj.sendMotice_withFile", noticevo);
+	}
 
 
 	

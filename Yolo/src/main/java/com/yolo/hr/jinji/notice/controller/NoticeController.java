@@ -86,13 +86,14 @@ public class NoticeController {
  	// 공지글 작성 (공지 작성시 aop 알림 설정 + 파일 첨부)
  	@ResponseBody
  	@RequestMapping(value = "/notice/sendNotice.yolo", produces="text/plain;charset=UTF-8")
- 	public void addAlarm_sendNotice(Map<String, String> paraMap, HttpServletRequest request, HttpServletResponse response, NoticeVO noticevo, MultipartHttpServletRequest mrequest) {
+ 	public void addAlarm_sendNotice(Map<String, String> paraMap, NoticeVO noticevo, MultipartHttpServletRequest mrequest) {
  		
  		
  		// !! 첨부파일 업로드 하기 시작 !! //
         // addEnd 카피
         MultipartFile attach = noticevo.getAttach();
         HttpSession session = mrequest.getSession();
+      
         if(!attach.isEmpty()) {
           // attach가 첨부파일이다. 이것이 비어있지 않다면(첨부파일 존재하면)
           /*
@@ -162,23 +163,25 @@ public class NoticeController {
           } 
         }
         // ===  첨부파일 있는 경우 작업 끝 !!! === //
+
+    	EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+ 		noticevo.setFk_senderno(loginuser.getEmpno()); // 작성 -> vo 인서트
  		
+ 		
+        
     	if(attach.isEmpty() ) {
 			//파일첨부가 없는 글쓰기인 경우		
-			paraMap.put("attach", "no");
+    		service.sendNotice_noFile(noticevo);
+			
 		}
 		else {
 			//파일첨부가 있는 글쓰기인 경우
-			//n = service.add_withFile(docvo, paraMap);
-			paraMap.put("attach", "yes");
+			service.sendMotice_withFile(noticevo);
 		}
         
-        
- 		
- 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
- 		noticevo.setFk_senderno(loginuser.getEmpno()); // 작성 -> vo 인서트
- 		
- 		service.sendNotice(noticevo);
+ 	
+ 		// 첨부 파일 없는 글쓰기
+ 		// service.sendNotice(noticevo);
  		
  		List<String> empnoList = new ArrayList<String>();
  		 
@@ -212,6 +215,10 @@ public class NoticeController {
  		
  	}
  
+ 	
+ 	
+ 	
+ 	
  	/////////////////////////////////////////////////// 전체 공지 시작 /////////////////////////////////
 	// 전체 공지 리스트
 	@RequestMapping(value = "/notice/noticeList.yolo")
@@ -256,15 +263,14 @@ public class NoticeController {
 		String searchWord = request.getParameter("searchWord"); 
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		
 		if(searchWord==null || "".equals(searchWord.trim())){
 			searchWord = "";
 		}
 		
+		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("empno", loginuser.getEmpno());
-		
 		
 		
 		
@@ -296,9 +302,9 @@ public class NoticeController {
 				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
 				
 				// 또 장난쳐올 경우 ( 숫자인데 없는 페이지 )
-				if(currentShowPageNo <1 || currentShowPageNo> totalPage) {
-					currentShowPageNo =1 ;
-				}
+				if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {// 유저가 페이지수 장난칠 수도 있다 겟방식이라서
+		              currentShowPageNo = 1;
+		        }
 				
 			} catch (NumberFormatException e) {
 				currentShowPageNo =1 ;
@@ -331,6 +337,8 @@ public class NoticeController {
 		// 페이징 처리 안한 전체 공지 리스트
 		// List<Map<String, String>> showAllNoticeList = service.showAllNoticeList(loginuser.getFk_deptno());
 		// 검색어 없는 전체 공지 리스트 페이징 처리
+		
+		// 페이징 처리 된 검색어 가능한 리스트
 		List<Map<String, String>> showAllNoticeList = service.showAllNoticeList(paraMap);
 		
 		if(!"".equals(searchWord)) {
