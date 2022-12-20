@@ -288,6 +288,8 @@
 
 <script type="text/javascript">
 
+// 	let flag = false;
+
 	$(document).ready(function() {
 		
 		  // 파일
@@ -297,7 +299,7 @@
 	      });
     
 		  
-		  
+		<%--  
 		// 검색시 검색조건 및 검색어 값 유지시키기
 		// paraMap 있는지 없는지 까바야징
 		if( ${not empty requestScope.searchWord}) { // 있는지 없는지 확인해야 한다.
@@ -311,6 +313,7 @@
 				goSearch();
 			}
 		});	
+		--%>
 	      
 		// 전체 선택
 		

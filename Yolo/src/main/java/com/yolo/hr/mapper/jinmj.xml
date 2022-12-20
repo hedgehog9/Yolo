@@ -248,6 +248,11 @@
 		where notino = #{fk_notino}
 	</update>
 	
+	<update id="delCount" parameterType="String">
+		update tbl_notice set cmtCount = cmtCount - 1
+		where notino = #{notino}
+	</update>
+	
 	
 	<!--  전체 공지글에서 글 1개에 대한 원게시글에 해당하는 댓글들 조회하기-->
 	<resultMap type="HashMap" id="CommentMap">

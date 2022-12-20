@@ -68,7 +68,6 @@
 	}  
 		
 		
-		
 	/* 페이징 처리 */	
 	
 	
@@ -354,6 +353,7 @@
 	}
 	
 	
+	<%--
 	// 검색어 
 	function goSearch() {
 		const frm = document.searchFrm;
@@ -363,7 +363,7 @@
 		frm.submit();
 		
 	}//end of function goSearch()
-	
+	--%>
 	
 	
 </script>

@@ -383,8 +383,8 @@
 		  url:"<%= request.getContextPath()%>/notice/addComment.yolo",
 		  data: {//cmtForm,
 			  	 "content" : $("textarea#commentContent").val() 
-			  	,"fk_empno" : $("input#fk_empno").val()
-			  	,"fk_notino" : $("input#notino").val()},
+			  	,"fk_empno" : $("input#fk_empno").val() 
+			  	,"fk_notino" : $("input#fk_notino").val()},
 			  
 			type: "POST",
 			dataType: "JSON",

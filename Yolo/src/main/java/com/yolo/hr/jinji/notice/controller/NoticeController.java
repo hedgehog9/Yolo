@@ -16,7 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.yolo.hr.common.FileManager;
 import com.yolo.hr.jinji.notice.model.CommentVO;
-import com.yolo.hr.jinji.notice.model.NoticeVO;
+import com.yolo.hr.jinji.notice.model.InterNoticeDAO;
+import com.yolo.hr.jinji.notice.model.*;
 import com.yolo.hr.jinji.notice.service.InterNoticeService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
 
@@ -26,6 +27,10 @@ public class NoticeController {
 
 	@Autowired
 	private InterNoticeService service;
+	
+	@Autowired
+	private InterNoticeDAO dao;
+
 	
 	// 파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) ===  
     @Autowired // Type에 따라 알아서 bean을 주입시켜준다. 
@@ -37,7 +42,7 @@ public class NoticeController {
  	@ResponseBody
  	@RequestMapping(value = "/notice/getDept.yolo", produces="text/plain;charset=UTF-8")
  	public String getDept( HttpServletRequest request) {
- 		
+ 	
  		// 부서만 조회해오기
  		List<Map<String,String>> deptList = service.getDeptList();
  		
@@ -723,6 +728,7 @@ public class NoticeController {
    }
 
    
+   
    // 원공지글에 해당하는 댓글 조회하기
    @ResponseBody
    @RequestMapping(value="/notice/readComment.yolo", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
@@ -812,7 +818,8 @@ public class NoticeController {
 		
 		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
 	    int result = service.delComment(paraMap);
-		
+	    
+		dao.delCmtCount(paraMap);
 	    // service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
 		
 	   // ajax
