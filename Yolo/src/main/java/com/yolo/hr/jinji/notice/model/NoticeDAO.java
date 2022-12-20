@@ -141,6 +141,14 @@ public class NoticeDAO implements InterNoticeDAO {
 		return result;
 	}
 	
+	// 댓글 삭제수 카운터
+	@Override
+	public void delCmtCount(Map<String, String> paraMap) {
+		sqlsession.delete("jinmj.delCount", paraMap);
+		
+	}
+	
+	
 	// 총 게시물 건수 (페이징 처리)
 	@Override
 	public int getTotalCount(Map<String, String> paraMap) {
@@ -331,8 +339,20 @@ public class NoticeDAO implements InterNoticeDAO {
 		return myFile;
 	}
 
+	
+	// 첨부파일 없는 글쓰기
+	@Override
+	public void sendNotice_noFile(NoticeVO noticevo) {
+		sqlsession.insert("jinmj.sendNotice_noFile", noticevo);
+	}
 
+	// 첨부파일 있는 글쓰기
+	@Override
+	public void sendMotice_withFile(NoticeVO noticevo) {
+		 sqlsession.insert("jinmj.sendMotice_withFile", noticevo);
+	}
 
+	
 
 
 	

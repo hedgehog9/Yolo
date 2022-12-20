@@ -137,6 +137,16 @@ public interface InterNoticeService {
 	// 첨부파일 조회
 	List<NoticeVO> getMyFile(String notino);
 
+	////////////////////
+	// 첨부파일 없는 글쓰기
+	void sendNotice_noFile(NoticeVO noticevo);
+
+
+	// 첨부파일 있는 글쓰기
+	void sendMotice_withFile(NoticeVO noticevo);
+
+
+
 	
 
 

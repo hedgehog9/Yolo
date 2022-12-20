@@ -16,7 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.yolo.hr.common.FileManager;
 import com.yolo.hr.jinji.notice.model.CommentVO;
-import com.yolo.hr.jinji.notice.model.NoticeVO;
+import com.yolo.hr.jinji.notice.model.InterNoticeDAO;
+import com.yolo.hr.jinji.notice.model.*;
 import com.yolo.hr.jinji.notice.service.InterNoticeService;
 import com.yolo.hr.jjy.employee.model.EmployeeVO;
 
@@ -26,6 +27,10 @@ public class NoticeController {
 
 	@Autowired
 	private InterNoticeService service;
+	
+	@Autowired
+	private InterNoticeDAO dao;
+
 	
 	// 파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection) ===  
     @Autowired // Type에 따라 알아서 bean을 주입시켜준다. 
@@ -37,7 +42,7 @@ public class NoticeController {
  	@ResponseBody
  	@RequestMapping(value = "/notice/getDept.yolo", produces="text/plain;charset=UTF-8")
  	public String getDept( HttpServletRequest request) {
- 		
+ 	
  		// 부서만 조회해오기
  		List<Map<String,String>> deptList = service.getDeptList();
  		
@@ -86,13 +91,14 @@ public class NoticeController {
  	// 공지글 작성 (공지 작성시 aop 알림 설정 + 파일 첨부)
  	@ResponseBody
  	@RequestMapping(value = "/notice/sendNotice.yolo", produces="text/plain;charset=UTF-8")
- 	public void addAlarm_sendNotice(Map<String, String> paraMap, HttpServletRequest request, HttpServletResponse response, NoticeVO noticevo, MultipartHttpServletRequest mrequest) {
+ 	public void addAlarm_sendNotice(Map<String, String> paraMap, NoticeVO noticevo, MultipartHttpServletRequest mrequest) {
  		
  		
  		// !! 첨부파일 업로드 하기 시작 !! //
         // addEnd 카피
         MultipartFile attach = noticevo.getAttach();
         HttpSession session = mrequest.getSession();
+      
         if(!attach.isEmpty()) {
           // attach가 첨부파일이다. 이것이 비어있지 않다면(첨부파일 존재하면)
           /*
@@ -162,23 +168,25 @@ public class NoticeController {
           } 
         }
         // ===  첨부파일 있는 경우 작업 끝 !!! === //
+
+    	EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+ 		noticevo.setFk_senderno(loginuser.getEmpno()); // 작성 -> vo 인서트
  		
+ 		
+        
     	if(attach.isEmpty() ) {
 			//파일첨부가 없는 글쓰기인 경우		
-			paraMap.put("attach", "no");
+    		service.sendNotice_noFile(noticevo);
+			
 		}
 		else {
 			//파일첨부가 있는 글쓰기인 경우
-			//n = service.add_withFile(docvo, paraMap);
-			paraMap.put("attach", "yes");
+			service.sendMotice_withFile(noticevo);
 		}
         
-        
- 		
- 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
- 		noticevo.setFk_senderno(loginuser.getEmpno()); // 작성 -> vo 인서트
- 		
- 		service.sendNotice(noticevo);
+ 	
+ 		// 첨부 파일 없는 글쓰기
+ 		// service.sendNotice(noticevo);
  		
  		List<String> empnoList = new ArrayList<String>();
  		 
@@ -212,6 +220,10 @@ public class NoticeController {
  		
  	}
  
+ 	
+ 	
+ 	
+ 	
  	/////////////////////////////////////////////////// 전체 공지 시작 /////////////////////////////////
 	// 전체 공지 리스트
 	@RequestMapping(value = "/notice/noticeList.yolo")
@@ -256,15 +268,14 @@ public class NoticeController {
 		String searchWord = request.getParameter("searchWord"); 
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		
 		if(searchWord==null || "".equals(searchWord.trim())){
 			searchWord = "";
 		}
 		
+		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("searchWord", searchWord);
 		paraMap.put("empno", loginuser.getEmpno());
-		
 		
 		
 		
@@ -296,9 +307,9 @@ public class NoticeController {
 				currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
 				
 				// 또 장난쳐올 경우 ( 숫자인데 없는 페이지 )
-				if(currentShowPageNo <1 || currentShowPageNo> totalPage) {
-					currentShowPageNo =1 ;
-				}
+				if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {// 유저가 페이지수 장난칠 수도 있다 겟방식이라서
+		              currentShowPageNo = 1;
+		        }
 				
 			} catch (NumberFormatException e) {
 				currentShowPageNo =1 ;
@@ -331,6 +342,8 @@ public class NoticeController {
 		// 페이징 처리 안한 전체 공지 리스트
 		// List<Map<String, String>> showAllNoticeList = service.showAllNoticeList(loginuser.getFk_deptno());
 		// 검색어 없는 전체 공지 리스트 페이징 처리
+		
+		// 페이징 처리 된 검색어 가능한 리스트
 		List<Map<String, String>> showAllNoticeList = service.showAllNoticeList(paraMap);
 		
 		if(!"".equals(searchWord)) {
@@ -715,6 +728,7 @@ public class NoticeController {
    }
 
    
+   
    // 원공지글에 해당하는 댓글 조회하기
    @ResponseBody
    @RequestMapping(value="/notice/readComment.yolo", method= {RequestMethod.GET}, produces="text/plain;charset=UTF-8")
@@ -804,7 +818,8 @@ public class NoticeController {
 		
 		// map 으로 넣기( 공지 수정을 위해 해당 공지번호 글 하나만 가져오기)
 	    int result = service.delComment(paraMap);
-		
+	    
+		dao.delCmtCount(paraMap);
 	    // service.editNotice(editNoticevo, noticevo); // 공지글 수정하기
 		
 	   // ajax

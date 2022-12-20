@@ -48,7 +48,7 @@ public class CommuteController {
 		if(n > 0) {
 			System.out.println("들어옴");
 			try {
-				sendSlack(name+"님이 출근 하셨습니다.");
+				sendSlack(name+"님이 " + getTime() + "에 출근 하셨습니다.");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -115,7 +115,7 @@ public class CommuteController {
 		if(n > 0) {
 			System.out.println("들어옴");
 			try {
-				sendSlack(name+"님이 퇴근 하셨습니다.");
+				sendSlack(name+"님이 " + getTime() + "에 퇴근 하셨습니다.");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -180,15 +180,22 @@ public class CommuteController {
 			for(CommuteVO commutevo :commuteList) {
 				
 				String worktime = commutevo.getWorktime();
+				String overtime = commutevo.getOvertime();
 				System.out.println(worktime);
 				
 				int integer_worktime = Integer.parseInt(worktime);
+				int integer_overtime = Integer.parseInt(overtime);
 				 
 				plus_worktime += integer_worktime;
+				plus_worktime += integer_overtime;
 				
 				if(integer_worktime != 0) {
 					worktime = getWorkingTime(integer_worktime);
 					commutevo.setWorktime(worktime);
+				}
+				if(integer_overtime != 0) {
+					overtime = getWorkingTime(integer_overtime);
+					commutevo.setOvertime(overtime);;
 				}
 				
 			}
@@ -266,7 +273,7 @@ public class CommuteController {
         
         //Setting Headers
         httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        httpURLConnection.setRequestProperty("Authorization", "Bearer xoxb-4491231996579-4488409004293-x8CGivfoxVJlvawP12OmGIp4");
+        httpURLConnection.setRequestProperty("Authorization", "Bearer ");
         httpURLConnection.setRequestMethod("POST");
 
         //Adding Request Params
@@ -321,6 +328,16 @@ public class CommuteController {
 		
 		
 		return service.avgSalaryByDept();
+	}
+	
+	
+	// 현재 시간을 가져오는 메소드
+	private String getTime() {
+		
+		Calendar calendar = Calendar.getInstance();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		
+		return formatter.format(calendar.getTime());
 	}
 		
 }
