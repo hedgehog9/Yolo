@@ -6,7 +6,7 @@
 
 ## 프로젝트 진행 기간
 >  2022.11.4 ~ 2022.12.20
-https://github.com/hedgehog9/Yolo/issues/1#issue-1508989732
+![프로젝트 일정](https://user-images.githubusercontent.com/100989788/209290095-53f1ec11-fd7a-48b0-afc9-cba1d3ce5cea.png)
 
 <Br>
 <h3>🍀프로젝트 소개 🍀</h3>
