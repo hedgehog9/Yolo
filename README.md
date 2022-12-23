@@ -9,8 +9,8 @@
 
 <Br>
 <h3>🍀프로젝트 소개 🍀</h3>
-
-
+HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framework 의 MVC 패턴 기법을 적용한 인사프로그램을 웹사이트로 구현
+사용자 친화적인 UI 와 기본에 충실한 그룹웨어로 조직 구성원들이 의사 소통, 업무 전달, 정보 공유 및 의사 결정들의 업무 활동을 원활하게 수행하고 지원.
 <br>
 
 
@@ -19,6 +19,10 @@
 - OS : Windows 10 , windows 11 <br>
 - FW : Spring Framework <br>
 - WAS : Apache Tomcat 9.0.65
+- Front-end : HTML5 / CSS / javascript / jQuery / AJAX / JSON
+- Back-end : JDK 1.8 / JSP / JSTL
+- Developer Tools : STS 3.9.12 / eXERD / SqlDeveloper 
+- GitHub
 
 <br>
 
