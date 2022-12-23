@@ -10,6 +10,7 @@
 ![](../header.png)
 
 ## 설치 방법
+![프로젝트 일정](https://user-images.githubusercontent.com/100989788/209290095-53f1ec11-fd7a-48b0-afc9-cba1d3ce5cea.png)
 
 OS X & 리눅스:
 
