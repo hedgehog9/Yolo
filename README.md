@@ -94,18 +94,17 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 
 
 
-## 기여 방법
+## 주요 기능 
+## 출퇴근
+- 출근하기 버튼 클릭시 자동으로 시간계산
+- 퇴근하기 버튼 클릭시 점심시간이 공제된 근무시간 기록 <br>
+![출퇴근](https://user-images.githubusercontent.com/65589607/209297538-9eaf95ca-855d-4a28-a6e3-926b2991e1d8.gif)
 
-1. (<https://github.com/yourname/yourproject/fork>)을 포크합니다.
-2. (`git checkout -b feature/fooBar`) 명령어로 새 브랜치를 만드세요.
-3. (`git commit -am 'Add some fooBar'`) 명령어로 커밋하세요.
-4. (`git push origin feature/fooBar`) 명령어로 브랜치에 푸시하세요. 
-5. 풀리퀘스트를 보내주세요.
+<br><br>
+## 캘린더
+- 캘린더 CRUD 기능 
+- 사원테이블에 직원들의 생년월일을 캘린더에 자동추가
+- 구글캘린더 대한민국 휴무일 api 연동 <br> 
+![캘린더](https://user-images.githubusercontent.com/65589607/209296260-b1d27954-492b-40e7-adc9-3552c3414181.gif)
 
-<!-- Markdown link & img dfn's -->
-[npm-image]: https://img.shields.io/npm/v/datadog-metrics.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/datadog-metrics
-[npm-downloads]: https://img.shields.io/npm/dm/datadog-metrics.svg?style=flat-square
-[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
-[wiki]: https://github.com/yourname/yourproject/wiki
+
