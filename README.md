@@ -92,6 +92,11 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ```
 <br>
 
+## 로그인
+- 이메일을 아이디로 사용 
+![로그인 화면](https://user-images.githubusercontent.com/100989788/209433886-01b3ebad-4d57-41b5-911d-ae176a3aa6b5.png)
+
+
 ## 구성원 조회 
 - 검색창에 숫자 입력 시 사번으로 검색, 한글 입력시 이름으로 검색하도록 구현
 - 직위, 부서, 재직 상태로 다중 필터를 적용하여 검색 가능하도록 구현 
