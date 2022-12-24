@@ -91,6 +91,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 김지현 - 새로운 소식, 메신저, 휴가 관리
 ```
 <br>
+## 주요 기능 
 
 ## 로그인
 - 이메일을 아이디로 사용 
@@ -112,7 +113,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 - 구성원 한명의 정보 입력 후 한명씩 등록하거나, 엑셀 파일로 여러명의 구성원 일괄 등록 기능 구현 <br> 
 ![구성원 상세](https://user-images.githubusercontent.com/100989788/209433788-5ffbc218-1835-4a27-8fb8-92951238cde7.png)
 
-## 주요 기능 
+
 ## 출퇴근
 - 출근하기 버튼 클릭시 자동으로 시간계산
 - 퇴근하기 버튼 클릭시 점심시간이 공제된 근무시간 기록 <br>
