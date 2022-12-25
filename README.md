@@ -98,6 +98,18 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ![로그인 화면](https://user-images.githubusercontent.com/100989788/209433886-01b3ebad-4d57-41b5-911d-ae176a3aa6b5.png)
 
 
+## 메신저
+- 보낸 메신저와 받은 메신저 페이지로 구성
+- 보낸 메신저의 경우 전달하기 기능, 받은 메신저의 경우 전달하기, 답장하기 기능 구현
+- 메신저는 부서로 정렬된 사원을 다중선택하여 보낼 수 있음
+- 답장이 있는 메신저의 경우 원글 보기 버튼을 클릭하여 원글을 볼 수 있음
+- 메신저 첨부파일은 다중선택 가능
+- 사원명, 메신저 제목, 메신저 내용으로 검색가능
+- 메신저 열람시 읽은 메신저로 바뀜
+![image](https://user-images.githubusercontent.com/103317169/209462970-03f8033c-5fc5-4dab-aa3f-fcc7d2573fe5.png)
+![image](https://user-images.githubusercontent.com/103317169/209462869-e05779db-2c8d-4e5f-8d20-45e325ac20aa.png)
+
+
 ## 구성원 조회 
 - 검색창에 숫자 입력 시 사번으로 검색, 한글 입력시 이름으로 검색하도록 구현
 - 직위, 부서, 재직 상태로 다중 필터를 적용하여 검색 가능하도록 구현 
