@@ -108,7 +108,12 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 - 메신저 열람시 읽은 메신저로 바뀜
 ![image](https://user-images.githubusercontent.com/103317169/209462970-03f8033c-5fc5-4dab-aa3f-fcc7d2573fe5.png)
 ![image](https://user-images.githubusercontent.com/103317169/209462869-e05779db-2c8d-4e5f-8d20-45e325ac20aa.png)
+<br><br>
+	
 
+## 
+	
+https://github.com/hedgehog9/Yolo/issues/10#issue-1510287647
 
 ## 구성원 조회 
 - 검색창에 숫자 입력 시 사번으로 검색, 한글 입력시 이름으로 검색하도록 구현
