@@ -126,7 +126,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 - 검색창에 숫자 입력 시 사번으로 검색, 한글 입력시 이름으로 검색하도록 구현
 - 직위, 부서, 재직 상태로 다중 필터를 적용하여 검색 가능하도록 구현 
 - 구성원 정보 다운로드 시 현재 보고있는 구성원 리스트를 엑셀 파일로 저장
-- 페이징  <br>
+- 페이징 구현 <br>
 ![구성원 메인 페이지](https://user-images.githubusercontent.com/100989788/209433776-8d6c866f-67e9-4481-ad53-6b91eb193e4f.png)
 
 <br><br>
