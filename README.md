@@ -1,18 +1,15 @@
 
 # "Yolo"
->  Spring 으로 구현한 인사관리 시스템
-
-<Br>
-
-## 프로젝트 진행 기간
->  2022.11.4 ~ 2022.12.20
-![프로젝트 일정](https://user-images.githubusercontent.com/100989788/209290095-53f1ec11-fd7a-48b0-afc9-cba1d3ce5cea.png)
 
 <Br>
 <h3>🍀프로젝트 소개 🍀</h3>
 HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framework 의 MVC 패턴 기법을 적용한 인사프로그램을 웹사이트로 구현
 사용자 친화적인 UI 와 기본에 충실한 그룹웨어로 조직 구성원들이 의사 소통, 업무 전달, 정보 공유 및 의사 결정들의 업무 활동을 원활하게 수행하고 지원.
 <br>
+
+## 프로젝트 진행 기간
+>  2022.11.4 ~ 2022.12.20
+![프로젝트 일정](https://user-images.githubusercontent.com/100989788/209290095-53f1ec11-fd7a-48b0-afc9-cba1d3ce5cea.png)
 
 
 ## 🌈개발환경
