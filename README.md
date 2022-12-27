@@ -19,6 +19,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 
 - OS : Windows 10 , windows 11 <br>
 - FW : Spring Framework <br>
+- DB : Oracle18C
 - WAS : Apache Tomcat 9.0.65
 - Front-end : HTML5 / CSS / javascript / jQuery / AJAX / JSON
 - Back-end : JDK 1.8 / JSP / JSTL
