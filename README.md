@@ -19,7 +19,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 - DB : Oracle18C
 - WAS : Apache Tomcat 9.0.65
 - Front-end : HTML5 / CSS / javascript / jQuery / AJAX / JSON
-- Back-end : JDK 1.8 / JSP / JSTL
+- Back-end : JDK 1.8 / JSP / JSTL / Mybatis
 - Developer Tools : STS 3.9.12 / eXERD / SqlDeveloper 
 - GitHub
 
@@ -42,6 +42,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 <img src="https://img.shields.io/badge/JDK 1.8-important?style=flat-square&logo=JDK &logoColor=white"/>
 <img src="https://img.shields.io/badge/JSP-yellowgreen?style=flat-square&logo=JSP&logoColor=white"/>
 <img src="https://img.shields.io/badge/JSTL-blue?style=flat-square&logo=JSTL&logoColor=white"/>
+<img src="https://img.shields.io/badge/Mybatis-green?style=flat-square&logo=JSTL&logoColor=white"/>
 
 
 <br>
