@@ -34,7 +34,6 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 <img src="https://img.shields.io/badge/HTML5-00599C?style=flat-square&logo=HTML5&logoColor=white"/>
 <img src="https://img.shields.io/badge/CSS-A8B9CC?style=flat-square&logo=C&logoColor=white"/>
 <img src="https://img.shields.io/badge/javascript-F6C915?style=flat-square&logo=javascript&logoColor=white"/>
-<img src="https://img.shields.io/badge/Java-006D5C?style=flat-square&logo=Java&logoColor=white"/>
 <img src="https://img.shields.io/badge/jQuery-red?style=flat-square&logo=jQuery&logoColor=white"/>
 <img src="https://img.shields.io/badge/AJAX -black?style=flat-square&logo=AJAX &logoColor=white"/>
 
@@ -165,7 +164,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ![작성하기](https://user-images.githubusercontent.com/110098108/209600747-d6d5240a-cdab-48da-9618-15e8e7d898cb.png)
 	
 
-### 승인 형황
+### 승인 현황
 - 최종 결재권자를 제외한 결재자들은 본인 전단계 사원이 결재를 완료한 경우 승인,반려 가능
  <br>(문서 조회는 결재권과 상관없이 가능)
 - 결재 단계중 반려된 단계가 있다면 최종 결재권자에게 이전 결재단계 승인여부와 관계없이 결재권 부여
