@@ -1,13 +1,13 @@
 
 # "Yolo"
-
 <Br>
-<h3>🍀프로젝트 소개 🍀</h3>
+	
+## 🍀프로젝트 소개 🍀
 HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framework 의 MVC 패턴 기법을 적용한 인사프로그램을 웹사이트로 구현
 사용자 친화적인 UI 와 기본에 충실한 그룹웨어로 조직 구성원들이 의사 소통, 업무 전달, 정보 공유 및 의사 결정들의 업무 활동을 원활하게 수행하고 지원.
 <br>
 
-## 프로젝트 진행 기간
+### 프로젝트 진행 기간
 >  2022.11.4 ~ 2022.12.20
 ![프로젝트 일정](https://user-images.githubusercontent.com/100989788/209290095-53f1ec11-fd7a-48b0-afc9-cba1d3ce5cea.png)
 
@@ -44,20 +44,19 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 <img src="https://img.shields.io/badge/JSTL-blue?style=flat-square&logo=JSTL&logoColor=white"/>
 <img src="https://img.shields.io/badge/Mybatis-green?style=flat-square&logo=JSTL&logoColor=white"/>
 
-
 <br>
 
 ### 🛠️ TOOL🛠️
-<br><br>
+<br>
+<p>
 <img src="https://img.shields.io/badge/STS 3.9.12-purple?style=flat-square&logo=STS&logoColor=white"/>
 <img src="https://img.shields.io/badge/eXERD-brightgreen?style=flat-square&logo=eXERD&logoColor=white"/>
 <img src="https://img.shields.io/badge/SqlDeveloper-9cf?style=flat-square&logo=SqlDeveloper &logoColor=white"/>
 <img src="https://img.shields.io/badge/gitHub-blueviolet?style=flat-square&logo=gitHub&logoColor=white"/>
-
-
+<p>
 <br>
 
-## 주요 기능 
+## 👉 주요 기능 
 
 ```sh
 - 사원 관리 
@@ -72,7 +71,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 <br>
 
 
-## 사용한 API 
+## 👉 사용한 API 
 
 * kakao 우편번호 서비스
 * fullcalendar-5.6.0
@@ -80,7 +79,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 
 <Br>
 
-## 🧑‍🚀 팀원
+## 🧑‍🚀 팀원 및 담당 기능
 ```
 장진영 - 사원 등록, 관리
 진민지 - 공지사항
@@ -89,14 +88,15 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 김지현 - 새로운 소식, 메신저, 휴가 관리
 ```
 <br>
-## 주요 기능 
+	
+## 👉 기능 상세 설명 
 
-## 로그인
+### 로그인
 - 이메일을 아이디로 사용하여 로그인 처리 
 ![로그인 화면](https://user-images.githubusercontent.com/100989788/209433886-01b3ebad-4d57-41b5-911d-ae176a3aa6b5.png)
 
 
-## 메신저
+### 메신저
 - 보낸 메신저와 받은 메신저 페이지로 구성
 - 보낸 메신저의 경우 전달하기 기능, 받은 메신저의 경우 전달하기, 답장하기 기능 구현
 - 메신저는 부서로 정렬된 사원을 다중선택하여 보낼 수 있음
@@ -109,7 +109,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ![image](https://user-images.githubusercontent.com/103317169/209462869-e05779db-2c8d-4e5f-8d20-45e325ac20aa.png)
 <br><br>
 
-## 새로운 소식
+### 새로운 소식
 - 새로운 소식 열람하지 않은 알림, 지난 소식은 열람한 알람들 중 7일 안에 온 알람이 보인다. 
 - 새로운 소식에 추가되는 경우
 	 * 전체공지 / 사원이 속한 부서의 공지가 올라올때
@@ -123,7 +123,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 <br><br>
 
 
-## 구성원 조회 
+### 구성원 조회 
 - 검색창에 숫자 입력 시 사번으로 검색, 한글 입력시 이름으로 검색하도록 구현
 - 직위, 부서, 재직 상태로 다중 필터를 적용하여 검색 가능하도록 구현 
 - 구성원 정보 다운로드 시 현재 보고있는 구성원 리스트를 엑셀 파일로 저장
@@ -131,7 +131,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ![구성원 메인 페이지](https://user-images.githubusercontent.com/100989788/209433776-8d6c866f-67e9-4481-ad53-6b91eb193e4f.png)
 
 <br><br>
-## 구성원 관리
+### 구성원 관리
 - 휴직, 퇴직 처리가 가능
 - 구성원 본인, 관리자의 경우 개인정보수정, 첨부파일 첨부, 다운로드 가능
 - 인사발령의 경우 관리자만 발령 가능  
@@ -139,13 +139,13 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ![구성원 상세](https://user-images.githubusercontent.com/100989788/209433788-5ffbc218-1835-4a27-8fb8-92951238cde7.png)
 
 
-## 출퇴근
+### 출퇴근
 - 출근하기 버튼 클릭시 자동으로 시간계산
 - 퇴근하기 버튼 클릭시 점심시간이 공제된 근무시간 기록 <br>
 ![출퇴근](https://user-images.githubusercontent.com/65589607/209297538-9eaf95ca-855d-4a28-a6e3-926b2991e1d8.gif)
 <br><br>
 	
-## 워크플로우(전자결재)
+### 워크플로우(전자결재)
 - 진행 중인 문서함(진행중,승인필요) / 내가 쓴 문서함(진행중,완료) / 완료 문서함(완료) 리스트 조회 
   <br><문서함별로 페이징>
 - 진행중인 문서함에서 본인 승인 차례가 되면 문서함 리스트에 승인필요 표시, 문서 내용에 반려,승인버튼 활성화
@@ -155,7 +155,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ![워크플로우 메인2](https://user-images.githubusercontent.com/110098108/209600107-7db59bbf-a281-410c-9b06-82b73439598f.jpg)
 	
 
-### 작성하기
+#### 작성하기
 - 항목별로 작성하기 폼이 달라진다.
 - 글 작성시 결재라인이 자동으로 불러와진다. (사원은 팀장-부서장,사장 / 팀장은 부서장-사원 식으로)
 - 결재라인은 부서로 계층을 형성하여, 부서 테이블과 부서 맵핑테이블로 관리하기 때문에 사원들의 인사발령이 
@@ -163,7 +163,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 ![작성하기](https://user-images.githubusercontent.com/110098108/209600747-d6d5240a-cdab-48da-9618-15e8e7d898cb.png)
 	
 
-### 승인 현황
+#### 승인 현황
 - 최종 결재권자를 제외한 결재자들은 본인 전단계 사원이 결재를 완료한 경우 승인,반려 가능
  <br>(문서 조회는 결재권과 상관없이 가능)
 - 결재 단계중 반려된 단계가 있다면 최종 결재권자에게 이전 결재단계 승인여부와 관계없이 결재권 부여
@@ -172,8 +172,8 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 
 <br><br>
 	
-## 휴가
-### 내 휴가
+### 휴가
+#### 내 휴가
 - 일반 사원의 경우 내 휴가 페이지만 보이며, 해당 기간에 남은 휴가를 조회하고 신청할 수 있다.
 - 당일을 기준으로 해당년도의 휴가 사용기록과 예정 휴가로 나뉘어 보여진다 
 - 예정 휴가의 경우 휴가 신청 취소가 가능하다 (취소시 캘린더의 휴가일정도 같이 삭제된다 )<br>
@@ -185,19 +185,19 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 - 휴가 신청시 사내 캘린더 해당 사원의 휴가가 추가된다.<br>
 ![image](https://user-images.githubusercontent.com/103317169/209463731-8103da33-c733-48e0-a33a-3ef06159ca4f.png)<br>
 
-### 휴가 신청내역
+#### 휴가 신청내역
 - 팀장, 부서장, 사장, 관리자로 로그인 시 해당 팀, 부서, 전체사원의 휴가 신청 내역을 볼 수 있다.
 - 휴가를 승인/ 반려 할 수 있다. (반려시 사내 스케줄에서도 삭제됨)<br>
 ![image](https://user-images.githubusercontent.com/103317169/209465296-65cab0db-4b46-4961-8111-c52d1ac833d6.png)<br>
 
-### 휴가 보유/ 사용 내역
+#### 휴가 보유/ 사용 내역
 - 팀장, 부서장, 사장, 관리자로 로그인 시 해당 년도의 해당 팀, 부서, 전체사원의 휴가 보유/ 사용 내역을 볼 수 있다.	
 - 사원의 이름을 클릭하면 해당 사원의 휴가 페이지로 이동한다
 - 잔여 연차를 클릭하면 해당 사용에게 휴가 사용을 권고하는 소식 알람이 간다.
 ![image](https://user-images.githubusercontent.com/103317169/209465436-a0191602-d9c9-4d4b-b15b-8499a384bb77.png)
 <br><br>
 	
-## 캘린더
+### 캘린더
 - 캘린더 CRUD 기능 
 - 사원테이블에 직원들의 생년월일을 캘린더에 자동추가
 - 구글캘린더 대한민국 휴무일 api 연동 <br> 
@@ -205,7 +205,7 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 
 <br><br>
 
-## 공지사항
+### 공지사항
 
 - 공지 카테고리는 
 	* 전체 공지 (모든 부서의 공지글 확인 가능)
@@ -268,6 +268,6 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 <br><br>
 
 
-## ERD
+## 👉 ERD
 <img width="788" alt="erd 최종" src="https://user-images.githubusercontent.com/100989788/209434132-13c6efe9-fbde-47d9-9e2b-da95b88ab2c3.png">
 
