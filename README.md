@@ -203,7 +203,60 @@ HTML, CSS, JAVASCRIPT, JAVA, OARCLE 등 언어들을 활용하여 Spring Framewo
 - 구글캘린더 대한민국 휴무일 api 연동 <br> 
 ![캘린더](https://user-images.githubusercontent.com/65589607/209296260-b1d27954-492b-40e7-adc9-3552c3414181.gif)
 
+<br><br>
 
+## 공지사항
+
+- 공지 카테고리는 
+	* 전체 공지 (모든 부서의 공지글 확인 가능)
+	* 부서 공지 (로그인 유저가 속한 해당 부서의 공지글 확인 가능)
+	* 내가 쓴 공지 (로그인 유저가 작성한 공지글 확인 가능), 세 항목으로 구분
+	<br>	
+
+- 로그인 한 사원은 부서를 선택, 선택된 부서에 한해 공지글 작성
+	* 공지 제목 작성/ 부서 선택/ 공지 내용 작성/ 파일 첨부 기능 
+	* 공지 작성시 새로운 소식에 자동 알림
+	<br> 
+![writeNotice](https://user-images.githubusercontent.com/113486102/209938274-ad3592c5-a904-4a6e-985d-943208969e7c.PNG)
+<br>
+
+![news](https://user-images.githubusercontent.com/113486102/209944320-9822a5a8-451c-48ed-ba91-f1b716bd5757.PNG)
+<br>
+
+- 공지글 리스트에서 작성자 프로필, 작성자, 작성자 부서, 공지 제목, 공지 작성일, 공지 받는 부서, 공지 내용 미리보기(20글자 내외), 댓글수 확인 가능 <br>
+
+- 공지사항 페이징 처리
+<br>
+
+![noticeList](https://user-images.githubusercontent.com/113486102/209941070-8fc2d600-1b76-434e-9972-29d5d17dd41e.PNG)
+<br>
+![paging](https://user-images.githubusercontent.com/113486102/209940760-389e7d1f-21fd-4b05-bbcf-75b921391dd2.PNG)
+
+- 공지 제목과 미리보기 내용을 클릭하면 공지글에 대한 상세 내용 확인 가능 (모달창 활성화) 
+	* 공지 작성자, 공지 제목, 공지 작성일, 공지 내용 확인 가능
+	* 파일 첨부 다운로드
+	<br>
+![noticeDetail](https://user-images.githubusercontent.com/113486102/209939374-f5eb8dc3-8124-452f-8698-0e648a9a9db0.PNG)
+<br>
+
+- 공지글 작성자 및 관리자는 본인글 수정 및 삭제 가능
+
+![edit](https://user-images.githubusercontent.com/113486102/209943517-c6bb6699-4128-45cf-a833-207d536ed5a9.PNG)
+<br>
+
+![delete](https://user-images.githubusercontent.com/113486102/209943897-ac369fb3-4de2-455e-aa9c-9b42796b925d.PNG)
+<br>
+
+- 상세 내용 모달창에서 댓글 작성 가능
+	* 댓글 작성란 아래 댓글 리스트 나열 (스크롤 페이징 처리)
+	![noticeCmt](https://user-images.githubusercontent.com/113486102/209939748-e50839b7-7da4-4ba5-838e-6a3b74ccdd8a.PNG)
+	<br>
+	
+	* 댓글 작성자는 본인이 작성한 댓글 수정 및 삭제 가능 ( 작성한 댓글에 한해 수정 및 삭제 버튼 활성화)
+	![mycmt](https://user-images.githubusercontent.com/113486102/209941646-259298a0-cd50-4cdb-aaaf-6a71a6336143.PNG)
+
+
+<br><br>
 
 
 ## ERD
